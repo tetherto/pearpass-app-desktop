@@ -3,7 +3,7 @@ import { html } from 'htm/react'
 import { useForm } from 'pear-apps-lib-ui-react-hooks'
 import { Validator } from 'pear-apps-utils-validator'
 import { useUserData } from 'pearpass-lib-vault'
-import { checkPasswordStrength } from 'pearpass-utils-password-check'
+import { validatePasswordChange } from 'pearpass-utils-password-check'
 
 import { useModal } from '../../../context/ModalContext'
 import { ModalContent } from '../ModalContent'
@@ -50,22 +50,22 @@ export const ModifyMasterVaultModalContent = () => {
   })
 
   const onSubmit = async (values) => {
-    const result = checkPasswordStrength(values.newPassword, { errors })
+    const result = validatePasswordChange({
+      currentPassword: values.currentPassword,
+      newPassword: values.newPassword,
+      repeatPassword: values.repeatPassword,
+      translate: (str) => i18n._(str),
+      config: { errors }
+    })
 
     if (!result.success) {
       setErrors({
-        newPassword: result.errors.join(', ')
+        [result.field]: result.error
       })
 
-      setValue('repeatPassword', '')
-      return
-    }
-
-    if (values.newPassword !== values.repeatPassword) {
-      setErrors({
-        repeatPassword: i18n._('Passwords do not match')
-      })
-
+      if (result.field === 'newPassword') {
+        setValue('repeatPassword', '')
+      }
       return
     }
 
