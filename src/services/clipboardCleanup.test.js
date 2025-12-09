@@ -16,10 +16,17 @@ global.Pear = {
 const clipboardCleanup = require('./clipboardCleanup')
 
 // Mock dependencies
+jest.mock('sodium-native', () => ({
+  sodium_memzero: jest.fn(),
+  sodium_malloc: jest.fn((size) => Buffer.alloc(size))
+}))
 jest.mock('bare-os', () => ({
   platform: jest.fn()
 }))
 jest.mock('bare-subprocess', () => ({
+  spawn: jest.fn()
+}))
+jest.mock('bare-daemon', () => ({
   spawn: jest.fn()
 }))
 jest.mock('pearpass-lib-constants', () => ({
@@ -27,7 +34,8 @@ jest.mock('pearpass-lib-constants', () => ({
 }))
 jest.mock('../utils/logger', () => ({
   logger: {
-    log: jest.fn()
+    log: jest.fn(),
+    error: jest.fn()
   }
 }))
 

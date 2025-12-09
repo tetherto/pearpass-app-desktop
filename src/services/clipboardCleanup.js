@@ -2,18 +2,47 @@
 
 import os from 'bare-os'
 import { spawn } from 'bare-subprocess'
+import { spawn as spawnDaemon } from 'bare-daemon'
+import sodium from 'sodium-native'
+import { Buffer } from 'buffer'
 import { CLIPBOARD_CLEAR_TIMEOUT } from 'pearpass-lib-constants'
 
 import { logger } from '../utils/logger'
 
 const pipe = Pear.worker.pipe()
 
-let copiedValue = ''
-
-pipe.on('data', async (buffer) => {
-  copiedValue = buffer.toString('utf8')
+pipe.on('data', (buffer) => {
+  const sodiumBuf = sodium.sodium_malloc(buffer.length)
+  buffer.copy(sodiumBuf)
+  const copiedValue = sodiumBuf.toString('utf8')
 
   logger.log('Received message clipboard')
+
+  try {
+    startClipboardClearDaemon(copiedValue)
+  } catch (err) {
+    logger.error(
+      'clipboardCleanup',
+      'Failed to start clipboard cleanup daemon',
+      err
+    )
+  } finally {
+    // Best-effort wipe of sensitive data from memory
+    try {
+      sodium.sodium_memzero(sodiumBuf)
+    } catch {}
+    try {
+      sodium.sodium_memzero(buffer)
+    } catch {}
+
+    Pear.exit(0)
+    logger.log('Clipboard cleanup worker exited after starting daemon')
+  }
+})
+
+pipe.on('end', () => {
+  Pear.exit(0)
+  logger.log('Clipboard cleanup worker pipe ended')
 })
 
 export function getClipboardContent() {
@@ -60,65 +89,112 @@ function collectOutput(child, resolve, onError) {
   })
 }
 
-function clearClipboard() {
-  return new Promise((resolve) => {
-    const platform = os.platform()
+function startClipboardClearDaemon(copiedValue) {
+  const platform = os.platform()
+  const timeoutMs = CLIPBOARD_CLEAR_TIMEOUT
+  const timeoutSeconds = Math.ceil(timeoutMs / 1000)
+  const expectedBase64 = deriveExpectedBase64(copiedValue)
 
-    if (platform === 'win32') {
-      // Windows: clip command
-      const child = spawn('clip', { shell: true })
-      child.on('exit', resolve)
-      child.on('error', resolve)
-      child.stdin.end() // Sending empty input clears it
-    } else if (platform === 'darwin') {
-      // macOS: pbcopy command
-      const child = spawn('pbcopy', { shell: true })
-      child.on('exit', resolve)
-      child.on('error', resolve)
-      child.stdin.end()
-    } else if (platform === 'linux') {
-      // Linux: xsel or xclip (try xsel first, fallback to xclip)
-      // Note: This assumes one of these is installed, which is standard on most distros
-      const child = spawn('xsel', ['--clipboard', '--input'], { shell: true })
-      let handled = false
-
-      const done = () => {
-        if (!handled) {
-          handled = true
-          resolve()
-        }
-      }
-
-      child.on('error', () => {
-        const xclip = spawn('xclip', ['-selection', 'clipboard'], {
-          shell: true
-        })
-        xclip.on('exit', done)
-        xclip.on('error', done)
-        xclip.stdin.end()
-      })
-
-      child.on('exit', done)
-      child.stdin.end()
-    } else {
-      resolve()
-    }
-  })
-}
-
-setTimeout(async () => {
-  const currentClipboard = await getClipboardContent()
-
-  if (currentClipboard === copiedValue) {
-    await clearClipboard()
-    logger.log('Clipboard cleared')
+  if (platform === 'win32') {
+    spawnWindowsClipboardDaemon(timeoutMs, expectedBase64)
+    return
   }
 
-  Pear.exit(0)
-  logger.log('Clipboard cleanup worker exited')
-}, CLIPBOARD_CLEAR_TIMEOUT)
+  if (platform === 'darwin') {
+    spawnMacClipboardDaemon(timeoutSeconds, copiedValue)
+    return
+  }
 
-pipe.on('end', async () => {
-  Pear.exit(0)
-  logger.log('Clipboard cleanup worker pipe ended')
-})
+  if (platform === 'linux') {
+    spawnLinuxClipboardDaemon(timeoutSeconds, expectedBase64)
+  }
+}
+
+function deriveExpectedBase64(copiedValue) {
+  let copiedBuf = null
+  try {
+    const len = Buffer.byteLength(copiedValue, 'utf8')
+    copiedBuf = sodium.sodium_malloc(len)
+    copiedBuf.write(copiedValue, 'utf8')
+    return copiedBuf.toString('base64')
+  } finally {
+    if (copiedBuf) {
+      try {
+        sodium.sodium_memzero(copiedBuf)
+      } catch {}
+    }
+  }
+}
+
+function spawnWindowsClipboardDaemon(timeoutMs, expectedBase64) {
+  const psScript = [
+    `$expected = "${expectedBase64}"`,
+    `Start-Sleep -Milliseconds ${timeoutMs}`,
+    'try {',
+    '  $clipboard = Get-Clipboard -Raw',
+    '} catch {',
+    '  $clipboard = $null',
+    '}',
+    'if ($clipboard -ne $null) {',
+    '  $bytes = [System.Text.Encoding]::UTF8.GetBytes($clipboard)',
+    '  $current = [Convert]::ToBase64String($bytes)',
+    '  if ($current -eq $expected) {',
+    '    Set-Clipboard -Value "" | Out-Null',
+    '  }',
+    '}'
+  ].join('; ')
+
+  spawnDaemon('powershell', [
+    '-NoProfile',
+    '-NonInteractive',
+    '-Command',
+    psScript
+  ])
+}
+
+function spawnMacClipboardDaemon(timeoutSeconds, copiedValue) {
+  // macOS: use JXA (JavaScript for Automation) via osascript so the helper
+  // can access the user's system clipboard even when detached from the app.
+  const jxaScript = `
+function run(argv) {
+  var delaySeconds = parseFloat(argv[0]);
+  var expected = argv[1] || "";
+  delay(delaySeconds);
+  var app = Application.currentApplication();
+  app.includeStandardAdditions = true;
+  var current = app.theClipboard() || "";
+  if (!current || current === expected) {
+    app.setTheClipboardTo("");
+  }
+}
+`.trim()
+
+  spawnDaemon('/usr/bin/osascript', [
+    '-l',
+    'JavaScript',
+    '-e',
+    jxaScript,
+    String(timeoutSeconds),
+    copiedValue
+  ])
+}
+
+function spawnLinuxClipboardDaemon(timeoutSeconds, expectedBase64) {
+  const shScript = [
+    `sleep ${timeoutSeconds}`,
+    `expected="${expectedBase64}"`,
+    'if command -v xsel >/dev/null 2>&1; then',
+    '  current=$(xsel --clipboard --output 2>/dev/null | base64 2>/dev/null || printf "")',
+    '  if [ "$current" = "$expected" ]; then',
+    '    printf "" | xsel --clipboard --input',
+    '  fi',
+    'elif command -v xclip >/dev/null 2>&1; then',
+    '  current=$(xclip -selection clipboard -o 2>/dev/null | base64 2>/dev/null || printf "")',
+    '  if [ "$current" = "$expected" ]; then',
+    '    printf "" | xclip -selection clipboard',
+    '  fi',
+    'fi'
+  ].join('; ')
+
+  spawnDaemon('/bin/sh', ['-lc', shScript])
+}
