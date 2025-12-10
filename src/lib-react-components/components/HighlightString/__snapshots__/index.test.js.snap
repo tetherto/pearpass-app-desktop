@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HighlightString Component matches snapshot 1`] = `
+<span
+  class="sc-bRKDuR eShuXS"
+>
+  Test 
+  <span
+    class="sc-hvigdm blIzNj"
+  >
+    42
+  </span>
+  <span
+    class="sc-fhHczv kbZySh"
+  >
+    ,
+  </span>
+   wow
+  <span
+    class="sc-fhHczv kbZySh"
+  >
+    !
+  </span>
+</span>
+`;

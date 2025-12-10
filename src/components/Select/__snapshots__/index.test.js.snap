@@ -1,0 +1,123 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Select Component opens dropdown when label is clicked 1`] = `
+<div>
+  <div
+    class="sc-bAehkN iomXeq"
+  >
+    <div
+      class="sc-hvigdm hOKcMe"
+    >
+      <span>
+         
+        Select a language
+         
+      </span>
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 25 25"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M3.17234 16.3761L12.4801 7.06836L21.7878 16.3761L20.7243 17.4396L12.4801 9.19536L4.23584 17.4396L3.17234 16.3761Z"
+          fill="#F6F6F6"
+        />
+      </svg>
+    </div>
+    <div
+      class="sc-gahYZc OAEPX"
+    >
+      <div
+        class="sc-bRKDuR dqdJa"
+      >
+         
+        English
+         
+      </div>
+      <div
+        class="sc-bRKDuR dqdJa"
+      >
+         
+        Italian
+         
+      </div>
+      <div
+        class="sc-bRKDuR dqdJa"
+      >
+         
+        Spanish
+         
+      </div>
+      <div
+        class="sc-bRKDuR dqdJa"
+      >
+         
+        French
+         
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Select Component renders correctly with a selected item 1`] = `
+<div>
+  <div
+    class="sc-bAehkN iomXeq"
+  >
+    <div
+      class="sc-hvigdm hOKcMe"
+    >
+      <span>
+         
+        English
+         
+      </span>
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 25 25"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M3.19236 8.1636L4.25586 7.1001L12.5001 15.3443L20.7444 7.1001L21.8079 8.1636L12.5001 17.4713L3.19236 8.1636Z"
+          fill="#F6F6F6"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Select Component renders correctly with placeholder when no selected item 1`] = `
+<div>
+  <div
+    class="sc-bAehkN iomXeq"
+  >
+    <div
+      class="sc-hvigdm hOKcMe"
+    >
+      <span>
+         
+        Select a language
+         
+      </span>
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 25 25"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M3.19236 8.1636L4.25586 7.1001L12.5001 15.3443L20.7444 7.1001L21.8079 8.1636L12.5001 17.4713L3.19236 8.1636Z"
+          fill="#F6F6F6"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;

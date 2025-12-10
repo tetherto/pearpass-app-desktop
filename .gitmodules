@@ -1,0 +1,68 @@
+[submodule "packages/pear-apps-lib-feedback"]
+	path = packages/pear-apps-lib-feedback
+	url = ../pear-apps-lib-feedback.git
+	branch = main
+[submodule "packages/pear-apps-lib-ui-react-hooks"]
+	path = packages/pear-apps-lib-ui-react-hooks
+	url = ../pear-apps-lib-ui-react-hooks.git
+	branch = main
+[submodule "packages/pear-apps-utils-avatar-initials"]
+	path = packages/pear-apps-utils-avatar-initials
+	url = ../pear-apps-utils-avatar-initials.git
+	branch = main
+[submodule "packages/pear-apps-utils-date"]
+	path = packages/pear-apps-utils-date
+	url = ../pear-apps-utils-date.git
+	branch = main
+[submodule "packages/pear-apps-utils-generate-unique-id"]
+	path = packages/pear-apps-utils-generate-unique-id
+	url = ../pear-apps-utils-generate-unique-id.git
+	branch = main
+[submodule "packages/pear-apps-utils-pattern-search"]
+	path = packages/pear-apps-utils-pattern-search
+	url = ../pear-apps-utils-pattern-search.git
+	branch = main
+[submodule "packages/pear-apps-utils-qr"]
+	path = packages/pear-apps-utils-qr
+	url = ../pear-apps-utils-qr.git
+	branch = main
+[submodule "packages/pear-apps-utils-validator"]
+	path = packages/pear-apps-utils-validator
+	url = ../pear-apps-utils-validator.git
+	branch = main
+[submodule "packages/pearpass-lib-constants"]
+	path = packages/pearpass-lib-constants
+	url = ../pearpass-lib-constants.git
+	branch = main
+[submodule "packages/pearpass-lib-data-export"]
+	path = packages/pearpass-lib-data-export
+	url = ../pearpass-lib-data-export.git
+	branch = main
+[submodule "packages/pearpass-lib-data-import"]
+	path = packages/pearpass-lib-data-import
+	url = ../pearpass-lib-data-import.git
+	branch = main
+[submodule "packages/pearpass-lib-ui-theme-provider"]
+	path = packages/pearpass-lib-ui-theme-provider
+	url = ../pearpass-lib-ui-theme-provider.git
+	branch = main
+[submodule "packages/pearpass-lib-vault"]
+	path = packages/pearpass-lib-vault
+	url = ../pearpass-lib-vault.git
+	branch = main
+[submodule "packages/pearpass-lib-vault-mobile"]
+	path = packages/pearpass-lib-vault-mobile
+	url = ../pearpass-lib-vault-mobile.git
+	branch = main
+[submodule "packages/pearpass-utils-password-check"]
+	path = packages/pearpass-utils-password-check
+	url = ../pearpass-utils-password-check.git
+	branch = main
+[submodule "packages/pearpass-utils-password-generator"]
+	path = packages/pearpass-utils-password-generator
+	url = ../pearpass-utils-password-generator.git
+	branch = main
+[submodule "packages/tether-dev-docs"]
+	path = packages/tether-dev-docs
+	url = ../tether-dev-docs.git
+	branch = main

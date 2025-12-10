@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PearPassInputField Component matches snapshot for default variant 1`] = `
+<div
+  class="sc-bRKDuR eGVVOP"
+>
+  <div
+    class="sc-hvigdm jRCUHz"
+  >
+    <div
+      class="sc-fhHczv kFQvhM"
+    >
+      <input
+        class="sc-ggWZvA ipphhO"
+        placeholder="Enter text"
+        value="snapshot test"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PearPassInputField Component matches snapshot for outline variant 1`] = `
+<div
+  class="sc-bRKDuR eGVVOP"
+>
+  <div
+    class="sc-hvigdm jRCUHz"
+  >
+    <div
+      class="sc-fhHczv kFQvhM"
+    >
+      <input
+        class="sc-ggWZvA ipphhO"
+        placeholder="Enter text"
+        value="outline snapshot"
+      />
+    </div>
+  </div>
+</div>
+`;

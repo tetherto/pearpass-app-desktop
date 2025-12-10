@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SpotLightLeft renders with default props 1`] = `
+<svg
+  fill="none"
+  height="100%"
+  viewBox="0 0 453 752"
+  width="100%"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <g
+    filter="url(#filter0_f_7001_17048)"
+  >
+    <path
+      d="M67.3396 592.874C152.858 791.154 321.5 880.851 222.19 923.684C122.879 966.517 -26.9543 840.503 -112.473 642.223C-197.991 443.944 -186.81 248.483 -87.4998 205.65C11.8108 162.817 -18.1789 394.594 67.3396 592.874Z"
+      fill="#F2CB40"
+      fill-opacity="0.35"
+    />
+  </g>
+  <defs>
+    <filter
+      color-interpolation-filters="sRGB"
+      filterUnits="userSpaceOnUse"
+      height="1131.56"
+      id="filter0_f_7001_17048"
+      width="822.535"
+      x="-369.959"
+      y="0.483398"
+    >
+      <feflood
+        flood-opacity="0"
+        result="BackgroundImageFix"
+      />
+      <feblend
+        in="SourceGraphic"
+        in2="BackgroundImageFix"
+        mode="normal"
+        result="shape"
+      />
+      <fegaussianblur
+        result="effect1_foregroundBlur_7001_17048"
+        stdDeviation="100"
+      />
+    </filter>
+  </defs>
+</svg>
+`;

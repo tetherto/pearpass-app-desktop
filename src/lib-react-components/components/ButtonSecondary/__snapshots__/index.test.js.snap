@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ButtonSecondary Component matches snapshot with default size ("md") 1`] = `
+<button
+  class="sc-bRKDuR cGoNTm"
+  type="button"
+>
+  Snapshot Button
+</button>
+`;
+
+exports[`ButtonSecondary Component matches snapshot with large size ("lg") 1`] = `
+<button
+  class="sc-bRKDuR khEfWs"
+  type="button"
+>
+  Large Button
+</button>
+`;
+
+exports[`ButtonSecondary Component matches snapshot with small size ("sm") 1`] = `
+<button
+  class="sc-bRKDuR hUcMEU"
+  type="button"
+>
+  Small Button
+</button>
+`;

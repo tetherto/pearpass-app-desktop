@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SettingsBlindPeersSection matches snapshot 1`] = `
+<div>
+  <div>
+    <div
+      data-testid="card-single-setting"
+    >
+      <div
+        data-testid="card-title"
+      >
+        Blind Peering
+      </div>
+      <div
+        data-testid="additional-header"
+      >
+        <div
+          data-testid="popup-menu"
+        >
+          <div
+            data-testid="info-icon"
+          >
+            Info
+          </div>
+        </div>
+      </div>
+      <div
+        data-testid="card-content"
+      >
+        <div>
+          <div
+            data-testid="rule-selector"
+          >
+            <div
+              data-testid="rule-blindPeers"
+            >
+              <span
+                data-testid="rule-label-blindPeers"
+              >
+                Private Connections
+              </span>
+              <span
+                data-testid="rule-description-blindPeers"
+              >
+                Sync your encrypted vault securely with blind peers to improve availability and consistency. Blind peers cannot read your data.
+              </span>
+              <button
+                data-testid="toggle-blindPeers"
+              >
+                Enable
+              </button>
+            </div>
+          </div>
+          <a>
+            <div
+              data-testid="outside-link-icon"
+            >
+              Link
+            </div>
+            Learn more about blind peering.
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

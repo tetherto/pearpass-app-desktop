@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CardSingleSetting renders with title 1`] = `
+<div>
+  <div>
+    <div>
+      <h3>
+        Test Title
+      </h3>
+    </div>
+    <div />
+  </div>
+</div>
+`;

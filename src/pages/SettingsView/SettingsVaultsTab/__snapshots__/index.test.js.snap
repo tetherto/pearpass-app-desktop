@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`VaultsTab renders Manage Vaults section 1`] = `
+<div>
+  <div>
+    <h1>
+      Manage Vaults
+    </h1>
+    <div
+      class="sc-bRKDuR hMjkPC"
+    >
+      <div>
+        <p>
+          Vault 1
+        </p>
+        <button>
+          Edit
+        </button>
+      </div>
+      <div>
+        <p>
+          Vault 2
+        </p>
+        <button>
+          Edit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;

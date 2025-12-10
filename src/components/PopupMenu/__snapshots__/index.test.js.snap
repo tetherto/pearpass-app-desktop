@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PopupMenu Component toggles open state when trigger is clicked (by opacity) 1`] = `
+<div>
+  <div
+    class="sc-bRKDuR jWGHch"
+  >
+    <div
+      class="sc-fhHczv MurJc"
+    >
+      <button>
+        Toggle Menu
+      </button>
+    </div>
+    <div
+      class="sc-hvigdm bHLWQJ"
+    >
+      <div>
+        Menu Content
+      </div>
+    </div>
+  </div>
+</div>
+`;

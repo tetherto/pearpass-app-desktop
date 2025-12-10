@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`InputSearch renders with custom value 1`] = `
+<div>
+  <div
+    class="sc-bRKDuR hyiOtx"
+  >
+    <label
+      class="sc-hvigdm eIripI"
+    >
+      <div
+        data-testid="lock-circle-icon"
+      >
+        LockCircleIcon
+      </div>
+    </label>
+    <input
+      class="sc-fhHczv hcoggh"
+      placeholder="Search..."
+      value="Test search"
+    />
+    <div
+      class="sc-ggWZvA leJRoq"
+    />
+  </div>
+</div>
+`;
+
+exports[`InputSearch renders with default props 1`] = `
+<div>
+  <div
+    class="sc-bRKDuR hyiOtx"
+  >
+    <label
+      class="sc-hvigdm eIripI"
+    >
+      <div
+        data-testid="lock-circle-icon"
+      >
+        LockCircleIcon
+      </div>
+    </label>
+    <input
+      class="sc-fhHczv hcoggh"
+      placeholder="Search..."
+      value=""
+    />
+    <div
+      class="sc-ggWZvA leJRoq"
+    />
+  </div>
+</div>
+`;

@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Switch Component matches snapshot when switched off 1`] = `
+<div
+  class="sc-bRKDuR bxYZvq"
+>
+  <div
+    class="sc-hvigdm gwuDWR"
+  />
+</div>
+`;
+
+exports[`Switch Component matches snapshot when switched on 1`] = `
+<div
+  class="sc-bRKDuR eChSRO"
+>
+  <div
+    class="sc-hvigdm ikiiMT"
+  />
+</div>
+`;

@@ -1,0 +1,18 @@
+node_modules
+
+src/locales
+
+.yalc
+yalc.lock
+pass
+
+#ignore IntelliJ or other Jetbrains files
+.idea
+
+# Generated log files
+logs/
+
+.env
+
+.DS_Store
+assets/.DS_Store

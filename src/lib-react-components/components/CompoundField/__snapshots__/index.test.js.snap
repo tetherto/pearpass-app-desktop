@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CompoundField Component matches snapshot when disabled 1`] = `
+<div
+  class="sc-bRKDuR ewMQvK"
+>
+   
+  Compound Field Content
+   
+</div>
+`;
+
+exports[`CompoundField Component matches snapshot when not disabled 1`] = `
+<div
+  class="sc-bRKDuR jgDyKn"
+>
+   
+  Compound Field Content
+   
+</div>
+`;

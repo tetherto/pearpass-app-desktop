@@ -1,0 +1,25 @@
+{
+  "name": "pear-apps-lib-ui-react-hooks",
+  "version": "0.0.11",
+  "type": "module",
+  "description": "hooks for Pearpass",
+  "main": "src/index.js",
+  "license": "Apache-2.0",
+  "scripts": {
+    "lint": "eslint --fix src",
+    "test": "jest"
+  },
+  "peerDependencies": {
+    "react": ">=18.3.1",
+    "pear-apps-utils-generate-unique-id": "0.0.x",
+    "tether-dev-docs": "0.0.x"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/preset-env": "^7.26.9",
+    "@testing-library/react": "^15.0.7",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  }
+}

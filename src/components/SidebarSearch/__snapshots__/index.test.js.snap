@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SidebarSearch Component renders correctly with default props 1`] = `
+<div>
+  <div
+    class="sc-bRKDuR jqBLZu"
+  >
+    <label
+      class="sc-hvigdm keDqJw"
+    >
+      <div
+        data-testid="search-icon"
+      >
+        SearchIcon
+      </div>
+    </label>
+    <input
+      class="sc-fhHczv iECxhv"
+      placeholder="Search folder..."
+      type="search"
+      value=""
+    />
+  </div>
+</div>
+`;

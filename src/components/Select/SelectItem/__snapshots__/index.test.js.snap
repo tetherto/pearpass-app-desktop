@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SelectItem Component renders correctly with a different item name 1`] = `
+<div>
+  <div
+    class="sc-bRKDuR dqdJa"
+  >
+     
+    Spanish
+     
+  </div>
+</div>
+`;
+
+exports[`SelectItem Component renders correctly with item name 1`] = `
+<div>
+  <div
+    class="sc-bRKDuR dqdJa"
+  >
+     
+    English
+     
+  </div>
+</div>
+`;

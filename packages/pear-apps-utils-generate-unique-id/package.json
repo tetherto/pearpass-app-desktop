@@ -1,0 +1,21 @@
+{
+  "name": "pear-apps-utils-generate-unique-id",
+  "version": "0.0.6",
+  "type": "module",
+  "description": "Generate unique IDs for Pear Apps",
+  "main": "src/index.js",
+  "license": "Apache-2.0",
+  "scripts": {
+    "lint": "eslint --fix .",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/preset-env": "^7.26.9",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0"
+  },
+  "peerDependencies": {
+    "tether-dev-docs": "0.0.x"
+  }
+}

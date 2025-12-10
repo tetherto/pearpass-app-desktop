@@ -1,0 +1,1 @@
+export const BASE_TRANSITION_DURATION = 300

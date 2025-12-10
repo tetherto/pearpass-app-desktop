@@ -1,0 +1,21 @@
+{
+  "name": "pearpass-lib-data-export",
+  "version": "0.0.13",
+  "description": "utility for exporting vaults",
+  "main": "index.js",
+  "license": "Apache-2.0",
+  "scripts": {
+    "lint": "eslint --fix .",
+    "test": "jest"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/preset-env": "^7.26.9",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0"
+  },
+  "peerDependencies": {
+    "tether-dev-docs": "0.0.x"
+  }
+}

@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MenuDropdown renders both dropdown labels 1`] = `
+<div>
+  <div
+    class="sc-hvigdm kbHgus"
+  >
+    <div
+      data-testid="menu-dropdown-label"
+    >
+      No selected item
+      Closed
+    </div>
+    <div
+      class="sc-fhHczv haGsoK"
+    >
+      <div
+        data-testid="menu-dropdown-label"
+      >
+        No selected item
+        Closed
+      </div>
+    </div>
+  </div>
+</div>
+`;

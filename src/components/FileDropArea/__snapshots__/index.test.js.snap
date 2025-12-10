@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FileDropArea component renders the label correctly 1`] = `
+<div>
+   
+  <div
+    class="sc-bRKDuR keAACD"
+  >
+    <div
+      class="sc-hvigdm dFnAyz"
+    >
+       
+      Drop files here
+       
+    </div>
+    <input
+      class="sc-fhHczv yvQzB"
+      type="file"
+    />
+  </div>
+</div>
+`;

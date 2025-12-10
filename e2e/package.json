@@ -1,0 +1,16 @@
+{
+  "name": "pearpass-e2e",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "report": "npx playwright show-report test-artifacts/report"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.52.0"
+  },
+  "devDependencies": {
+    "playwright-qase-reporter": "^2.1.6"
+  }
+}

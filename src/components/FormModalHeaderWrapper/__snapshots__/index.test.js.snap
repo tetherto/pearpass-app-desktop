@@ -1,0 +1,109 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FormModalHeaderWrapper renders children and buttons correctly 1`] = `
+<div>
+   
+  <div
+    class="sc-bRKDuR dGUPt"
+  >
+    <div
+      class="sc-hvigdm dEdrNg"
+    >
+       
+      <div
+        data-testid="test-children"
+      >
+        Test Children
+      </div>
+       
+    </div>
+    <div
+      class="sc-fhHczv cpmIbm"
+    >
+       
+      <div
+        data-testid="test-buttons"
+      >
+        Test Buttons
+      </div>
+       
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FormModalHeaderWrapper renders with empty content 1`] = `
+<div>
+   
+  <div
+    class="sc-bRKDuR dGUPt"
+  >
+    <div
+      class="sc-hvigdm dEdrNg"
+    >
+       
+       
+    </div>
+    <div
+      class="sc-fhHczv cpmIbm"
+    >
+       
+       
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FormModalHeaderWrapper renders without buttons 1`] = `
+<div>
+   
+  <div
+    class="sc-bRKDuR dGUPt"
+  >
+    <div
+      class="sc-hvigdm dEdrNg"
+    >
+       
+      <div
+        data-testid="test-children"
+      >
+        Test Children
+      </div>
+       
+    </div>
+    <div
+      class="sc-fhHczv cpmIbm"
+    >
+       
+       
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FormModalHeaderWrapper renders without children 1`] = `
+<div>
+   
+  <div
+    class="sc-bRKDuR dGUPt"
+  >
+    <div
+      class="sc-hvigdm dEdrNg"
+    >
+       
+       
+    </div>
+    <div
+      class="sc-fhHczv cpmIbm"
+    >
+       
+      <div
+        data-testid="test-buttons"
+      >
+        Test Buttons
+      </div>
+       
+    </div>
+  </div>
+</div>
+`;

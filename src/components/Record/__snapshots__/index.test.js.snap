@@ -1,0 +1,186 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Record Component renders Record component correctly when not selected 1`] = `
+<DocumentFragment>
+  <div
+    class="sc-ggWZvA icnNFY"
+  >
+    <div
+      class="sc-dTvVRJ icGHDn"
+    >
+      <div>
+        RecordAvatar
+      </div>
+      <div
+        class="sc-jwTyAe iDJCHC"
+      >
+        <span>
+          Test Record Title
+        </span>
+        <p>
+          Test Folder
+        </p>
+      </div>
+    </div>
+     
+    <div
+      class="sc-hjsuWn eMFYBK"
+    >
+      <div
+        class="sc-bRKDuR jWGHch"
+      >
+        <div
+          class="sc-fhHczv MurJc"
+        >
+          <div>
+            <svg
+              data-testid="kebab-icon"
+            />
+          </div>
+        </div>
+        <div
+          class="sc-hvigdm bHLWQJ"
+        >
+          <div
+            data-testid="record-actions-popup-content"
+          >
+            RecordActionsPopupContent
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Record Component renders Record component correctly when selected 1`] = `
+<DocumentFragment>
+  <div
+    class="sc-ggWZvA fwyZFR"
+  >
+    <div
+      class="sc-dTvVRJ icGHDn"
+    >
+      <div>
+        RecordAvatar
+      </div>
+      <div
+        class="sc-jwTyAe iDJCHC"
+      >
+        <span>
+          Test Record Title
+        </span>
+        <p>
+          Test Folder
+        </p>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Record Component toggles action menu when kebab icon is clicked (snapshot test): after toggle 1`] = `
+<DocumentFragment>
+  <div
+    class="sc-ggWZvA QGdUN"
+  >
+    <div
+      class="sc-dTvVRJ icGHDn"
+    >
+      <div>
+        RecordAvatar
+      </div>
+      <div
+        class="sc-jwTyAe iDJCHC"
+      >
+        <span>
+          Test Record Title
+        </span>
+        <p>
+          Test Folder
+        </p>
+      </div>
+    </div>
+     
+    <div
+      class="sc-hjsuWn eMFYBK"
+    >
+      <div
+        class="sc-bRKDuR jWGHch"
+      >
+        <div
+          class="sc-fhHczv MurJc"
+        >
+          <div>
+            <svg
+              data-testid="kebab-icon"
+            />
+          </div>
+        </div>
+        <div
+          class="sc-hvigdm kIjgdY"
+        >
+          <div
+            data-testid="record-actions-popup-content"
+          >
+            RecordActionsPopupContent
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Record Component toggles action menu when kebab icon is clicked (snapshot test): initial state 1`] = `
+<DocumentFragment>
+  <div
+    class="sc-ggWZvA icnNFY"
+  >
+    <div
+      class="sc-dTvVRJ icGHDn"
+    >
+      <div>
+        RecordAvatar
+      </div>
+      <div
+        class="sc-jwTyAe iDJCHC"
+      >
+        <span>
+          Test Record Title
+        </span>
+        <p>
+          Test Folder
+        </p>
+      </div>
+    </div>
+     
+    <div
+      class="sc-hjsuWn eMFYBK"
+    >
+      <div
+        class="sc-bRKDuR jWGHch"
+      >
+        <div
+          class="sc-fhHczv MurJc"
+        >
+          <div>
+            <svg
+              data-testid="kebab-icon"
+            />
+          </div>
+        </div>
+        <div
+          class="sc-hvigdm bHLWQJ"
+        >
+          <div
+            data-testid="record-actions-popup-content"
+          >
+            RecordActionsPopupContent
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

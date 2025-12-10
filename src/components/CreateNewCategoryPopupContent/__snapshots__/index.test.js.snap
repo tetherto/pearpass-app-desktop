@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CreateNewCategoryPopupContent renders menu items correctly 1`] = `
+<div>
+  <div
+    class="sc-bRKDuR cNurts"
+  >
+    <div
+      class="sc-hvigdm gwoevN"
+      color="#6E9700"
+    >
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 25 25"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M8.63081 21.4628V8.45709H21.6308V17.0398L17.2078 21.4628H8.63081ZM20.6308 16.4628H16.6308V20.4628L20.6308 16.4628ZM5.64231 18.2686L3.38281 5.47434L16.1771 3.21484L16.6808 6.07834H6.24831V18.1603L5.64231 18.2686Z"
+          fill="#6E9700"
+        />
+      </svg>
+      Note
+    </div>
+    <div
+      class="sc-hvigdm ddfABV"
+    >
+      Email
+    </div>
+  </div>
+</div>
+`;

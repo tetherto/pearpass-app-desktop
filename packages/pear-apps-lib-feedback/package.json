@@ -1,0 +1,21 @@
+{
+  "name": "pear-apps-lib-feedback",
+  "version": "0.0.7",
+  "type": "module",
+  "description": "A library for sending feedbacks to slack channels and google forms",
+  "main": "src/index.js",
+  "license": "Apache-2.0",
+  "scripts": {
+    "lint": "eslint --fix ./src",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/preset-env": "^7.26.9",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0"
+  },
+  "peerDependencies": {
+    "tether-dev-docs": "0.0.x"
+  }
+}

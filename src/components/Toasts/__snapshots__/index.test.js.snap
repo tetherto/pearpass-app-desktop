@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Toasts Component renders correctly with toasts 1`] = `
+<div>
+  <div
+    data-testid="toast-stack"
+  >
+    <div
+      data-testid="toast-container"
+    >
+      <div
+        data-testid="mock-icon"
+      >
+        Icon
+      </div>
+      Success message
+    </div>
+    <div
+      data-testid="toast-container"
+    >
+      Error message
+    </div>
+  </div>
+</div>
+`;

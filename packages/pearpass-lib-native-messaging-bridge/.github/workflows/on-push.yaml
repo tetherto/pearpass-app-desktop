@@ -1,0 +1,102 @@
+name: Build on Push
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history to get commit SHA
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install hp-rpc-cli
+        run: npm install -g hp-rpc-cli
+      
+      - name: Set up environment variables
+        run: |
+          echo "REPO_URL=${{ github.server_url }}/${{ github.repository }}" >> $GITHUB_ENV
+          echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
+      
+      - name: Run hp-rpc-cli build
+        id: build
+        run: |
+          echo "Starting build process..."
+          BUILD_OUTPUT=$(hp-rpc-cli -s ${{ secrets.WORKER_PUBKEY }} -m build -d '{"repo":"${{ env.REPO_URL }}","branch":"${{ env.BRANCH_NAME }}","commit":"${{ env.COMMIT_SHA }}"}' -t 100000)
+          
+          # Parse JSON to extract ID
+          BUILD_ID=$(echo "$BUILD_OUTPUT" | jq -r '.id')
+          echo "Build ID: $BUILD_ID"
+          echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
+      
+      - name: Poll build status
+        run: |
+          BUILD_ID="${{ steps.build.outputs.build_id }}"
+          CURRENT_STATUS=""
+          CONSECUTIVE_FAILURES=0
+          MAX_FAILURES=5
+          
+          while true; do
+            # Run status command and ignore failures
+            STATUS_OUTPUT=$(hp-rpc-cli -s ${{ secrets.WORKER_PUBKEY }} -m status -d "{\"id\":\"$BUILD_ID\"}" -t 100000 2>/dev/null || echo "")
+            
+            # Only proceed if we got valid output
+            if [ -n "$STATUS_OUTPUT" ]; then
+              # Reset failure counter on successful response
+              CONSECUTIVE_FAILURES=0
+              
+              # Parse status
+              STATUS=$(echo "$STATUS_OUTPUT" | jq -r '.status' 2>/dev/null || echo "")
+              
+              # Only display if status has changed
+              if [ "$STATUS" != "$CURRENT_STATUS" ]; then
+                echo "Status changed: $CURRENT_STATUS → $STATUS"
+              fi
+              
+              if [ "$STATUS" = "seeding" ] && [ "$STATUS" != "$CURRENT_STATUS" ]; then
+                echo "Build is seeding! Extracting details..."
+                VERSION=$(echo "$STATUS_OUTPUT" | jq -r '.stage.version')
+                KEY=$(echo "$STATUS_OUTPUT" | jq -r '.stage.key')
+                
+                echo "=========================================="
+                echo "Build Details:"
+                echo "ID: $BUILD_ID"
+                echo "Version: $VERSION"
+                echo "Key: $KEY"
+                echo "=========================================="
+                
+              elif [ "$STATUS" = "complete" ]; then
+                echo "=========================================="
+                echo "✅ Build completed successfully!"
+                echo "=========================================="
+                exit 0
+              elif [ "$STATUS" = "failed" ]; then
+                echo "❌ Build failed"
+                exit 1
+              fi
+              CURRENT_STATUS="$STATUS"
+            else
+              # Command failed, increment failure counter
+              CONSECUTIVE_FAILURES=$((CONSECUTIVE_FAILURES + 1))
+              
+              # Fail job if too many consecutive failures
+              if [ "$CONSECUTIVE_FAILURES" -ge "$MAX_FAILURES" ]; then
+                echo "❌ Too many consecutive failures ($MAX_FAILURES), failing job"
+                exit 1
+              fi
+            fi
+            
+            sleep 10
+          done

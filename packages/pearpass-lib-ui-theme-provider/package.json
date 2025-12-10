@@ -1,0 +1,41 @@
+{
+  "name": "pearpass-lib-ui-theme-provider",
+  "version": "0.0.16",
+  "main": "src/index.js",
+  "license": "Apache-2.0",
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    },
+    "./native": {
+      "import": "./native/index.js"
+    }
+  },
+  "react-native": {
+    ".": "./src/index.js",
+    "./native": "./native/index.js"
+  },
+  "type": "module",
+  "description": "A theme and colors provider for Pearpass",
+  "scripts": {
+    "lint": "eslint --fix .",
+    "test": "jest"
+  },
+  "optionalDependencies": {
+    "react-native": "0.78.1"
+  },
+  "peerDependencies": {
+    "styled-components": "^6.1.19",
+    "tether-dev-docs": "0.0.x"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/preset-env": "^7.26.9",
+    "@babel/preset-react": "^7.26.3",
+    "@react-native/babel-preset": "^0.78.1",
+    "@testing-library/react": "16.2.0",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  }
+}

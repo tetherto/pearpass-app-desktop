@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ButtonFolder Component matches snapshot 1`] = `
+<div
+  class="sc-bRKDuR cPEZXi"
+  type="button"
+>
+  <svg
+    fill="none"
+    height="21"
+    viewBox="0 0 24 24"
+    width="21"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M3 19V5H9.59625L11.5963 7H21V19H3ZM4 18H20V8H11.1943L9.19425 6H4V18Z"
+      fill="#F6F6F6"
+    />
+  </svg>
+   
+  Snapshot Folder
+</div>
+`;

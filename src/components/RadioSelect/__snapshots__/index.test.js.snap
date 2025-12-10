@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RadioSelect renders the component with title and options 1`] = `
+<div>
+  <div
+    data-testid="radio-select-wrapper"
+  >
+    <div
+      data-testid="title"
+    >
+      Select an option
+    </div>
+    <div
+      data-testid="radio-option"
+    >
+      <div
+        data-active="true"
+        data-testid="button-radio"
+      >
+        Active
+      </div>
+      Option 1
+    </div>
+    <div
+      data-testid="radio-option"
+    >
+      <div
+        data-active="false"
+        data-testid="button-radio"
+      >
+        Inactive
+      </div>
+      Option 2
+    </div>
+    <div
+      data-testid="radio-option"
+    >
+      <div
+        data-active="false"
+        data-testid="button-radio"
+      >
+        Inactive
+      </div>
+      Option 3
+    </div>
+  </div>
+</div>
+`;

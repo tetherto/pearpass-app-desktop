@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ButtonPlusCreateNew passes the correct color prop to icons 1`] = `
+<div>
+  <div
+    data-testid="button"
+  >
+    PlusIcon
+  </div>
+</div>
+`;
+
+exports[`ButtonPlusCreateNew renders PlusIcon when isOpen is false 1`] = `
+<div>
+  <div
+    data-testid="button"
+  >
+    PlusIcon
+  </div>
+</div>
+`;
+
+exports[`ButtonPlusCreateNew renders XIcon when isOpen is true 1`] = `
+<div>
+  <div
+    data-testid="button"
+  >
+    XIcon
+  </div>
+</div>
+`;

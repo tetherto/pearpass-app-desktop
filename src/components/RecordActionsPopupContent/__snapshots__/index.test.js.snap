@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RecordActionsPopupContent Component renders correctly with compact variant 1`] = `
+<DocumentFragment>
+  <div
+    class="sc-bRKDuR fmvGmW"
+    variant="compact"
+  >
+    <div
+      class="sc-hvigdm cYnssP"
+      variant="compact"
+    >
+      <svg
+        data-testid="edit-icon"
+      />
+      <p>
+        Edit
+      </p>
+    </div>
+    <div
+      class="sc-hvigdm cYnssP"
+      variant="compact"
+    >
+      <svg
+        data-testid="delete-icon"
+      />
+      <p>
+        Delete
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`RecordActionsPopupContent Component renders correctly with default variant 1`] = `
+<DocumentFragment>
+  <div
+    class="sc-bRKDuR fBQtQW"
+    variant="default"
+  >
+    <div
+      class="sc-hvigdm cYnssP"
+      variant="default"
+    >
+      <svg
+        data-testid="edit-icon"
+      />
+      <p>
+        Edit
+      </p>
+    </div>
+    <div
+      class="sc-hvigdm cYnssP"
+      variant="default"
+    >
+      <svg
+        data-testid="delete-icon"
+      />
+      <p>
+        Delete
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;

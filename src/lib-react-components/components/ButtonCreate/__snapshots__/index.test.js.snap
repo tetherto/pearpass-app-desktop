@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ButtonCreate Component matches snapshot 1`] = `
+<button
+  class="sc-bRKDuR dmWtlb"
+  type="button"
+>
+  <div
+    class="sc-hvigdm dEdrNg"
+  >
+    <svg
+      fill="none"
+      height="24"
+      viewBox="0 0 25 25"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M3.19236 8.1636L4.25586 7.1001L12.5001 15.3443L20.7444 7.1001L21.8079 8.1636L12.5001 17.4713L3.19236 8.1636Z"
+        fill="#050B06"
+      />
+    </svg>
+  </div>
+  Snapshot Button
+  <div
+    class="sc-hvigdm dEdrNg"
+  >
+    <svg
+      fill="none"
+      height="24"
+      viewBox="0 0 25 25"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M3.19236 8.1636L4.25586 7.1001L12.5001 15.3443L20.7444 7.1001L21.8079 8.1636L12.5001 17.4713L3.19236 8.1636Z"
+        fill="#050B06"
+      />
+    </svg>
+  </div>
+</button>
+`;

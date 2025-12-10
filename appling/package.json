@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "name": "pear-appling-pearpass-app-desktop",
+  "description": "Pear Appling for PearPass Desktop Application",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/holepunchto/pear-appling.git"
+  },
+  "author": "Holepunch",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/tetherto/pearpass-app-desktop#readme",
+  "devDependencies": {
+    "cmake-pear": "3.0.4"
+  }
+}

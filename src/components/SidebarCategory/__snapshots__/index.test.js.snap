@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SidebarCategory Component renders correctly with default props 1`] = `
+<div>
+  <button
+    class="sc-bRKDuR bDBHR"
+  >
+    <div
+      class="sc-hvigdm oRisu"
+    >
+      <div
+        class="sc-fhHczv hLXVSY"
+      >
+        <div
+          data-testid="mock-icon"
+        >
+          Icon
+        </div>
+      </div>
+      <span>
+        Test Category
+      </span>
+    </div>
+    <span
+      class="sc-ggWZvA gSmtta"
+    >
+      5
+    </span>
+  </button>
+</div>
+`;

@@ -1,0 +1,14 @@
+{
+  "name": "pearpass-lib-constants",
+  "version": "0.0.10",
+  "type": "module",
+  "description": "Shared constants for the Pearpass repositories",
+  "main": "src/index.js",
+  "license": "Apache-2.0",
+  "scripts": {
+    "lint": "eslint --fix ."
+  },
+  "peerDependencies": {
+    "tether-dev-docs": "0.0.x"
+  }
+}

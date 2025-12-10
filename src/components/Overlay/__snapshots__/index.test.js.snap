@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Overlay does not render when isRendered is false 1`] = `<div />`;

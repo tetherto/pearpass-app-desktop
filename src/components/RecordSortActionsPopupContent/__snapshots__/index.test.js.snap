@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RecordSortActionsPopupContent Component renders correctly with all menu items 1`] = `
+<div>
+  <div
+    class="sc-bRKDuR gcfjVY"
+  >
+    <div
+      class="sc-hvigdm cYNyTs"
+    >
+      <div>
+        <svg
+          data-testid="recent-icon"
+        />
+        Recent
+      </div>
+    </div>
+    <div
+      class="sc-hvigdm cYNyTs"
+    >
+      <div>
+        <svg
+          data-testid="new-to-old-icon"
+        />
+        Newest First
+      </div>
+    </div>
+    <div
+      class="sc-hvigdm cYNyTs"
+    >
+      <div>
+        <svg
+          data-testid="old-to-new-icon"
+        />
+        Oldest First
+      </div>
+    </div>
+  </div>
+</div>
+`;

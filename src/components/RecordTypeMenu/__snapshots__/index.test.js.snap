@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RecordTypeMenu Component renders correctly with no selected record 1`] = `
+<div>
+  <div
+    data-testid="menu-dropdown"
+  >
+    <div
+      data-testid="selected-item"
+    />
+    <ul>
+      <li
+        data-testid="menu-item-login"
+      >
+        Login
+        <svg
+          data-testid="login-icon"
+        />
+      </li>
+      <li
+        data-testid="menu-item-card"
+      >
+        Card
+        <svg
+          data-testid="card-icon"
+        />
+      </li>
+      <li
+        data-testid="menu-item-note"
+      >
+        Note
+        <svg
+          data-testid="note-icon"
+        />
+      </li>
+    </ul>
+  </div>
+</div>
+`;

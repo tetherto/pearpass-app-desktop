@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SettingsLanguageSection matches snapshot 1`] = `
+<div>
+  <div
+    class="sc-bRKDuR biDtcp"
+  >
+    <div
+      class="sc-hvigdm gjmbZL"
+    >
+      <span
+        class="sc-fhHczv eLwglV"
+      />
+    </div>
+    <div>
+      <div
+        class="sc-ibashp gGUQXM"
+      >
+        <div
+          class="sc-jwTyAe eJfDtf"
+        >
+          <span>
+             
+             
+          </span>
+          <svg
+            fill="none"
+            height="24"
+            viewBox="0 0 25 25"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M3.19236 8.1636L4.25586 7.1001L12.5001 15.3443L20.7444 7.1001L21.8079 8.1636L12.5001 17.4713L3.19236 8.1636Z"
+              fill="#F6F6F6"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

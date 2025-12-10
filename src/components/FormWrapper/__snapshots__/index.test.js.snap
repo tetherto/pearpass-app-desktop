@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FormWrapper renders correctly 1`] = `
+<div>
+  <div
+    class="sc-bRKDuR hMjkPC"
+  />
+</div>
+`;
+
+exports[`FormWrapper renders multiple children in correct order 1`] = `
+<div>
+  <div
+    class="sc-bRKDuR hMjkPC"
+  >
+    <div>
+      First Child
+    </div>
+    <div>
+      Second Child
+    </div>
+    <div>
+      Third Child
+    </div>
+  </div>
+</div>
+`;

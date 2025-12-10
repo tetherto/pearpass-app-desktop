@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`InputField Component matches snapshot for default variant 1`] = `
+<div
+  class="sc-bRKDuR sc-fhHczv iUcaPP dGaGUo"
+>
+  <div
+    class="sc-ggWZvA jlOnfN"
+  >
+    <div
+      class="sc-jwTyAe hXRaZK"
+    >
+      <span
+        class="sc-hjsuWn iagtKj"
+      >
+         
+        Label
+         
+      </span>
+      <div
+        class="sc-jJLAfE gttYtk"
+      >
+        <input
+          class="sc-hwkwBN DnOVm"
+          placeholder="Enter text"
+          type="text"
+          value="snapshot test"
+        />
+        <div
+          class="sc-kNOymR iQIqLX"
+        >
+           
+           
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`InputField Component matches snapshot for outline variant 1`] = `
+<div
+  class="sc-bRKDuR sc-hvigdm iUcaPP iAaque"
+>
+  <div
+    class="sc-ggWZvA jlOnfN"
+  >
+    <div
+      class="sc-jwTyAe hXRaZK"
+    >
+      <span
+        class="sc-hjsuWn iagtKj"
+      >
+         
+        Outline Label
+         
+      </span>
+      <div
+        class="sc-jJLAfE gttYtk"
+      >
+        <input
+          class="sc-hwkwBN DnOVm"
+          placeholder="Enter text"
+          type="text"
+          value="outline snapshot"
+        />
+        <div
+          class="sc-kNOymR iQIqLX"
+        >
+           
+           
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

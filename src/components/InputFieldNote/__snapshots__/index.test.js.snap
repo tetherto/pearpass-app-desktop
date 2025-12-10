@@ -1,0 +1,176 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`InputFieldNote renders with custom value 1`] = `
+<div>
+  <div
+    class="sc-eqYatC sc-kcLKEh rKEPQ fsEbxZ"
+  >
+    <div
+      class="sc-kvnevz euqDEt"
+    >
+       
+      <div
+        class="sc-dFVmKS jeQHKC"
+      >
+         
+        <svg
+          fill="none"
+          height="24"
+          viewBox="0 0 24 25"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M8.3845 12.8077H15.6155V11.8077H8.3845V12.8077ZM8.3845 15.577H15.6155V14.577H8.3845V15.577ZM8.3845 18.3462H12.6155V17.3462H8.3845V18.3462ZM5 21.5V3.5H14.5L19 8V21.5H5ZM14 8.5V4.5H6V20.5H18V8.5H14Z"
+            fill="#F6F6F6"
+          />
+        </svg>
+         
+      </div>
+      <div
+        class="sc-kCuUfV hqBslW"
+      >
+        <span
+          class="sc-dNdcvo lbJylK"
+        >
+           
+          Note
+           
+        </span>
+        <div
+          class="sc-fbQrwq hytYjv"
+        >
+          <input
+            class="sc-gGKoUb jNaItO"
+            placeholder="Add note"
+            type="text"
+            value="Test note"
+          />
+          <div
+            class="sc-hwddKA fjIOYK"
+          >
+             
+             
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`InputFieldNote renders with custom variant 1`] = `
+<div>
+  <div
+    class="sc-eqYatC sc-dntSTA rKEPQ brpVzZ"
+  >
+    <div
+      class="sc-kvnevz euqDEt"
+    >
+       
+      <div
+        class="sc-dFVmKS jeQHKC"
+      >
+         
+        <svg
+          fill="none"
+          height="24"
+          viewBox="0 0 24 25"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M8.3845 12.8077H15.6155V11.8077H8.3845V12.8077ZM8.3845 15.577H15.6155V14.577H8.3845V15.577ZM8.3845 18.3462H12.6155V17.3462H8.3845V18.3462ZM5 21.5V3.5H14.5L19 8V21.5H5ZM14 8.5V4.5H6V20.5H18V8.5H14Z"
+            fill="#F6F6F6"
+          />
+        </svg>
+         
+      </div>
+      <div
+        class="sc-kCuUfV hqBslW"
+      >
+        <span
+          class="sc-dNdcvo lbJylK"
+        >
+           
+          Note
+           
+        </span>
+        <div
+          class="sc-fbQrwq hytYjv"
+        >
+          <input
+            class="sc-gGKoUb jNaItO"
+            placeholder="Add note"
+            type="text"
+          />
+          <div
+            class="sc-hwddKA fjIOYK"
+          >
+             
+             
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`InputFieldNote renders with default props 1`] = `
+<div>
+  <div
+    class="sc-eqYatC sc-kcLKEh rKEPQ fsEbxZ"
+  >
+    <div
+      class="sc-kvnevz euqDEt"
+    >
+       
+      <div
+        class="sc-dFVmKS jeQHKC"
+      >
+         
+        <svg
+          fill="none"
+          height="24"
+          viewBox="0 0 24 25"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M8.3845 12.8077H15.6155V11.8077H8.3845V12.8077ZM8.3845 15.577H15.6155V14.577H8.3845V15.577ZM8.3845 18.3462H12.6155V17.3462H8.3845V18.3462ZM5 21.5V3.5H14.5L19 8V21.5H5ZM14 8.5V4.5H6V20.5H18V8.5H14Z"
+            fill="#F6F6F6"
+          />
+        </svg>
+         
+      </div>
+      <div
+        class="sc-kCuUfV hqBslW"
+      >
+        <span
+          class="sc-dNdcvo lbJylK"
+        >
+           
+          Note
+           
+        </span>
+        <div
+          class="sc-fbQrwq hytYjv"
+        >
+          <input
+            class="sc-gGKoUb jNaItO"
+            placeholder="Add note"
+            type="text"
+          />
+          <div
+            class="sc-hwddKA fjIOYK"
+          >
+             
+             
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

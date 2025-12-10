@@ -1,0 +1,96 @@
+{
+  "name": "pearpass-app-desktop",
+  "version": "1.0.1",
+  "pear": {
+    "name": "pearpass-app-desktop",
+    "pre": "pear-electron/pre",
+    "routes": ".",
+    "unrouted": [
+      "/node_modules/pearpass-lib-vault-mobile/src/worklet/app.js"
+    ],
+    "gui": {
+      "backgroundColor": "#1F2430",
+      "height": "1024",
+      "width": "1440"
+    },
+    "links": [
+      "https://hooks.slack.com/services/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",
+      "https://docs.google.com/forms/d/e/1FAIpQLScLltvRe64VzMDRzOVjGtHWZ3KafLC2zzvkEoJfTzJkFd67OA/*"
+    ],
+    "stage": {
+      "entrypoints": [
+        "/node_modules/pearpass-lib-vault-mobile/src/worklet/app.js"
+      ],
+      "ignore": [
+        ".github/**",
+        "appling/**",
+        ".git/**"
+      ]
+    }
+  },
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "dev": "pear run -d .",
+    "test": "jest",
+    "build:pear": "lingui extract && lingui compile",
+    "build-bridge-package": "node scripts/build-bridge-package.js",
+    "lint": "eslint --fix .",
+    "lingui:extract": "lingui extract",
+    "lingui:compile": "lingui compile",
+    "update-submodules": "bash scripts/update-submodules.sh"
+  },
+  "devDependencies": {
+    "@babel/core": "7.26.10",
+    "@babel/preset-env": "7.26.9",
+    "@babel/preset-react": "7.26.3",
+    "@lingui/cli": "5.1.2",
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.2.0",
+    "@vercel/ncc": "0.38.3",
+    "babel-jest": "29.7.0",
+    "bare-pack": "1.4.8",
+    "cmake-pear": "2.0.0",
+    "jest": "29.7.0",
+    "jest-environment-jsdom": "29.7.0",
+    "pear-interface": "1.0.0",
+    "tether-dev-docs": "file:packages/tether-dev-docs"
+  },
+  "dependencies": {
+    "@lingui/core": "5.1.2",
+    "@lingui/format-json": "5.1.2",
+    "@lingui/macro": "5.1.2",
+    "@lingui/react": "5.1.2",
+    "@rive-app/react-canvas": "4.22.1",
+    "bare-os": "3.6.2",
+    "bare-subprocess": "5.2.1",
+    "buffer": "6.0.3",
+    "compact-encoding": "2.18.0",
+    "dotenv": "17.2.1",
+    "htm": "3.1.1",
+    "jszip": "3.10.1",
+    "pear-apps-lib-feedback": "file:packages/pear-apps-lib-feedback",
+    "pear-apps-lib-ui-react-hooks": "file:packages/pear-apps-lib-ui-react-hooks",
+    "pear-apps-utils-avatar-initials": "file:packages/pear-apps-utils-avatar-initials",
+    "pear-apps-utils-date": "file:packages/pear-apps-utils-date",
+    "pear-apps-utils-generate-unique-id": "file:packages/pear-apps-utils-generate-unique-id",
+    "pear-apps-utils-pattern-search": "file:packages/pear-apps-utils-pattern-search",
+    "pear-apps-utils-qr": "file:packages/pear-apps-utils-qr",
+    "pear-apps-utils-validator": "file:packages/pear-apps-utils-validator",
+    "pear-bridge": "1.2.4",
+    "pear-electron": "1.7.25-rc.0",
+    "pear-ipc": "6.4.0",
+    "pear-run": "1.0.5",
+    "pearpass-lib-constants": "file:packages/pearpass-lib-constants",
+    "pearpass-lib-data-export": "file:packages/pearpass-lib-data-export",
+    "pearpass-lib-data-import": "file:packages/pearpass-lib-data-import",
+    "pearpass-lib-ui-theme-provider": "file:packages/pearpass-lib-ui-theme-provider",
+    "pearpass-lib-vault": "file:packages/pearpass-lib-vault",
+    "pearpass-lib-vault-mobile": "file:packages/pearpass-lib-vault-mobile",
+    "pearpass-utils-password-check": "file:packages/pearpass-utils-password-check",
+    "pearpass-utils-password-generator": "file:packages/pearpass-utils-password-generator",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "styled-components": "6.1.19"
+  }
+}

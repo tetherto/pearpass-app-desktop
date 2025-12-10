@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SwitchWithLabel Component renders correctly with default props 1`] = `
+<div>
+  <div
+    class="sc-bRKDuR kuaafX"
+  >
+    <div
+      class="sc-hvigdm fPxzex"
+    >
+      <div
+        class="sc-fhHczv ifvzga"
+      >
+         
+        Test Label
+         
+      </div>
+    </div>
+    <div
+      data-is-on="false"
+      data-testid="switch"
+    >
+      Switch Component
+    </div>
+  </div>
+</div>
+`;
