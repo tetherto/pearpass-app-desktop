@@ -1,1 +1,0 @@
-export const CLIPBOARD_CLEAR_TIMEOUT = 30000

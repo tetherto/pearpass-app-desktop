@@ -1,6 +1,0 @@
-export { parse1PasswordData } from './src/parsers/1password'
-export { parseBitwardenData } from './src/parsers/bitwarden'
-export { parseLastPassData } from './src/parsers/lastPass'
-export { parsePearPassData } from './src/parsers/pearPass'
-export { parseProtonPassData } from './src/parsers/protonPass'
-export { parseNordPassData } from './src/parsers/nordPass'
