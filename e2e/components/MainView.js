@@ -2,71 +2,94 @@
 
 const { expect } = require('../fixtures/app.runner')
 
-/**
- * Main View - Password list and categories
- * Recommended test-ids to add in the app:
- * - data-testid="main-search-input"
- * - data-testid="category-all"
- * - data-testid="category-login"
- * - data-testid="category-identity"
- * - data-testid="category-credit-card"
- * - data-testid="sidebar-settings"
- * - data-testid="sidebar-add-device"
- * - data-testid="sidebar-exit-vault"
- * - data-testid="sort-recent"
- * - data-testid="multi-select"
- */
 class MainView {
-  constructor (root) {
+  constructor(root) {
     this.root = root
-    
-    // Search
-    this.searchInput = root.locator('input[placeholder="Search..."]')
-    
-    // Sidebar categories
-    this.allCategory = root.locator('button:has-text("All")')
-    this.loginCategory = root.locator('button:has-text("Login")')
-    this.identityCategory = root.locator('button:has-text("Identity")')
-    this.creditCardCategory = root.locator('button:has-text("Credit Card")')
-    
-    // Sidebar actions
-    this.settingsButton = root.locator('text=Settings').first()
-    this.addDeviceButton = root.locator('text=Add a Device').first()
-    this.exitVaultButton = root.locator('text=Exit Vault').first()
-    
-    // Sort/filter
-    this.recentButton = root.locator('text=Recent').first()
-    this.multiSelectButton = root.locator('text=Multiple selection').first()
-    
-    // Preferred selectors (uncomment when test-ids are added)
-    // this.searchInput = root.locator('[data-testid="main-search-input"]')
-    // this.allCategory = root.locator('[data-testid="category-all"]')
-    // this.exitVaultButton = root.locator('[data-testid="sidebar-exit-vault"]')
   }
 
-  async waitForReady (timeout = 30000) {
-    await expect(this.searchInput).toBeVisible({ timeout })
+  // ==== GETTERS - LOCATORS ====
+
+  get loginCategory() {
+    return this.root.getByTestId('sidebar-category-login')
   }
 
-  async isVisible () {
-    return await this.searchInput.isVisible().catch(() => false)
+  get createLoginButton() {
+    return this.root.getByText('Create a login')
   }
 
-  async search (query) {
-    await this.searchInput.fill(query)
+  get item() {
+    return this.root.getByText('Test Title').first()
   }
 
-  async selectCategory (name) {
-    const category = this.root.locator(`button:has-text("${name}")`).first()
+  get editButton() {
+    return this.root.getByText('Edit').last()
+  }
+
+  get itemBarThreeDots() {
+    return this.root.getByTestId('button-round-icon').first()
+  }
+
+  get deleteItemButton() {
+    return this.root.getByText('Delete element').last()
+  }
+
+  get collectionEmptyText() {
+    return this.root.getByText('This collection is empty.')
+  }
+
+  get collectionEmptySubText() { 
+    return this.root.getByText('Create a new element or pass to another collection')
+  }
+
+  // ==== ACTIONS ====
+
+  async selectSideBarCategory(name) {
+    const category = this.root.getByTestId(`sidebar-category-${name}`)
+    await expect(category).toBeVisible()
     await category.click()
   }
 
-  async exitVault () {
-    await this.exitVaultButton.click()
+  async clickCreateNewElementButton(name) {
+    const button = this.root.getByText(name)
+    await expect(button).toBeVisible()
+    await button.click()
   }
 
-  async openSettings () {
-    await this.settingsButton.click()
+  async openItem() {
+    await expect(this.item).toBeVisible()
+    await this.item.click()
+  }
+
+  async editItem() {
+    await expect(this.editButton).toBeVisible()
+    await this.editButton.click()
+  }
+
+  async openThreeDotsMenu() {
+    await expect(this.itemBarThreeDots).toBeVisible()
+    await this.itemBarThreeDots.click()
+  }
+
+  async clickDeleteItem() {
+    await expect(this.deleteItemButton).toBeVisible()
+    await this.deleteItemButton.click()
+  }
+
+  async clickConfirmYes() {
+    const yesButton = this.root.getByText('Yes')
+    await expect(yesButton).toBeVisible()
+    await yesButton.click()
+  }
+
+  async verifyLoginItemUsername() {
+    const input = this.root.getByPlaceholder('Email or username')
+    await expect(input).toBeVisible()
+    await expect(input).toHaveValue('Test User')
+  }
+  
+  async verifyEmptyCollection() {
+    await expect(this.collectionEmptyText).toBeVisible()
+    await expect(this.collectionEmptySubText).toBeVisible()
   }
 }
 
