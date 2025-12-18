@@ -6,7 +6,7 @@ exports[`SidebarCategory Component renders correctly with default props 1`] = `
     class="sc-bRKDuR bDBHR"
   >
     <div
-      class="sc-hvigdm oRisu"
+      class="sc-hvigdm QSbSi"
     >
       <div
         class="sc-fhHczv hLXVSY"
@@ -17,12 +17,14 @@ exports[`SidebarCategory Component renders correctly with default props 1`] = `
           Icon
         </div>
       </div>
-      <span>
+      <span
+        class="sc-ggWZvA eOLAkq"
+      >
         Test Category
       </span>
     </div>
     <span
-      class="sc-ggWZvA gSmtta"
+      class="sc-dTvVRJ ikZhiU"
     >
       5
     </span>

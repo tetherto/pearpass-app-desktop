@@ -26,12 +26,14 @@ import { SidebarNestedFile } from '../SidebarNestedFile'
  *   },
  *  level: number
  *  onFolderExpandToggle: (id) => void
+ *  testId?: string
  * }} props
  */
 export const SidebarNestedFolders = ({
   item,
   level = 0,
-  onFolderExpandToggle
+  onFolderExpandToggle,
+  testId
 }) => {
   const { i18n } = useLingui()
   const { setModal } = useModal()
@@ -61,6 +63,7 @@ export const SidebarNestedFolders = ({
   if (!isFolder) {
     return html`
       <${SidebarNestedFile}
+        testId=${`sidebar-file-${item.id}`}
         icon=${item.icon}
         id=${item.id}
         name=${item.name}
@@ -75,7 +78,7 @@ export const SidebarNestedFolders = ({
   }
 
   return html`
-    <${NestedFoldersWrapper} level=${level}>
+    <${NestedFoldersWrapper} level=${level} data-testid=${testId}>
       <${SidebarFolder}
         onAddClick=${handleAddClick}
         isOpen=${isOpen}
@@ -94,6 +97,7 @@ export const SidebarNestedFolders = ({
           childItem?.name?.length
             ? html`
                 <${SidebarNestedFolders}
+                  testId=${`sidebar-folder-${childItem.id}`}
                   key=${childItem.name + childItem.id + level}
                   onFolderExpandToggle=${onFolderExpandToggle}
                   item=${childItem}
@@ -108,6 +112,7 @@ export const SidebarNestedFolders = ({
           <${SidebarNestedFile}
             key=${item.id + 'newFile'}
             folderId=${item.id}
+            testId=${`sidebar-${item.id}-newfile`}
             icon=${PlusIcon}
             name=${i18n._('New')}
             isNew=${true}

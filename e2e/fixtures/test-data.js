@@ -21,4 +21,3 @@ module.exports = {
     action: 2000
   }
 }
-

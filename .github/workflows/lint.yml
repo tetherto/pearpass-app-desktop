@@ -1,0 +1,45 @@
+name: Lint check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.NOXTTON_BOT_PAT }}
+          submodules: recursive
+
+      - name: Configure Git credentials
+        run: |
+          git config --global --add url."https://${{ secrets.NOXTTON_BOT_PAT }}:x-oauth-basic@github.com/".insteadOf "git+ssh://git@github.com/"
+          git config --global --add url."https://${{ secrets.NOXTTON_BOT_PAT }}:x-oauth-basic@github.com/".insteadOf "git@github.com:"
+          git config --global --add url."https://${{ secrets.NOXTTON_BOT_PAT }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+      - uses: actions/setup-node@v4
+        with:
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@tetherto"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NOXTTON_BOT_PAT }}
+
+      - name: Run ESLint
+        run: npm run lint

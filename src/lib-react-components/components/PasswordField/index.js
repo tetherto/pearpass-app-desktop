@@ -8,15 +8,15 @@ import {
 
 import { PasswordStrongnessWrapper } from './styles'
 import { useTranslation } from '../../../hooks/useTranslation'
-import { ButtonRoundIcon } from '../ButtonRoundIcon'
-import { HighlightString } from '../HighlightString'
-import { InputField } from '../InputField'
 import { ErrorIcon } from '../../icons/ErrorIcon'
 import { EyeClosedIcon } from '../../icons/EyeClosedIcon'
 import { EyeIcon } from '../../icons/EyeIcon'
 import { KeyIcon } from '../../icons/KeyIcon'
 import { OkayIcon } from '../../icons/OkayIcon'
 import { YellowErrorIcon } from '../../icons/YellowErrorIcon'
+import { ButtonRoundIcon } from '../ButtonRoundIcon'
+import { HighlightString } from '../HighlightString'
+import { InputField } from '../InputField'
 
 const PASSWORD_STRENGTH_ICONS = {
   error: ErrorIcon,
@@ -39,6 +39,7 @@ const PASSWORD_STRENGTH_ICONS = {
  *  onClick: () => void,
  *  variant?: 'default' | 'outline'
  *  icon: import('react').ReactNode,
+ *  testId?: string
  * }} props
  */
 export const PasswordField = ({
@@ -54,7 +55,8 @@ export const PasswordField = ({
   hasStrongness = false,
   onClick,
   variant = 'default',
-  icon
+  icon,
+  testId = 'password-field'
 }) => {
   const { t } = useTranslation()
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
@@ -89,6 +91,7 @@ export const PasswordField = ({
 
   return html`
     <${InputField}
+      testId=${testId}
       label=${label || 'Password'}
       icon=${icon || KeyIcon}
       isDisabled=${isDisabled}
@@ -107,6 +110,7 @@ export const PasswordField = ({
           ${!!hasStrongness && getPasswordStrongness()}
 
           <${ButtonRoundIcon}
+            testId="passwordfield-button-togglevisibility"
             startIcon=${isPasswordVisible ? EyeClosedIcon : EyeIcon}
             onClick=${(e) => {
               e.stopPropagation()

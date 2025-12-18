@@ -5,10 +5,18 @@ import { StyledRange } from './styles'
 /**
  * @param {{
  *  value: number,
- *  onChange: (value: number) => void
+ *  onChange: (value: number) => void,
+ *  testId?: string,
  * }} props
  */
-export const Slider = ({ value, onChange, min = 0, max = 100, step = 1 }) => {
+export const Slider = ({
+  value,
+  onChange,
+  min = 0,
+  max = 100,
+  step = 1,
+  testId = 'slider'
+}) => {
   const handleChange = (event) => {
     const value = event.target.value
     onChange?.(parseFloat(value))
@@ -21,6 +29,7 @@ export const Slider = ({ value, onChange, min = 0, max = 100, step = 1 }) => {
       min=${min}
       max=${max}
       step=${step}
+      data-testid=${testId}
     />
   `
 }

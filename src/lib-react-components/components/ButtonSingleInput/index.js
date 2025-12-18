@@ -9,7 +9,8 @@ import { Button } from './styles'
  *  variant: 'default' | 'bordered',
  *  rounded: 'default' | 'md'
  *  type?: 'button' | 'submit'
- *  onClick: () => void
+ *  onClick: () => void,
+ *  testId?: string
  * }} props
  */
 export const ButtonSingleInput = ({
@@ -18,9 +19,11 @@ export const ButtonSingleInput = ({
   variant = 'default',
   rounded = 'default',
   type = 'button',
-  onClick
+  onClick,
+  testId = 'button-single-input'
 }) => html`
   <${Button}
+    data-testid=${testId}
     onClick=${onClick}
     variant=${variant}
     rounded=${rounded}

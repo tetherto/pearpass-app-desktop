@@ -177,21 +177,31 @@ export const CreateOrEditCustomModalContent = ({
       headerChildren=${html`
         <${FormModalHeaderWrapper}
           buttons=${html`
-            <${ButtonLittle} startIcon=${ImageIcon} onClick=${handleFileLoad}>
+            <${ButtonLittle}
+              testId="createoredit-button-loadfile"
+              startIcon=${ImageIcon}
+              onClick=${handleFileLoad}
+            >
               ${i18n._('Load file')}
             <//>
-            <${ButtonLittle} startIcon=${SaveIcon} type="submit">
+            <${ButtonLittle}
+              testId="createoredit-button-save"
+              startIcon=${SaveIcon}
+              type="submit"
+            >
               ${i18n._('Save')}
             <//>
           `}
         >
           <${DropdownsWrapper}>
             <${FolderDropdown}
+              testId="createoredit-dropdown-folder"
               selectedFolder=${values?.folder}
               onFolderSelect=${(folder) => setValue('folder', folder?.name)}
             />
             ${!initialRecord &&
             html` <${RecordTypeMenu}
+              testId="createoredit-dropdown-recordtype"
               selectedRecord=${RECORD_TYPES.CUSTOM}
               onRecordSelect=${(record) => handleRecordTypeChange(record?.type)}
             />`}
@@ -202,6 +212,7 @@ export const CreateOrEditCustomModalContent = ({
       <${FormWrapper}>
         <${FormGroup}>
           <${InputField}
+            testId="createoredit-input-title"
             label=${i18n._('Title')}
             placeholder=${i18n._('Insert title')}
             variant="outline"
@@ -215,6 +226,7 @@ export const CreateOrEditCustomModalContent = ({
             ${values.attachments.map(
               (attachment) =>
                 html`<${AttachmentField}
+                  testId="createoredit-attachment"
                   key=${attachment.id || attachment.tempId}
                   attachment=${attachment}
                   label=${i18n._('File')}
@@ -246,6 +258,7 @@ export const CreateOrEditCustomModalContent = ({
 
         <${FormGroup}>
           <${CreateCustomField}
+            testId="createoredit-button-createcustomfield"
             onCreateCustom=${(type) => addItem({ type: type, name: type })}
           />
         <//>

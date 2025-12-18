@@ -22,6 +22,7 @@ import {
  * @param {string} props.message
  * @param {string} props.highlightedDescription
  * @param {string} props.buttonText
+ * @param {string} props.testId
  * @returns {null|Object}
  */
 export const BannerBox = ({
@@ -36,16 +37,22 @@ export const BannerBox = ({
   if (!isVisible) return null
 
   return html`
-    <${Container}>
+    <${Container} data-testid="bannerbox-container">
       <${Title}>${title} <//>
       <${Message}> ${message} <//>
       <${HighlightedDescription}> ${highlightedDescription} <//>
 
       <a href=${href}>
-        <${ButtonPrimary} onClick=${onClose}> ${buttonText} <//>
+        <${ButtonPrimary} onClick=${onClose} testId="bannerbox-button-download">
+          ${buttonText}
+        <//>
       </a>
       <${CloseButtonWrapper}>
-        <${ButtonRoundIcon} startIcon=${XIcon} onClick=${onClose} />
+        <${ButtonRoundIcon}
+          testId="bannerbox-button-close"
+          startIcon=${XIcon}
+          onClick=${onClose}
+        />
       <//>
     <//>
   `

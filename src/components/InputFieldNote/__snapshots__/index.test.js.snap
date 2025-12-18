@@ -42,6 +42,7 @@ exports[`InputFieldNote renders with custom value 1`] = `
         >
           <input
             class="sc-gGKoUb jNaItO"
+            data-testid="input-field"
             placeholder="Add note"
             type="text"
             value="Test note"
@@ -101,6 +102,7 @@ exports[`InputFieldNote renders with custom variant 1`] = `
         >
           <input
             class="sc-gGKoUb jNaItO"
+            data-testid="input-field"
             placeholder="Add note"
             type="text"
           />
@@ -159,6 +161,7 @@ exports[`InputFieldNote renders with default props 1`] = `
         >
           <input
             class="sc-gGKoUb jNaItO"
+            data-testid="input-field"
             placeholder="Add note"
             type="text"
           />

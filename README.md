@@ -78,6 +78,34 @@ Run unit tests with Jest:
 npm test
 ```
 
+## Staging to dev
+
+Ensure the app runs correctly using `npm run dev`.
+
+If successful, stage it—for example: `pear stage dev`.
+
+Then run the app: `pear run pear://GENERATED_URL`.
+
+Pear serves files from the "dist" folder:
+
+```html
+<!-- index.html -->
+<script type="module" src="./dist/app.js"></script>
+```
+
+The "src" folder is for development and it's ignored in package.json
+
+```json
+  "ignore": [
+    ".github",
+    "appling",
+    ".git",
+    ".gitignore",
+    "packages",
+    "src"     
+  ]
+```
+
 ## Dependencies
 
 - [Pear Runtime](https://pears.com/)

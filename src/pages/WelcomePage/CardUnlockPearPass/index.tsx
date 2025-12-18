@@ -1,5 +1,3 @@
-import { useLingui } from '@lingui/react'
-import { html } from 'htm/react'
 import { useUserData, useVaults } from 'pearpass-lib-vault'
 
 import { AlertBox } from '../../../components/AlertBox'
@@ -9,17 +7,19 @@ import { useRouter } from '../../../context/RouterContext'
 import { useTranslation } from '../../../hooks/useTranslation'
 
 export const CardUnlockPearPass = () => {
+  // @ts-ignore TODO: ignore for now, next PR will fix properly
   const { t } = useTranslation()
   const { currentPage, navigate } = useRouter()
   const { initVaults } = useVaults()
   const { refreshMasterPasswordStatus } = useUserData()
 
-  const handleSuccess = async (password) => {
+  const handleSuccess = async (password: string) => {
     await initVaults({ password })
     navigate(currentPage, { state: 'vaults' })
   }
 
-  const handleError = async (error, setErrors) => {
+  // eslint-disable-next-line no-unused-vars
+  const handleError = async (error: string | Error, setErrors: (errors: { password: string }) => void) => {
     const status = await refreshMasterPasswordStatus()
 
     if (status?.isLocked) {
@@ -35,23 +35,26 @@ export const CardUnlockPearPass = () => {
           ? error
           : remainingAttempts !== undefined
             ? t(
-                `Incorrect password. You have ${remainingAttempts} attempts before the app locks for 5 minutes.`
-              )
+              `Incorrect password. You have ${remainingAttempts} attempts before the app locks for 5 minutes.`
+            )
             : t('Invalid password')
     })
   }
 
-  return html`
-    <${AuthenticationCard}
-      title=${t('Enter your Master password')}
-      buttonLabel=${t('Continue')}
-      descriptionComponent=${html`<${AlertBox}
-        message=${t(
-          "Don't forget your master password. It's the only way to access your vault. We can't help recover it. Back it up securely."
-        )}
-      />`}
-      onSuccess=${handleSuccess}
-      onError=${handleError}
+  return (
+    <AuthenticationCard
+      title={t('Enter your Master password')}
+      buttonLabel={t('Continue')}
+      descriptionComponent={
+        <AlertBox
+          testId="masterpassword-alert-box"
+          message={t(
+            "Don't forget your master password. It's the only way to access your vault. We can't help recover it. Back it up securely."
+          )}
+        />
+      }
+      onSuccess={handleSuccess}
+      onError={handleError}
     />
-  `
+  )
 }

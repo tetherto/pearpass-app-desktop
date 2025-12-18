@@ -224,21 +224,31 @@ export const CreateOrEditLoginModalContent = ({
       headerChildren=${html`
         <${FormModalHeaderWrapper}
           buttons=${html`
-            <${ButtonLittle} startIcon=${ImageIcon} onClick=${handleFileLoad}>
+            <${ButtonLittle}
+              testId="createoredit-button-loadfile"
+              startIcon=${ImageIcon}
+              onClick=${handleFileLoad}
+            >
               ${i18n._('Load file')}
             <//>
-            <${ButtonLittle} startIcon=${SaveIcon} type="submit">
+            <${ButtonLittle}
+              testId="createoredit-button-save"
+              startIcon=${SaveIcon}
+              type="submit"
+            >
               ${i18n._('Save')}
             <//>
           `}
         >
           <${DropdownsWrapper}>
             <${FolderDropdown}
+              testId="createoredit-dropdown-folder"
               selectedFolder=${values?.folder}
               onFolderSelect=${(folder) => setValue('folder', folder?.name)}
             />
             ${!initialRecord &&
             html` <${RecordTypeMenu}
+              testId="createoredit-dropdown-recordtype"
               selectedRecord=${RECORD_TYPES.LOGIN}
               onRecordSelect=${(record) => handleRecordTypeChange(record?.type)}
             />`}
@@ -249,6 +259,7 @@ export const CreateOrEditLoginModalContent = ({
       <${FormWrapper}>
         <${FormGroup}>
           <${InputField}
+            testId="createoredit-input-title"
             label=${i18n._('Title')}
             placeholder=${i18n._('Insert title')}
             variant="outline"
@@ -258,6 +269,7 @@ export const CreateOrEditLoginModalContent = ({
 
         <${FormGroup}>
           <${InputField}
+            testId="createoredit-input-username"
             label=${i18n._('Email or username')}
             placeholder=${i18n._('Email or username')}
             variant="outline"
@@ -266,6 +278,7 @@ export const CreateOrEditLoginModalContent = ({
           />
 
           <${PasswordField}
+            testId="createoredit-input-password"
             label=${i18n._('Password')}
             placeholder=${i18n._('Password')}
             variant="outline"
@@ -273,6 +286,7 @@ export const CreateOrEditLoginModalContent = ({
             hasStrongness
             additionalItems=${html`
               <${ButtonRoundIcon}
+                testId="createoredit-button-generatepassword"
                 startIcon=${PasswordIcon}
                 onClick=${() =>
                   handleCreateOrEditRecord({
@@ -290,6 +304,7 @@ export const CreateOrEditLoginModalContent = ({
             (website, index) => html`
               <${React.Fragment} key=${website.id}>
                 <${InputField}
+                  testId="createoredit-input-website"
                   label=${i18n._('Website')}
                   placeholder=${i18n._('https://')}
                   icon=${WorldIcon}
@@ -297,6 +312,7 @@ export const CreateOrEditLoginModalContent = ({
                   additionalItems=${index === 0
                     ? html`
                         <${ButtonSingleInput}
+                          testId="createoredit-button-addwebsite"
                           startIcon=${PlusIcon}
                           onClick=${() => addItem({ name: 'website' })}
                         >
@@ -305,6 +321,7 @@ export const CreateOrEditLoginModalContent = ({
                       `
                     : html`
                         <${ButtonSingleInput}
+                          testId="createoredit-button-removewebsite"
                           startIcon=${DeleteIcon}
                           onClick=${() => removeItem(index)}
                         >
@@ -323,11 +340,13 @@ export const CreateOrEditLoginModalContent = ({
             ${values.attachments.map(
               (attachment) =>
                 html`<${AttachmentField}
+                  testId="createoredit-attachment"
                   key=${attachment.id || attachment.tempId}
                   attachment=${attachment}
                   label=${i18n._('File')}
                   additionalItems=${html`
                     <${ButtonSingleInput}
+                      testId="createoredit-button-deleteattachment"
                       startIcon=${DeleteIcon}
                       onClick=${() =>
                         setValue(
@@ -347,7 +366,10 @@ export const CreateOrEditLoginModalContent = ({
         `}
 
         <${FormGroup}>
-          <${InputFieldNote} ...${register('note')} />
+          <${InputFieldNote}
+            testId="createoredit-input-note"
+            ...${register('note')}
+          />
         <//>
 
         <${CustomFields}
@@ -358,6 +380,7 @@ export const CreateOrEditLoginModalContent = ({
 
         <${FormGroup}>
           <${CreateCustomField}
+            testId="createoredit-createcustomfield"
             onCreateCustom=${(type) =>
               addCustomField({ type: type, name: type })}
           />

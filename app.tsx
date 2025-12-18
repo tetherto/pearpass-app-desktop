@@ -1,10 +1,10 @@
 /** @typedef {import('pear-interface')} */ /* global Pear */
-
-import { createElement } from 'react'
+// We declare Pear here to ensure TypeScript is happy if the global types aren't automatically picked up
+declare const Pear: any;
 
 import { i18n } from '@lingui/core'
 import { I18nProvider } from '@lingui/react'
-import htm from 'htm'
+// import htm from 'htm' // Removed for TypeScript conversion
 import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
 import { setPearpassVaultClient, VaultProvider } from 'pearpass-lib-vault'
 import { createRoot } from 'react-dom/client'
@@ -47,11 +47,11 @@ setPearpassVaultClient(client)
 
 // Check if native messaging is enabled and start IPC server
 // For testing, always start the IPC server
-startNativeMessagingIPC(client).catch((err) => {
+startNativeMessagingIPC(client).catch((err: unknown) => {
   logger.error('INDEX', 'Failed to start IPC server:', err)
 })
 
-let inactivityTimeout
+let inactivityTimeout: ReturnType<typeof setTimeout>
 
 const resetInactivityTimer = () => {
   clearTimeout(inactivityTimeout)
@@ -76,22 +76,26 @@ activityEvents.forEach((event) =>
 resetInactivityTimer()
 
 // Render the application
-const root = createRoot(document.querySelector('#root'))
-const html = htm.bind(createElement)
-root.render(html`
-  <${LoadingProvider}>
-    <${ThemeProvider}>
-      <${VaultProvider}>
-        <${I18nProvider} i18n=${i18n}>
-          <${ToastProvider}>
-            <${RouterProvider}>
-              <${ModalProvider}>
-                <${App} />
-              <//>
-            <//>
-          <//>
-        <//>
-      <//>
-    <//>
-  <//>
-`)
+const container = document.querySelector('#root')
+if (!container) throw new Error('Failed to find the root element');
+
+const root = createRoot(container)
+// const html = htm.bind(createElement) // Removed htm binding
+
+root.render(
+  <LoadingProvider>
+    <ThemeProvider>
+      <VaultProvider>
+        <I18nProvider i18n={i18n}>
+          <ToastProvider>
+            <RouterProvider>
+              <ModalProvider>
+                <App />
+              </ModalProvider>
+            </RouterProvider>
+          </ToastProvider>
+        </I18nProvider>
+      </VaultProvider>
+    </ThemeProvider>
+  </LoadingProvider>
+)

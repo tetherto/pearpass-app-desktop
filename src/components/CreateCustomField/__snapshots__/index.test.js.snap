@@ -7,6 +7,7 @@ exports[`CreateCustomField component renders with correct initial state 1`] = `
   >
     <div
       class="sc-hvigdm bLQxQc"
+      data-testid="createcustomfield-label-closed"
     >
       <svg
         fill="none"

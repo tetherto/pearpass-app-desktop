@@ -20,6 +20,7 @@ jest.mock('sodium-native', () => ({
 
 import { act, renderHook, waitFor } from '@testing-library/react'
 
+import { useConnectExtension } from './useConnectExtension'
 import { createOrGetPearpassClient } from '../services/createOrGetPearpassClient'
 import {
   isNativeMessagingIPCRunning,
@@ -39,7 +40,6 @@ import {
   killNativeMessagingHostProcesses,
   setupNativeMessaging
 } from '../utils/nativeMessagingSetup'
-import { useConnectExtension } from './useConnectExtension'
 
 const mockSetModal = jest.fn()
 const mockSetToast = jest.fn()

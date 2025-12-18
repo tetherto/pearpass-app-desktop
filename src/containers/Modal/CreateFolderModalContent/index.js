@@ -6,15 +6,15 @@ import { useForm } from 'pear-apps-lib-ui-react-hooks'
 import { Validator } from 'pear-apps-utils-validator'
 import { useCreateFolder, useFolders } from 'pearpass-lib-vault'
 
-import { useModal } from '../../../context/ModalContext'
-import { ModalContent } from '../ModalContent'
 import { HeaderWrapper } from './styles'
 import { useGlobalLoading } from '../../../context/LoadingContext'
+import { useModal } from '../../../context/ModalContext'
 import {
   InputField,
   ButtonLittle,
   SaveIcon
 } from '../../../lib-react-components'
+import { ModalContent } from '../ModalContent'
 
 /**
  * @param {{
@@ -80,7 +80,11 @@ export const CreateFolderModalContent = ({ onCreate, initialValues }) => {
         onClose=${closeModal}
         headerChildren=${html`
           <${HeaderWrapper}>
-            <${ButtonLittle} startIcon=${SaveIcon} type="submit">
+            <${ButtonLittle}
+              data-testid="createfolder-button-submit"
+              startIcon=${SaveIcon}
+              type="submit"
+            >
               ${!!initialValues ? i18n._('Save') : i18n._('Create folder')}
             <//>
           <//>

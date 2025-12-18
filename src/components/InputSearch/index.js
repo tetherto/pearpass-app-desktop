@@ -9,9 +9,10 @@ import { LockCircleIcon } from '../../lib-react-components'
  *  value: string
  *  onChange: (event: import('react').ChangeEvent<HTMLInputElement>) => void
  *  quantity?: number
+ *  testId?: string
  * }} props
  */
-export const InputSearch = ({ value, onChange, quantity }) => {
+export const InputSearch = ({ value, onChange, quantity, testId }) => {
   const { i18n } = useLingui()
   return html`
     <${Container}>
@@ -19,6 +20,7 @@ export const InputSearch = ({ value, onChange, quantity }) => {
         <${LockCircleIcon} />
       <//>
       <${Input}
+        data-testid=${testId}
         placeholder=${i18n._('Search...')}
         value=${value}
         onChange=${onChange}

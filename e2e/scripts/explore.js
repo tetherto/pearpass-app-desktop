@@ -1,16 +1,19 @@
 'use strict'
 const { chromium } = require('@playwright/test')
 
-async function explore () {
+async function explore() {
   const browser = await chromium.connectOverCDP('http://localhost:9222')
-  const page = browser.contexts()[0].pages().find(p => p.url().includes('index.html'))
-  
+  const page = browser
+    .contexts()[0]
+    .pages()
+    .find((p) => p.url().includes('index.html'))
+
   console.log('Connected to:', page.url())
   await page.waitForTimeout(2000)
-  
+
   console.log('\n=== VISIBLE TEXT ===')
   console.log(await page.locator('body').innerText())
-  
+
   console.log('\n=== BUTTONS ===')
   const buttons = await page.locator('button').all()
   for (const btn of buttons) {
@@ -18,7 +21,7 @@ async function explore () {
       console.log('-', await btn.textContent())
     }
   }
-  
+
   console.log('\n=== INPUTS ===')
   const inputs = await page.locator('input').all()
   for (const input of inputs) {
@@ -31,4 +34,3 @@ async function explore () {
 }
 
 explore().catch(console.error)
-

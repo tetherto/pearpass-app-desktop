@@ -25,9 +25,14 @@ export const ListItem = ({
   onShareClick,
   onEditClick,
   onDeleteClick,
-  isSelected
+  isSelected,
+  testId
 }) => html`
-  <${ListItemContainer} isSelected=${isSelected} onClick=${onClick}>
+  <${ListItemContainer}
+    isSelected=${isSelected}
+    onClick=${onClick}
+    data-testid=${testId}
+  >
     <${ListItemInfo}>
       ${isSelected
         ? html` <${SelectedListItemIconContainer}>

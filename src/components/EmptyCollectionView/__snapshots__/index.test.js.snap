@@ -139,7 +139,7 @@ exports[`EmptyCollectionView component renders empty collection message 1`] = `
             />
           </svg>
         </div>
-        Save a PassPhrase
+        Save a Recovery phrase
         <div
           class="sc-lgpSej hqfEku"
         />

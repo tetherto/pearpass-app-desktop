@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 
-import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import {
   PASSPHRASE_WORD_COUNTS,
@@ -24,24 +23,31 @@ import { BadgeTextItem } from '../../components/BadgeTextItem'
 import { useToast } from '../../context/ToastContext'
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard'
 import { usePasteFromClipboard } from '../../hooks/usePasteFromClipboard'
+import { useTranslation } from '../../hooks/useTranslation'
 import {
   CopyIcon,
   PassPhraseIcon,
   ErrorIcon,
   PasteIcon
 } from '../../lib-react-components'
-
 /**
  * @param {{
  *  isCreateOrEdit: boolean,
  *  onChange: (value: string) => void,
  *  value: string,
- *  error: string
+ *  error: string,
+ *  testId?: string
  * }} props
  */
 
-export const PassPhrase = ({ isCreateOrEdit, onChange, value, error }) => {
-  const { i18n } = useLingui()
+export const PassPhrase = ({
+  isCreateOrEdit,
+  onChange,
+  value,
+  error,
+  testId
+}) => {
+  const { t } = useTranslation()
   const { setToast } = useToast()
   const [selectedType, setSelectedType] = useState(DEFAULT_SELECTED_TYPE)
   const [withRandomWord, setWithRandomWord] = useState(false)
@@ -49,7 +55,7 @@ export const PassPhrase = ({ isCreateOrEdit, onChange, value, error }) => {
   const { copyToClipboard } = useCopyToClipboard({
     onCopy: () => {
       setToast({
-        message: i18n._('Copied to clipboard!'),
+        message: t('Copied to clipboard!'),
         icon: CopyIcon
       })
     }
@@ -88,7 +94,13 @@ export const PassPhrase = ({ isCreateOrEdit, onChange, value, error }) => {
 
     if (pastedText) {
       const words = parsePassphraseText(pastedText)
-
+      if (!isValidRange(words.length)) {
+        setToast({
+          message: t('Only 12 or 24 words are allowed'),
+          icon: ErrorIcon
+        })
+        return
+      }
       setPassphraseWords(words)
       detectAndUpdateSettings(words)
       if (onChange) {
@@ -108,10 +120,10 @@ export const PassPhrase = ({ isCreateOrEdit, onChange, value, error }) => {
   const isCreateOrEditWithValidRange =
     isCreateOrEdit && isValidRange(passphraseWords.length)
   return html`
-    <${Container}>
+    <${Container} data-testid=${testId}>
       <${PassPhraseHeader}>
         <${PassPhraseIcon} />
-        <${HeaderText}>${i18n._('PassPhrase')}<//>
+        <${HeaderText}>${t('Recovery phrase')}<//>
       <//>
       <${PassPhraseContainer}>
         ${passphraseWords.map(
@@ -135,15 +147,16 @@ export const PassPhrase = ({ isCreateOrEdit, onChange, value, error }) => {
         ${isCreateOrEdit
           ? html`
               <${PasteIcon} color=${colors.primary400?.mode1} />
-              <${CopyPasteText}>${i18n._('Paste from clipboard')}<//>
+              <${CopyPasteText}>${t('Paste from clipboard')}<//>
             `
           : html`
               <${CopyIcon} color=${colors.primary400?.mode1} />
-              <${CopyPasteText}>${i18n._('Copy')}<//>
+              <${CopyPasteText}>${t('Copy')}<//>
             `}
       <//>
       ${isCreateOrEditWithValidRange &&
       html`<${PassPhraseSettings}
+        testId="passphrase-settings"
         selectedType=${selectedType}
         setSelectedType=${setSelectedType}
         withRandomWord=${withRandomWord}

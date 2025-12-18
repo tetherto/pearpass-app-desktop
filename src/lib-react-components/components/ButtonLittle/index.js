@@ -8,7 +8,8 @@ import { Button } from './styles'
  *  variant?: 'primary' | 'secondary'
  *  startIcon?: import('react').ElementType
  *  type?: 'button' | 'submit'
- *  onClick: () => void
+ *  onClick: () => void,
+ *  testId?: string
  * }} props
  */
 export const ButtonLittle = ({
@@ -16,9 +17,11 @@ export const ButtonLittle = ({
   startIcon,
   variant = 'primary',
   type = 'button',
-  onClick
+  onClick,
+  testId
 }) => html`
   <${Button}
+    data-testid=${testId}
     type=${type}
     variant=${variant}
     onClick=${onClick}

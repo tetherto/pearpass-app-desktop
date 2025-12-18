@@ -32,7 +32,7 @@ export const ToastProvider = ({ children }) => {
 
 /**
  * @returns {{
- *  setToast: (data: { message: string, icon: import('react').ReactNode }) => void
+ *  setToast: (data: { message: string, icon?: import('react').ReactNode }) => void
  * }}
  */
 export const useToast = () => useContext(ToastContext)

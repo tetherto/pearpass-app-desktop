@@ -81,20 +81,25 @@ export const RecordDetails = () => {
 
   return html`
     <${React.Fragment}>
-      <${Header}>
+      <${Header} data-testid="details-header">
         <${RecordInfo}>
           <${RecordAvatar}
+            testId=${`details-avatar-${generateAvatarInitials(record?.data?.title)}`}
             websiteDomain=${domain}
             initials=${generateAvatarInitials(record?.data?.title)}
             isFavorite=${record?.isFavorite}
             color=${RECORD_COLOR_BY_TYPE[record?.type]}
           />
           <div>
-            <${Title}> ${record?.data?.title} <//>
+            <${Title} data-testid=${`details-title-${record?.id}`}>
+              ${record?.data?.title}
+            <//>
 
             ${!!record?.folder &&
             html`
-              <${FolderWrapper}>
+              <${FolderWrapper}
+                data-testid=${`details-folder-${record?.folder ?? 'none'}`}
+              >
                 <${FolderIcon} size="24" color=${colors.grey200.mode1} />
                 ${record?.folder}
               <//>
@@ -104,6 +109,7 @@ export const RecordDetails = () => {
 
         <${HeaderRight}>
           <${FavoriteButtonWrapper}
+            data-testid="details-button-favorite"
             favorite=${record?.isFavorite}
             onClick=${() =>
               updateFavoriteState([record?.id], !record?.isFavorite)}
@@ -115,7 +121,11 @@ export const RecordDetails = () => {
             />
           <//>
 
-          <${ButtonLittle} startIcon=${BrushIcon} onClick=${handleEdit}>
+          <${ButtonLittle}
+            data-testid="details-button-edit"
+            startIcon=${BrushIcon}
+            onClick=${handleEdit}
+          >
             ${i18n._('Edit')}
           <//>
 
@@ -129,11 +139,15 @@ export const RecordDetails = () => {
                 <${RecordActionsPopupContent} menuItems=${actions} />
               `}
             >
-              <${ButtonRoundIcon} startIcon=${KebabMenuIcon} />
+              <${ButtonRoundIcon}
+                data-testid="details-button-actions"
+                startIcon=${KebabMenuIcon}
+              />
             <//>
           <//>
 
           <${ButtonRoundIcon}
+            data-testid="details-button-collapse"
             startIcon=${CollapseIcon}
             onClick=${handleCollapseRecordDetails}
           />

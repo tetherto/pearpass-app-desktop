@@ -3,6 +3,7 @@
 exports[`ButtonRoundIcon Component matches snapshot for default rendering 1`] = `
 <button
   class="sc-bRKDuR jXrSvT"
+  data-testid="button-round-icon"
   type="button"
 >
   <svg
