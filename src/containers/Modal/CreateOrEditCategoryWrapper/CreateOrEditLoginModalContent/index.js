@@ -51,7 +51,7 @@ import { UploadFilesModalContent } from '../../UploadImageModalContent'
  *    title: string
  *    username: string
  *    password: string
- *    note: string
+ *    comment: string
  *    websites: string[]
  *    customFields: {
  *        type: string
@@ -107,7 +107,7 @@ export const CreateOrEditLoginModalContent = ({
     title: Validator.string().required(i18n._('Title is required')),
     username: Validator.string(),
     password: Validator.string(),
-    note: Validator.string(),
+    comment: Validator.string(),
     websites: Validator.array().items(
       Validator.object({
         website: Validator.string().website('Wrong format of website')
@@ -133,7 +133,7 @@ export const CreateOrEditLoginModalContent = ({
       title: initialRecord?.data?.title ?? '',
       username: initialRecord?.data?.username ?? '',
       password: initialRecord?.data?.password ?? '',
-      note: initialRecord?.data?.note ?? '',
+      comment: initialRecord?.data?.comment ?? '',
       websites: initialRecord?.data?.websites?.length
         ? initialRecord?.data?.websites.map((website) => ({ website }))
         : [{ name: 'website' }],
@@ -173,7 +173,7 @@ export const CreateOrEditLoginModalContent = ({
         title: values.title,
         username: values.username,
         password: values.password,
-        note: values.note,
+        comment: values.comment,
         websites: values.websites
           .filter((website) => !!website?.website?.trim().length)
           .map((website) => addHttps(website.website)),
@@ -347,7 +347,7 @@ export const CreateOrEditLoginModalContent = ({
         `}
 
         <${FormGroup}>
-          <${InputFieldNote} ...${register('note')} />
+          <${InputFieldNote} ...${register('comment')} />
         <//>
 
         <${CustomFields}

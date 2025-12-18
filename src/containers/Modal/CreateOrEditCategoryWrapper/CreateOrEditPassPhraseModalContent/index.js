@@ -31,7 +31,7 @@ import { DropdownsWrapper } from '../../styles'
  *    data: {
  *     title: string
  *     passPhrase: string
- *     note: string
+ *     comment: string
  *     customFields: {
  *        type: string
  *        name: string
@@ -82,7 +82,7 @@ export const CreateOrEditPassPhraseModalContent = ({
   const schema = Validator.object({
     title: Validator.string().required(i18n._('Title is required')),
     passPhrase: Validator.string().required(i18n._('PassPhrase is required')),
-    note: Validator.string(),
+    comment: Validator.string(),
     customFields: Validator.array().items(
       Validator.object({
         note: Validator.string().required(i18n._('Note is required'))
@@ -95,7 +95,7 @@ export const CreateOrEditPassPhraseModalContent = ({
     initialValues: {
       title: initialRecord?.data?.title ?? '',
       passPhrase: initialRecord?.data?.passPhrase ?? '',
-      note: initialRecord?.data?.note ?? '',
+      comment: initialRecord?.data?.comment ?? '',
       customFields: initialRecord?.data?.customFields ?? [],
       folder: selectedFolder ?? initialRecord?.folder
     },
@@ -117,7 +117,7 @@ export const CreateOrEditPassPhraseModalContent = ({
       data: {
         title: values.title,
         passPhrase: values.passPhrase,
-        note: values.note,
+        comment: values.comment,
         customFields: values.customFields
       }
     }
@@ -179,7 +179,7 @@ export const CreateOrEditPassPhraseModalContent = ({
         <//>
 
         <${FormGroup}>
-          <${InputFieldNote} ...${register('note')} />
+          <${InputFieldNote} ...${register('comment')} />
         <//>
         <${CustomFields}
           customFields=${list}
