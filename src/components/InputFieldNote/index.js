@@ -18,14 +18,17 @@ import { CommonFileIcon, InputField } from '../../lib-react-components'
  *  variant?: 'default' | 'outline'
  * }} props
  */
-export const InputFieldNote = (props) => {
+export const InputFieldComment = (props) => {
   const { i18n } = useLingui()
 
   return html`<${InputField}
-    label=${i18n._('Note')}
-    placeholder=${i18n._('Add note')}
+    label=${i18n._('Comment')}
+    placeholder=${i18n._('Add comment')}
     variant="outline"
     icon=${CommonFileIcon}
     ...${props}
   />`
 }
+
+// Backward compatibility alias
+export const InputFieldNote = InputFieldComment

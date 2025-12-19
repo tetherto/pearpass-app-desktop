@@ -47,7 +47,7 @@ import { UploadFilesModalContent } from '../../UploadImageModalContent'
  *    expireDate: string
  *    securityCode: string
  *    pinCode: string
- *    note: string
+ *    comment: string
  *    customFields: {
  *       type: string
  *       name: string
@@ -108,7 +108,7 @@ export const CreateOrEditCreditCardModalContent = ({
     expireDate: Validator.string(),
     securityCode: Validator.string().numeric(i18n._('Note must be a string')),
     pinCode: Validator.string().numeric(i18n._('Pin code must be a number')),
-    note: Validator.string(),
+    comment: Validator.string(),
     customFields: Validator.array().items(
       Validator.object({
         note: Validator.string().required(i18n._('Note is required'))
@@ -132,7 +132,7 @@ export const CreateOrEditCreditCardModalContent = ({
       expireDate: initialRecord?.data?.expireDate ?? '',
       securityCode: initialRecord?.data?.securityCode ?? '',
       pinCode: initialRecord?.data?.pinCode ?? '',
-      note: initialRecord?.data?.note ?? '',
+      comment: initialRecord?.data?.comment ?? '',
       customFields: initialRecord?.data?.customFields ?? [],
       folder: selectedFolder ?? initialRecord?.folder,
       attachments: initialRecord?.attachments ?? []
@@ -165,7 +165,7 @@ export const CreateOrEditCreditCardModalContent = ({
         expireDate: values.expireDate,
         securityCode: values.securityCode,
         pinCode: values.pinCode,
-        note: values.note,
+        comment: values.comment,
         customFields: values.customFields,
         attachments: values.attachments
       }
@@ -332,7 +332,7 @@ export const CreateOrEditCreditCardModalContent = ({
         `}
 
         <${FormGroup}>
-          <${InputFieldNote} ...${register('note')} />
+          <${InputFieldNote} ...${register('comment')} />
         <//>
 
         <${CustomFields}

@@ -8,11 +8,11 @@ exports[`InputFieldNote renders with custom value 1`] = `
     <div
       class="sc-kvnevz euqDEt"
     >
-       
+
       <div
         class="sc-dFVmKS jeQHKC"
       >
-         
+
         <svg
           fill="none"
           height="24"
@@ -25,7 +25,7 @@ exports[`InputFieldNote renders with custom value 1`] = `
             fill="#F6F6F6"
           />
         </svg>
-         
+
       </div>
       <div
         class="sc-kCuUfV hqBslW"
@@ -33,24 +33,24 @@ exports[`InputFieldNote renders with custom value 1`] = `
         <span
           class="sc-dNdcvo lbJylK"
         >
-           
-          Note
-           
+
+          Comment
+
         </span>
         <div
           class="sc-fbQrwq hytYjv"
         >
           <input
             class="sc-gGKoUb jNaItO"
-            placeholder="Add note"
+            placeholder="Add comment"
             type="text"
-            value="Test note"
+            value="Test comment"
           />
           <div
             class="sc-hwddKA fjIOYK"
           >
-             
-             
+
+
           </div>
         </div>
       </div>
@@ -67,11 +67,11 @@ exports[`InputFieldNote renders with custom variant 1`] = `
     <div
       class="sc-kvnevz euqDEt"
     >
-       
+
       <div
         class="sc-dFVmKS jeQHKC"
       >
-         
+
         <svg
           fill="none"
           height="24"
@@ -84,7 +84,7 @@ exports[`InputFieldNote renders with custom variant 1`] = `
             fill="#F6F6F6"
           />
         </svg>
-         
+
       </div>
       <div
         class="sc-kCuUfV hqBslW"
@@ -92,23 +92,23 @@ exports[`InputFieldNote renders with custom variant 1`] = `
         <span
           class="sc-dNdcvo lbJylK"
         >
-           
-          Note
-           
+
+          Comment
+
         </span>
         <div
           class="sc-fbQrwq hytYjv"
         >
           <input
             class="sc-gGKoUb jNaItO"
-            placeholder="Add note"
+            placeholder="Add comment"
             type="text"
           />
           <div
             class="sc-hwddKA fjIOYK"
           >
-             
-             
+
+
           </div>
         </div>
       </div>
@@ -125,11 +125,11 @@ exports[`InputFieldNote renders with default props 1`] = `
     <div
       class="sc-kvnevz euqDEt"
     >
-       
+
       <div
         class="sc-dFVmKS jeQHKC"
       >
-         
+
         <svg
           fill="none"
           height="24"
@@ -142,7 +142,7 @@ exports[`InputFieldNote renders with default props 1`] = `
             fill="#F6F6F6"
           />
         </svg>
-         
+
       </div>
       <div
         class="sc-kCuUfV hqBslW"
@@ -150,23 +150,23 @@ exports[`InputFieldNote renders with default props 1`] = `
         <span
           class="sc-dNdcvo lbJylK"
         >
-           
-          Note
-           
+
+          Comment
+
         </span>
         <div
           class="sc-fbQrwq hytYjv"
         >
           <input
             class="sc-gGKoUb jNaItO"
-            placeholder="Add note"
+            placeholder="Add comment"
             type="text"
           />
           <div
             class="sc-hwddKA fjIOYK"
           >
-             
-             
+
+
           </div>
         </div>
       </div>
