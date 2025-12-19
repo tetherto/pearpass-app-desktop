@@ -21,7 +21,7 @@
       "entrypoints": [
         "node_modules/pearpass-lib-vault-core/src/worklet/app.js"
       ],
-     "ignore": [
+      "ignore": [
         ".github",
         "appling",
         ".git",
