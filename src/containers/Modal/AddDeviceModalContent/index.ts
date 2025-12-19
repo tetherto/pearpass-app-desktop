@@ -85,7 +85,7 @@ export const AddDeviceModalContent = () => {
   useEffect(() => {
     if (data?.publicKey) {
       generateQRCodeSVG(data?.publicKey, { type: 'svg', margin: 0 }).then(
-        (value) => setQrSvg(value)
+        (value: string) => setQrSvg(value)
       )
     }
   }, [data])
