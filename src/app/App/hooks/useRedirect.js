@@ -20,7 +20,6 @@ export const useRedirect = () => {
   useEffect(() => {
     ;(async () => {
       try {
-        console.log('useRedirect: fetching user data')
         setIsLoading(true)
         const userData = await refetchUser()
 
