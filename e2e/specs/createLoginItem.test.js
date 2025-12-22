@@ -22,7 +22,7 @@ test.describe('Creating Login Item', () => {
    * @description "Login" item is created after fulfilling fields
    * Verify vault selection screen displays correctly
    */
-  test('PAS-563: "Login" item is created after fulfilling fields', async ({ page }) => {
+  test.only('PAS-563: "Login" item is created after fulfilling fields', async ({ page }) => {
 
     await test.step('LOGIN', async () => {
       await expect(loginPage.title).toHaveText('Enter your Master password')
@@ -296,6 +296,93 @@ test.describe('Creating Login Item', () => {
 
     await test.step('VERIFY THERE IS NO CUSTOM NOTES ITEMS INSIDE LOGIN ELEMENT', async () => {
       await expect(createLoginPage.customNoteInput).toHaveCount(0);
+    })
+
+    await test.step('CLICK CLOSE (X) BUTTON', async () => {
+      await createLoginPage.clickElementItemCloseButton()
+    })
+
+    // await test.step('DELETE ELEMENT', async () => {
+    //   await mainView.openItemBarThreeDotsDropdownMenu()
+    //   await mainView.clickDeleteElement()
+    //   await mainView.clickConfirmYes()
+    // })
+
+    // await test.step('VERIFY COLLECTION IS EMPTY', async () => {
+    //   await expect(mainView.collectionEmptySubText).toBeVisible()
+    // })
+
+    // await test.step('EXIT TO LOGIN SCREEN', async () => {
+    //   await mainView.clickSidebarExitButton()
+    // })
+
+    await test.step('EXIT TO LOGIN SCREEN', async () => {
+      await mainView.clickSidebarExitButton()
+    })
+
+  })
+
+  test.only('PAS-XXX: Upload file to Login Items', async ({ page }) => {
+
+    await test.step('LOGIN', async () => {
+      await expect(loginPage.title).toHaveText('Enter your Master password')
+      await loginPage.login(testData.credentials.validPassword)
+    })
+
+    await test.step('VAULT SELECTION', async () => {
+      await expect(vaultSelectPage.title).toHaveText('Select a vault, create a new one or load another one')
+      await vaultSelectPage.selectVault(testData.vault.name)
+    })
+
+    // await test.step('CREATE LOGIN ELEMENT - initial empty element collection', async () => {
+    //   await mainView.selectSideBarCategory('login')
+    //   await mainView.clickCreateNewElementButton('Create a login')
+
+    //   await createLoginPage.enterTitle('Test Title')
+    //   await createLoginPage.enterPassword('Test Password')
+
+    //   await createLoginPage.clickSave()
+    // })
+
+    await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
+      await mainView.verifyElement('Login Title')
+    })
+
+    await test.step('OPEN/EDITLOGIN ELEMENT', async () => {
+      await mainView.openElement()
+      await mainView.editElement()
+    })
+
+    await test.step('CLICK LOAD FILE BUTTON', async () => {
+      await createLoginPage.clickLoadFileButton()
+    })
+
+    await test.step('UPLOAD FILE', async () => {
+      await createLoginPage.uploadFile()
+    })
+
+    await test.step('VERIFY UPLOADED FILE IS VISIBLE INSIDE LOGIN ITEMS', async () => {
+      await createLoginPage.verifyUploadedFileIsVisible()
+    })
+
+    await test.step('OPEN UPLOADED FILE', async () => {
+      await createLoginPage.clickOnUploadedFile()
+    })
+
+    await test.step('VERIFY UPLOADED IMAGE', async () => {
+      await createLoginPage.verifyUploadedImageIsVisible()
+    })
+
+    await test.step('CLICK CLOSE (X) BUTTON', async () => {
+      await createLoginPage.clickElementItemCloseButton()
+    })
+
+    await test.step('CLICK DELETE FILE BUTTON', async () => {
+      await createLoginPage.clickDeleteFileButton()
+    })
+
+    await test.step('VERIFY UPLOADED FILE NOT VISIBLE', async () => {
+      await createLoginPage.verifyUploadedImageIsNotVisible()
     })
 
     await test.step('CLICK CLOSE (X) BUTTON', async () => {

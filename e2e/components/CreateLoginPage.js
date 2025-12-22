@@ -21,8 +21,6 @@ class CreateLoginPage {
     return this.root.locator('input[data-testid="createoredit-input-password"]')
   }
 
-
-
   get passwordMenu() {
     return this.root.getByTestId('createoredit-button-generatepassword')
   }
@@ -95,7 +93,26 @@ class CreateLoginPage {
     return this.root.getByTestId('passwordfield-button-togglevisibility').last()
   }
 
-  // button-round-icon
+  get loadFile() {
+    return this.root.getByTestId('createoredit-button-loadfile')
+  }
+
+  get fileInput() {
+    return this.root.locator('input[type="file"]').first()
+  }
+
+  get uploadedFileLink() {
+    return this.root.getByRole('link', { name: 'TestPhoto.png' })
+  }
+
+  get uploadedImage() {
+    return this.root.getByAltText('TestPhoto.png')
+  }
+
+  get deleteFileButton() {
+    return this.root.getByTestId('createoredit-button-deleteattachment')
+  }
+
 
   // ==== ACTIONS ====
 
@@ -181,6 +198,29 @@ class CreateLoginPage {
     await this.elementItemCloseButton.click();
   }
 
+  async clickLoadFileButton() {
+    await expect(this.loadFile).toBeVisible();
+    await this.loadFile.click();
+  }
+
+  async uploadFile() {
+    // await expect(this.fileInput).toBeVisible();
+    await this.fileInput.setInputFiles('test-files/TestPhoto.png');
+  }
+
+  async clickOnUploadedFile() {
+    await expect(this.uploadedFileLink).toBeVisible();
+    await this.uploadedFileLink.click();
+  }
+
+  async clickDeleteFileButton() {
+    await expect(this.deleteFileButton).toBeVisible()
+    await this.deleteFileButton.click()
+  }
+
+
+
+
   // ==== VERIFICATIONS - PASSWORD MENU ====
 
   async verifyInsertPasswordButtonIsVisible() {
@@ -201,6 +241,19 @@ class CreateLoginPage {
 
   async verifyspecialCharacterSwitcherState(state) {
     await expect(this.getSpecialCharacterSwithcerState(state)).toBeVisible()
+  }
+
+  async verifyUploadedFileIsVisible() {
+    await expect(this.uploadedFileLink).toBeVisible();
+    await expect(this.uploadedFileLink).toHaveText('TestPhoto.png');
+  }
+
+  async verifyUploadedImageIsVisible() {
+    await expect(this.uploadedImage).toBeVisible();
+  }
+
+  async verifyUploadedImageIsNotVisible() {
+    await expect(this.uploadedImage).not.toBeVisible();
   }
 
 }

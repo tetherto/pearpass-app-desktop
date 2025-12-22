@@ -129,8 +129,6 @@ class MainView {
   }
 
   async clickShowHidePasswordButton() {
-    // await expect(elementItemPasswordShowHide).toBeVisible()
-    // await elementItemPasswordShowHide.click()
     await expect(this.elementItemPasswordShowHide).toBeVisible();
     await this.elementItemPasswordShowHide.click();
   }
