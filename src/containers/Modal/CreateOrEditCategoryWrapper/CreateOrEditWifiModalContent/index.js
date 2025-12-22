@@ -43,7 +43,7 @@ import { UploadFilesModalContent } from '../../UploadImageModalContent'
  *    data: {
  *     title: string
  *     password: string
- *     comment: string
+ *     note: string
  *     customFields: {
  *        type: string
  *        name: string
@@ -97,7 +97,7 @@ export const CreateOrEditWifiModalContent = ({
   const schema = Validator.object({
     title: Validator.string().required(i18n._('Title is required')),
     password: Validator.string().required(i18n._('Password is required')),
-    comment: Validator.string(),
+    note: Validator.string(),
     customFields: Validator.array().items(
       Validator.object({
         note: Validator.string().required(i18n._('Note is required'))
@@ -116,7 +116,7 @@ export const CreateOrEditWifiModalContent = ({
     initialValues: {
       title: initialRecord?.data?.title ?? '',
       password: initialRecord?.data?.password ?? '',
-      comment: initialRecord?.data?.comment ?? '',
+      note: initialRecord?.data?.note ?? '',
       customFields: initialRecord?.data?.customFields ?? [],
       folder: selectedFolder ?? initialRecord?.folder,
       attachments: initialRecord?.attachments ?? []
@@ -145,7 +145,7 @@ export const CreateOrEditWifiModalContent = ({
       data: {
         title: values.title,
         password: values.password,
-        comment: values.comment,
+        note: values.note,
         customFields: values.customFields,
         attachments: values.attachments
       }
@@ -242,7 +242,7 @@ export const CreateOrEditWifiModalContent = ({
         <//>
 
         <${FormGroup}>
-          <${InputFieldNote} ...${register('comment')} />
+          <${InputFieldNote} ...${register('note')} />
         <//>
 
         ${values.attachments.length > 0 &&

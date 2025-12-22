@@ -29,12 +29,12 @@ describe('InputFieldNote', () => {
   test('renders with custom value', () => {
     const { container } = render(
       <ThemeProvider>
-        <InputFieldNote value="Test comment" />
+        <InputFieldNote value="Test note" />
       </ThemeProvider>
     )
 
     expect(container).toMatchSnapshot()
-    expect(screen.getByDisplayValue('Test comment')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Test note')).toBeInTheDocument()
   })
 
   test('renders with custom icon', () => {
@@ -66,8 +66,8 @@ describe('InputFieldNote', () => {
       </ThemeProvider>
     )
 
-    const input = screen.getByPlaceholderText('Add comment')
-    fireEvent.change(input, { target: { value: 'New comment' } })
+    const input = screen.getByPlaceholderText('Add note')
+    fireEvent.change(input, { target: { value: 'New note' } })
 
     expect(handleChange).toHaveBeenCalled()
   })
@@ -79,7 +79,7 @@ describe('InputFieldNote', () => {
       </ThemeProvider>
     )
 
-    expect(screen.getByPlaceholderText('Add comment')).toHaveAttribute('readonly')
+    expect(screen.getByPlaceholderText('Add note')).toHaveAttribute('readonly')
   })
 
   test('renders with custom variant', () => {

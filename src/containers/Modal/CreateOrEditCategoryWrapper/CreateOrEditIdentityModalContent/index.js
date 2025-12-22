@@ -53,7 +53,7 @@ import { UploadFilesModalContent } from '../../UploadImageModalContent'
  *       city: string
  *       region: string
  *       country: string
- *       comment: string
+ *       note: string
  *       customFields: {
  *         note: string
  *         type: string
@@ -134,7 +134,7 @@ export const CreateOrEditIdentityModalContent = ({
     city: Validator.string(),
     region: Validator.string(),
     country: Validator.string(),
-    comment: Validator.string(),
+    note: Validator.string(),
     customFields: Validator.array().items(
       Validator.object({
         note: Validator.string().required(i18n._('Note is required'))
@@ -194,7 +194,7 @@ export const CreateOrEditIdentityModalContent = ({
       city: initialRecord?.data?.city ?? '',
       region: initialRecord?.data?.region ?? '',
       country: initialRecord?.data?.country ?? '',
-      comment: initialRecord?.data?.comment ?? '',
+      note: initialRecord?.data?.note ?? '',
       customFields: initialRecord?.data?.customFields || [],
       folder: selectedFolder ?? initialRecord?.folder,
       passportFullName: initialRecord?.data?.passportFullName ?? '',
@@ -257,7 +257,7 @@ export const CreateOrEditIdentityModalContent = ({
         city: values.city,
         region: values.region,
         country: values.country,
-        comment: values.comment,
+        note: values.note,
         customFields: values.customFields,
         passportFullName: values.passportFullName,
         passportNumber: values.passportNumber,
@@ -620,7 +620,7 @@ export const CreateOrEditIdentityModalContent = ({
         `}
 
         <${FormGroup}>
-          <${InputFieldNote} ...${register('comment')} />
+          <${InputFieldNote} ...${register('note')} />
         <//>
 
         <${CustomFields}
