@@ -5,10 +5,11 @@ import { HighlightedText, NumberSpan, SymbolSpan } from './styles'
 /**
  *
  * @param {{
- *  text: string
+ *  text: string,
+ *  testId: string,
  * }} props
  */
-export const HighlightString = ({ text }) => {
+export const HighlightString = ({ text, testId }) => {
   const highlightText = (text) => {
     const regex = /(\d+|[^a-zA-Z\d\s])/g
     const parts = text.split(regex)
@@ -26,5 +27,7 @@ export const HighlightString = ({ text }) => {
     })
   }
 
-  return html`<${HighlightedText}>${highlightText(text)}<//>`
+  return html`<${HighlightedText} data-testid=${testId}>
+    ${highlightText(text)}
+  <//>`
 }

@@ -19,7 +19,11 @@ export const PasswordChecker = ({ pass }) => {
   const { strengthText, strengthType } = checkPasswordStrength(pass)
 
   return html` <${PasswordWrapper}>
-    <${HighlightString} text=${pass} />
-    <${NoticeText} text=${t(strengthText)} type=${strengthType} />
+    <${HighlightString} testId=${`passwordcheck-text-${pass}`} text=${pass} />
+    <${NoticeText}
+      testId=${`passwordcheck-strength-${strengthType}`}
+      text=${t(strengthText)}
+      type=${strengthType}
+    />
   <//>`
 }
