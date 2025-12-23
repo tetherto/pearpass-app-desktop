@@ -216,7 +216,7 @@ export const AddDeviceModalContent = () => {
             $active=${scanQRStep}
             onClick=${() => setScanQRStep(true)}
           >
-            ${t('Share this device')}
+            ${t('Share this vault')}
           <//>
           <${PairTab}
             type="button"
