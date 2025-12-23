@@ -53,10 +53,10 @@ export const LoadingPage = ({ onLoadingComplete, duration = 3000 }) => {
   return html`
     <${PageContainer}>
       <${PearImageBlurred}
-        src="assets/images/pear_background_blur.png"
-        alt=""
+        src="assets/images/pear_background_blur.webp"
+        alt="Blurred background"
       />
-      <${PearImage} src="assets/images/pear_background.png" alt="" />
+      <${PearImage} src="assets/images/pear_background.webp" alt="Background" />
 
       <${ContentContainer}>
         <${MessageContainer}>
