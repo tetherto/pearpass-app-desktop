@@ -32,11 +32,13 @@ export const CustomFields = ({
         return html`
           <${FormGroup} key=${customField.id}>
             <${InputFieldNote}
+              testId="customfields-input-note"
               onClick=${onClick}
               isDisabled=${areInputsDisabled}
               additionalItems=${!areInputsDisabled &&
               html`
                 <${ButtonRoundIcon}
+                  testId="customfields-button-remove"
                   startIcon=${DeleteIcon}
                   onClick=${() => removeItem?.(index)}
                 />

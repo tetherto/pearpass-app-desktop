@@ -42,6 +42,7 @@ exports[`PearPassPasswordField Component matches snapshot 1`] = `
     >
       <input
         class="sc-jwTyAe ZPggY"
+        data-testid="pearpass-password-field"
         type="password"
         value="snapshot"
       />
@@ -52,6 +53,7 @@ exports[`PearPassPasswordField Component matches snapshot 1`] = `
   >
     <button
       class="sc-bRKDuR jXrSvT"
+      data-testid="password-visibility-button"
       type="button"
     >
       <svg

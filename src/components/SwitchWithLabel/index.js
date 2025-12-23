@@ -12,7 +12,8 @@ import { Switch } from '../../lib-react-components'
  *  isLabelBold?: boolean
  *  isSwitchFirst?: boolean
  *  stretch?: boolean
- *  disabled?: boolean
+ *  disabled?: boolean,
+ *  testId?: string
  * }} props
  */
 export const SwitchWithLabel = ({
@@ -23,7 +24,8 @@ export const SwitchWithLabel = ({
   isLabelBold,
   isSwitchFirst = false,
   stretch = true,
-  disabled = false
+  disabled = false,
+  testId
 }) => {
   const toggleSwitch = () => {
     if (!disabled) {
@@ -36,12 +38,16 @@ export const SwitchWithLabel = ({
       isSwitchFirst=${isSwitchFirst}
       stretch=${stretch}
       onClick=${toggleSwitch}
+      data-testid=${testId}
     >
       <${ContentWrapper}>
         <${Label} isBold=${isLabelBold}> ${label} <//>
         ${description && html`<${Description}> ${description} <//>`}
       <//>
-      <${Switch} isOn=${isOn} />
+      <${Switch}
+        testId=${`switchwithlabel-switch-${isOn ? 'on' : 'off'}`}
+        isOn=${isOn}
+      />
     <//>
   `
 }

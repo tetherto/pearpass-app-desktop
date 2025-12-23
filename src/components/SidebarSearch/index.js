@@ -8,9 +8,10 @@ import { SearchIcon } from '../../lib-react-components'
  * @param {{
  *  value: string
  *  onChange: (value: string) => void
+ *  testId?: string
  * }} props
  */
-export const SidebarSearch = ({ value, onChange }) => {
+export const SidebarSearch = ({ value, onChange, testId }) => {
   const { i18n } = useLingui()
 
   const handleSearch = (e) => {
@@ -24,6 +25,7 @@ export const SidebarSearch = ({ value, onChange }) => {
       <//>
 
       <${SearchInput}
+        data-testid=${testId}
         type="search"
         value=${value}
         onChange=${handleSearch}

@@ -9,9 +9,10 @@ import { YellowErrorIcon } from '../../icons/YellowErrorIcon'
  * @param {{
  *  text: string
  *  type: 'success' | 'error' | 'warning'
+ *  testId?: string
  * }} props
  */
-export const NoticeText = ({ text, type = 'success' }) => {
+export const NoticeText = ({ text, type = 'success', testId }) => {
   const getIconByType = () => {
     switch (type) {
       case 'success':
@@ -28,7 +29,7 @@ export const NoticeText = ({ text, type = 'success' }) => {
   return html`
     <${NoticeTextWrapper}>
       <${getIconByType()} size="10px" />
-      <${NoticeTextComponent} type=${type}> ${text} <//>
+      <${NoticeTextComponent} data-testid=${testId} type=${type}> ${text} <//>
     <//>
   `
 }

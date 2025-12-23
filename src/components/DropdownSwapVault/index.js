@@ -77,7 +77,11 @@ export const DropdownSwapVault = ({ vaults, selectedVault }) => {
 
   return html`
     <${Wrapper} isOpen=${isOpen}>
-      <${Container} isOpen=${isOpen} onClick=${() => setIsOpen(!isOpen)}>
+      <${Container}
+        isOpen=${isOpen}
+        data-testid="dropdownswapvault-container"
+        onClick=${() => setIsOpen(!isOpen)}
+      >
         <${LockCircleIcon} size="24" color=${colors.primary400.mode1} />
 
         ${selectedVault?.name}

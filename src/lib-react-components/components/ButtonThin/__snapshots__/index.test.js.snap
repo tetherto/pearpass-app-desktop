@@ -3,6 +3,7 @@
 exports[`ButtonThin Component matches snapshot for default variant 1`] = `
 <div
   class="sc-bRKDuR ekYLeu"
+  data-testid="button-thin"
   type="button"
   variant="black"
 >
@@ -38,6 +39,7 @@ exports[`ButtonThin Component matches snapshot for default variant 1`] = `
 exports[`ButtonThin Component matches snapshot for grey variant 1`] = `
 <div
   class="sc-bRKDuR fzARNN"
+  data-testid="button-thin"
   type="button"
   variant="grey"
 >

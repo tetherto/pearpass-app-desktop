@@ -49,6 +49,8 @@ export const CategoryDescription = styled.div`
   gap: 2px;
   white-space: nowrap;
   font-weight: 600;
+  width: 100%;
+  text-align: left;
 
   ${({ size }) =>
     size === 'default' &&
@@ -68,6 +70,13 @@ export const CategoryIconWrapper = styled.div.withConfig({
   shouldForwardProp: (prop) => !['isSelected', 'color'].includes(prop)
 })`
   display: flex;
+`
+
+export const CategoryName = styled.span`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 `
 
 export const CategoryQuantity = styled.span.withConfig({

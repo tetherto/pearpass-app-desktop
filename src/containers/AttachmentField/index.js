@@ -17,7 +17,12 @@ const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp']
 
 const getExtension = (filename) => filename?.split('.').pop()?.toLowerCase()
 
-export const AttachmentField = ({ attachment, label, additionalItems }) => {
+export const AttachmentField = ({
+  attachment,
+  label,
+  additionalItems,
+  testId
+}) => {
   const { setModal } = useModal()
 
   const isImage = attachment?.name
@@ -53,7 +58,7 @@ export const AttachmentField = ({ attachment, label, additionalItems }) => {
   }
 
   return html`
-    <${Wrapper}>
+    <${Wrapper} data-testid=${testId}>
       <${IconWrapper}> <${CommonFileIcon} size="21" /> <//>
       <${MainWrapper}>
         <${Label}> ${label} <//>

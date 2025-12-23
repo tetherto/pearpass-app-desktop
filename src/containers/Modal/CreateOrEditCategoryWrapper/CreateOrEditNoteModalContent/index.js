@@ -178,22 +178,32 @@ export const CreateOrEditNoteModalContent = ({
       headerChildren=${html`
         <${FormModalHeaderWrapper}
           buttons=${html`
-            <${ButtonLittle} startIcon=${ImageIcon} onClick=${handleFileLoad}>
+            <${ButtonLittle}
+              testId="createoredit-button-loadfile"
+              startIcon=${ImageIcon}
+              onClick=${handleFileLoad}
+            >
               ${i18n._('Load file')}
             <//>
-            <${ButtonLittle} startIcon=${SaveIcon} type="submit">
+            <${ButtonLittle}
+              testId="createoredit-button-save"
+              startIcon=${SaveIcon}
+              type="submit"
+            >
               ${i18n._('Save')}
             <//>
           `}
         >
           <${DropdownsWrapper}>
             <${FolderDropdown}
+              testId="createoredit-dropdown-folder"
               selectedFolder=${values?.folder}
               onFolderSelect=${(folder) => setValue('folder', folder?.name)}
             />
 
             ${!initialRecord &&
             html` <${RecordTypeMenu}
+              testId="createoredit-dropdown-recordtype"
               selectedRecord=${RECORD_TYPES.NOTE}
               onRecordSelect=${(record) => onTypeChange(record?.type)}
             />`}
@@ -204,6 +214,7 @@ export const CreateOrEditNoteModalContent = ({
       <${FormWrapper}>
         <${FormGroup}>
           <${InputField}
+            testId="createoredit-input-title"
             label=${i18n._('Title')}
             placeholder=${i18n._('Insert title')}
             variant="outline"
@@ -213,6 +224,7 @@ export const CreateOrEditNoteModalContent = ({
 
         <${FormGroup}>
           <${TextArea}
+            testId="createoredit-textarea-note"
             ...${register('note')}
             placeholder=${i18n._('Write a note...')}
           />
@@ -224,6 +236,7 @@ export const CreateOrEditNoteModalContent = ({
             ${values.attachments.map(
               (attachment) =>
                 html`<${AttachmentField}
+                  testId="createoredit-attachment"
                   key=${attachment.id || attachment.tempId}
                   attachment=${attachment}
                   label=${i18n._('File')}
@@ -255,6 +268,7 @@ export const CreateOrEditNoteModalContent = ({
 
         <${FormGroup}>
           <${CreateCustomField}
+            testId="createoredit-createcustomfield"
             onCreateCustom=${(type) => addItem({ type: type, name: type })}
           />
         <//>

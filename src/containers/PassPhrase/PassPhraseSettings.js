@@ -17,7 +17,8 @@ import { SwitchWithLabel } from '../../components/SwitchWithLabel'
  *   setSelectedType: (value: number) => void,
  *   withRandomWord: boolean,
  *   setWithRandomWord: (value: boolean) => void,
- *   isDisabled: boolean
+ *   isDisabled: boolean,
+ *   testId?: string
  * }} props
  */
 export const PassPhraseSettings = ({
@@ -25,12 +26,13 @@ export const PassPhraseSettings = ({
   setSelectedType,
   withRandomWord,
   setWithRandomWord,
-  isDisabled
+  isDisabled,
+  testId
 }) => {
   const { i18n } = useLingui()
 
   return html`
-    <${PassPraseSettingsContainer}>
+    <${PassPraseSettingsContainer} data-testid=${testId}>
       <${RadioSelect}
         title=${i18n._('Type')}
         options=${PASSPHRASE_TYPE_OPTIONS.map((option) => ({
@@ -48,6 +50,7 @@ export const PassPhraseSettings = ({
         <${PassPraseSettingsRandomWordText}>${i18n._('+1 random word')}<//>
         <${SwitchWrapper}>
           <${SwitchWithLabel}
+            testId="passphrasesettings-switchwithlabel"
             isOn=${withRandomWord}
             onChange=${(value) => setWithRandomWord(value)}
             disabled=${isDisabled}

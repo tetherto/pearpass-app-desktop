@@ -7,10 +7,11 @@ import { PlusIcon, XIcon } from '../../lib-react-components'
 /**
  * @param {{
  *  isOpen: boolean
+ *  testId?: string
  * }} props
  */
-export const ButtonPlusCreateNew = ({ isOpen }) => html`
-  <${Button}>
+export const ButtonPlusCreateNew = ({ isOpen, testId }) => html`
+  <${Button} data-testid=${testId}>
     <${isOpen ? XIcon : PlusIcon} color=${colors.black.mode1} />
   <//>
 `

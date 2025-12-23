@@ -23,6 +23,7 @@ export const CreateNewCategoryPopupContent = ({ menuItems, onClick }) => {
         const Icon = RECORD_ICON_BY_TYPE?.[item.type]
 
         return html`<${MenuItem}
+          data-testid=${`createcategory-popup-${item.type}`}
           color=${RECORD_COLOR_BY_TYPE?.[item.type]}
           key=${item.type}
           onClick=${(e) => handleMenuItemClick(e, item)}

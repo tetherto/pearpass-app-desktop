@@ -222,21 +222,31 @@ export const CreateOrEditCreditCardModalContent = ({
       headerChildren=${html`
         <${FormModalHeaderWrapper}
           buttons=${html`
-            <${ButtonLittle} startIcon=${ImageIcon} onClick=${handleFileLoad}>
+            <${ButtonLittle}
+              testId="createoredit-button-loadfile"
+              startIcon=${ImageIcon}
+              onClick=${handleFileLoad}
+            >
               ${i18n._('Load file')}
             <//>
-            <${ButtonLittle} startIcon=${SaveIcon} type="submit">
+            <${ButtonLittle}
+              testId="createoredit-button-save"
+              startIcon=${SaveIcon}
+              type="submit"
+            >
               ${i18n._('Save')}
             <//>
           `}
         >
           <${DropdownsWrapper}>
             <${FolderDropdown}
+              testId="createoredit-dropdown-folder"
               selectedFolder=${values?.folder}
               onFolderSelect=${(folder) => setValue('folder', folder?.name)}
             />
             ${!initialRecord &&
             html` <${RecordTypeMenu}
+              testId="createoredit-dropdown-recordtype"
               selectedRecord=${RECORD_TYPES.CREDIT_CARD}
               onRecordSelect=${(record) => handleRecordTypeChange(record?.type)}
             />`}
@@ -247,6 +257,7 @@ export const CreateOrEditCreditCardModalContent = ({
       <${FormWrapper}>
         <${FormGroup}>
           <${InputField}
+            testId="createoredit-input-title"
             label=${i18n._('Title')}
             placeholder=${i18n._('Insert title')}
             variant="outline"
@@ -256,6 +267,7 @@ export const CreateOrEditCreditCardModalContent = ({
 
         <${FormGroup}>
           <${InputField}
+            testId="createoredit-input-fullname"
             label=${i18n._('Full name')}
             placeholder=${i18n._('Full name')}
             variant="outline"
@@ -264,6 +276,7 @@ export const CreateOrEditCreditCardModalContent = ({
           />
 
           <${InputField}
+            testId="createoredit-input-number"
             label=${i18n._('Number on card')}
             placeholder="1234 1234 1234 1234 "
             variant="outline"
@@ -274,6 +287,7 @@ export const CreateOrEditCreditCardModalContent = ({
           />
 
           <${InputField}
+            testId="createoredit-input-expiredate"
             label=${i18n._('Date of expire')}
             placeholder="MM YY"
             variant="outline"
@@ -283,6 +297,7 @@ export const CreateOrEditCreditCardModalContent = ({
           />
 
           <${PasswordField}
+            testId="createoredit-input-securitycode"
             label=${i18n._('Security code')}
             placeholder="123"
             variant="outline"
@@ -293,6 +308,7 @@ export const CreateOrEditCreditCardModalContent = ({
           />
 
           <${PasswordField}
+            testId="createoredit-input-pincode"
             label=${i18n._('Pin code')}
             placeholder="1234"
             variant="outline"
@@ -308,11 +324,13 @@ export const CreateOrEditCreditCardModalContent = ({
             ${values.attachments.map(
               (attachment) =>
                 html`<${AttachmentField}
+                  testId="createoredit-attachment"
                   key=${attachment.id || attachment.tempId}
                   attachment=${attachment}
                   label=${i18n._('File')}
                   additionalItems=${html`
                     <${ButtonSingleInput}
+                      testId="createoredit-button-deleteattachment"
                       startIcon=${DeleteIcon}
                       onClick=${() =>
                         setValue(
@@ -332,7 +350,10 @@ export const CreateOrEditCreditCardModalContent = ({
         `}
 
         <${FormGroup}>
-          <${InputFieldNote} ...${register('note')} />
+          <${InputFieldNote}
+            testId="createoredit-input-note"
+            ...${register('note')}
+          />
         <//>
 
         <${CustomFields}
@@ -343,6 +364,7 @@ export const CreateOrEditCreditCardModalContent = ({
 
         <${FormGroup}>
           <${CreateCustomField}
+            testId="createoredit-createcustomfield"
             onCreateCustom=${(type) => addItem({ type: type, name: type })}
           />
         <//>

@@ -33,7 +33,8 @@ import { NoticeText } from '../NoticeText'
  *  type?: 'text' | 'password' | 'url',
  *  variant?: 'default' | 'outline'
  *  overlay?: import('react').ReactNode
- *  autoFocus?: boolean
+ *  autoFocus?: boolean,
+ *  testId?: string
  * }} props
  */
 export const InputField = ({
@@ -50,7 +51,9 @@ export const InputField = ({
   type = 'text',
   variant = 'default',
   overlay,
-  autoFocus
+  autoFocus,
+  testId = 'input-field',
+  onPaste
 }) => {
   const inputRef = useRef(null)
 
@@ -96,6 +99,7 @@ export const InputField = ({
 
           <${InputAreaWrapper}>
             <${Input}
+              data-testid=${testId}
               ref=${inputRef}
               value=${value}
               onChange=${handleChange}
@@ -107,6 +111,7 @@ export const InputField = ({
               hasOverlay=${!!overlay && !isFocused}
               autoFocus=${autoFocus}
               isDisabled=${isDisabled}
+              onPaste=${onPaste}
             />
 
             ${!isFocused && html`<${InputOverlay}> ${overlay} <//>`}

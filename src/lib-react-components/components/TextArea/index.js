@@ -9,7 +9,8 @@ import { ReportTextAreaComponent, TextAreaComponent } from './styles'
  *  placeholder: string,
  *  isDisabled: boolean,
  *  onClick: (value: string) => void,
- *  variant: 'default' | 'report'
+ *  variant: 'default' | 'report',
+ *  testId?: string
  * }} props
  */
 export const TextArea = ({
@@ -18,7 +19,8 @@ export const TextArea = ({
   placeholder,
   isDisabled,
   onClick,
-  variant
+  variant,
+  testId = 'text-area'
 }) => {
   const handleChange = (e) => {
     if (isDisabled) {
@@ -39,6 +41,7 @@ export const TextArea = ({
   return html`
     <${variant === 'report' ? ReportTextAreaComponent : TextAreaComponent}
       value=${value}
+      data-testid=${testId}
       onChange=${handleChange}
       placeholder=${placeholder}
       disabled=${isDisabled}

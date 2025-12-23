@@ -75,8 +75,9 @@ jest.mock('../../../hooks/usePasteFromClipboard', () => ({
   usePasteFromClipboard: () => ({ pasteFromClipboard: mockPaste })
 }))
 
+const mockSetToast = jest.fn()
 jest.mock('../../../context/ToastContext', () => ({
-  useToast: () => ({ setToast: jest.fn() })
+  useToast: () => ({ setToast: mockSetToast })
 }))
 
 describe('PassPhrase (container)', () => {
@@ -98,12 +99,13 @@ describe('PassPhrase (container)', () => {
     mockSettingsCalls.length = 0
     mockCopy.mockReset()
     mockPaste.mockReset()
+    mockSetToast.mockReset()
   })
 
   test('renders header and no words initially', () => {
     renderComponent()
     expect(screen.getByTestId('pp-icon')).toBeInTheDocument()
-    expect(screen.getByTestId('title')).toHaveTextContent('PassPhrase')
+    expect(screen.getByTestId('title')).toHaveTextContent('Recovery phrase')
     expect(screen.getByTestId('words').children.length).toBe(0)
   })
 
@@ -194,5 +196,23 @@ describe('PassPhrase (container)', () => {
     await waitFor(() => expect(mockBadgeCalls.length).toBe(12))
     const last = mockSettingsCalls[mockSettingsCalls.length - 1]
     expect(last.isDisabled).toBe(true)
+  })
+
+  test('shows error toast when pasting invalid word count', async () => {
+    const onChange = jest.fn()
+    mockPaste.mockResolvedValueOnce('one-two-three-four-five')
+    renderComponent({ isCreateOrEdit: true, onChange, value: '' })
+
+    fireEvent.click(screen.getByTestId('copy-paste'))
+
+    await waitFor(() => {
+      expect(mockSetToast).toHaveBeenCalledWith({
+        message: 'Only 12 or 24 words are allowed',
+        icon: expect.anything()
+      })
+    })
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(mockBadgeCalls.length).toBe(0)
   })
 })

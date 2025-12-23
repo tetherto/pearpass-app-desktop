@@ -144,19 +144,25 @@ export const CreateOrEditPassPhraseModalContent = ({
       headerChildren=${html`
         <${FormModalHeaderWrapper}
           buttons=${html`
-            <${ButtonLittle} startIcon=${SaveIcon} type="submit">
+            <${ButtonLittle}
+              testId="createoredit-button-save"
+              startIcon=${SaveIcon}
+              type="submit"
+            >
               ${i18n._('Save')}
             <//>
           `}
         >
           <${DropdownsWrapper}>
             <${FolderDropdown}
+              testId="createoredit-dropdown-folder"
               selectedFolder=${values?.folder}
               onFolderSelect=${(folder) => setValue('folder', folder?.name)}
             />
 
             ${!initialRecord &&
             html` <${RecordTypeMenu}
+              testId="createoredit-dropdown-recordtype"
               selectedRecord=${RECORD_TYPES.PASS_PHRASE}
               onRecordSelect=${(record) => onTypeChange(record?.type)}
             />`}
@@ -167,6 +173,7 @@ export const CreateOrEditPassPhraseModalContent = ({
       <${FormWrapper}>
         <${FormGroup}>
           <${InputField}
+            testId="createoredit-input-title"
             icon=${CubeIcon}
             label=${i18n._('Application')}
             placeholder=${i18n._('Insert Application name')}
