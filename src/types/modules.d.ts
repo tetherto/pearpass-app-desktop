@@ -20,3 +20,12 @@ declare module 'pearpass-lib-vault' {
   const otherExports: any
   export default otherExports
 }
+
+declare module 'pear-apps-lib-ui-react-hooks' {
+  export const useCountDown: any
+}
+
+declare module 'pear-apps-utils-qr' {
+  export const generateQRCodeSVG: any
+}
+
