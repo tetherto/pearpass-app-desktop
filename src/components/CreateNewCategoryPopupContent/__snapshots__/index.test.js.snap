@@ -8,6 +8,7 @@ exports[`CreateNewCategoryPopupContent renders menu items correctly 1`] = `
     <div
       class="sc-hvigdm gwoevN"
       color="#6E9700"
+      data-testid="createcategory-popup-note"
     >
       <svg
         fill="none"
@@ -25,6 +26,7 @@ exports[`CreateNewCategoryPopupContent renders menu items correctly 1`] = `
     </div>
     <div
       class="sc-hvigdm ddfABV"
+      data-testid="createcategory-popup-email"
     >
       Email
     </div>
