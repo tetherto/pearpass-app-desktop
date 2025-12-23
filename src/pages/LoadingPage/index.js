@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 
-import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
+
+import { useTranslation } from '../../hooks/useTranslation'
 
 import {
   BottomGlow,
@@ -30,7 +31,7 @@ import { PearLogo } from '../../svgs/PearLogo'
  * @returns {JSX.Element}
  */
 export const LoadingPage = ({ onLoadingComplete, duration = 3000 }) => {
-  const { i18n } = useLingui()
+  const { t } = useTranslation()
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
@@ -60,11 +61,9 @@ export const LoadingPage = ({ onLoadingComplete, duration = 3000 }) => {
 
       <${ContentContainer}>
         <${MessageContainer}>
-          <${WelcomeTitle}>${i18n._('Welcome to PearPass')}<//>
+          <${WelcomeTitle}>${t('Welcome to PearPass')}<//>
           <${WelcomeSubtitle}>
-            ${i18n._(
-              'Public Wi-Fi is risky - avoid typing passwords on open networks.'
-            )}
+            ${t('Public Wi-Fi is risky - avoid typing passwords on open networks.')}
           <//>
         <//>
 
@@ -73,14 +72,14 @@ export const LoadingPage = ({ onLoadingComplete, duration = 3000 }) => {
             <${ProgressBarFill} progress=${progress} />
           <//>
           <${LoadingTextContainer}>
-            <${LoadingText}>${i18n._('Loading...')}<//>
+            <${LoadingText}>${t('Loading...')}<//>
           <//>
         <//>
       <//>
 
       <${FooterContainer}>
         <${PearLogo} width="35" height="47" />
-        <${PoweredByText}>${i18n._('Powered by Pear')}<//>
+        <${PoweredByText}>${t('Powered by Pear')}<//>
       <//>
 
       <${BottomGlow} />

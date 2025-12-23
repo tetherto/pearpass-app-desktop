@@ -26,14 +26,14 @@ export const App = () => {
   }, [])
 
   // Show InitialPage during simulated loading (splash screen)
-  const isInitialLoading = isSimulatedLoading
+  const isSplashScreenShown = isSimulatedLoading
 
   // Show LoadingPage during data loading and until the loading animation completes
   const showLoadingPage = !isSimulatedLoading && (isDataLoading || !isLoadingPageComplete)
 
   return html`
     <${Routes}
-      isInitialLoading=${isInitialLoading}
+      isSplashScreenShown=${isSplashScreenShown}
       isDataLoading=${showLoadingPage}
       onLoadingComplete=${handleLoadingComplete}
     />

@@ -12,20 +12,20 @@ import { WelcomePage } from '../../pages/WelcomePage'
 
 /**
  * @param {Object} props
- * @param {boolean} props.isInitialLoading - Shows InitialPage (splash screen)
+ * @param {boolean} props.isSplashScreenShown - Shows InitialPage (splash screen)
  * @param {boolean} props.isDataLoading - Shows LoadingPage (with progress bar)
  * @param {() => void} [props.onLoadingComplete] - Callback when LoadingPage finishes
  * @returns {import('react').ReactNode}
  */
 export const Routes = ({
-  isInitialLoading,
+  isSplashScreenShown,
   isDataLoading,
   onLoadingComplete
 }) => {
   const { currentPage, data } = useRouter()
 
   // Show InitialPage during initial splash
-  if (isInitialLoading) {
+  if (isSplashScreenShown) {
     return html` <${InitialPage} /> `
   }
 
