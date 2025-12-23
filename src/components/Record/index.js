@@ -34,10 +34,17 @@ import {
  *  },
  *  isSelected: boolean,
  *  onClick: () => void
- *  onSelect: () => void
+ *  onSelect: () => void,
+ *  testId?: string
  * }} props
  */
-export const Record = ({ record, isSelected = false, onClick, onSelect }) => {
+export const Record = ({
+  record,
+  isSelected = false,
+  onClick,
+  onSelect,
+  testId
+}) => {
   const [isOpen, setIsOpen] = useState()
 
   const folderName = record?.folder
@@ -63,6 +70,7 @@ export const Record = ({ record, isSelected = false, onClick, onSelect }) => {
       open=${isOpen}
       isSelected=${isSelected}
       onClick=${onClick}
+      data-testid=${testId}
     >
       <${RecordInformation}>
         <${RecordAvatar}

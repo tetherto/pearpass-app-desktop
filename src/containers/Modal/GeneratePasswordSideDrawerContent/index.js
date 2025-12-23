@@ -98,10 +98,16 @@ export const GeneratePasswordSideDrawerContent = ({ onPasswordInsert }) => {
       <${ModalHeader} onClose=${closeModal}>
         <${HeaderButtonWrapper}>
           ${onPasswordInsert
-            ? html`<${ButtonLittle} onClick=${handleInsertPassword}>
+            ? html`<${ButtonLittle}
+                testId="passwordGenerator-button-insertpassword"
+                onClick=${handleInsertPassword}
+              >
                 ${i18n._('Insert password')}
               <//> `
-            : html`<${ButtonLittle} onClick=${handleCopyAndClose}>
+            : html`<${ButtonLittle}
+                testId="passwordGenerator-button-copyandclose"
+                onClick=${handleCopyAndClose}
+              >
                 ${i18n._('Copy and close')}
               <//> `}
         <//>

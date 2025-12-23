@@ -22,6 +22,7 @@ exports[`InputField Component matches snapshot for default variant 1`] = `
       >
         <input
           class="sc-hwkwBN DnOVm"
+          data-testid="input-field"
           placeholder="Enter text"
           type="text"
           value="snapshot test"
@@ -60,6 +61,7 @@ exports[`InputField Component matches snapshot for outline variant 1`] = `
       >
         <input
           class="sc-hwkwBN DnOVm"
+          data-testid="input-field"
           placeholder="Enter text"
           type="text"
           value="outline snapshot"

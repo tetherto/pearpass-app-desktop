@@ -1,6 +1,6 @@
-import { useLingui } from '@lingui/react'
 import { RECORD_TYPES } from 'pearpass-lib-vault'
 
+import { useTranslation } from './useTranslation'
 import { RECORD_COLOR_BY_TYPE } from '../constants/recordColorByType'
 import { RECORD_ICON_BY_TYPE } from '../constants/recordIconByType'
 
@@ -19,49 +19,49 @@ import { RECORD_ICON_BY_TYPE } from '../constants/recordIconByType'
  *  type: string
  * }>}}
  */
-export const useRecordMenuItems = () => {
-  const { i18n } = useLingui()
 
+export const useRecordMenuItems = () => {
+  const { t } = useTranslation()
   const defaultItems = [
     {
-      name: i18n._('Login'),
+      name: t('Login'),
       type: RECORD_TYPES.LOGIN,
       icon: RECORD_ICON_BY_TYPE.login,
       color: RECORD_COLOR_BY_TYPE.login
     },
     {
-      name: i18n._('Identity'),
+      name: t('Identity'),
       type: RECORD_TYPES.IDENTITY,
       icon: RECORD_ICON_BY_TYPE.identity,
       color: RECORD_COLOR_BY_TYPE.identity
     },
     {
-      name: i18n._('Credit Card'),
+      name: t('Credit Card'),
       type: RECORD_TYPES.CREDIT_CARD,
       icon: RECORD_ICON_BY_TYPE.creditCard,
       color: RECORD_COLOR_BY_TYPE.creditCard
     },
     {
-      name: i18n._('Wi-Fi'),
+      name: t('Wi-Fi'),
       type: RECORD_TYPES.WIFI_PASSWORD,
       icon: RECORD_ICON_BY_TYPE.wifiPassword,
       color: RECORD_COLOR_BY_TYPE.wifiPassword
     },
     {
-      name: i18n._('PassPhrase'),
+      name: t('Recovery phrase'),
       type: RECORD_TYPES.PASS_PHRASE,
       icon: RECORD_ICON_BY_TYPE.passPhrase,
       color: RECORD_COLOR_BY_TYPE.passPhrase
     },
     {
-      name: i18n._('Note'),
+      name: t('Note'),
       type: RECORD_TYPES.NOTE,
       icon: RECORD_ICON_BY_TYPE.note,
       color: RECORD_COLOR_BY_TYPE.note
     },
 
     {
-      name: i18n._('Custom'),
+      name: t('Custom'),
       type: RECORD_TYPES.CUSTOM,
       icon: RECORD_ICON_BY_TYPE.custom,
       color: RECORD_COLOR_BY_TYPE.custom
@@ -70,7 +70,7 @@ export const useRecordMenuItems = () => {
 
   const menuItems = [
     {
-      name: i18n._('All'),
+      name: t('All'),
       type: 'all'
     },
     ...defaultItems
@@ -79,7 +79,7 @@ export const useRecordMenuItems = () => {
   const popupItems = [
     ...defaultItems,
     {
-      name: i18n._('Password'),
+      name: t('Password'),
       type: 'password'
     }
   ]

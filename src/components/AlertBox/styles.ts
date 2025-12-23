@@ -1,6 +1,12 @@
 import styled from 'styled-components'
+import { AlertBoxType } from '.'
 
-export const Container = styled.div`
+interface ContainerProps {
+  $isMultiLine?: boolean
+  type?: AlertBoxType
+}
+
+export const Container = styled.div<ContainerProps>`
   display: flex;
   width: 100%;
   padding: 10px;

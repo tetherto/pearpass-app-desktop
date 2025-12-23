@@ -327,23 +327,30 @@ export const CreateOrEditIdentityModalContent = ({
         <${FormModalHeaderWrapper}
           buttons=${html`
             <${ButtonLittle}
+              testId="createoredit-button-loadfile"
               startIcon=${ImageIcon}
               onClick=${() => handleFileLoad(ATTACHMENTS_FIELD_KEY)}
             >
               ${i18n._('Load file')}
             <//>
-            <${ButtonLittle} startIcon=${SaveIcon} type="submit">
+            <${ButtonLittle}
+              testId="createoredit-button-save"
+              startIcon=${SaveIcon}
+              type="submit"
+            >
               ${i18n._('Save')}
             <//>
           `}
         >
           <${DropdownsWrapper}>
             <${FolderDropdown}
+              testId="createoredit-dropdown-folder"
               selectedFolder=${values?.folder}
               onFolderSelect=${(folder) => setValue('folder', folder?.name)}
             />
             ${!initialRecord &&
             html` <${RecordTypeMenu}
+              testId="createoredit-dropdown-recordtype"
               selectedRecord=${RECORD_TYPES.IDENTITY}
               onRecordSelect=${(record) => onTypeChange(record?.type)}
             />`}
@@ -354,6 +361,7 @@ export const CreateOrEditIdentityModalContent = ({
       <${FormWrapper}>
         <${FormGroup}>
           <${InputField}
+            testId="createoredit-input-title"
             label=${i18n._('Title')}
             placeholder=${i18n._('Insert title')}
             variant="outline"
@@ -363,6 +371,7 @@ export const CreateOrEditIdentityModalContent = ({
 
         <${FormGroup} title=${i18n._('Personal information')} isCollapse>
           <${InputField}
+            testId="createoredit-input-fullname"
             label=${i18n._('Full name')}
             placeholder=${i18n._('Full name')}
             variant="outline"
@@ -371,6 +380,7 @@ export const CreateOrEditIdentityModalContent = ({
           />
 
           <${InputField}
+            testId="createoredit-input-email"
             label=${i18n._('Email')}
             placeholder=${i18n._('Insert email')}
             variant="outline"
@@ -379,6 +389,7 @@ export const CreateOrEditIdentityModalContent = ({
           />
 
           <${InputField}
+            testId="createoredit-input-phonenumber"
             label=${i18n._('Phone number ')}
             placeholder=${i18n._('Phone number ')}
             variant="outline"
@@ -389,6 +400,7 @@ export const CreateOrEditIdentityModalContent = ({
 
         <${FormGroup} title=${i18n._('Detail of address')} isCollapse>
           <${InputField}
+            testId="createoredit-input-address"
             label=${i18n._('Address')}
             placeholder=${i18n._('Address')}
             variant="outline"
@@ -396,6 +408,7 @@ export const CreateOrEditIdentityModalContent = ({
           />
 
           <${InputField}
+            testId="createoredit-input-zip"
             label=${i18n._('ZIP')}
             placeholder=${i18n._('Insert zip')}
             variant="outline"
@@ -403,6 +416,7 @@ export const CreateOrEditIdentityModalContent = ({
           />
 
           <${InputField}
+            testId="createoredit-input-city"
             label=${i18n._('City')}
             placeholder=${i18n._('City')}
             variant="outline"
@@ -410,6 +424,7 @@ export const CreateOrEditIdentityModalContent = ({
           />
 
           <${InputField}
+            testId="createoredit-input-region"
             label=${i18n._('Region')}
             placeholder=${i18n._('Region')}
             variant="outline"
@@ -417,6 +432,7 @@ export const CreateOrEditIdentityModalContent = ({
           />
 
           <${InputField}
+            testId="createoredit-input-country"
             label=${i18n._('Country')}
             placeholder=${i18n._('Country')}
             variant="outline"
@@ -431,6 +447,7 @@ export const CreateOrEditIdentityModalContent = ({
         >
           <div>
             <${InputField}
+              testId="createoredit-input-passportfullname"
               label=${i18n._('Full name')}
               placeholder="John Smith"
               variant="outline"
@@ -439,6 +456,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
 
             <${InputField}
+              testId="createoredit-input-passportnumber"
               label=${i18n._('Passport number')}
               placeholder=${i18n._('Insert numbers')}
               variant="outline"
@@ -447,6 +465,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
 
             <${InputField}
+              testId="createoredit-input-passportissuingcountry"
               label=${i18n._('Issuing country')}
               placeholder=${i18n._('Insert country')}
               variant="outline"
@@ -455,6 +474,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
 
             <${InputField}
+              testId="createoredit-input-passportdateofissue"
               label=${i18n._('Date of issue')}
               placeholder=${DATE_FORMAT}
               variant="outline"
@@ -463,6 +483,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
 
             <${InputField}
+              testId="createoredit-input-passportexpirydate"
               label=${i18n._('Expiry Date')}
               placeholder=${DATE_FORMAT}
               variant="outline"
@@ -471,6 +492,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
 
             <${InputField}
+              testId="createoredit-input-passportnationality"
               label=${i18n._('Nationality')}
               placeholder=${i18n._('Insert your nationality')}
               variant="outline"
@@ -479,6 +501,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
 
             <${InputField}
+              testId="createoredit-input-passportdob"
               label=${i18n._('Date of birth')}
               placeholder=${DATE_FORMAT}
               variant="outline"
@@ -487,6 +510,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
 
             <${InputField}
+              testId="createoredit-input-passportgender"
               label=${i18n._('Gender')}
               placeholder=${i18n._('M/F')}
               variant="outline"
@@ -495,6 +519,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
           <//>
           <${ImagesField}
+            testId="createoredit-imagesfield-passportimages"
             title=${i18n._('Passport Images')}
             onAdd=${() => handleFileLoad('passportPicture')}
             pictures=${values.passportPicture}
@@ -510,6 +535,7 @@ export const CreateOrEditIdentityModalContent = ({
         >
           <div>
             <${InputField}
+              testId="createoredit-input-idcardnumber"
               label=${i18n._('ID number')}
               placeholder="123456789"
               variant="outline"
@@ -518,6 +544,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
 
             <${InputField}
+              testId="createoredit-input-idcarddateofissue"
               label=${i18n._('Creation date')}
               placeholder=${DATE_FORMAT}
               variant="outline"
@@ -526,6 +553,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
 
             <${InputField}
+              testId="createoredit-input-idcardexpirydate"
               label=${i18n._('Expiry date')}
               placeholder=${DATE_FORMAT}
               variant="outline"
@@ -534,6 +562,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
 
             <${InputField}
+              testId="createoredit-input-idcardissuingcountry"
               label=${i18n._('Issue country')}
               placeholder=${i18n._('Insert country')}
               variant="outline"
@@ -542,6 +571,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
           <//>
           <${ImagesField}
+            testId="createoredit-imagesfield-idcardimages"
             title=${i18n._('Identity Card Images')}
             onAdd=${() => handleFileLoad('idCardPicture')}
             pictures=${values.idCardPicture}
@@ -557,6 +587,7 @@ export const CreateOrEditIdentityModalContent = ({
         >
           <div>
             <${InputField}
+              testId="createoredit-input-drivinglicensenumber"
               label=${i18n._('ID number')}
               placeholder="123456789"
               variant="outline"
@@ -565,6 +596,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
 
             <${InputField}
+              testId="createoredit-input-drivinglicensedateofissue"
               label=${i18n._('Creation date')}
               placeholder=${DATE_FORMAT}
               variant="outline"
@@ -573,6 +605,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
 
             <${InputField}
+              testId="createoredit-input-drivinglicenseexpirydate"
               label=${i18n._('Expiry date')}
               placeholder=${DATE_FORMAT}
               variant="outline"
@@ -581,6 +614,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
 
             <${InputField}
+              testId="createoredit-input-drivinglicenseissuingcountry"
               label=${i18n._('Issue country')}
               placeholder=${i18n._('Insert country')}
               variant="outline"
@@ -589,6 +623,7 @@ export const CreateOrEditIdentityModalContent = ({
             />
           <//>
           <${ImagesField}
+            testId="createoredit-imagesfield-drivinglicenseimages"
             title=${i18n._('Driving License Images')}
             onAdd=${() => handleFileLoad('drivingLicensePicture')}
             pictures=${values.drivingLicensePicture}
@@ -603,10 +638,12 @@ export const CreateOrEditIdentityModalContent = ({
             ${values.attachments.map(
               (attachment, index) =>
                 html`<${AttachmentField}
+                  testId="createoredit-attachment"
                   attachment=${attachment}
                   label=${i18n._('File')}
                   additionalItems=${html`
                     <${ButtonSingleInput}
+                      testId="createoredit-button-deleteattachment"
                       startIcon=${DeleteIcon}
                       onClick=${() =>
                         handleAttachmentRemove(ATTACHMENTS_FIELD_KEY, index)}
@@ -620,7 +657,10 @@ export const CreateOrEditIdentityModalContent = ({
         `}
 
         <${FormGroup}>
-          <${InputFieldNote} ...${register('note')} />
+          <${InputFieldNote}
+            testId="createoredit-input-note"
+            ...${register('note')}
+          />
         <//>
 
         <${CustomFields}
@@ -631,6 +671,7 @@ export const CreateOrEditIdentityModalContent = ({
 
         <${FormGroup}>
           <${CreateCustomField}
+            testId="createoredit-createcustomfield"
             onCreateCustom=${(type) => addItem({ type: type, name: type })}
           />
         <//>

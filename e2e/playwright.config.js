@@ -8,20 +8,23 @@ module.exports = {
   },
   reporter: [
     ['html', { outputFolder: 'test-artifacts/report' }],
-    ['playwright-qase-reporter', {
-      mode: 'testops',
-      debug: true,
-      testops: {
-        api: {
-          token: process.env.QASE_API_TOKEN
-        },
-        project: 'PAS',
-        uploadAttachments: true,
-        run: {
-          complete: true
+    [
+      'playwright-qase-reporter',
+      {
+        mode: 'testops',
+        debug: true,
+        testops: {
+          api: {
+            token: process.env.QASE_API_TOKEN
+          },
+          project: 'PAS',
+          uploadAttachments: true,
+          run: {
+            complete: true
+          }
         }
       }
-    }]
+    ]
   ],
   outputDir: 'test-artifacts/results',
   workers: 1,

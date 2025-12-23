@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 
-import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import {
   authoriseCurrentProtectedVault,

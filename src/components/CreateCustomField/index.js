@@ -53,10 +53,11 @@ const OPTIONS = [
 
 /**
  * @param {{
- *  onCreateCustom: (type: string) => void
+ *  onCreateCustom: (type: string) => void,
+ *  testId?: string
  * }} props
  */
-export const CreateCustomField = ({ onCreateCustom }) => {
+export const CreateCustomField = ({ onCreateCustom, testId }) => {
   const { i18n } = useLingui()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -74,8 +75,11 @@ export const CreateCustomField = ({ onCreateCustom }) => {
   }
 
   return html`
-    <${Wrapper} ref=${wrapperRef}>
-      <${Label} onClick=${() => setIsOpen(!isOpen)}>
+    <${Wrapper} ref=${wrapperRef} data-testid=${testId}>
+      <${Label}
+        data-testid=${`createcustomfield-label-${isOpen ? 'open' : 'closed'}`}
+        onClick=${() => setIsOpen(!isOpen)}
+      >
         <${PlusIcon} size="21" />
 
         <div>${i18n._('Create Custom')}</div>
@@ -90,6 +94,7 @@ export const CreateCustomField = ({ onCreateCustom }) => {
         ${OPTIONS.map(
           (option) => html`
             <${ButtonFilter}
+              testId=${`createcustomfield-option-${option.type}`}
               variant="secondary"
               startIcon=${option.icon}
               onClick=${() => handleSelect(option.type)}

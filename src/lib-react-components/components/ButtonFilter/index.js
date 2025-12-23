@@ -9,7 +9,8 @@ import { Button } from './styles'
  *  startIcon?: import('react').ElementType
  *  isDisabled?: boolean
  *  type?: 'button' | 'submit'
- *  onClick: () => void
+ *  onClick: () => void,
+ *  testId?: string
  * }} props
  */
 export const ButtonFilter = ({
@@ -18,7 +19,8 @@ export const ButtonFilter = ({
   variant = 'primary',
   type = 'button',
   isDisabled,
-  onClick
+  onClick,
+  testId
 }) => {
   const handleClick = isDisabled ? () => {} : onClick
 
@@ -28,6 +30,7 @@ export const ButtonFilter = ({
       isDisabled=${isDisabled}
       type=${type}
       onClick=${handleClick}
+      data-testid=${testId}
     >
       ${startIcon && html`<${startIcon} size="24" />`} ${children}
     <//>

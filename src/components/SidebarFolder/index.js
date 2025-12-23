@@ -28,7 +28,8 @@ import {
  *  isRoot: boolean
  *  name: string
  *  icon: string
- *  isActive: boolean
+ *  isActive: boolean,
+ *  testId?: string
  * }} props
  */
 export const SidebarFolder = ({
@@ -39,7 +40,8 @@ export const SidebarFolder = ({
   isRoot,
   name,
   icon: Icon,
-  isActive
+  isActive,
+  testId
 }) => {
   const [isNewPopupMenuOpen, setIsNewPopupMenuOpen] = useState(false)
 
@@ -51,7 +53,7 @@ export const SidebarFolder = ({
   return html`
     <${React.Fragment}>
       <${NestedFoldersContainer}>
-        <${NestedItem}>
+        <${NestedItem} data-testid=${testId}>
           <div onClick=${handleDropDownClick}>
             <${isOpen ? ArrowDownIcon : ArrowUpIcon}
               ArrowUpIcon="14"
@@ -85,7 +87,10 @@ export const SidebarFolder = ({
 
         ${isRoot &&
         html`
-          <${AddIconWrapper} onClick=${() => onAddClick()}>
+          <${AddIconWrapper}
+            data-testid="sidebarfolder-button-add"
+            onClick=${() => onAddClick()}
+          >
             <${PlusIcon} color=${colors.primary400.mode1} size="24" />
           <//>
         `}

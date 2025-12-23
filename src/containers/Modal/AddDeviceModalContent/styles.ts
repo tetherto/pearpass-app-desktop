@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 export const HeaderTitle = styled.div`
   display: flex;
@@ -8,6 +8,51 @@ export const HeaderTitle = styled.div`
   font-family: 'Inter';
   font-size: 16px;
   font-weight: 500;
+`
+export const PairingDescription = styled.div`
+  color: ${({ theme }) => theme.colors.white.mode1};
+  font-family: 'Inter';
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 10px;
+`
+
+export const PairTabs = styled.div`
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  border: 2px solid ${({ theme }) => theme.colors.grey100.mode1};
+  border-radius: 10px;
+  color: ${({ theme }) => theme.colors.primary400.mode1};
+`
+
+export const PairTab = styled.button<{ $active?: boolean }>`
+  flex: 1;
+  padding: 8px 14px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-family: 'Inter';
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.15s ease-in-out,
+    color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out;
+  background-color: transparent;
+  border-radius: 7px;
+  color: ${({ theme }) => theme.colors.primary400.mode1};
+  ${({ $active }) =>
+    $active &&
+    css`
+      background-color: ${({ theme }) => theme.colors.primary400.mode1};
+      color: ${({ theme }) => theme.colors.black.dark};
+    `}
 `
 
 export const Content = styled.div`
@@ -112,4 +157,39 @@ export const WarningText = styled.div`
 
 export const IconWrapper = styled.div`
   flex-shrink: 0;
+`
+
+export const PasteIconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background-color: ${({ theme }) => theme.colors.black.dark};
+  color: ${({ theme }) => theme.colors.primary400.mode1};
+  padding: 9px 15px;
+  cursor: pointer;
+  gap: 7px;
+  font-family: 'Inter';
+  font-size: 12px;
+`
+
+export const InputFieldWrapper = styled.div`
+  width: 100%;
+
+  > div {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+`
+
+export const LoadVaultNotice = styled.div`
+  white-space: nowrap;
+  width: 100%;
+  color: ${({ theme }) => theme.colors.white.mode1};
+  text-align: left;
+  font-family: 'Inter';
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 `

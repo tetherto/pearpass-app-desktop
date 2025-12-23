@@ -16,7 +16,9 @@ jest.mock('pearpass-lib-vault', () => ({
     IDENTITY: 'identity',
     CREDIT_CARD: 'credit_card',
     NOTE: 'note',
-    CUSTOM: 'custom'
+    CUSTOM: 'custom',
+    WIFI_PASSWORD: 'wifi_password',
+    PASS_PHRASE: 'pass_phrase'
   }
 }))
 
@@ -90,7 +92,7 @@ describe('useRecordMenuItems', () => {
     expect(mockI18n._).toHaveBeenCalledWith('Identity')
     expect(mockI18n._).toHaveBeenCalledWith('Credit Card')
     expect(mockI18n._).toHaveBeenCalledWith('Wi-Fi')
-    expect(mockI18n._).toHaveBeenCalledWith('PassPhrase')
+    expect(mockI18n._).toHaveBeenCalledWith('Recovery phrase')
     expect(mockI18n._).toHaveBeenCalledWith('Note')
     expect(mockI18n._).toHaveBeenCalledWith('Custom')
     expect(mockI18n._).toHaveBeenCalledWith('All')

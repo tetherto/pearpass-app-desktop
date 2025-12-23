@@ -30,6 +30,7 @@ export const SideBarCategories = ({ sidebarSize = 'default' }) => {
         const count = recordCountData[record?.type] || 0
         return html`
           <${SidebarCategory}
+            testId=${`sidebar-category-${record?.type}`}
             key=${record?.type}
             categoryName=${record?.name}
             color=${RECORD_COLOR_BY_TYPE[record?.type]}

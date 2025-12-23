@@ -19,10 +19,10 @@ jest.mock('sodium-native', () => ({
 }))
 
 import { SecurityHandlers } from './SecurityHandlers'
+import { getNativeMessagingEnabled } from '../nativeMessagingPreferences'
 import * as appIdentity from '../security/appIdentity'
 import * as sessionManager from '../security/sessionManager'
 import * as sessionStore from '../security/sessionStore'
-import { getNativeMessagingEnabled } from '../nativeMessagingPreferences'
 
 jest.mock('../security/appIdentity')
 jest.mock('../security/sessionManager')

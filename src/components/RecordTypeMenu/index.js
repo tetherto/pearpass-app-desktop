@@ -12,10 +12,11 @@ import { MenuDropdown } from '../MenuDropdown'
  *  onRecordSelect: (record: {
  *    name: string;
  *    icon?: React.ReactNode;
- *  }) => void
+ *  }) => void,
+ *  testId?: string
  * }} props
  */
-export const RecordTypeMenu = ({ selectedRecord, onRecordSelect }) => {
+export const RecordTypeMenu = ({ selectedRecord, onRecordSelect, testId }) => {
   const { defaultItems } = useRecordMenuItems()
 
   const selectedItem = defaultItems.filter(
@@ -27,6 +28,7 @@ export const RecordTypeMenu = ({ selectedRecord, onRecordSelect }) => {
       selectedItem=${selectedItem}
       onItemSelect=${onRecordSelect}
       items=${defaultItems}
+      testId=${testId}
     />
   `
 }

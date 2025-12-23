@@ -21,7 +21,8 @@ import { extractDomainName } from '../../utils/extractDomainName'
  *  size: 'md' | 'sm',
  *  isSelected: boolean,
  *  isFavorite: boolean,
- *  color: string
+ *  color: string,
+ *  testid?: string
  * }} props
  */
 export const RecordAvatar = ({
@@ -30,7 +31,8 @@ export const RecordAvatar = ({
   size = 'md',
   isSelected = false,
   isFavorite = false,
-  color
+  color,
+  testId
 }) => {
   const avatarSrc = useMemo(() => {
     if (!websiteDomain) {
@@ -47,15 +49,15 @@ export const RecordAvatar = ({
     : html`<${AvatarAlt} color=${color} size=${size}> ${initials} <//>`
 
   if (isSelected) {
-    return html`<${SelectedAvatarContainer}>
+    return html`<${SelectedAvatarContainer} data-testid=${`${testId}-selected`}>
       <${CheckIcon} size="21" color=${colors.black.mode1} />
     <//>`
   }
 
-  return html`<${AvatarContainer} size=${size}>
+  return html`<${AvatarContainer} size=${size} data-testid=${testId}>
     ${avatar}
     ${isFavorite &&
-    html` <${FavoriteIcon}>
+    html` <${FavoriteIcon} data-testid=${`avatar-favorite-${initials}`}>
       <${StarIcon} size="18" fill=${true} color=${colors.primary400.mode1} />
     <//>`}
   <//>`

@@ -241,6 +241,7 @@ export const RecordListView = ({
               html`<${DatePeriod}> ${i18n._('Last 14 days')} <//>`}
 
               <${Record}
+                testId="recordList-record-container"
                 record=${record}
                 isSelected=${isSelected}
                 onSelect=${() => handleSelect(record, isSelected)}

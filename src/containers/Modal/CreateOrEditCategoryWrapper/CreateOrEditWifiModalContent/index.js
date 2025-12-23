@@ -188,22 +188,32 @@ export const CreateOrEditWifiModalContent = ({
       headerChildren=${html`
         <${FormModalHeaderWrapper}
           buttons=${html`
-            <${ButtonLittle} startIcon=${ImageIcon} onClick=${handleFileLoad}>
+            <${ButtonLittle}
+              testId="createoredit-button-loadfile"
+              startIcon=${ImageIcon}
+              onClick=${handleFileLoad}
+            >
               ${i18n._('Load file')}
             <//>
-            <${ButtonLittle} startIcon=${SaveIcon} type="submit">
+            <${ButtonLittle}
+              testId="createoredit-button-save"
+              startIcon=${SaveIcon}
+              type="submit"
+            >
               ${i18n._('Save')}
             <//>
           `}
         >
           <${DropdownsWrapper}>
             <${FolderDropdown}
+              testId="createoredit-dropdown-folder"
               selectedFolder=${values?.folder}
               onFolderSelect=${(folder) => setValue('folder', folder?.name)}
             />
 
             ${!initialRecord &&
             html` <${RecordTypeMenu}
+              testId="createoredit-dropdown-recordtype"
               selectedRecord=${RECORD_TYPES.WIFI_PASSWORD}
               onRecordSelect=${(record) => onTypeChange(record?.type)}
             />`}
@@ -214,6 +224,7 @@ export const CreateOrEditWifiModalContent = ({
       <${FormWrapper}>
         <${FormGroup}>
           <${InputField}
+            testId="createoredit-input-wifiname"
             icon=${WifiIcon}
             label=${i18n._('Wi-Fi Name')}
             placeholder=${i18n._('Insert Wi-Fi Name')}
@@ -223,12 +234,14 @@ export const CreateOrEditWifiModalContent = ({
         <//>
         <${FormGroup}>
           <${PasswordField}
+            testId="createoredit-input-wifipassword"
             icon=${PasswordIcon}
             label=${i18n._('Wi-Fi Password')}
             placeholder=${i18n._('Insert Wi-Fi Password')}
             variant="outline"
             additionalItems=${html`
               <${ButtonRoundIcon}
+                testId="createoredit-button-generatepassword"
                 startIcon=${PasswordIcon}
                 onClick=${() =>
                   handleCreateOrEditRecord({
@@ -242,7 +255,10 @@ export const CreateOrEditWifiModalContent = ({
         <//>
 
         <${FormGroup}>
-          <${InputFieldNote} ...${register('note')} />
+          <${InputFieldNote}
+            testId="createoredit-input-note"
+            ...${register('note')}
+          />
         <//>
 
         ${values.attachments.length > 0 &&
@@ -251,6 +267,7 @@ export const CreateOrEditWifiModalContent = ({
             ${values.attachments.map(
               (attachment) =>
                 html`<${AttachmentField}
+                  testId="createoredit-attachment"
                   key=${attachment.id || attachment.tempId}
                   attachment=${attachment}
                   label=${i18n._('File')}
@@ -282,6 +299,7 @@ export const CreateOrEditWifiModalContent = ({
 
         <${FormGroup}>
           <${CreateCustomField}
+            testId="createoredit-createcustomfield"
             onCreateCustom=${(type) => addItem({ type: type, name: type })}
           />
         <//>

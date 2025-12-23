@@ -24,6 +24,8 @@ import { NoticeText } from '../NoticeText'
  *  onChange: (value: string) => void,
  *  isDisabled: boolean,
  *  error: string,
+ *  testId?: string
+ *  errorTestId?: string
  * }} props
  */
 export const PearPassPasswordField = ({
@@ -31,7 +33,8 @@ export const PearPassPasswordField = ({
   placeholder,
   onChange,
   isDisabled,
-  error
+  error,
+  testId = 'pearpass-password-field'
 }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
@@ -49,6 +52,7 @@ export const PearPassPasswordField = ({
       <${MainWrapper}>
         <${InputAreaWrapper}>
           <${Input}
+            data-testid=${testId}
             placeholder=${placeholder}
             value=${value}
             onChange=${handleChange}
@@ -58,12 +62,17 @@ export const PearPassPasswordField = ({
         <//>
         ${!!error?.length &&
         html` <${NoticeWrapper}>
-          <${NoticeText} text=${error} type="error" />
+          <${NoticeText}
+            text=${error}
+            type="error"
+            testId=${`password-error-${error}`}
+          />
         <//>`}
       <//>
 
       <${AdditionalItems}>
         <${ButtonRoundIcon}
+          testId="password-visibility-button"
           startIcon=${isPasswordVisible ? EyeClosedIcon : EyeIcon}
           onClick=${() => setIsPasswordVisible(!isPasswordVisible)}
         />

@@ -41,6 +41,7 @@ exports[`PasswordField Component matches snapshot for default variant 1`] = `
       >
         <input
           class="sc-kcLKEh bgHJLb"
+          data-testid="password-field"
           placeholder="Enter password"
           type="password"
           value="snapshot test"
@@ -58,6 +59,7 @@ exports[`PasswordField Component matches snapshot for default variant 1`] = `
     >
       <button
         class="sc-hvigdm cVFTGa"
+        data-testid="passwordfield-button-togglevisibility"
         type="button"
       >
         <svg
@@ -119,6 +121,7 @@ exports[`PasswordField Component matches snapshot for outline variant 1`] = `
       >
         <input
           class="sc-kcLKEh bgHJLb"
+          data-testid="password-field"
           placeholder="Enter password"
           type="password"
           value="outline snapshot"
@@ -136,6 +139,7 @@ exports[`PasswordField Component matches snapshot for outline variant 1`] = `
     >
       <button
         class="sc-hvigdm cVFTGa"
+        data-testid="passwordfield-button-togglevisibility"
         type="button"
       >
         <svg
