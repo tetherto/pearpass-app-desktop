@@ -25,10 +25,7 @@ export const PearLogo = ({
       d="M15 6.13268V7.07617H12.5V8.25553H22.5V7.07617H20V5.24816H17.5V6.13268H15Z"
       fill=${color}
     />
-    <path
-      d="M25 8.84522H17.5V9.72974H10V11.8526H25V8.84522Z"
-      fill=${color}
-    />
+    <path d="M25 8.84522H17.5V9.72974H10V11.8526H25V8.84522Z" fill=${color} />
     <path
       d="M27.5 12.4423H17.5V13.3268H7.50002V15.4497H27.5V12.4423Z"
       fill=${color}
@@ -49,26 +46,13 @@ export const PearLogo = ({
       d="M32.5 26.8305H17.5V27.7151H2.5V29.8379H32.5V26.8305Z"
       fill=${color}
     />
-    <path
-      d="M35 30.4276H17.5V31.3121H0V33.435H35V30.4276Z"
-      fill=${color}
-    />
-    <path
-      d="M35 34.0246H17.5V34.9092H0V37.032H35V34.0246Z"
-      fill=${color}
-    />
-    <path
-      d="M35 37.6217H17.5V38.5062H0V40.6291H35V37.6217Z"
-      fill=${color}
-    />
+    <path d="M35 30.4276H17.5V31.3121H0V33.435H35V30.4276Z" fill=${color} />
+    <path d="M35 34.0246H17.5V34.9092H0V37.032H35V34.0246Z" fill=${color} />
+    <path d="M35 37.6217H17.5V38.5062H0V40.6291H35V37.6217Z" fill=${color} />
     <path
       d="M30 41.2188H17.5V42.1033H5.00002V44.2261H30V41.2188Z"
       fill=${color}
     />
-    <path
-      d="M25 44.8158H17.5V45.7003H10V47.1745H25V44.8158Z"
-      fill=${color}
-    />
+    <path d="M25 44.8158H17.5V45.7003H10V47.1745H25V44.8158Z" fill=${color} />
   </svg>
 `
-

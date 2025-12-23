@@ -1,4 +1,3 @@
-import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import { useUserData, useVaults } from 'pearpass-lib-vault'
 

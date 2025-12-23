@@ -144,4 +144,3 @@ export const BottomGlow = styled.div`
   filter: blur(320px);
   z-index: 0;
 `
-

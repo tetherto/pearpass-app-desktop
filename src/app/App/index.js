@@ -29,7 +29,8 @@ export const App = () => {
   const isSplashScreenShown = isSimulatedLoading
 
   // Show LoadingPage during data loading and until the loading animation completes
-  const showLoadingPage = !isSimulatedLoading && (isDataLoading || !isLoadingPageComplete)
+  const showLoadingPage =
+    !isSimulatedLoading && (isDataLoading || !isLoadingPageComplete)
 
   return html`
     <${Routes}

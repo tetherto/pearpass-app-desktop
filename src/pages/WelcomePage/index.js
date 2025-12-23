@@ -17,7 +17,7 @@ import { useRouter } from '../../context/RouterContext'
 
 export const WelcomePage = () => {
   const { data } = useRouter()
-  
+
   const Card = React.useMemo(() => {
     switch (data.state) {
       case NAVIGATION_ROUTES.CREATE_MASTER_PASSWORD:

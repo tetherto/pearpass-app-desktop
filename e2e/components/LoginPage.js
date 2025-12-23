@@ -11,15 +11,15 @@ const { expect } = require('../fixtures/app.runner')
  * - data-testid="login-error-message"
  */
 class LoginPage {
-  constructor (root) {
+  constructor(root) {
     this.root = root
-    
+
     // Using text selectors until test-ids are added
     this.title = root.locator('text=Enter your Master password')
     this.passwordInput = root.locator('input[type="password"]')
     this.continueButton = root.locator('button:has-text("Continue")')
     this.errorMessage = root.locator('text=Invalid password')
-    
+
     // Preferred selectors (uncomment when test-ids are added)
     // this.title = root.locator('[data-testid="login-title"]')
     // this.passwordInput = root.locator('[data-testid="login-password-input"]')
@@ -27,29 +27,29 @@ class LoginPage {
     // this.errorMessage = root.locator('[data-testid="login-error-message"]')
   }
 
-  async waitForReady (timeout = 30000) {
+  async waitForReady(timeout = 30000) {
     await expect(this.title).toBeVisible({ timeout })
   }
 
-  async isVisible () {
+  async isVisible() {
     return await this.title.isVisible().catch(() => false)
   }
 
-  async enterPassword (password) {
+  async enterPassword(password) {
     await expect(this.passwordInput).toBeVisible()
     await this.passwordInput.fill(password)
   }
 
-  async clickContinue () {
+  async clickContinue() {
     await this.continueButton.click()
   }
 
-  async login (password) {
+  async login(password) {
     await this.enterPassword(password)
     await this.clickContinue()
   }
 
-  async hasError () {
+  async hasError() {
     return await this.errorMessage.isVisible().catch(() => false)
   }
 }

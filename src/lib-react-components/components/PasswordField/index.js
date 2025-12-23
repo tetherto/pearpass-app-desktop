@@ -8,15 +8,15 @@ import {
 
 import { PasswordStrongnessWrapper } from './styles'
 import { useTranslation } from '../../../hooks/useTranslation'
-import { ButtonRoundIcon } from '../ButtonRoundIcon'
-import { HighlightString } from '../HighlightString'
-import { InputField } from '../InputField'
 import { ErrorIcon } from '../../icons/ErrorIcon'
 import { EyeClosedIcon } from '../../icons/EyeClosedIcon'
 import { EyeIcon } from '../../icons/EyeIcon'
 import { KeyIcon } from '../../icons/KeyIcon'
 import { OkayIcon } from '../../icons/OkayIcon'
 import { YellowErrorIcon } from '../../icons/YellowErrorIcon'
+import { ButtonRoundIcon } from '../ButtonRoundIcon'
+import { HighlightString } from '../HighlightString'
+import { InputField } from '../InputField'
 
 const PASSWORD_STRENGTH_ICONS = {
   error: ErrorIcon,

@@ -17,55 +17,55 @@ const { expect } = require('../fixtures/app.runner')
  * - data-testid="multi-select"
  */
 class MainView {
-  constructor (root) {
+  constructor(root) {
     this.root = root
-    
+
     // Search
     this.searchInput = root.locator('input[placeholder="Search..."]')
-    
+
     // Sidebar categories
     this.allCategory = root.locator('button:has-text("All")')
     this.loginCategory = root.locator('button:has-text("Login")')
     this.identityCategory = root.locator('button:has-text("Identity")')
     this.creditCardCategory = root.locator('button:has-text("Credit Card")')
-    
+
     // Sidebar actions
     this.settingsButton = root.locator('text=Settings').first()
     this.addDeviceButton = root.locator('text=Add a Device').first()
     this.exitVaultButton = root.locator('text=Exit Vault').first()
-    
+
     // Sort/filter
     this.recentButton = root.locator('text=Recent').first()
     this.multiSelectButton = root.locator('text=Multiple selection').first()
-    
+
     // Preferred selectors (uncomment when test-ids are added)
     // this.searchInput = root.locator('[data-testid="main-search-input"]')
     // this.allCategory = root.locator('[data-testid="category-all"]')
     // this.exitVaultButton = root.locator('[data-testid="sidebar-exit-vault"]')
   }
 
-  async waitForReady (timeout = 30000) {
+  async waitForReady(timeout = 30000) {
     await expect(this.searchInput).toBeVisible({ timeout })
   }
 
-  async isVisible () {
+  async isVisible() {
     return await this.searchInput.isVisible().catch(() => false)
   }
 
-  async search (query) {
+  async search(query) {
     await this.searchInput.fill(query)
   }
 
-  async selectCategory (name) {
+  async selectCategory(name) {
     const category = this.root.locator(`button:has-text("${name}")`).first()
     await category.click()
   }
 
-  async exitVault () {
+  async exitVault() {
     await this.exitVaultButton.click()
   }
 
-  async openSettings () {
+  async openSettings() {
     await this.settingsButton.click()
   }
 }

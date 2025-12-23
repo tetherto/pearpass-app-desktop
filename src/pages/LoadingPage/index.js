@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react'
 
 import { html } from 'htm/react'
 
-import { useTranslation } from '../../hooks/useTranslation'
-
 import {
   BottomGlow,
   ContentContainer,
@@ -21,6 +19,7 @@ import {
   WelcomeSubtitle,
   WelcomeTitle
 } from './styles'
+import { useTranslation } from '../../hooks/useTranslation'
 import { PearLogo } from '../../svgs/PearLogo'
 
 /**
@@ -63,7 +62,9 @@ export const LoadingPage = ({ onLoadingComplete, duration = 3000 }) => {
         <${MessageContainer}>
           <${WelcomeTitle}>${t('Welcome to PearPass')}<//>
           <${WelcomeSubtitle}>
-            ${t('Public Wi-Fi is risky - avoid typing passwords on open networks.')}
+            ${t(
+              'Public Wi-Fi is risky - avoid typing passwords on open networks.'
+            )}
           <//>
         <//>
 
@@ -86,4 +87,3 @@ export const LoadingPage = ({ onLoadingComplete, duration = 3000 }) => {
     <//>
   `
 }
-
