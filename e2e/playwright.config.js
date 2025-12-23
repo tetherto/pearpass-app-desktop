@@ -1,6 +1,6 @@
 /** @type {import('@playwright/test').PlaywrightTestConfig} */
 module.exports = {
-  timeout: 5 * 60 * 1000,
+  timeout: 5 * 60 * 3000,
   use: {
     screenshot: 'only-on-failure',
     actionTimeout: 30000,

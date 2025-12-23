@@ -124,6 +124,14 @@ class CreateLoginPage {
     return await this.titleInput.isVisible().catch(() => false)
   }
 
+  async createLoginElementInsertData(title, username, password, url, note) {
+    await this.titleInput.fill(title)
+    await this.emailOrUsernameInput.fill(username)
+    await this.passwordInput.fill(password)
+    await this.websiteInput.fill(url)
+    await this.noteInput.fill(note)
+  }
+
   async enterTitle(title) {
     await expect(this.titleInput).toBeVisible()
     await this.titleInput.fill(title)
@@ -204,7 +212,6 @@ class CreateLoginPage {
   }
 
   async uploadFile() {
-    // await expect(this.fileInput).toBeVisible();
     await this.fileInput.setInputFiles('test-files/TestPhoto.png');
   }
 
@@ -217,9 +224,6 @@ class CreateLoginPage {
     await expect(this.deleteFileButton).toBeVisible()
     await this.deleteFileButton.click()
   }
-
-
-
 
   // ==== VERIFICATIONS - PASSWORD MENU ====
 

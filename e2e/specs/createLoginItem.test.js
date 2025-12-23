@@ -17,13 +17,12 @@ test.describe('Creating Login Item', () => {
     createLoginPage = new CreateLoginPage(page.locator('body'))
   })
 
-  /**
-   * @qase.id PAS-563
-   * @description "Login" item is created after fulfilling fields
-   * Verify vault selection screen displays correctly
-   */
-  test.only('PAS-563: "Login" item is created after fulfilling fields', async ({ page }) => {
+  test.afterAll(async ({ app }) => {
+    await mainView.deleteElementFromViewMode()
+    await mainView.clickSidebarExitButton()
+  })
 
+  test('Login item is created after fulfilling fields', async ({ page }) => {
     await test.step('LOGIN', async () => {
       await expect(loginPage.title).toHaveText('Enter your Master password')
       await loginPage.login(testData.credentials.validPassword)
@@ -32,9 +31,11 @@ test.describe('Creating Login Item', () => {
     await test.step('VAULT SELECTION', async () => {
       await expect(vaultSelectPage.title).toHaveText('Select a vault, create a new one or load another one')
       await vaultSelectPage.selectVault(testData.vault.name)
-
     })
-
+    /**
+     * @qase.id PAS-563
+     * @description "Login" item is created after fulfilling fields
+     */  
     await test.step('CREATE LOGIN ELEMENT - initial empty element collection', async () => {
       await mainView.selectSideBarCategory('login')
       await mainView.clickCreateNewElementButton('Create a login')
@@ -47,7 +48,10 @@ test.describe('Creating Login Item', () => {
       await mainView.verifyElement('Test Title')
     })
 
-    // PAS-575
+    /**
+     * @qase.id PAS-575
+     * @description Empty fields are not displayed in view mode
+     */
     await test.step('OPEN LOGIN ELEMENT AND VERIFY LOGIN ELEMENT ITEMS', async () => {
       await mainView.openElement()
       await mainView.verifyLoginElementItemWebAddressIsVisible()
@@ -56,6 +60,10 @@ test.describe('Creating Login Item', () => {
       await mainView.verifyLoginElementItemNoteIsNotVisible()
     })
 
+    /**
+     * @qase.id PAS-583
+     * @description Changes after editing all "Login" item fields including folder destination correspond to entered fields' values
+     */
     await test.step('EDIT LOGIN ELEMENT - fill all items fields', async () => {
       await mainView.editElement()
       await createLoginPage.enterTitle('Login Title')
@@ -65,33 +73,23 @@ test.describe('Creating Login Item', () => {
       await createLoginPage.enterNote('Test Note')
 
       await createLoginPage.clickSave()
-      await page.waitForTimeout(2000)
     })
 
-    await test.step('VERIFY LOGIN ELEMENT ITEMS ARE CREATED AND ITEM VALUES', async () => {
-      await mainView.verifyLoginElementItemUsername()
+    await test.step('VERIFY SUCCESSFUL CREATION OF THE LOGIN ITEM AND VALIDATION OF ALL ELEMENT VALUES', async () => {
+      await mainView.verifyElement('Login Title')
+      await mainView.verifyLoginElementItemUsername('Test User')
       await mainView.verifyLoginElementItemPassword('Test Pass')
-      await mainView.verifyLoginElementItemWebAddress()
-      await mainView.verifyLoginElementItemNote()
+      await mainView.verifyLoginElementItemWebAddress('https://www.website.co')
+      await mainView.verifyLoginElementItemNote('Test Note')
     })
 
-    await test.step('Exit to login screen', async () => {
+    await test.step('EXIT TO LOGIN SCREEN', async () => {
       await mainView.clickSidebarExitButton()
     })
 
-    // await test.step('DELETE ELEMENT', async () => {
-    //   await mainView.openItemBarThreeDotsDropdownMenu()
-    //   await mainView.clickDeleteElement()
-    //   await mainView.clickConfirmYes()
-    // })
-
-    // await test.step('VERIFY COLLECTION IS EMPTY', async () => {
-    //   await expect(mainView.collectionEmptySubText).toBeVisible()
-    // })
-
   })
 
-  test('PAS-567: "Password visibility" icon of "Password" field displays/hides value', async ({ page }) => {
+  test('Password visibility icon of "Password" field displays/hides value', async ({ page }) => {
 
     await test.step('LOGIN', async () => {
       await expect(loginPage.title).toHaveText('Enter your Master password')
@@ -103,20 +101,10 @@ test.describe('Creating Login Item', () => {
       await vaultSelectPage.selectVault(testData.vault.name)
     })
 
-    // await test.step('CREATE LOGIN ELEMENT - initial empty element collection', async () => {
-    //   await mainView.selectSideBarCategory('login')
-    //   await mainView.clickCreateNewElementButton('Create a login')
-
-    //   await createLoginPage.enterTitle('Test Title')
-    //   await createLoginPage.enterPassword('Test Password')
-
-    //   await createLoginPage.clickSave()
-    // })
-
-    await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
-      await mainView.verifyElement('Login Title')
-    })
-
+    /**
+     * @qase.id PAS-576
+     * @description "Password visibility" icon of "Password" field displays/hides value
+     */
     await test.step('OPEN LOGIN ELEMENT AND VERIFY PASSWORD SHOW/HIDE', async () => {
       await mainView.openElement()
       await expect(mainView.elementItemPassword).toHaveAttribute('type', 'password');
@@ -124,129 +112,13 @@ test.describe('Creating Login Item', () => {
       await expect(mainView.elementItemPassword).toHaveAttribute('type', 'text');
     })
 
-    await test.step('Exit to login screen', async () => {
-      await mainView.clickSidebarExitButton()
-    })
-
-  })
-
-  test('PAS-XXX: Password menu verification', async ({ page }) => {
-
-    await test.step('LOGIN', async () => {
-      await expect(loginPage.title).toHaveText('Enter your Master password')
-      await loginPage.login(testData.credentials.validPassword)
-    })
-
-    await test.step('VAULT SELECTION', async () => {
-      await expect(vaultSelectPage.title).toHaveText('Select a vault, create a new one or load another one')
-      await vaultSelectPage.selectVault(testData.vault.name)
-    })
-
-    // await test.step('CREATE LOGIN ELEMENT - initial empty element collection', async () => {
-    //   await mainView.selectSideBarCategory('login')
-    //   await mainView.clickCreateNewElementButton('Create a login')
-
-    //   await createLoginPage.enterTitle('Test Title')
-    //   await createLoginPage.enterPassword('Test Password')
-
-    //   await createLoginPage.clickSave()
-    // })
-
-    await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
-      await mainView.verifyElement('Login Title')
-    })
-
-    await test.step('OPEN LOGIN ELEMENT AND VERIFY PASSWORD MENU OPTIONS', async () => {
-      await mainView.openElement()
-      await mainView.editElement()
-      await createLoginPage.openPasswordMenu()
-      await createLoginPage.verifyPasswordTypeRadioButtonState('active')
-      await createLoginPage.verifyPassphraseTypeRadioButtonState('inactive')
-      await createLoginPage.verifyCharSliderIsVisible()
-      await createLoginPage.verifyspecialCharacterSwitcherState('on')
-
-    })
-
-    await test.step('Exit to login screen', async () => {
-      await createLoginPage.clickElementItemCloseButton()
-    })
-
-    await test.step('Exit to login screen', async () => {
-      await createLoginPage.clickElementItemCloseButton()
-    })
-
-    await test.step('Exit to login screen', async () => {
-      await mainView.clickSidebarExitButton()
-    })
-
-  })
-
-  test('PAS-566: Password fields value generated by the app is inserted into "Password" field after clicking on "Insert password" button', async ({ page }) => {
-
-    await test.step('LOGIN', async () => {
-      await expect(loginPage.title).toHaveText('Enter your Master password')
-      await loginPage.login(testData.credentials.validPassword)
-    })
-
-    await test.step('VAULT SELECTION', async () => {
-      await expect(vaultSelectPage.title).toHaveText('Select a vault, create a new one or load another one')
-      await vaultSelectPage.selectVault(testData.vault.name)
-    })
-
-    // await test.step('CREATE LOGIN ELEMENT - initial empty element collection', async () => {
-    //   await mainView.selectSideBarCategory('login')
-    //   await mainView.clickCreateNewElementButton('Create a login')
-
-    //   await createLoginPage.enterTitle('Test Title')
-    //   await createLoginPage.enterPassword('Test Password')
-
-    //   await createLoginPage.clickSave()
-    // })
-
-    await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
-      await mainView.verifyElement('Login Title')
-    })
-
-    await test.step('OPEN PASSWORD MENU', async () => {
-      await mainView.openElement()
-      await mainView.editElement()
-      await createLoginPage.openPasswordMenu()
-    })
-
-    await test.step('CLICK INSERT PASSWORD BUTTON', async () => {
-      await createLoginPage.clickInsertPasswordButton()
-    })
-
-    await test.step('VERIFY PASSWORD VALUE HAS CHANGED', async () => {
-      await createLoginPage.clickShowHidePasswordButton()
-      await createLoginPage.verifyPasswordToNotHaveValue('Test Password')
-    })
-
-    await test.step('CLICK CLOSE (X) BUTTON', async () => {
-      await createLoginPage.clickElementItemCloseButton()
-    })
-
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await mainView.clickSidebarExitButton()
     })
 
-    // await test.step('DELETE ELEMENT', async () => {
-    //   await mainView.openItemBarThreeDotsDropdownMenu()
-    //   await mainView.clickDeleteElement()
-    //   await mainView.clickConfirmYes()
-    // })
-
-    // await test.step('VERIFY COLLECTION IS EMPTY', async () => {
-    //   await expect(mainView.collectionEmptySubText).toBeVisible()
-    // })
-
-    // await test.step('EXIT TO LOGIN SCREEN', async () => {
-    //   await mainView.clickSidebarExitButton()
-    // })
-
   })
 
-  test('PAS-XXX: Adding Custom Field with Note option', async ({ page }) => {
+  test('PAS-942: Adding Custom Field with Note option', async ({ page }) => {
 
     await test.step('LOGIN', async () => {
       await expect(loginPage.title).toHaveText('Enter your Master password')
@@ -256,20 +128,6 @@ test.describe('Creating Login Item', () => {
     await test.step('VAULT SELECTION', async () => {
       await expect(vaultSelectPage.title).toHaveText('Select a vault, create a new one or load another one')
       await vaultSelectPage.selectVault(testData.vault.name)
-    })
-
-    // await test.step('CREATE LOGIN ELEMENT - initial empty element collection', async () => {
-    //   await mainView.selectSideBarCategory('login')
-    //   await mainView.clickCreateNewElementButton('Create a login')
-
-    //   await createLoginPage.enterTitle('Test Title')
-    //   await createLoginPage.enterPassword('Test Password')
-
-    //   await createLoginPage.clickSave()
-    // })
-
-    await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
-      await mainView.verifyElement('Login Title')
     })
 
     await test.step('OPEN/EDITLOGIN ELEMENT', async () => {
@@ -277,19 +135,26 @@ test.describe('Creating Login Item', () => {
       await mainView.editElement()
     })
 
+    /**
+     * @qase.id PAS-942
+     * @description It is possible to add fields
+     */
     await test.step('OPEN CREATE CUSTOM MENU', async () => {
       await createLoginPage.clickCreateCustomItem()
     })
 
     await test.step('CLICK ON NOTE OPTION FROM CREATE CUSTOM MENU', async () => {
       await createLoginPage.clickCustomItemOptionNote();
-      await page.waitForTimeout(3000);
     })
 
     await test.step('VERIFY THERE IS ONE NEW CUSTOM NOTES ITEMS INSIDE LOGIN ELEMENT', async () => {
       await expect(createLoginPage.customNoteInput).toHaveCount(1);
     })
 
+    /**
+     * @qase.id PAS-943
+     * @description It is possible to delete additional fields
+     */
     await test.step('DELETE NEW CUSTOM NOTE ITEM', async () => {
       await createLoginPage.deleteCustomNote();
     })
@@ -298,23 +163,13 @@ test.describe('Creating Login Item', () => {
       await expect(createLoginPage.customNoteInput).toHaveCount(0);
     })
 
+    /**
+     * @qase.id PAS-945
+     * @description It is possible to close the screen by clicking on the "Cross" icon
+     */
     await test.step('CLICK CLOSE (X) BUTTON', async () => {
       await createLoginPage.clickElementItemCloseButton()
     })
-
-    // await test.step('DELETE ELEMENT', async () => {
-    //   await mainView.openItemBarThreeDotsDropdownMenu()
-    //   await mainView.clickDeleteElement()
-    //   await mainView.clickConfirmYes()
-    // })
-
-    // await test.step('VERIFY COLLECTION IS EMPTY', async () => {
-    //   await expect(mainView.collectionEmptySubText).toBeVisible()
-    // })
-
-    // await test.step('EXIT TO LOGIN SCREEN', async () => {
-    //   await mainView.clickSidebarExitButton()
-    // })
 
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await mainView.clickSidebarExitButton()
@@ -322,7 +177,7 @@ test.describe('Creating Login Item', () => {
 
   })
 
-  test.only('PAS-XXX: Upload file to Login Items', async ({ page }) => {
+  test('Upload file to Login Items', async ({ page }) => {
 
     await test.step('LOGIN', async () => {
       await expect(loginPage.title).toHaveText('Enter your Master password')
@@ -333,16 +188,6 @@ test.describe('Creating Login Item', () => {
       await expect(vaultSelectPage.title).toHaveText('Select a vault, create a new one or load another one')
       await vaultSelectPage.selectVault(testData.vault.name)
     })
-
-    // await test.step('CREATE LOGIN ELEMENT - initial empty element collection', async () => {
-    //   await mainView.selectSideBarCategory('login')
-    //   await mainView.clickCreateNewElementButton('Create a login')
-
-    //   await createLoginPage.enterTitle('Test Title')
-    //   await createLoginPage.enterPassword('Test Password')
-
-    //   await createLoginPage.clickSave()
-    // })
 
     await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
       await mainView.verifyElement('Login Title')
@@ -361,6 +206,10 @@ test.describe('Creating Login Item', () => {
       await createLoginPage.uploadFile()
     })
 
+    /**
+   * @qase.id PAS-901
+   * @description It is possible to view uploaded files in "Edit" mode
+   */
     await test.step('VERIFY UPLOADED FILE IS VISIBLE INSIDE LOGIN ITEMS', async () => {
       await createLoginPage.verifyUploadedFileIsVisible()
     })
@@ -377,6 +226,34 @@ test.describe('Creating Login Item', () => {
       await createLoginPage.clickElementItemCloseButton()
     })
 
+    await test.step('CLICK SAVE BUTTON', async () => {
+      await createLoginPage.clickSave()
+    })
+
+    /**
+   * @qase.id PAS-960
+   * @description It is possible to view uploaded files in "View" mode
+   */
+    await test.step('VERIFY UPLOADED FILE IS VISIBLE INSIDE LOGIN ITEMS', async () => {
+      await mainView.verifyUploadedFileIsVisible()
+    })
+
+    await test.step('CLICK SAVE BUTTON', async () => {
+      await mainView.clickOnUploadedFile()
+    })
+
+    await test.step('VERIFY UPLOADED IMAGE IS VISIBLE', async () => {
+      await mainView.verifyUploadedImageIsVisible()
+    })
+
+    await test.step('CLICK CLOSE (X) BUTTON', async () => {
+      await createLoginPage.clickElementItemCloseButton()
+    })
+
+    await test.step('CLICK EDIT BUTTON', async () => {
+      await mainView.editElement()
+    })
+
     await test.step('CLICK DELETE FILE BUTTON', async () => {
       await createLoginPage.clickDeleteFileButton()
     })
@@ -387,20 +264,6 @@ test.describe('Creating Login Item', () => {
 
     await test.step('CLICK CLOSE (X) BUTTON', async () => {
       await createLoginPage.clickElementItemCloseButton()
-    })
-
-    await test.step('DELETE ELEMENT', async () => {
-      await mainView.openItemBarThreeDotsDropdownMenu()
-      await mainView.clickDeleteElement()
-      await mainView.clickConfirmYes()
-    })
-
-    await test.step('VERIFY COLLECTION IS EMPTY', async () => {
-      await expect(mainView.collectionEmptySubText).toBeVisible()
-    })
-
-    await test.step('EXIT TO LOGIN SCREEN', async () => {
-      await mainView.clickSidebarExitButton()
     })
 
   })

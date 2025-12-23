@@ -7,7 +7,7 @@ class MainView {
     this.root = root
   }
 
-  // ==== GETTERS - LOCATORS ====
+  // ==== LOCATORS ====
 
   get loginCategory() {
     return this.root.getByTestId('sidebar-category-login')
@@ -46,6 +46,14 @@ class MainView {
 
   get elementItemNote() {
     return this.root.getByPlaceholder('Add note')
+  }
+
+  get elementItemFileLink() {
+    return this.root.getByRole('link', { name: 'TestPhoto.png' })
+  }
+
+  get uploadedImage() {
+    return this.root.getByAltText('TestPhoto.png')
   }
 
   // ITEM BAR ELEMENTS
@@ -128,6 +136,18 @@ class MainView {
     await yesButton.click()
   }
 
+  async deleteElementFromViewMode() {
+    await expect(this.itemBarThreeDots).toBeVisible()
+    await this.itemBarThreeDots.click()
+    await expect(this.deleteElementButton).toBeVisible()
+    await this.deleteElementButton.click()
+    const yesButton = this.root.getByText('Yes')
+    await expect(yesButton).toBeVisible()
+    await yesButton.click()
+    await expect(this.collectionEmptyText).toBeVisible()
+    await expect(this.collectionEmptySubText).toBeVisible()
+  }
+
   async clickShowHidePasswordButton() {
     await expect(this.elementItemPasswordShowHide).toBeVisible();
     await this.elementItemPasswordShowHide.click();
@@ -138,14 +158,25 @@ class MainView {
     await this.sidebarExitButton.click()
   }
 
+  async clickOnUploadedFile() {
+    await expect(this.elementItemFileLink).toBeVisible();
+    await this.elementItemFileLink.click();
+  }
+
+  // ==== VERIFICATIONS ====
+
   async verifyElement(title) {
     await expect(this.element).toBeVisible()
     await expect(this.element).toHaveText(title)
   }
 
-  async verifyLoginElementItemUsername() {
+  async verifyElementIsNotVisible() {
+    await expect(this.element).not.toBeVisible()
+  }
+
+  async verifyLoginElementItemUsername(username) {
     await expect(this.elementItemUsername).toBeVisible()
-    await expect(this.elementItemUsername).toHaveValue('Test User')
+    await expect(this.elementItemUsername).toHaveValue(username)
   }
 
   async verifyLoginElementItemUsernameNotVisible() {
@@ -161,18 +192,18 @@ class MainView {
     await expect(this.elementItemPassword).not.toBeVisible()
   }
 
-  async verifyLoginElementItemWebAddress() {
+  async verifyLoginElementItemWebAddress(webaddress) {
     await expect(this.elementItemWebAddress).toBeVisible()
-    await expect(this.elementItemWebAddress).toHaveValue('https://www.website.co')
+    await expect(this.elementItemWebAddress).toHaveValue(webaddress)
   }
 
   async verifyLoginElementItemWebAddressIsVisible() {
     await expect(this.elementItemWebAddress).toBeVisible()
   }
 
-  async verifyLoginElementItemNote() {
+  async verifyLoginElementItemNote(note) {
     await expect(this.elementItemNote).toBeVisible()
-    await expect(this.elementItemNote).toHaveValue('Test Note')
+    await expect(this.elementItemNote).toHaveValue(note)
   }
 
   async verifyLoginElementItemNoteIsNotVisible() {
@@ -184,7 +215,14 @@ class MainView {
     await expect(this.collectionEmptySubText).toBeVisible()
   }
 
-  
+  async verifyUploadedFileIsVisible() {
+    await expect(this.elementItemFileLink).toBeVisible();
+  }
+
+  async verifyUploadedImageIsVisible() {
+    await expect(this.uploadedImage).toBeVisible()
+  }
+
 }
 
 module.exports = { MainView }

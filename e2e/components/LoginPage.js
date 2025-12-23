@@ -7,7 +7,7 @@ class LoginPage {
     this.root = root
   }
 
-  // ==== GETTERS - LOCATORS ====
+  // ==== LOCATORS ====
 
   get title() {
     return this.root.getByTestId('login-title')
