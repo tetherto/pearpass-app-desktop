@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 
-import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import {
   authoriseCurrentProtectedVault,
@@ -12,7 +11,7 @@ import {
   getMasterEncryption
 } from 'pearpass-lib-vault'
 
-import { ActionsContainer, ContentContainer, Description } from './styles'
+import { ActionsContainer, ContentContainer } from './styles'
 import { handleExportCSVPerVault } from './utils/exportCsvPerVault'
 import { handleExportJsonPerVaultTest } from './utils/exportJsonPerVault'
 import { AlertBox } from '../../../components/AlertBox/index.js'
@@ -177,11 +176,6 @@ export const ExportTab = () => {
 
   return html` <${CardSingleSetting} title=${t('Export')}>
     <${ContentContainer}>
-      <${Description}>
-        ${t(
-          'Choose which Vaults do you want to backup and select if you want the file encrypted'
-        )}
-      <//>
       ${data?.map(
         (vault) =>
           html`<${ListItem}
