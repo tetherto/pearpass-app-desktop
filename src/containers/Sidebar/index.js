@@ -88,14 +88,12 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
     setIsLoading(false)
   }
 
-  const matchesSearch = (records, searchValue) => {
+  const matchesSearch = (folder, searchValue) => {
     if (!searchValue) {
       return false
     }
 
-    return records.some((record) =>
-      matchPatternToValue(searchValue, record?.data?.title ?? '')
-    )
+    return matchPatternToValue(searchValue, folder)
   }
 
   const folders = React.useMemo(() => {
@@ -126,7 +124,7 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
             id: folder.name,
             isActive: routerData?.folder === folder.name,
             isOpenInitially:
-              matchesSearch(folder.records ?? [], searchValue) ||
+              matchesSearch(folder.name, searchValue) ||
               expandedFolders.includes(folder.name),
             children: folder.records?.map((record) => ({
               name: record?.data?.title,
