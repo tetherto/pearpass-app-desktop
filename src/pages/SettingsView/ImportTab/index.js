@@ -5,7 +5,8 @@ import {
   parseLastPassData,
   parseNordPassData,
   parsePearPassData,
-  parseProtonPassData
+  parseProtonPassData,
+  parseKeepassData
 } from 'pearpass-lib-data-import'
 import { useCreateRecord } from 'pearpass-lib-vault'
 
@@ -56,6 +57,12 @@ const importOptions = [
   //   accepts: ['.json'],
   //   icon: LockIcon
   // },
+  {
+    title: 'KeePassXC',
+    type: 'keepass',
+    accepts: ['.csv'],
+    imgSrc: '/assets/images/keepassxc.png'
+  },
   {
     title: 'Unencrypted file',
     type: 'unencrypted',
@@ -113,6 +120,9 @@ export const ImportTab = () => {
           break
         case 'protonpass':
           result = await parseProtonPassData(fileContent, fileType)
+          break
+        case 'keepass':
+          result = await parseKeepassData(fileContent, fileType)
           break
         case 'unencrypted':
           result = await parsePearPassData(fileContent, fileType)
