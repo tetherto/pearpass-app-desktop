@@ -1,4 +1,3 @@
-import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import { useForm } from 'pear-apps-lib-ui-react-hooks'
 import { Validator } from 'pear-apps-utils-validator'
@@ -15,13 +14,13 @@ import {
   ModalTitle
 } from './styles'
 import { useLoadingContext } from '../../../context/LoadingContext'
+import { useTranslation } from '../../../hooks/useTranslation.js'
 import {
   ButtonPrimary,
   ButtonSecondary,
   PearPassPasswordField
 } from '../../../lib-react-components'
 import { logger } from '../../../utils/logger'
-import { useTranslation } from "../../../hooks/useTranslation.js";
 
 export const ModifyMasterVaultModalContent = () => {
   const { t } = useTranslation()
@@ -57,7 +56,9 @@ export const ModifyMasterVaultModalContent = () => {
       newPassword,
       repeatPassword,
       messages: {
-        newPasswordMustDiffer: t('New password must be different from the current password'),
+        newPasswordMustDiffer: t(
+          'New password must be different from the current password'
+        ),
         passwordsDontMatch: t('Passwords do not match')
       },
       config: { errors }
