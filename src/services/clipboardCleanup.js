@@ -1,11 +1,12 @@
 /** @typedef {import('pear-interface')} */ /* global Pear */
 
+import { Buffer } from 'buffer'
+
+import { spawn as spawnDaemon } from 'bare-daemon'
 import os from 'bare-os'
 import { spawn } from 'bare-subprocess'
-import { spawn as spawnDaemon } from 'bare-daemon'
-import sodium from 'sodium-native'
-import { Buffer } from 'buffer'
 import { CLIPBOARD_CLEAR_TIMEOUT } from 'pearpass-lib-constants'
+import sodium from 'sodium-native'
 
 import { logger } from '../utils/logger'
 
