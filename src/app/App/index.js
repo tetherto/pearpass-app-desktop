@@ -1,3 +1,5 @@
+import { useState, useCallback } from 'react'
+
 import { html } from 'htm/react'
 
 import { usePearUpdate } from '../../hooks/usePearUpdate'
@@ -11,12 +13,27 @@ import { useRedirect } from './hooks/useRedirect'
 export const App = () => {
   usePearUpdate()
   const isSimulatedLoading = useSimulatedLoading()
+  const [isLoadingPageComplete, setIsLoadingPageComplete] = useState(false)
 
   useInactivity()
-  const { isLoading } = useRedirect()
+  const { isLoading: isDataLoading } = useRedirect()
 
   useOnExtensionExit()
   useOnExtensionLockOut()
 
-  return html` <${Routes} isLoading=${isLoading || isSimulatedLoading} /> `
+  const handleLoadingComplete = useCallback(() => {
+    setIsLoadingPageComplete(true)
+  }, [])
+
+  // Show LoadingPage during data loading and until the loading animation completes
+  const showLoadingPage =
+    !isSimulatedLoading && (isDataLoading || !isLoadingPageComplete)
+
+  return html`
+    <${Routes}
+      isSplashScreenShown=${isSimulatedLoading}
+      isDataLoading=${showLoadingPage}
+      onLoadingComplete=${handleLoadingComplete}
+    />
+  `
 }

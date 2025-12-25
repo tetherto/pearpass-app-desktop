@@ -36,7 +36,7 @@ export const PassPhraseSettings = ({
       <${RadioSelect}
         title=${i18n._('Type')}
         options=${PASSPHRASE_TYPE_OPTIONS.map((option) => ({
-          label: i18n._(`${option.value} words`),
+          label: i18n._('{count} words', { count: option.value }),
           value: option.value
         }))}
         selectedOption=${selectedType}

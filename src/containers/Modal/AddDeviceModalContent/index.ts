@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import type { ClipboardEvent } from 'react'
 
 import { html } from 'htm/react'
-import { useCountDown } from 'pear-apps-lib-ui-react-hooks'
 import { generateQRCodeSVG } from 'pear-apps-utils-qr'
 import { colors } from 'pearpass-lib-ui-theme-provider'
 import {
@@ -13,7 +12,6 @@ import {
   useVault,
   usePair
 } from 'pearpass-lib-vault'
-
 import { InputFieldWrapper } from './styles'
 import { PasteIconWrapper } from './styles'
 import {
@@ -21,7 +19,6 @@ import {
   Content,
   CopyText,
   ExpireText,
-  ExpireTime,
   HeaderTitle,
   PairTabs,
   PairTab,
@@ -49,6 +46,7 @@ import { InputField } from '../../../lib-react-components/components/InputField'
 import { PasteIcon } from '../../../lib-react-components/icons/PasteIcon'
 import { ModalContent } from '../ModalContent'
 import { VaultPasswordFormModalContent } from '../VaultPasswordFormModalContent'
+import { ScanQRExpireTimer } from './ScanQRExpireTimer'
 
 export const AddDeviceModalContent = () => {
   const { t } = useTranslation()
@@ -180,15 +178,6 @@ export const AddDeviceModalContent = () => {
     }
   }
 
-  const ScanQRExpireTimer = () => {
-    const expireTime = useCountDown({
-      initialSeconds: 120,
-      onFinish: closeModal
-    })
-
-    return html`<${ExpireTime}> ${expireTime} <//>`
-  }
-
   return html`
     <${ModalContent}
       onClose=${closeModal}
@@ -216,7 +205,7 @@ export const AddDeviceModalContent = () => {
             $active=${scanQRStep}
             onClick=${() => setScanQRStep(true)}
           >
-            ${t('Share this device')}
+            ${t('Share this vault')}
           <//>
           <${PairTab}
             type="button"

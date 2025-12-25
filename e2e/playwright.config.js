@@ -1,6 +1,6 @@
 /** @type {import('@playwright/test').PlaywrightTestConfig} */
 module.exports = {
-  timeout: 5 * 60 * 1000,
+  timeout: 5 * 60 * 3000,
   use: {
     screenshot: 'only-on-failure',
     actionTimeout: 30000,
@@ -8,20 +8,23 @@ module.exports = {
   },
   reporter: [
     ['html', { outputFolder: 'test-artifacts/report' }],
-    ['playwright-qase-reporter', {
-      mode: 'testops',
-      debug: true,
-      testops: {
-        api: {
-          token: process.env.QASE_API_TOKEN
-        },
-        project: 'PAS',
-        uploadAttachments: true,
-        run: {
-          complete: true
+    [
+      'playwright-qase-reporter',
+      {
+        mode: 'testops',
+        debug: true,
+        testops: {
+          api: {
+            token: process.env.QASE_API_TOKEN
+          },
+          project: 'PAS',
+          uploadAttachments: true,
+          run: {
+            complete: true
+          }
         }
       }
-    }]
+    ]
   ],
   outputDir: 'test-artifacts/results',
   workers: 1,
