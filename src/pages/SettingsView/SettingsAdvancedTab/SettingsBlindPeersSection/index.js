@@ -6,11 +6,20 @@ import { colors } from 'pearpass-lib-ui-theme-provider'
 import { useBlindMirrors } from 'pearpass-lib-vault'
 
 import {
+  ActiveDot,
+  ActiveIndicator,
+  ActiveText,
   LearnMoreLink,
   ListContainer,
+  PeerCountDivider,
+  PeerCountText,
+  PeerTypeCard,
+  PeerTypeText,
   TooltipContent,
   TooltipText,
-  Wrapper
+  Wrapper,
+  YourPeersSection,
+  YourPeersTitle
 } from './styles'
 import { CardSingleSetting } from '../../../../components/CardSingleSetting'
 import { PopupMenu } from '../../../../components/PopupMenu'
@@ -20,7 +29,7 @@ import { useLoadingContext } from '../../../../context/LoadingContext'
 import { useModal } from '../../../../context/ModalContext'
 import { useToast } from '../../../../context/ToastContext'
 import { useTranslation } from '../../../../hooks/useTranslation'
-import { InfoIcon } from '../../../../lib-react-components'
+import { ButtonSecondary, InfoIcon } from '../../../../lib-react-components'
 import { TooltipWrapper } from '../../../../lib-react-components/components/TooltipWrapper'
 import { OutsideLinkIcon } from '../../../../lib-react-components/icons/OutsideLinkIcon'
 
@@ -43,6 +52,7 @@ export const SettingsBlindPeersSection = () => {
   const [blindPeersRules, setBlindPeersRules] = useState({
     blindPeers: false
   })
+  const [isUpdating, setIsUpdating] = useState(false)
 
   useEffect(() => {
     if (blindMirrorsData.length > 0) {
@@ -71,14 +81,12 @@ export const SettingsBlindPeersSection = () => {
     try {
       setIsLoading(true)
       await callback()
-      setBlindPeersRules({ blindPeers: !blindPeersRules.blindPeers })
-
       if (successMessage) {
         setToast({
           message: successMessage
         })
       }
-    } catch {
+    } catch (error) {
       setToast({
         message: errorMessage
       })
@@ -88,6 +96,18 @@ export const SettingsBlindPeersSection = () => {
   }
 
   const handleBlindPeersConfirm = async (data) => {
+    if (
+      data.isEditMode &&
+      blindMirrorsData.length > 0 &&
+      blindMirrorsData[0].isDefault
+    ) {
+      setIsUpdating(true)
+      await handleBlindMirrorsRequest({
+        callback: removeAllBlindMirrors,
+        errorMessage: t('Error removing existing Blind Peers')
+      })
+    }
+
     if (data.blindPeerType === BLIND_PEER_TYPE.PERSONAL) {
       if (data.blindPeers?.length) {
         await handleBlindMirrorsRequest({
@@ -95,6 +115,7 @@ export const SettingsBlindPeersSection = () => {
           errorMessage: t('Error adding Blind Peers'),
           successMessage: t('Manual Blind Peers enabled successfully')
         })
+        setIsUpdating(false)
       } else {
         return
       }
@@ -106,6 +127,7 @@ export const SettingsBlindPeersSection = () => {
         errorMessage: t('Error adding Blind Peers'),
         successMessage: t('Automatic Blind Peers enabled successfully')
       })
+      setIsUpdating(false)
     }
 
     closeModal()
@@ -132,6 +154,15 @@ export const SettingsBlindPeersSection = () => {
     }
   }
 
+  const handleEditPress = () => {
+    setModal(
+      html`<${BlindPeersModalContent}
+        onConfirm=${handleBlindPeersConfirm}
+        onClose=${closeModal}
+      />`
+    )
+  }
+
   return html`
     <${CardSingleSetting}
       title=${t('Blind Peering')}
@@ -151,18 +182,18 @@ export const SettingsBlindPeersSection = () => {
                   <${ListContainer}>
                     <li>
                       ${t(
-                        'Automatic blind peers: Let PearPass allocate blind peers for you to handle syncing.'
-                      )}
+    'Automatic blind peers: Let PearPass allocate blind peers for you to handle syncing.'
+  )}
                     </li>
                     <li>
                       ${t(
-                        'Manual blind peers: Setup your own private blind peers.'
-                      )}
+    'Manual blind peers: Setup your own private blind peers.'
+  )}
                     </li>
                   <//>
                   ${t(
-                    'In both cases, all data stays fully encrypted, ensuring safe, non-intrusive replication and better data consistency.'
-                  )}
+    'In both cases, all data stays fully encrypted, ensuring safe, non-intrusive replication and better data consistency.'
+  )}
                 <//>
                 <${LearnMoreLink} href=${BLIND_PEERS_LEARN_MORE}>
                   <${OutsideLinkIcon} color=${colors.primary400.mode1} />
@@ -179,17 +210,47 @@ export const SettingsBlindPeersSection = () => {
       <${Wrapper}>
         <${RuleSelector}
           rules=${[
-            {
-              name: 'blindPeers',
-              label: t(`Private Connections`),
-              description: t(
-                'Sync your encrypted vault securely with blind peers to improve availability and consistency. Blind peers cannot read your data.'
-              )
-            }
-          ]}
+      {
+        name: 'blindPeers',
+        label: t(`Private Connections`),
+        description: t(
+          'Sync your encrypted vault securely with blind peers to improve availability and consistency. Blind peers cannot read your data.'
+        )
+      }
+    ]}
           selectedRules=${blindPeersRules}
           setRules=${handleSetBlindPeersRules}
         />
+        ${(blindMirrorsData.length > 0 || isUpdating) &&
+    html`
+          <${YourPeersSection}>
+            <${YourPeersTitle}>${t('Your Blind Peers')}</>
+            <${PeerTypeCard}>
+              <${PeerTypeText}>
+                ${blindMirrorsData[0]?.isDefault
+        ? t('Automatic')
+        : t('Personal')
+      }
+              </>
+              <${ActiveIndicator}>
+                <${ActiveDot} />
+                <${ActiveText}>${t('Active')}</>
+                ${!blindMirrorsData[0]?.isDefault &&
+      html`
+                  <${PeerCountDivider} />
+                  <${PeerCountText}>
+                    ${blindMirrorsData.length} ${t('peers')}
+                  </>
+                `
+      }
+              </>
+            </>
+            
+            <${ButtonSecondary} onClick=${handleEditPress}>
+              ${t('Edit')}
+            </>
+          </>
+        `}
         <${LearnMoreLink} href=${BLIND_PEERS_LEARN_MORE}>
           <${OutsideLinkIcon} color=${colors.primary400.mode1} />
           ${t('Learn more about blind peering.')}
