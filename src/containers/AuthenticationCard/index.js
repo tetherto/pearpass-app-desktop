@@ -95,10 +95,11 @@ export const AuthenticationCard = ({
   return html`
     <${CardContainer} onSubmit=${handleSubmit(onSubmit)} style=${style}>
       <${CardTitle}>
-        <${Title}> ${title}<//>
+        <${Title} data-testid="login-title"> ${title}<//>
       <//>
 
       <${PearPassPasswordField}
+        testId="login-password-input"
         placeholder=${t('Master password')}
         ...${register('password')}
       />
@@ -106,7 +107,9 @@ export const AuthenticationCard = ({
       ${descriptionComponent}
 
       <${ButtonWrapper}>
-        <${ButtonPrimary} type="submit"> ${buttonLabel} <//>
+        <${ButtonPrimary} testId="login-continue-button" type="submit">
+          ${buttonLabel}
+        <//>
       <//>
     <//>
   `

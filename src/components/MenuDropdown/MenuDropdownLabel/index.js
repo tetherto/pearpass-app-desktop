@@ -10,23 +10,34 @@ import { Label } from '../styles'
  *    isHidden: boolean,
  *    selectedItem?: {name: string, icon?: import('react').ReactNode},
  *    isOpen: boolean,
- *    setIsOpen?: (isOpen: boolean) => void
+ *    setIsOpen?: (isOpen: boolean) => void,
+ *    testId?: string
  *  }} props
  */
 export const MenuDropdownLabel = ({
   isHidden,
   selectedItem,
   isOpen,
-  setIsOpen
+  setIsOpen,
+  testId
 }) => {
   const { i18n } = useLingui()
 
   return html`
-    <${Label} isHidden=${isHidden} onClick=${() => setIsOpen?.(!isOpen)}>
+    <${Label}
+      isHidden=${isHidden}
+      onClick=${() => setIsOpen?.(!isOpen)}
+      data-testid=${testId}
+    >
       <${isOpen ? ArrowUpIcon : ArrowDownIcon} size="24" />
 
       ${selectedItem?.name
-        ? html` <${MenuDropdownItem} item=${selectedItem} /> `
+        ? html`
+            <${MenuDropdownItem}
+              testId=${`menudropdown-item-${selectedItem.name}`}
+              item=${selectedItem}
+            />
+          `
         : i18n._('No folder')}
     <//>
   `

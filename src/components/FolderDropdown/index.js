@@ -19,9 +19,10 @@ const NO_FOLDER = 'no-folder'
  *    name: string;
  *    icon?: React.ReactNode;
  *   }) => void
+ *  testId?: string
  * }} props
  */
-export const FolderDropdown = ({ selectedFolder, onFolderSelect }) => {
+export const FolderDropdown = ({ selectedFolder, onFolderSelect, testId }) => {
   const { data: folders } = useFolders()
 
   const { i18n } = useLingui()
@@ -48,6 +49,7 @@ export const FolderDropdown = ({ selectedFolder, onFolderSelect }) => {
 
   return html`
     <${MenuDropdown}
+      testId=${testId}
       selectedItem=${{ name, icon }}
       onItemSelect=${handleFolderSelect}
       items=${customFolders}

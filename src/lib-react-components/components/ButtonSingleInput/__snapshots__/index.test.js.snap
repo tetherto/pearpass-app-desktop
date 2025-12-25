@@ -3,6 +3,7 @@
 exports[`ButtonSingleInput Component matches snapshot with default props 1`] = `
 <button
   class="sc-bRKDuR hwZkvp"
+  data-testid="button-single-input"
   rounded="default"
   type="button"
 >
@@ -26,6 +27,7 @@ exports[`ButtonSingleInput Component matches snapshot with default props 1`] = `
 exports[`ButtonSingleInput Component matches snapshot with variant "bordered" and rounded "md" 1`] = `
 <button
   class="sc-bRKDuR hWjZgV"
+  data-testid="button-single-input"
   rounded="md"
   type="button"
 >

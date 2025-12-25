@@ -5,6 +5,7 @@ import {
   CategoryButton,
   CategoryDescription,
   CategoryIconWrapper,
+  CategoryName,
   CategoryQuantity
 } from './styles'
 
@@ -16,7 +17,8 @@ import {
  *  quantity: number,
  *  color: string,
  *  icon: import('react').ReactNode,
- *  onClick: () => void
+ *  onClick: () => void,
+ *  testId?: string
  * }} props
  */
 export const SidebarCategory = ({
@@ -26,13 +28,15 @@ export const SidebarCategory = ({
   quantity = 0,
   color,
   icon,
-  onClick
+  onClick,
+  testId
 }) => html`
   <${CategoryButton}
     size=${size}
     color=${color}
     isSelected=${isSelected}
     onClick=${onClick}
+    data-testid=${testId}
   >
     <${CategoryDescription} size=${size}>
       <${CategoryIconWrapper} isSelected=${isSelected} color=${color}>
@@ -43,7 +47,7 @@ export const SidebarCategory = ({
         />
       <//>
 
-      <span>${categoryName}</span>
+      <${CategoryName}>${categoryName}<//>
     <//>
 
     <${CategoryQuantity} size=${size}>${quantity}<//>

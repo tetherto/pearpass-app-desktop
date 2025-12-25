@@ -49,6 +49,7 @@ export const RuleSelector = ({
         onChange=${() => handleSwitchToggle(rule.name)}
         isLabelBold
         stretch=${stretch}
+        testId=${`ruleselector-switchwithlabel-${rule.name}`}
       />`
   )} `
 }

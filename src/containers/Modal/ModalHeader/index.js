@@ -13,6 +13,10 @@ export const ModalHeader = ({ onClose, children }) => html`
   <${Header}>
     <${HeaderChildrenWrapper}> ${children} <//>
 
-    <${ButtonRoundIcon} onClick=${onClose} startIcon=${XIcon} />
+    <${ButtonRoundIcon}
+      onClick=${onClose}
+      startIcon=${XIcon}
+      data-testid="modalheader-button-close"
+    />
   <//>
 `

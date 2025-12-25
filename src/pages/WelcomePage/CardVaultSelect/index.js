@@ -61,7 +61,7 @@ export const CardVaultSelect = () => {
   return html`
     <${CardContainer}>
       <${CardTitle}>
-        <${Title}>
+        <${Title} data-testid="vault-title">
           ${data.length > 0
             ? i18n._('Select a vault, create a new one or load another one')
             : i18n._('Create or Load Vault')}
@@ -74,8 +74,9 @@ export const CardVaultSelect = () => {
               (vault) =>
                 html`<${ListItem}
                   onClick=${() => handleSelectVault(vault.id)}
-                  itemName="${vault.name}"
+                  itemName=${vault.name}
                   itemDateText=${vaultCreatedFormat(vault.createdAt)}
+                  testId=${`vault-item-${vault.name}`}
                 />`
             )}
           <//>`
@@ -86,11 +87,17 @@ export const CardVaultSelect = () => {
           <//> `}
 
       <${ButtonWrapper}>
-        <${ButtonPrimary} onClick=${handleCreateNewVault}>
+        <${ButtonPrimary}
+          testId="vault-create-button"
+          onClick=${handleCreateNewVault}
+        >
           ${i18n._('Create a new vault')}
         <//>
 
-        <${ButtonSecondary} onClick=${handleLoadVault}>
+        <${ButtonSecondary}
+          testId="vault-load-button"
+          onClick=${handleLoadVault}
+        >
           ${i18n._('Load a vault')}
         <//>
       <//>

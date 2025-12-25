@@ -38,11 +38,12 @@ export const PasswordGenerator = ({ onRuleChange, rules }) => {
   delete selectableRules.characters
 
   return html`
-    <${SliderWrapper}>
+    <${SliderWrapper} data-testid="passwordgenerator-characterslider-container">
       <${SliderLabel}> ${rules.characters} ${' '} ${i18n._('characters')} <//>
 
       <${SliderContainer}>
         <${Slider}
+          testId=${`passwordgenerator-characterSlider-${rules.characters}`}
           value=${rules.characters}
           onChange=${handleSliderValueChange}
           min=${4}

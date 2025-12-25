@@ -30,7 +30,7 @@ export const RadioSelect = ({
   }
 
   return html`
-    <${RadioSelectWrapper}>
+    <${RadioSelectWrapper} data-testid="radioselect-container">
       ${title && html`<${Title} style=${titleStyle}>${title}<//>`}
       ${options.map(
         (option) => html`
@@ -38,6 +38,10 @@ export const RadioSelect = ({
             key=${option.value}
             onClick=${() => handleChange(option.value)}
             style=${optionStyle}
+            data-testid="radioselect-${option.value}-${selectedOption ===
+            option.value
+              ? 'active'
+              : 'inactive'}"
           >
             <${ButtonRadio}
               type=${buttonType}

@@ -23,6 +23,7 @@ export const RecordActionsPopupContent = ({
     ${menuItems.map(
       (item) => html`
         <${MenuItem}
+          data-testid=${`recordaction-item-${item.type}`}
           key=${item.type}
           variant=${variant}
           onClick=${(e) => {

@@ -9,7 +9,8 @@ import { Button } from './styles'
  *  endIcon: import('react').ElementType
  *  variant: 'black' | 'grey'
  *  type?: 'button' | 'submit'
- *  onClick: () => void
+ *  onClick: () => void,
+ *  testId?: string
  * }} props
  */
 export const ButtonThin = ({
@@ -18,9 +19,15 @@ export const ButtonThin = ({
   endIcon,
   variant = 'black',
   type = 'button',
-  onClick
+  onClick,
+  testId = 'button-thin'
 }) => html`
-  <${Button} variant=${variant} onClick=${onClick} type=${type}>
+  <${Button}
+    data-testid=${testId}
+    variant=${variant}
+    onClick=${onClick}
+    type=${type}
+  >
     ${startIcon && html`<${startIcon} size="24" />`} ${children}
     ${endIcon && html`<${endIcon} size="24" />`}
   <//>

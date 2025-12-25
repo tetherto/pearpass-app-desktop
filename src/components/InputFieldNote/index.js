@@ -15,13 +15,15 @@ import { CommonFileIcon, InputField } from '../../lib-react-components'
  *  isDisabled?: boolean,
  *  onClick?: () => void,
  *  type?: 'text' | 'password' | 'url',
- *  variant?: 'default' | 'outline'
+ *  variant?: 'default' | 'outline',
+ *  testId?: string
  * }} props
  */
 export const InputFieldNote = (props) => {
   const { i18n } = useLingui()
 
   return html`<${InputField}
+    testId=${props.testId}
     label=${i18n._('Note')}
     placeholder=${i18n._('Add note')}
     variant="outline"

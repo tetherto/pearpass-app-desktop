@@ -3,6 +3,7 @@
 exports[`Switch Component matches snapshot when switched off 1`] = `
 <div
   class="sc-bRKDuR bxYZvq"
+  data-testid="switch"
 >
   <div
     class="sc-hvigdm gwuDWR"
@@ -13,6 +14,7 @@ exports[`Switch Component matches snapshot when switched off 1`] = `
 exports[`Switch Component matches snapshot when switched on 1`] = `
 <div
   class="sc-bRKDuR eChSRO"
+  data-testid="switch"
 >
   <div
     class="sc-hvigdm ikiiMT"

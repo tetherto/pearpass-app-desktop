@@ -85,6 +85,7 @@ export const MainView = () => {
             value=${searchValue}
             onChange=${(e) => setSearchValue(e.target.value)}
             quantity=${records?.length}
+            testId="main-search-input"
           />
 
           <${PopupMenu}
@@ -99,7 +100,10 @@ export const MainView = () => {
               />
             `}
           >
-            <${ButtonPlusCreateNew} isOpen=${isOpen} />
+            <${ButtonPlusCreateNew}
+              testId="main-plus-button"
+              isOpen=${isOpen}
+            />
           <//>
         <//>
 

@@ -16,12 +16,18 @@ permissions:
 jobs:
   publish-worker:
     runs-on: ["self-hosted", "Linux", "large"]
+    if: github.repository_owner == 'noxtton'
     steps:
-      - uses: actions/checkout@v4
-      - name: Checkout submodules
+      - name: Clean workspace
         run: |
-          git submodule deinit --force .
-          git submodule update --init --recursive
+          # Clean existing directory on self-hosted runner
+          rm -rf .git ./* ./.[!.]* 2>/dev/null || true
+
+      - name: Checkout code with SSH
+        run: |
+          git clone --recurse-submodules git@github.com:${{ github.repository }}.git .
+          git checkout ${{ github.ref_name }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -39,6 +45,8 @@ jobs:
         run: |
           npm run lingui:extract
           npm run lingui:compile
+      - name: Build application
+        run: npm run build
       # - name: Prune dev dependencies
       #   run: npm prune --omit=dev
       - name: "Stage to channel"

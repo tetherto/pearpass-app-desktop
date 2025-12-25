@@ -8,6 +8,7 @@ exports[`RecordActionsPopupContent Component renders correctly with compact vari
   >
     <div
       class="sc-hvigdm cYnssP"
+      data-testid="recordaction-item-edit"
       variant="compact"
     >
       <svg
@@ -19,6 +20,7 @@ exports[`RecordActionsPopupContent Component renders correctly with compact vari
     </div>
     <div
       class="sc-hvigdm cYnssP"
+      data-testid="recordaction-item-delete"
       variant="compact"
     >
       <svg
@@ -40,6 +42,7 @@ exports[`RecordActionsPopupContent Component renders correctly with default vari
   >
     <div
       class="sc-hvigdm cYnssP"
+      data-testid="recordaction-item-edit"
       variant="default"
     >
       <svg
@@ -51,6 +54,7 @@ exports[`RecordActionsPopupContent Component renders correctly with default vari
     </div>
     <div
       class="sc-hvigdm cYnssP"
+      data-testid="recordaction-item-delete"
       variant="default"
     >
       <svg

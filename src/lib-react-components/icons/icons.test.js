@@ -38,7 +38,7 @@ iconModulePaths.forEach((modulePath) => {
   })
 })
 
-const originalConsoleError = console.error
+const originalConsoleError = console.error // eslint-disable-line no-console
 
 beforeEach(() => {
   jest.spyOn(console, 'error').mockImplementation((message, ...args) => {
@@ -53,7 +53,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  console.error.mockRestore()
+  console.error.mockRestore() // eslint-disable-line no-console
 })
 
 describe('Icon Components', () => {

@@ -22,7 +22,14 @@ export const PassphraseChecker = ({ pass }) => {
   const { strengthText, strengthType } = checkPassphraseStrength(pass)
 
   return html` <${PasswordWrapper}>
-    <${HighlightString} text=${pass && pass.join('-')} />
-    <${NoticeText} text=${t(strengthText)} type=${strengthType} />
+    <${HighlightString}
+      testId=${`passphrasecheck-text-${pass}`}
+      text=${pass && pass.join('-')}
+    />
+    <${NoticeText}
+      testId=${`passphrasecheck-strength-${strengthType}`}
+      text=${t(strengthText)}
+      type=${strengthType}
+    />
   <//>`
 }
