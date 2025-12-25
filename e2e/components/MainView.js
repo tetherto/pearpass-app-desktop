@@ -2,71 +2,230 @@
 
 const { expect } = require('../fixtures/app.runner')
 
-/**
- * Main View - Password list and categories
- * Recommended test-ids to add in the app:
- * - data-testid="main-search-input"
- * - data-testid="category-all"
- * - data-testid="category-login"
- * - data-testid="category-identity"
- * - data-testid="category-credit-card"
- * - data-testid="sidebar-settings"
- * - data-testid="sidebar-add-device"
- * - data-testid="sidebar-exit-vault"
- * - data-testid="sort-recent"
- * - data-testid="multi-select"
- */
 class MainView {
   constructor(root) {
     this.root = root
-
-    // Search
-    this.searchInput = root.locator('input[placeholder="Search..."]')
-
-    // Sidebar categories
-    this.allCategory = root.locator('button:has-text("All")')
-    this.loginCategory = root.locator('button:has-text("Login")')
-    this.identityCategory = root.locator('button:has-text("Identity")')
-    this.creditCardCategory = root.locator('button:has-text("Credit Card")')
-
-    // Sidebar actions
-    this.settingsButton = root.locator('text=Settings').first()
-    this.addDeviceButton = root.locator('text=Add a Device').first()
-    this.exitVaultButton = root.locator('text=Exit Vault').first()
-
-    // Sort/filter
-    this.recentButton = root.locator('text=Recent').first()
-    this.multiSelectButton = root.locator('text=Multiple selection').first()
-
-    // Preferred selectors (uncomment when test-ids are added)
-    // this.searchInput = root.locator('[data-testid="main-search-input"]')
-    // this.allCategory = root.locator('[data-testid="category-all"]')
-    // this.exitVaultButton = root.locator('[data-testid="sidebar-exit-vault"]')
   }
 
-  async waitForReady(timeout = 30000) {
-    await expect(this.searchInput).toBeVisible({ timeout })
+  // ==== LOCATORS ====
+
+  get loginCategory() {
+    return this.root.getByTestId('sidebar-category-login')
   }
 
-  async isVisible() {
-    return await this.searchInput.isVisible().catch(() => false)
+  get createLoginButton() {
+    return this.root.getByText('Create a login')
+  }
+  get element() {
+    return this.root
+      .getByTestId('recordList-record-container')
+      .locator('span')
+      .first()
   }
 
-  async search(query) {
-    await this.searchInput.fill(query)
+  get mainPlusButon() {
+    return this.root.getByTestId('main-plus-button')
   }
 
-  async selectCategory(name) {
-    const category = this.root.locator(`button:has-text("${name}")`).first()
+  // main-plus-button
+
+  // ELEMENT ITEMS - VIEW MODE
+
+  get elementItemUsername() {
+    return this.root.getByPlaceholder('Email or username')
+  }
+
+  get elementItemPassword() {
+    return this.root.getByPlaceholder('Password')
+  }
+
+  get elementItemPasswordShowHide() {
+    return this.root.getByTestId('passwordfield-button-togglevisibility')
+  }
+
+  get elementItemWebAddress() {
+    return this.root.getByPlaceholder('https://')
+  }
+
+  get elementItemNote() {
+    return this.root.getByPlaceholder('Add note')
+  }
+
+  get elementItemFileLink() {
+    return this.root.getByRole('link', { name: 'TestPhoto.png' })
+  }
+
+  get uploadedImage() {
+    return this.root.getByAltText('TestPhoto.png')
+  }
+
+  // ITEM BAR ELEMENTS
+  // Missing ID's: Login Title, Favorite Button, Edit Button, ThreeDots Menu, Close Item Bar
+
+  get itemBarEditButton() {
+    return this.root.getByText('Edit').last()
+  }
+
+  get itemBarThreeDots() {
+    return this.root.getByTestId('button-round-icon').first()
+  }
+
+  get markAsFavoriteButton() {
+    return this.root.getByText('Mark as favorite').last()
+  }
+
+  get moveToAnotherFolderButton() {
+    return this.root.getByText('Move to another folder').last()
+  }
+
+  get deleteElementButton() {
+    return this.root.getByText('Delete element').last()
+  }
+
+  get collectionEmptyText() {
+    return this.root.getByText('This collection is empty.')
+  }
+
+  get collectionEmptySubText() {
+    return this.root.getByText(
+      'Create a new element or pass to another collection'
+    )
+  }
+
+  get sidebarExitButton() {
+    return this.root.getByTestId('sidebar-exit-button')
+  }
+
+  // ==== ACTIONS ====
+
+  async selectSideBarCategory(name) {
+    const category = this.root.getByTestId(`sidebar-category-${name}`)
+    await expect(category).toBeVisible()
     await category.click()
   }
 
-  async exitVault() {
-    await this.exitVaultButton.click()
+  async clickCreateNewElementButton(name) {
+    const button = this.root.getByText(name)
+    await expect(button).toBeVisible()
+    await button.click()
   }
 
-  async openSettings() {
-    await this.settingsButton.click()
+  async clickMainPlusButton(name) {
+    await expect(mainPlusButon).toBeVisible()
+    await mainPlusButon.click()
+  }
+
+  async openElement() {
+    await expect(this.element).toBeVisible()
+    await this.element.click()
+  }
+
+  async editElement() {
+    await expect(this.itemBarEditButton).toBeVisible()
+    await this.itemBarEditButton.click()
+  }
+
+  async openItemBarThreeDotsDropdownMenu() {
+    await expect(this.itemBarThreeDots).toBeVisible()
+    await this.itemBarThreeDots.click()
+  }
+
+  async clickDeleteElement() {
+    await expect(this.deleteElementButton).toBeVisible()
+    await this.deleteElementButton.click()
+  }
+
+  async clickConfirmYes() {
+    const yesButton = this.root.getByText('Yes')
+    await expect(yesButton).toBeVisible()
+    await yesButton.click()
+  }
+
+  async deleteElementFromViewMode() {
+    await expect(this.itemBarThreeDots).toBeVisible()
+    await this.itemBarThreeDots.click()
+    await expect(this.deleteElementButton).toBeVisible()
+    await this.deleteElementButton.click()
+    const yesButton = this.root.getByText('Yes')
+    await expect(yesButton).toBeVisible()
+    await yesButton.click()
+    await expect(this.collectionEmptyText).toBeVisible()
+    await expect(this.collectionEmptySubText).toBeVisible()
+  }
+
+  async clickShowHidePasswordButton() {
+    await expect(this.elementItemPasswordShowHide).toBeVisible()
+    await this.elementItemPasswordShowHide.click()
+  }
+
+  async clickSidebarExitButton(name) {
+    await expect(this.sidebarExitButton).toBeVisible()
+    await this.sidebarExitButton.click()
+  }
+
+  async clickOnUploadedFile() {
+    await expect(this.elementItemFileLink).toBeVisible()
+    await this.elementItemFileLink.click()
+  }
+
+  // ==== VERIFICATIONS ====
+
+  async verifyElement(title) {
+    await expect(this.element).toBeVisible()
+    await expect(this.element).toHaveText(title)
+  }
+
+  async verifyElementIsNotVisible() {
+    await expect(this.element).not.toBeVisible()
+  }
+
+  async verifyLoginElementItemUsername(username) {
+    await expect(this.elementItemUsername).toBeVisible()
+    await expect(this.elementItemUsername).toHaveValue(username)
+  }
+
+  async verifyLoginElementItemUsernameNotVisible() {
+    await expect(this.elementItemUsername).not.toBeVisible()
+  }
+
+  async verifyLoginElementItemPassword(password) {
+    await expect(this.elementItemPassword).toBeVisible()
+    await expect(this.elementItemPassword).toHaveValue(password)
+  }
+
+  async verifyLoginElementItemPasswordNotVisible() {
+    await expect(this.elementItemPassword).not.toBeVisible()
+  }
+
+  async verifyLoginElementItemWebAddress(webaddress) {
+    await expect(this.elementItemWebAddress).toBeVisible()
+    await expect(this.elementItemWebAddress).toHaveValue(webaddress)
+  }
+
+  async verifyLoginElementItemWebAddressIsVisible() {
+    await expect(this.elementItemWebAddress).toBeVisible()
+  }
+
+  async verifyLoginElementItemNote(note) {
+    await expect(this.elementItemNote).toBeVisible()
+    await expect(this.elementItemNote).toHaveValue(note)
+  }
+
+  async verifyLoginElementItemNoteIsNotVisible() {
+    await expect(this.elementItemNote).not.toBeVisible()
+  }
+
+  async verifyEmptyCollection() {
+    await expect(this.collectionEmptyText).toBeVisible()
+    await expect(this.collectionEmptySubText).toBeVisible()
+  }
+
+  async verifyUploadedFileIsVisible() {
+    await expect(this.elementItemFileLink).toBeVisible()
+  }
+
+  async verifyUploadedImageIsVisible() {
+    await expect(this.uploadedImage).toBeVisible()
   }
 }
 

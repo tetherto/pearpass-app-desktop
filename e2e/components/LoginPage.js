@@ -2,30 +2,30 @@
 
 const { expect } = require('../fixtures/app.runner')
 
-/**
- * Login Page - Master password entry screen
- * Recommended test-ids to add in the app:
- * - data-testid="login-title"
- * - data-testid="login-password-input"
- * - data-testid="login-continue-button"
- * - data-testid="login-error-message"
- */
 class LoginPage {
   constructor(root) {
     this.root = root
-
-    // Using text selectors until test-ids are added
-    this.title = root.locator('text=Enter your Master password')
-    this.passwordInput = root.locator('input[type="password"]')
-    this.continueButton = root.locator('button:has-text("Continue")')
-    this.errorMessage = root.locator('text=Invalid password')
-
-    // Preferred selectors (uncomment when test-ids are added)
-    // this.title = root.locator('[data-testid="login-title"]')
-    // this.passwordInput = root.locator('[data-testid="login-password-input"]')
-    // this.continueButton = root.locator('[data-testid="login-continue-button"]')
-    // this.errorMessage = root.locator('[data-testid="login-error-message"]')
   }
+
+  // ==== LOCATORS ====
+
+  get title() {
+    return this.root.getByTestId('login-title')
+  }
+
+  get passwordInput() {
+    return this.root.getByTestId('login-password-input')
+  }
+
+  get continueButton() {
+    return this.root.getByTestId('login-continue-button')
+  }
+
+  get errorMessage() {
+    return this.root.locator('text=Invalid password')
+  }
+
+  // ==== ACTIONS ====
 
   async waitForReady(timeout = 30000) {
     await expect(this.title).toBeVisible({ timeout })
