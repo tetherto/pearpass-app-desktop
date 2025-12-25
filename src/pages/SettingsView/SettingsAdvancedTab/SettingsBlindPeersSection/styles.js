@@ -115,35 +115,3 @@ export const PeerCountText = styled.span`
   font-family: 'Inter';
   font-weight: 400;
 `
-
-export const EditButton = styled.button`
-  background-color: ${({ theme }) => theme.colors.primary400.mode1};
-  border-radius: 10px;
-  padding: 10px 16px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: 100%;
-
-  &:active {
-    transform: translateY(0);
-    opacity: 0.8;
-  }
-
-  &:focus {
-    outline: 2px solid ${({ theme }) => theme.colors.primary400.mode1};
-    outline-offset: 2px;
-  }
-`
-
-export const EditButtonText = styled.span`
-  color: ${({ theme }) => theme.colors.grey500.mode1};
-  font-size: 14px;
-  font-weight: 700;
-  font-family: 'Inter';
-`
