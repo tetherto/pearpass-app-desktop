@@ -17,7 +17,10 @@ class MainView {
     return this.root.getByText('Create a login')
   }
   get element() {
-    return this.root.getByTestId('recordList-record-container').locator('span').first()
+    return this.root
+      .getByTestId('recordList-record-container')
+      .locator('span')
+      .first()
   }
 
   get mainPlusButon() {
@@ -83,8 +86,10 @@ class MainView {
     return this.root.getByText('This collection is empty.')
   }
 
-  get collectionEmptySubText() { 
-    return this.root.getByText('Create a new element or pass to another collection')
+  get collectionEmptySubText() {
+    return this.root.getByText(
+      'Create a new element or pass to another collection'
+    )
   }
 
   get sidebarExitButton() {
@@ -149,8 +154,8 @@ class MainView {
   }
 
   async clickShowHidePasswordButton() {
-    await expect(this.elementItemPasswordShowHide).toBeVisible();
-    await this.elementItemPasswordShowHide.click();
+    await expect(this.elementItemPasswordShowHide).toBeVisible()
+    await this.elementItemPasswordShowHide.click()
   }
 
   async clickSidebarExitButton(name) {
@@ -159,8 +164,8 @@ class MainView {
   }
 
   async clickOnUploadedFile() {
-    await expect(this.elementItemFileLink).toBeVisible();
-    await this.elementItemFileLink.click();
+    await expect(this.elementItemFileLink).toBeVisible()
+    await this.elementItemFileLink.click()
   }
 
   // ==== VERIFICATIONS ====
@@ -209,20 +214,19 @@ class MainView {
   async verifyLoginElementItemNoteIsNotVisible() {
     await expect(this.elementItemNote).not.toBeVisible()
   }
-  
+
   async verifyEmptyCollection() {
     await expect(this.collectionEmptyText).toBeVisible()
     await expect(this.collectionEmptySubText).toBeVisible()
   }
 
   async verifyUploadedFileIsVisible() {
-    await expect(this.elementItemFileLink).toBeVisible();
+    await expect(this.elementItemFileLink).toBeVisible()
   }
 
   async verifyUploadedImageIsVisible() {
     await expect(this.uploadedImage).toBeVisible()
   }
-
 }
 
 module.exports = { MainView }

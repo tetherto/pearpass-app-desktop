@@ -22,9 +22,18 @@ jest.mock('../styles', () => ({
   )
 }))
 
-// Mock i18n to return the key itself
+// Mock i18n to handle translation with interpolation
 jest.mock('@lingui/react', () => ({
-  useLingui: () => ({ i18n: { _: (s) => s } })
+  useLingui: () => ({
+    i18n: {
+      _: (key, values) => {
+        if (values?.count !== undefined) {
+          return `${values.count} words`
+        }
+        return key
+      }
+    }
+  })
 }))
 
 // Capture props passed into children

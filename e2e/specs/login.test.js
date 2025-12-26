@@ -35,7 +35,7 @@
 //   test('PAS-1231: Invalid password is rejected', async () => {
 //     await loginPage.login(testData.credentials.invalidPassword)
 //     await page.waitForTimeout(testData.timeouts.action)
-    
+
 //     const stillOnLogin = await loginPage.isVisible()
 //     expect(stillOnLogin).toBe(true)
 //   })
@@ -48,7 +48,7 @@
 //   test('PAS-1246: Valid password logs in successfully', async () => {
 //     await loginPage.login(testData.credentials.validPassword)
 //     await page.waitForTimeout(testData.timeouts.navigation)
-    
+
 //     await vaultSelectPage.waitForReady()
 //     expect(await vaultSelectPage.isVisible()).toBe(true)
 //   })
@@ -71,7 +71,7 @@
 //   test('PAS-923: Selecting vault opens main view', async () => {
 //     await vaultSelectPage.selectVault(testData.vault.name)
 //     await page.waitForTimeout(testData.timeouts.navigation)
-    
+
 //     await mainView.waitForReady()
 //     expect(await mainView.isVisible()).toBe(true)
 //   })
@@ -110,7 +110,7 @@
 //   test('Exit vault returns to login screen', async () => {
 //     await mainView.exitVault()
 //     await page.waitForTimeout(testData.timeouts.action)
-    
+
 //     await loginPage.waitForReady()
 //     expect(await loginPage.isVisible()).toBe(true)
 //   })
