@@ -98,8 +98,7 @@ export const SettingsBlindPeersSection = () => {
   const handleBlindPeersConfirm = async (data) => {
     if (
       data.isEditMode &&
-      blindMirrorsData.length > 0 &&
-      blindMirrorsData[0].isDefault
+      blindMirrorsData?.[0]?.isDefault
     ) {
       setIsUpdating(true)
       await handleBlindMirrorsRequest({
