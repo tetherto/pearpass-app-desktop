@@ -40,8 +40,8 @@ module.exports = html`
       --color-red-400: #ff1831;
       --color-gradient-background: linear-gradient(
         180deg,
-        var(--color-blue-950) 0%,
-        var(--color-grey-800) 100%
+      #687c26 0%,
+      #1e2211 100%
       );
     }
 
@@ -120,7 +120,7 @@ module.exports = html`
     }
 
     button {
-      background-color: var(--color-blue-400);
+      background-color: #9fc131;
       color: var(--color-grey-950);
       font-size: 0.938rem;
       font-weight: 600;
@@ -137,11 +137,11 @@ module.exports = html`
     }
 
     button:hover {
-      background-color: var(--color-blue-500);
+      background-color: #b1cb58;
     }
 
     button:active {
-      background-color: var(--color-blue-600);
+      background-color: #b1cb58;
     }
 
     button,
