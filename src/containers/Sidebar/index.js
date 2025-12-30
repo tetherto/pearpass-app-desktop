@@ -115,7 +115,7 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
           })) ?? []
       },
       {
-        name: i18n._('All Folders'),
+        name: i18n._('All Items'),
         id: 'allFolders',
         isOpenInitially: expandedFolders.includes('allFolders'),
         children: [
