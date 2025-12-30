@@ -86,7 +86,7 @@ export const SettingsBlindPeersSection = () => {
           message: successMessage
         })
       }
-    } catch (error) {
+    } catch () {
       setToast({
         message: errorMessage
       })
