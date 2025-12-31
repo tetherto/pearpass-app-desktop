@@ -1,0 +1,51 @@
+name: pearpass
+base: core24
+version: "1.0.1"
+title: PearPass
+summary: A secure, decentralized and fully local password manager
+description: A secure, decentralized and fully local password manager
+grade: stable
+license: Apache-2.0
+website: https://pass.pears.com
+confinement: strict
+apps:
+  pearpass:
+    extensions: [gnome]
+    command: assets/usr/bin/pearpass
+    common-id: com.pears.pass
+    plugs:
+      - home
+      - network
+      - network-observe
+      - personal-files
+      - system-files
+platforms:
+  amd64:
+    build-on: amd64
+    build-for: amd64
+parts:
+  local_files:
+    plugin: dump
+    source: .
+    source-type: local
+  remote_files:
+    after: [local_files]
+    plugin: dump
+    source:
+      - to amd64: "https://static.tether.dev/pearpass/PearPass.linux.x64.bin.tar.gz"
+    source-type: tar
+    organize:
+      pearpass: assets/usr/bin/pearpass
+  execstack:
+    after: [remote_files]
+    build-packages: [execstack]
+    plugin: nil
+    override-prime: |
+      if [[ $CRAFT_ARCH_BUILD_FOR = amd64 ]]
+      then
+        execstack -c assets/usr/bin/pearpass
+      fi
+plugs:
+  shmem:
+    interface: shared-memory
+    private: true
