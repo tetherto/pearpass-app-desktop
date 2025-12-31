@@ -2,8 +2,8 @@ import os from 'os'
 
 import { useEffect, useState } from 'react'
 
-import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
+import { colors } from 'pearpass-lib-ui-theme-provider'
 import { usePair, useVault } from 'pearpass-lib-vault'
 
 import {
@@ -12,17 +12,28 @@ import {
   LoadVaultCard,
   LoadVaultInput,
   LoadVaultNotice,
-  LoadVaultTitle
+  LoadVaultTitle,
+  LoadVaultDescription,
+  ImportVaultButtonContent,
+  IconWrapper,
+  ImportVaultButtonWrapper
 } from './styles'
 import { NAVIGATION_ROUTES } from '../../../constants/navigation'
 import { useRouter } from '../../../context/RouterContext'
 import { useToast } from '../../../context/ToastContext'
-import { ArrowLeftIcon, ButtonRoundIcon } from '../../../lib-react-components'
+import { usePasteFromClipboard } from '../../../hooks/usePasteFromClipboard'
+import { useTranslation } from '../../../hooks/useTranslation'
+import { ButtonPrimary } from '../../../lib-react-components'
+import {
+  ArrowLeftIcon,
+  ButtonRoundIcon,
+  LockCircleIcon
+} from '../../../lib-react-components'
 
 export const CardLoadVault = () => {
-  const { i18n } = useLingui()
+  const { t } = useTranslation()
   const { navigate } = useRouter()
-
+  const { pasteFromClipboard } = usePasteFromClipboard()
   const [inviteCode, setInviteCodeId] = useState('')
 
   const { setToast } = useToast()
@@ -61,13 +72,24 @@ export const CardLoadVault = () => {
     } catch {
       setInviteCodeId('')
       setToast({
-        message: i18n._('Something went wrong, please check invite code')
+        message: t('Something went wrong, please check invite code')
       })
     }
   }
 
   const handleGoBack = () => {
     navigate('welcome', { state: NAVIGATION_ROUTES.VAULTS })
+  }
+
+  const handlePastedText = (pastedText) => {
+    if (pastedText) {
+      setInviteCodeId(pastedText)
+      setTimeout(() => {
+        if (!isPairing) {
+          handleLoadVault(pastedText)
+        }
+      }, 0)
+    }
   }
 
   useEffect(() => {
@@ -91,25 +113,22 @@ export const CardLoadVault = () => {
         variant="secondary"
         startIcon=${ArrowLeftIcon}
       />
-      <${LoadVaultTitle}>${i18n._('Load an existing Vault')}<//>
+      <${LoadVaultTitle}>${t('Import an existing vault')}<//>
     <//>
-
+    <${LoadVaultDescription}
+      >${t(
+        'Using PearPass on your other device, use "Add Device" to generate a QR or connection code to pair your account. This method keeps your account secure.'
+      )}<//
+    >
     <${InputContainer}>
       <${LoadVaultInput}
         autoFocus
-        placeholder=${i18n._('Insert your code vault...')}
+        placeholder=${t('Enter your vault code…')}
         value=${inviteCode}
         onChange=${handleChange}
         onPaste=${(e) => {
           const pastedText = e.clipboardData?.getData('text')
-          if (pastedText) {
-            setInviteCodeId(pastedText)
-            setTimeout(() => {
-              if (!isPairing) {
-                handleLoadVault(pastedText)
-              }
-            }, 0)
-          }
+          handlePastedText(pastedText)
         }}
         onKeyPress=${(e) => {
           if (e.key === 'Enter' && !isPairing) {
@@ -119,7 +138,24 @@ export const CardLoadVault = () => {
       />
 
       ${isPairing &&
-      html`<${LoadVaultNotice}>${i18n._('Click Escape to cancel pairing')}<//>`}
+      html`<${LoadVaultNotice}>${t('Click Escape to cancel pairing')}<//>`}
+    <//>
+    <${ImportVaultButtonWrapper}>
+      <${ButtonPrimary}
+        type="button"
+        onClick=${async () => {
+          const pastedText = await pasteFromClipboard()
+          handlePastedText(pastedText)
+        }}
+        width="260px"
+      >
+        <${ImportVaultButtonContent}>
+          <${IconWrapper}>
+            <${LockCircleIcon} size="24" color=${colors.black.mode1} />
+          <//>
+          ${t('Import vault')}
+        <//>
+      <//>
     <//>
   <//>`
 }
