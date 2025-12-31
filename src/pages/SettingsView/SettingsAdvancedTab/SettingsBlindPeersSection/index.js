@@ -86,7 +86,7 @@ export const SettingsBlindPeersSection = () => {
           message: successMessage
         })
       }
-    } catch (error) {
+    } catch {
       setToast({
         message: errorMessage
       })
@@ -96,10 +96,7 @@ export const SettingsBlindPeersSection = () => {
   }
 
   const handleBlindPeersConfirm = async (data) => {
-    if (
-      data.isEditMode &&
-      blindMirrorsData?.[0]?.isDefault
-    ) {
+    if (data.isEditMode && blindMirrorsData?.[0]?.isDefault) {
       setIsUpdating(true)
       await handleBlindMirrorsRequest({
         callback: removeAllBlindMirrors,
@@ -181,18 +178,18 @@ export const SettingsBlindPeersSection = () => {
                   <${ListContainer}>
                     <li>
                       ${t(
-    'Automatic blind peers: Let PearPass allocate blind peers for you to handle syncing.'
-  )}
+                        'Automatic blind peers: Let PearPass allocate blind peers for you to handle syncing.'
+                      )}
                     </li>
                     <li>
                       ${t(
-    'Manual blind peers: Setup your own private blind peers.'
-  )}
+                        'Manual blind peers: Setup your own private blind peers.'
+                      )}
                     </li>
                   <//>
                   ${t(
-    'In both cases, all data stays fully encrypted, ensuring safe, non-intrusive replication and better data consistency.'
-  )}
+                    'In both cases, all data stays fully encrypted, ensuring safe, non-intrusive replication and better data consistency.'
+                  )}
                 <//>
                 <${LearnMoreLink} href=${BLIND_PEERS_LEARN_MORE}>
                   <${OutsideLinkIcon} color=${colors.primary400.mode1} />
@@ -209,39 +206,41 @@ export const SettingsBlindPeersSection = () => {
       <${Wrapper}>
         <${RuleSelector}
           rules=${[
-      {
-        name: 'blindPeers',
-        label: t(`Private Connections`),
-        description: t(
-          'Sync your encrypted vault securely with blind peers to improve availability and consistency. Blind peers cannot read your data.'
-        )
-      }
-    ]}
+            {
+              name: 'blindPeers',
+              label: t(`Private Connections`),
+              description: t(
+                'Sync your encrypted vault securely with blind peers to improve availability and consistency. Blind peers cannot read your data.'
+              )
+            }
+          ]}
           selectedRules=${blindPeersRules}
           setRules=${handleSetBlindPeersRules}
         />
         ${(blindMirrorsData.length > 0 || isUpdating) &&
-    html`
+        html`
           <${YourPeersSection}>
             <${YourPeersTitle}>${t('Your Blind Peers')}</>
             <${PeerTypeCard}>
               <${PeerTypeText}>
-                ${blindMirrorsData[0]?.isDefault
-        ? t('Automatic')
-        : t('Personal')
-      }
+                ${
+                  blindMirrorsData[0]?.isDefault
+                    ? t('Automatic')
+                    : t('Personal')
+                }
               </>
               <${ActiveIndicator}>
                 <${ActiveDot} />
                 <${ActiveText}>${t('Active')}</>
-                ${!blindMirrorsData[0]?.isDefault &&
-      html`
+                ${
+                  !blindMirrorsData[0]?.isDefault &&
+                  html`
                   <${PeerCountDivider} />
                   <${PeerCountText}>
                     ${blindMirrorsData.length} ${t('peers')}
                   </>
                 `
-      }
+                }
               </>
             </>
             
