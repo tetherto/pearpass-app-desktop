@@ -19,7 +19,7 @@ import { CommonFileIcon, InputField } from '../../lib-react-components'
  *  testId?: string
  * }} props
  */
-export const InputFieldComment = (props) => {
+export const InputFieldNote = (props) => {
   const { i18n } = useLingui()
 
   return html`<${InputField}
@@ -31,6 +31,3 @@ export const InputFieldComment = (props) => {
     ...${props}
   />`
 }
-
-// Backward compatibility alias
-export const InputFieldNote = InputFieldComment
