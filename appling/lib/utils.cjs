@@ -32,7 +32,12 @@ function decode(msg) {
 function format(u) {
   // Guard against null/undefined input
   if (!u) {
-    return { speed: undefined, progress: undefined, peers: undefined, bytes: undefined };
+    return {
+      speed: undefined,
+      progress: undefined,
+      peers: undefined,
+      bytes: undefined,
+    };
   }
 
   // Format for Hyperswarm updater (has drive.core property)

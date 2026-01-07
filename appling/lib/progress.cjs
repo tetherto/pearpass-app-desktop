@@ -27,7 +27,7 @@ class Progress {
     if (Math.abs(sum - 1) > 0.001) {
       console.warn(
         `[Progress] Stage weights sum to ${sum.toFixed(3)}, expected 1.0. ` +
-          `Progress percentage may not reach 100%.`
+          `Progress percentage may not reach 100%.`,
       );
     }
   }

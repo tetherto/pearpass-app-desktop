@@ -255,14 +255,10 @@ export const CreateOrEditWifiModalContent = ({
         <//>
 
         <${FormGroup}>
-<<<<<<< HEAD
-          <${InputFieldNote} ...${register('comment')} />
-=======
           <${InputFieldNote}
             testId="createoredit-input-note"
             ...${register('note')}
           />
->>>>>>> 6ad995e75237626c4b4f6e5ba0129474505e7729
         <//>
 
         ${values.attachments.length > 0 &&

@@ -40,8 +40,8 @@ module.exports = html`
       --color-red-400: #ff1831;
       --color-gradient-background: linear-gradient(
         180deg,
-      #687c26 0%,
-      #1e2211 100%
+        #687c26 0%,
+        #1e2211 100%
       );
     }
 
@@ -57,9 +57,8 @@ module.exports = html`
       margin: 0;
       background: var(--color-gradient-background);
       color: var(--color-white);
-      font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
-        Cantarell, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Oxygen, Ubuntu, Cantarell, sans-serif;
     }
 
     img {
@@ -309,14 +308,20 @@ module.exports = html`
           aria-valuemin="0"
           aria-valuemax="100"
           aria-label="Installation progress"
-        ><div></div></div>
+        >
+          <div></div>
+        </div>
         <div id="statusLine" class="status-line">
           <p id="warning" class="message" role="status" aria-live="polite"></p>
           <p id="stats" class="stats" aria-label="Download statistics"></p>
         </div>
         <div id="buttonGroup" class="button-group hidden">
-          <button id="quitBtn" class="secondary" aria-label="Quit installation">Quit</button>
-          <button id="retryBtn" aria-label="Retry installation">Retry installation</button>
+          <button id="quitBtn" class="secondary" aria-label="Quit installation">
+            Quit
+          </button>
+          <button id="retryBtn" aria-label="Retry installation">
+            Retry installation
+          </button>
         </div>
         <button
           id="launchBtn"
