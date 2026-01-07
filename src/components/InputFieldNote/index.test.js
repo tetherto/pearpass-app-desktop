@@ -79,9 +79,7 @@ describe('InputFieldNote', () => {
       </ThemeProvider>
     )
 
-    expect(screen.getByPlaceholderText('Add comment')).toHaveAttribute(
-      'readonly'
-    )
+    expect(screen.getByPlaceholderText('Add comment')).toHaveAttribute('readonly')
   })
 
   test('renders with custom variant', () => {

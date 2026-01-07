@@ -1,7 +1,6 @@
 import styled from 'styled-components'
 
 export const Button = styled.button`
-  ${({ width }) => width && `width: ${width};`}
   box-sizing: border-box;
   background: ${({ theme }) => theme.colors.primary400.mode1};
   color: ${({ theme }) => theme.colors.black.mode1};

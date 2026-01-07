@@ -88,12 +88,14 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
     setIsLoading(false)
   }
 
-  const matchesSearch = (folder, searchValue) => {
+  const matchesSearch = (records, searchValue) => {
     if (!searchValue) {
       return false
     }
 
-    return matchPatternToValue(searchValue, folder)
+    return records.some((record) =>
+      matchPatternToValue(searchValue, record?.data?.title ?? '')
+    )
   }
 
   const folders = React.useMemo(() => {
@@ -115,7 +117,7 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
           })) ?? []
       },
       {
-        name: i18n._('All Items'),
+        name: i18n._('All Folders'),
         id: 'allFolders',
         isOpenInitially: expandedFolders.includes('allFolders'),
         children: [
@@ -124,7 +126,7 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
             id: folder.name,
             isActive: routerData?.folder === folder.name,
             isOpenInitially:
-              matchesSearch(folder.name, searchValue) ||
+              matchesSearch(folder.records ?? [], searchValue) ||
               expandedFolders.includes(folder.name),
             children: folder.records?.map((record) => ({
               name: record?.data?.title,

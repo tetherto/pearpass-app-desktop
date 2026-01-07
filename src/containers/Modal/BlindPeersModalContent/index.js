@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import { html } from 'htm/react'
 import { useForm } from 'pear-apps-lib-ui-react-hooks'
@@ -7,7 +7,6 @@ import {
   BLIND_PEERS_FORM_NAME,
   BLIND_PEER_TYPE
 } from 'pearpass-lib-constants'
-import { useBlindMirrors } from 'pearpass-lib-vault'
 
 import { RadioSelect } from '../../../components/RadioSelect'
 import {
@@ -37,28 +36,12 @@ const { DEFAULT, PERSONAL } = BLIND_PEER_TYPE
  */
 export const BlindPeersModalContent = ({ onConfirm, onClose }) => {
   const { t } = useTranslation()
-  const { data: blindMirrorsData } = useBlindMirrors()
-  const isEditMode = blindMirrorsData.length > 0
   const [selectedOption, setSelectedOption] = useState(DEFAULT)
 
-  const getInitialValues = () => {
-    const manualPeers = blindMirrorsData.filter((item) => !item.isDefault)
-
-    if (manualPeers.length > 0) {
-      return {
-        blindPeers: manualPeers.map((item) => ({
-          name: BLIND_PEER_FORM_NAME,
-          blindPeer: item.key
-        }))
-      }
-    }
-    return {
+  const { registerArray } = useForm({
+    initialValues: {
       blindPeers: [{ name: BLIND_PEER_FORM_NAME }]
     }
-  }
-
-  const { registerArray } = useForm({
-    initialValues: getInitialValues()
   })
 
   const {
@@ -67,12 +50,6 @@ export const BlindPeersModalContent = ({ onConfirm, onClose }) => {
     registerItem,
     removeItem
   } = registerArray(BLIND_PEERS_FORM_NAME)
-
-  useEffect(() => {
-    if (isEditMode && blindMirrorsData.length > 0) {
-      setSelectedOption(blindMirrorsData[0].isDefault ? DEFAULT : PERSONAL)
-    }
-  }, [isEditMode, blindMirrorsData.length])
 
   const radioOptions = [
     { label: t('Automatic blind peers'), value: DEFAULT },
@@ -85,12 +62,12 @@ export const BlindPeersModalContent = ({ onConfirm, onClose }) => {
 
   const handleBlindPeersConfirm = async () => {
     if (selectedOption === DEFAULT) {
-      onConfirm({ blindPeerType: DEFAULT, isEditMode })
+      onConfirm({ blindPeerType: DEFAULT })
     } else if (selectedOption === PERSONAL && blindPeersList.length > 0) {
       const blindPeers = blindPeersList
         .map((peer) => peer.blindPeer?.trim())
         .filter((peer) => peer && peer.length > 0)
-      onConfirm({ blindPeerType: PERSONAL, blindPeers, isEditMode })
+      onConfirm({ blindPeerType: PERSONAL, blindPeers })
     }
   }
 
