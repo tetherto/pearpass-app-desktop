@@ -73,6 +73,7 @@ jobs:
       TEST_GOOGLE_FORM_MAPPING_DEVICE_MODEL: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_DEVICE_MODEL }}
       TEST_GOOGLE_FORM_MAPPING_MESSAGE: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_MESSAGE }}
       TEST_GOOGLE_FORM_MAPPING_APP_VERSION: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_APP_VERSION }}
+      APP_FILE: ${{ github.ref_name == 'refs/heads/main' && 'app' || 'app.dev' }}.cjs
     steps:
       - uses: actions/checkout@v4
 
@@ -95,7 +96,7 @@ jobs:
 
       - name: Build Linux AppImage
         run: |
-          bare-build --target=linux-${{ matrix.arch }} --package --icon lib/icons/linux/icon.png app.cjs
+          bare-build --target=linux-${{ matrix.arch }} --package --icon lib/icons/linux/icon.png ${{ env.APP_FILE }}
       
       - name: Find & rename AppImage file
         id: find_file
@@ -153,6 +154,7 @@ jobs:
       TEST_GOOGLE_FORM_MAPPING_DEVICE_MODEL: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_DEVICE_MODEL }}
       TEST_GOOGLE_FORM_MAPPING_MESSAGE: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_MESSAGE }}
       TEST_GOOGLE_FORM_MAPPING_APP_VERSION: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_APP_VERSION }}
+      APP_FILE: ${{ github.ref_name == 'refs/heads/main' && 'app' || 'app.dev' }}.cjs
     steps:
       - uses: actions/checkout@v4
 
@@ -220,7 +222,7 @@ jobs:
             --keychain "pearpass" \
             --entitlements entitlements.plist \
             --hardened-runtime \
-            app.cjs
+            ${{ env.APP_FILE }}
 
       - name: Find App file
         id: find_file
