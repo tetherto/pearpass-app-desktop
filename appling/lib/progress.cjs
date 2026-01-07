@@ -5,6 +5,8 @@ const { encode } = require("./utils");
  * Multi-stage progress tracker with weighted percentages.
  * Broadcasts progress updates via the app's IPC mechanism.
  */
+// NOTE: Assumes updates come from a trusted worker.
+// Do not expose Progress.update() to untrusted input.
 class Progress {
   /**
    * Creates a new Progress tracker.
