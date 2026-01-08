@@ -41,5 +41,9 @@
     <!-- Required for Bare runtime module resolution -->
     <key>com.apple.security.cs.allow-dyld-environment-variables</key>
     <true/>
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
 </dict>
 </plist>
