@@ -117,13 +117,13 @@ export const CardLoadVault = () => {
     <//>
     <${LoadVaultDescription}
       >${t(
-        'Using PearPass on your other device, use "Add Device" to generate a QR or connection code to pair your account. This method keeps your account secure.'
+        'Using PearPass on your other device, use "Add Device" to generate a QR or connection code to pair your vault. This method keeps your vault secure.'
       )}<//
     >
     <${InputContainer}>
       <${LoadVaultInput}
         autoFocus
-        placeholder=${t('Enter your vault code…')}
+        placeholder=${t('Insert vault key...')}
         value=${inviteCode}
         onChange=${handleChange}
         onPaste=${(e) => {
