@@ -25,17 +25,6 @@ export const EditFolderPopupContent = ({ name }) => {
   const menuItems = useMemo(
     () => [
       {
-        name: i18n._('Rename'),
-        type: 'rename',
-        icon: FolderIcon,
-        onClick: () =>
-          setModal(
-            html`<${CreateFolderModalContent}
-              initialValues=${{ title: name }}
-            />`
-          )
-      },
-      {
         name: i18n._('Delete'),
         type: 'delete',
         icon: DeleteIcon,
@@ -53,9 +42,20 @@ export const EditFolderPopupContent = ({ name }) => {
               )}
             />`
           )
+      },
+      {
+        name: i18n._('Rename'),
+        type: 'rename',
+        icon: FolderIcon,
+        onClick: () =>
+          setModal(
+            html`<${CreateFolderModalContent}
+              initialValues=${{ title: name }}
+            />`
+          )
       }
     ],
-    []
+    [closeModal, deleteFolder, i18n, name, setModal]
   )
 
   const handleMenuItemClick = (e, item) => {

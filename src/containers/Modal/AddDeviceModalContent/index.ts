@@ -195,8 +195,8 @@ export const AddDeviceModalContent = () => {
         <${PairingDescription}>
           ${t(
             scanQRStep
-              ? 'Scan this QR code or paste the vault key into the PearPass app on your other device to connect it to your account. This method keeps your account secure.'
-              : 'Paste the vault key from the PearPass app on your other device to connect it to your account. This method keeps your account secure.'
+              ? 'Scan this QR code or paste the vault key into the PearPass app on your other device to connect it to your vault. This method keeps your vault secure.'
+              : 'Paste the vault key from the PearPass app on your other device to connect it to your vault. This method keeps your vault secure.'
           )}
         <//>
         <${PairTabs}>
@@ -218,7 +218,7 @@ export const AddDeviceModalContent = () => {
         ${scanQRStep
           ? html`
               <${QRCodeSection}>
-                <${QRCodeText}> ${t('Scan this QR code')} <//>
+                <${QRCodeText}> ${t('Scan this QR code while in the PearPass App')} <//>
 
                 <${QRCode}
                   style=${{ width: '200px', height: '200px' }}
@@ -228,7 +228,7 @@ export const AddDeviceModalContent = () => {
 
               <${BackgroundSection}>
                 <${ExpireText}>
-                  ${t('This link will expire in')}
+                  ${t('Expires in')}
                   <${ScanQRExpireTimer} />
                 <//>
 
@@ -249,7 +249,7 @@ export const AddDeviceModalContent = () => {
                 <${QRCodeCopyWrapper}>
                   <${QRCodeCopy}>
                     <${QRCodeText}>
-                      ${t('Copy this vault key to your device')}
+                      ${t('Copy vault key')}
                     <//>
                     <${CopyIcon} color=${colors.primary400.mode1} />
                   <//>
@@ -261,7 +261,7 @@ export const AddDeviceModalContent = () => {
 
               <${AlertBox}
                 message=${t(
-                  'Caution: You’re generating a secure invitation to sync another device with your vault. Treat this invite with the same confidentiality as your password.'
+                  'Keep this code private. Anyone with it can connect a device to your vault.'
                 )}
               />
             `

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=PearPass
+Exec=pearpass %U
+Type=Application
+Icon=${SNAP}/meta/gui/pearpass.png
+Comment=A secure, decentralized and fully local password manager
+Categories=Utility;
+Terminal=false
+StartupNotify=true
+X-GNOME-UsesNotifications=true

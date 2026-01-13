@@ -49,15 +49,17 @@ import { UploadFilesModalContent } from '../../UploadImageModalContent'
  *        name: string
  *      }[]
  *    attachments: { id: string, name: string}[]
- *     }
+ *    }
  *    }
  *  selectedFolder?: string
+ *  isFavorite?: boolean
  *  onTypeChange: (type: string) => void
  * }} props
  */
 export const CreateOrEditWifiModalContent = ({
   initialRecord,
   selectedFolder,
+  isFavorite,
   onTypeChange
 }) => {
   const { i18n } = useLingui()
@@ -141,7 +143,7 @@ export const CreateOrEditWifiModalContent = ({
     const data = {
       type: RECORD_TYPES.WIFI_PASSWORD,
       folder: values.folder,
-      isFavorite: initialRecord?.isFavorite,
+      isFavorite: initialRecord?.isFavorite ?? isFavorite,
       data: {
         title: values.title,
         password: values.password,

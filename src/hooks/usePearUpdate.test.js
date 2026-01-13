@@ -39,7 +39,7 @@ describe('usePearUpdate', () => {
 
     const callback = Pear.updates.mock.calls[0][0]
     await act(async () => {
-      await callback({ diff: [{ key: '/src/file.js' }] })
+      await callback({ diff: [{ key: '/app/file.js' }] })
     })
 
     expect(setModalMock).toHaveBeenCalledTimes(1)
@@ -58,16 +58,18 @@ describe('usePearUpdate', () => {
     expect(setModalMock).not.toHaveBeenCalled()
   })
 
-  it('reloads app immediately in dev mode (no key)', async () => {
+  it('ignores updates in dev mode (no key)', async () => {
     Pear.config.key = null
     renderHook(() => usePearUpdate())
 
     const callback = Pear.updates.mock.calls[0][0]
     await act(async () => {
-      await callback({ diff: [{ key: '/src/file.js' }] })
+      await callback({ diff: [{ key: '/app/file.js' }] })
     })
 
-    expect(Pear.reload).toHaveBeenCalledTimes(1)
+    expect(setModalMock).not.toHaveBeenCalled()
+    expect(Pear.restart).not.toHaveBeenCalled()
+    expect(Pear.reload).not.toHaveBeenCalled()
   })
 
   it('triggers restart when update handler is called', async () => {
@@ -75,7 +77,7 @@ describe('usePearUpdate', () => {
 
     const callback = Pear.updates.mock.calls[0][0]
     await act(async () => {
-      await callback({ diff: [{ key: '/src/file.js' }] })
+      await callback({ diff: [{ key: '/app/file.js' }] })
     })
 
     const modalVNode = setModalMock.mock.calls[0][0]

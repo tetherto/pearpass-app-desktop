@@ -39,12 +39,14 @@ import { DropdownsWrapper } from '../../styles'
  *     }
  *    }
  *  selectedFolder?: string
+ *  isFavorite?: boolean
  *  onTypeChange: (type: string) => void
  * }} props
  */
 export const CreateOrEditPassPhraseModalContent = ({
   initialRecord,
   selectedFolder,
+  isFavorite,
   onTypeChange
 }) => {
   const { i18n } = useLingui()
@@ -113,7 +115,7 @@ export const CreateOrEditPassPhraseModalContent = ({
     const data = {
       type: RECORD_TYPES.PASS_PHRASE,
       folder: values.folder,
-      isFavorite: initialRecord?.isFavorite,
+      isFavorite: initialRecord?.isFavorite ?? isFavorite,
       data: {
         title: values.title,
         passPhrase: values.passPhrase,

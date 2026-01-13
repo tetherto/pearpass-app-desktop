@@ -4,8 +4,8 @@ import { ErrorIcon, YellowErrorIcon } from '../../lib-react-components'
 
 
 export enum AlertBoxType {
-  WARNING = 'warning', // eslint-disable-line no-unused-vars
-  ERROR = 'error', // eslint-disable-line no-unused-vars
+  WARNING = 'warning',  
+  ERROR = 'error',  
 }
 
 interface Props {

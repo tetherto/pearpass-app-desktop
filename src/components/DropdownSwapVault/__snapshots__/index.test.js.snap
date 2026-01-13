@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`DropdownSwapVault component renders nothing when vaults array is empty 1`] = `<div />`;

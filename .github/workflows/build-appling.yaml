@@ -73,6 +73,7 @@ jobs:
       TEST_GOOGLE_FORM_MAPPING_DEVICE_MODEL: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_DEVICE_MODEL }}
       TEST_GOOGLE_FORM_MAPPING_MESSAGE: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_MESSAGE }}
       TEST_GOOGLE_FORM_MAPPING_APP_VERSION: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_APP_VERSION }}
+      APP_FILE: ${{ github.ref_name == 'refs/heads/main' && 'app' || 'app.dev' }}.cjs
     steps:
       - uses: actions/checkout@v4
 
@@ -90,15 +91,12 @@ jobs:
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
           sudo ./llvm.sh 20
-          npm install --global bare-make
-          npm install --install-links --legacy-peer-deps
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          npm install --global bare-build
+          npm install
 
       - name: Build Linux AppImage
         run: |
-          bare-make generate --platform linux --arch ${{ matrix.arch }}
-          bare-make build
+          bare-build --target=linux-${{ matrix.arch }} --package --icon lib/icons/linux/icon.png ${{ env.APP_FILE }}
       
       - name: Find & rename AppImage file
         id: find_file
@@ -136,6 +134,8 @@ jobs:
       run:
         working-directory: ./appling
     env:
+      # Apple code signing identity - used for app, installer, and DMG signing
+      APPLE_SIGNING_IDENTITY: "959D2C8BB8323AEF9C2367ACA2F854AE4D7DE458"
       SLACK_WEBHOOK_URL_PATH: ${{ secrets.SLACK_WEBHOOK_URL_PATH }}
       GOOGLE_FORM_KEY: ${{ secrets.GOOGLE_FORM_KEY }}
       GOOGLE_FORM_MAPPING_TIMESTAMP: ${{ secrets.GOOGLE_FORM_MAPPING_TIMESTAMP }}
@@ -154,6 +154,7 @@ jobs:
       TEST_GOOGLE_FORM_MAPPING_DEVICE_MODEL: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_DEVICE_MODEL }}
       TEST_GOOGLE_FORM_MAPPING_MESSAGE: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_MESSAGE }}
       TEST_GOOGLE_FORM_MAPPING_APP_VERSION: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_APP_VERSION }}
+      APP_FILE: ${{ github.ref_name == 'refs/heads/main' && 'app' || 'app.dev' }}.cjs
     steps:
       - uses: actions/checkout@v4
 
@@ -165,10 +166,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install --global bare-make
-          npm install --install-links --legacy-peer-deps
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          npm install --global bare-build
+          npm install
+
+      - name: Audit dependencies
+        run: |
+          npm audit --production --audit-level=high || echo "::warning::npm audit found vulnerabilities"
 
       - name: Install the Apple certificate and provisioning profile
         env:
@@ -208,8 +211,18 @@ jobs:
 
       - name: Build macOS app
         run: |
-          bare-make generate --platform darwin --arch ${{ matrix.arch }}
-          bare-make build
+          bare-build \
+            --identifier "com.pears.pass" \
+            --target=darwin-${{ matrix.arch }} \
+            --icon lib/icons/darwin/icon.png \
+            --sign \
+            --identity "$APPLE_SIGNING_IDENTITY" \
+            --application-identity "$APPLE_SIGNING_IDENTITY" \
+            --installer-identity "$APPLE_SIGNING_IDENTITY" \
+            --keychain "pearpass" \
+            --entitlements entitlements.plist \
+            --hardened-runtime \
+            ${{ env.APP_FILE }}
 
       - name: Find App file
         id: find_file
@@ -233,7 +246,7 @@ jobs:
           VERSION="${{ needs.version.outputs.version }}"
           ARCH="${{ matrix.arch }}"
 
-          create-dmg --identity=959D2C8BB8323AEF9C2367ACA2F854AE4D7DE458 --no-version-in-filename "$APP_PATH"
+          create-dmg --identity="$APPLE_SIGNING_IDENTITY" --no-version-in-filename "$APP_PATH"
 
           # Find the DMG that was just created in the current working directory (./appling)
           RAW_DMG=$(ls ./*.dmg | head -n 1)
@@ -272,6 +285,8 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     needs: [version, linux, macos]
     if: github.ref == 'refs/heads/main'
     steps:

@@ -43,15 +43,17 @@ import { UploadFilesModalContent } from '../../UploadImageModalContent'
  *        name: string
  *      }[]
  *    attachments: { id: string, name: string}[]
- *     }
+ *    }
  *    }
  *  selectedFolder?: string
+ *  isFavorite?: boolean
  *  onTypeChange: (type: string) => void
  * }} props
  */
 export const CreateOrEditNoteModalContent = ({
   initialRecord,
   selectedFolder,
+  isFavorite,
   onTypeChange
 }) => {
   const { i18n } = useLingui()
@@ -132,7 +134,7 @@ export const CreateOrEditNoteModalContent = ({
     const data = {
       type: RECORD_TYPES.NOTE,
       folder: values.folder,
-      isFavorite: initialRecord?.isFavorite,
+      isFavorite: initialRecord?.isFavorite ?? isFavorite,
       data: {
         title: values.title,
         note: values.note,

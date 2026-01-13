@@ -43,10 +43,10 @@ export const MainView = () => {
 
   const sort = React.useMemo(() => SORT_BY_TYPE[sortType], [sortType])
 
+  const isFavoritesView = isFavorite(routerData?.folder)
+
   const selectedFolder =
-    routerData?.folder && !isFavorite(routerData.folder)
-      ? routerData.folder
-      : undefined
+    routerData?.folder && !isFavoritesView ? routerData.folder : undefined
 
   const { data: records, isLoading } = useRecords({
     shouldSkip: true,
@@ -56,9 +56,7 @@ export const MainView = () => {
         type:
           routerData?.recordType === 'all' ? undefined : routerData?.recordType,
         folder: selectedFolder,
-        isFavorite: routerData?.folder
-          ? isFavorite(routerData.folder)
-          : undefined
+        isFavorite: isFavoritesView ? true : undefined
       },
       sort: sort
     }
@@ -71,7 +69,8 @@ export const MainView = () => {
   const handleMenuItemClick = (item) => {
     handleCreateOrEditRecord({
       recordType: item.type,
-      selectedFolder: selectedFolder
+      selectedFolder: selectedFolder,
+      isFavorite: isFavoritesView ? true : undefined
     })
 
     setIsOpen(false)
@@ -109,7 +108,10 @@ export const MainView = () => {
 
         ${!isLoading &&
         (!records?.length
-          ? html` <${EmptyCollectionView} />`
+          ? html` <${EmptyCollectionView}
+              selectedFolder=${selectedFolder}
+              isFavoritesView=${isFavoritesView}
+            />`
           : html` <${ContentWrapper}>
               <${RecordListView}
                 records=${records}

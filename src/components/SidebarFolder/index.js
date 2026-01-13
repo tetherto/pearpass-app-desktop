@@ -3,13 +3,7 @@ import React, { useState } from 'react'
 import { html } from 'htm/react'
 import { colors } from 'pearpass-lib-ui-theme-provider'
 
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  FolderIcon,
-  KebabMenuIcon,
-  PlusIcon
-} from '../../lib-react-components'
+import { FolderIcon, KebabMenuIcon, PlusIcon } from '../../lib-react-components'
 import { EditFolderPopupContent } from '../EditFolderPopupContent'
 import { PopupMenu } from '../PopupMenu'
 import {
@@ -28,40 +22,30 @@ import {
  *  isRoot: boolean
  *  name: string
  *  icon: string
- *  isActive: boolean,
- *  testId?: string
+ *  isActive: boolean
+ *  hasMenu?: boolean
  * }} props
  */
 export const SidebarFolder = ({
-  isOpen,
   onClick,
-  onDropDown,
   onAddClick,
   isRoot,
   name,
   icon: Icon,
   isActive,
-  testId
+  hasMenu = true
 }) => {
   const [isNewPopupMenuOpen, setIsNewPopupMenuOpen] = useState(false)
-
-  const handleDropDownClick = (e) => {
-    e.stopPropagation()
-    onDropDown()
-  }
 
   return html`
     <${React.Fragment}>
       <${NestedFoldersContainer}>
-        <${NestedItem} data-testid=${testId}>
-          <div onClick=${handleDropDownClick}>
-            <${isOpen ? ArrowDownIcon : ArrowUpIcon}
-              ArrowUpIcon="14"
-              color=${isActive ? colors.primary400.mode1 : undefined}
-            />
-          </div>
-
-          <${NestedFolder} isActive=${isActive}>
+        <${NestedItem}>
+          <${NestedFolder}
+            isActive=${isActive}
+            data-testid="sidebar-folder"
+            onClick=${onClick}
+          >
             ${!isRoot &&
             html`
               <${Icon ?? FolderIcon}
@@ -70,9 +54,10 @@ export const SidebarFolder = ({
               />
             `}
 
-            <${FolderName} onClick=${onClick}>${name}<//>
+            <${FolderName}>${name}<//>
 
             ${!isRoot &&
+            hasMenu &&
             html` <${PopupMenu}
               side="right"
               align="right"

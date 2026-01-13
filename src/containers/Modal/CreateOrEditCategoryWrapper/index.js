@@ -14,7 +14,8 @@ import { CreateOrEditWifiModalContent } from './CreateOrEditWifiModalContent'
 export const CreateOrEditCategoryWrapper = ({
   initialRecord,
   selectedFolder,
-  recordType
+  recordType,
+  isFavorite
 }) => {
   const [currentRecordType, setCurrentRecordType] = useState(recordType)
 
@@ -22,6 +23,7 @@ export const CreateOrEditCategoryWrapper = ({
     return html`<${CreateOrEditLoginModalContent}
       initialRecord=${initialRecord}
       selectedFolder=${selectedFolder}
+      isFavorite=${isFavorite}
       onTypeChange=${setCurrentRecordType}
     />`
   }
@@ -30,6 +32,7 @@ export const CreateOrEditCategoryWrapper = ({
     return html`<${CreateOrEditCreditCardModalContent}
       initialRecord=${initialRecord}
       selectedFolder=${selectedFolder}
+      isFavorite=${isFavorite}
       onTypeChange=${setCurrentRecordType}
     />`
   }
@@ -38,6 +41,7 @@ export const CreateOrEditCategoryWrapper = ({
     return html`<${CreateOrEditIdentityModalContent}
       initialRecord=${initialRecord}
       selectedFolder=${selectedFolder}
+      isFavorite=${isFavorite}
       onTypeChange=${setCurrentRecordType}
     />`
   }
@@ -46,6 +50,7 @@ export const CreateOrEditCategoryWrapper = ({
     return html`<${CreateOrEditNoteModalContent}
       initialRecord=${initialRecord}
       selectedFolder=${selectedFolder}
+      isFavorite=${isFavorite}
       onTypeChange=${setCurrentRecordType}
     />`
   }
@@ -54,6 +59,7 @@ export const CreateOrEditCategoryWrapper = ({
     return html`<${CreateOrEditWifiModalContent}
       initialRecord=${initialRecord}
       selectedFolder=${selectedFolder}
+      isFavorite=${isFavorite}
       onTypeChange=${setCurrentRecordType}
     />`
   }
@@ -62,6 +68,7 @@ export const CreateOrEditCategoryWrapper = ({
     return html`<${CreateOrEditPassPhraseModalContent}
       initialRecord=${initialRecord}
       selectedFolder=${selectedFolder}
+      isFavorite=${isFavorite}
       onTypeChange=${setCurrentRecordType}
     />`
   }
@@ -70,6 +77,7 @@ export const CreateOrEditCategoryWrapper = ({
     return html`<${CreateOrEditCustomModalContent}
       initialRecord=${initialRecord}
       selectedFolder=${selectedFolder}
+      isFavorite=${isFavorite}
       onTypeChange=${setCurrentRecordType}
     />`
   }

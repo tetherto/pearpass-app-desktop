@@ -56,12 +56,14 @@ import { UploadFilesModalContent } from '../../UploadImageModalContent'
  *  }
  * }
  *  selectedFolder?: string
+ *  isFavorite?: boolean
  *  onTypeChange: (type: string) => void
  * }} props
  */
 export const CreateOrEditCreditCardModalContent = ({
   initialRecord,
   selectedFolder,
+  isFavorite,
   onTypeChange
 }) => {
   const { i18n } = useLingui()
@@ -157,7 +159,7 @@ export const CreateOrEditCreditCardModalContent = ({
     const data = {
       type: RECORD_TYPES.CREDIT_CARD,
       folder: values.folder,
-      isFavorite: initialRecord?.isFavorite,
+      isFavorite: initialRecord?.isFavorite ?? isFavorite,
       data: {
         title: values.title,
         name: values.name,

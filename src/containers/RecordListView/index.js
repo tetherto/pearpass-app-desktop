@@ -30,6 +30,7 @@ import {
   TimeIcon,
   XIcon
 } from '../../lib-react-components'
+import { FAVORITES_FOLDER_ID } from '../../utils/isFavorite'
 import { ConfirmationModalContent } from '../Modal/ConfirmationModalContent'
 import { MoveFolderModalContent } from '../Modal/MoveFolderModalContent'
 
@@ -78,7 +79,7 @@ export const RecordListView = ({
   ]
 
   const isRecordsSelected = selectedRecords.length > 0
-  const isFavorite = routeData.folder === 'favorites'
+  const isFavorite = routeData.folder === FAVORITES_FOLDER_ID
 
   const selectedSortAction = sortActions.find(
     (action) => action.type === sortType

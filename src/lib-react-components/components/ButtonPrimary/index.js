@@ -9,6 +9,7 @@ import { Button } from './styles'
  *  onClick: () => void
  *  type?: 'button' | 'submit'
  *  testId?: string
+ *  width?: string
  * }} props
  */
 export const ButtonPrimary = ({
@@ -16,9 +17,16 @@ export const ButtonPrimary = ({
   size = 'md',
   onClick,
   type = 'button',
-  testId = 'button-primary'
+  testId = 'button-primary',
+  width
 }) => html`
-  <${Button} size=${size} onClick=${onClick} type=${type} data-testid=${testId}>
+  <${Button}
+    size=${size}
+    onClick=${onClick}
+    type=${type}
+    data-testid=${testId}
+    width=${width}
+  >
     ${children}
   <//>
 `

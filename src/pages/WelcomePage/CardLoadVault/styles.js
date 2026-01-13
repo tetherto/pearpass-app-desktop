@@ -8,8 +8,8 @@ export const LoadVaultCard = styled.div.withConfig({
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 480px;
-  gap: 40px;
+  width: 640px;
+  gap: 25px;
   cursor: ${({ isLoading }) => (isLoading ? 'wait' : 'default')};
 
   & > * {
@@ -18,20 +18,24 @@ export const LoadVaultCard = styled.div.withConfig({
 `
 
 export const LoadVaultTitle = styled.span`
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-
   color: ${({ theme }) => theme.colors.white.mode1};
-  text-align: center;
+  text-align: left;
   font-family: 'Inter';
   font-size: 20px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
+  margin-left: 10px;
 `
-
+export const LoadVaultDescription = styled.span`
+  color: ${({ theme }) => theme.colors.white.mode1};
+  text-align: left;
+  font-family: 'Inter';
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+`
 export const LoadVaultNotice = styled.div`
   white-space: nowrap;
   margin-top: 8px;
@@ -78,4 +82,30 @@ export const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
+`
+export const ImportVaultButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+`
+export const ImportVaultButtonContent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: ${({ theme }) => theme.colors.black.mode1};
+  font-family: 'Inter';
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  cursor: pointer;
+`
+
+export const IconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  position: relative;
 `

@@ -5,6 +5,10 @@ import { useForm } from 'pear-apps-lib-ui-react-hooks'
 import { Validator } from 'pear-apps-utils-validator'
 import { TERMS_OF_USE } from 'pearpass-lib-constants'
 import { useUserData } from 'pearpass-lib-vault'
+import {
+  stringToBuffer,
+  clearBuffer
+} from 'pearpass-lib-vault/src/utils/buffer'
 import { checkPasswordStrength } from 'pearpass-utils-password-check'
 
 import {
@@ -122,10 +126,11 @@ export const CardCreateMasterPassword = () => {
       return
     }
 
+    const passwordBuffer = stringToBuffer(values.password)
     try {
       setIsLoading(true)
 
-      await createMasterPassword(values.password)
+      await createMasterPassword(passwordBuffer)
 
       navigate(currentPage, { state: 'masterPassword' })
 
@@ -142,6 +147,8 @@ export const CardCreateMasterPassword = () => {
         'Error creating master password:',
         error
       )
+    } finally {
+      clearBuffer(passwordBuffer)
     }
   }
 

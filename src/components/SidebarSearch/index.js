@@ -29,7 +29,7 @@ export const SidebarSearch = ({ value, onChange, testId }) => {
         type="search"
         value=${value}
         onChange=${handleSearch}
-        placeholder=${i18n._('Search folder...')}
+        placeholder=${i18n._('Search...')}
       />
     <//>
   `

@@ -16,7 +16,7 @@ exports[`SidebarSearch Component renders correctly with default props 1`] = `
     </label>
     <input
       class="sc-fhHczv iECxhv"
-      placeholder="Search folder..."
+      placeholder="Search..."
       type="search"
       value=""
     />

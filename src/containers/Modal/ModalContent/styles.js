@@ -5,8 +5,9 @@ export const Wrapper = styled.div`
   max-height: 85vh;
   overflow-y: auto;
   padding: 20px;
-  border-radius: 10px;
-  border: 1px solid ${({ theme }) => theme.colors.grey300.dark};
+  border-radius: ${({ $borderRadius }) => $borderRadius ?? '10px'};
+  border: 1px solid
+    ${({ theme, $borderColor }) => $borderColor ?? theme.colors.grey300.dark};
   background: ${({ theme }) => theme.colors.grey500.dark};
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   position: relative;
