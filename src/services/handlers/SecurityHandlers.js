@@ -1,9 +1,15 @@
+import sodium from 'sodium-native'
+
 import { getNativeMessagingEnabled } from '../nativeMessagingPreferences.js'
 import {
   getOrCreateIdentity,
   getFingerprint,
   verifyPairingToken,
-  resetIdentity
+  resetIdentity,
+  setPairingApproved,
+  isPairingApproved,
+  setClientIdentityPublicKey,
+  getClientIdentityPublicKey
 } from '../security/appIdentity.js'
 import { beginHandshake } from '../security/sessionManager.js'
 import {
@@ -24,7 +30,7 @@ export class SecurityHandlers {
    * Get the app's identity for pairing
    */
   async nmGetAppIdentity(params) {
-    const { pairingToken } = params || {}
+    const { pairingToken, clientEd25519PublicKeyB64 } = params || {}
 
     // Require a pairing token that the user manually copied from desktop app
     if (!pairingToken) {
@@ -42,6 +48,14 @@ export class SecurityHandlers {
     )
     if (!isValidToken) {
       throw new Error('InvalidPairingToken: The pairing token is incorrect')
+    }
+
+    // Persist that user has approved pairing for this identity
+    await setPairingApproved(this.client).catch(() => {})
+
+    // If client identity was provided, store its public key for mutual auth
+    if (clientEd25519PublicKeyB64) {
+      await setClientIdentityPublicKey(this.client, clientEd25519PublicKeyB64)
     }
 
     return {
@@ -63,6 +77,14 @@ export class SecurityHandlers {
       )
     }
 
+    // Require that user has approved pairing for this identity
+    const approved = await isPairingApproved(this.client)
+    if (!approved) {
+      throw new Error(
+        'NotPaired: Desktop app pairing has not been approved by the user'
+      )
+    }
+
     const { extEphemeralPubB64 } = params || {}
     if (!extEphemeralPubB64) throw new Error('Missing extEphemeralPubB64')
     return beginHandshake(this.client, extEphemeralPubB64)
@@ -72,9 +94,38 @@ export class SecurityHandlers {
    * Finish handshake by validating session
    */
   async nmFinishHandshake(params) {
-    const { sessionId } = params || {}
+    const { sessionId, clientSigB64 } = params || {}
     if (!sessionId) throw new Error('Missing sessionId')
-    if (!getSession(sessionId)) throw new Error('SessionNotFound')
+    if (!clientSigB64) throw new Error('MissingClientSignature')
+
+    const session = getSession(sessionId)
+    if (!session) throw new Error('SessionNotFound')
+
+    // Load pinned client identity
+    const clientPubB64 = await getClientIdentityPublicKey(this.client)
+    if (!clientPubB64) {
+      throw new Error('ClientNotPaired: No client identity registered')
+    }
+
+    const clientPubBytes = new Uint8Array(Buffer.from(clientPubB64, 'base64'))
+    const sigBytes = new Uint8Array(Buffer.from(clientSigB64, 'base64'))
+
+    // Verify client Ed25519 signature over transcript
+    const ok = sodium.crypto_sign_verify_detached(
+      sigBytes,
+      session.transcript,
+      clientPubBytes
+    )
+
+    if (!ok) {
+      // On failure, drop the session
+      closeSession(sessionId)
+      throw new Error('ClientSignatureInvalid')
+    }
+
+    // Mark session as verified
+    session.clientVerified = true
+
     return { ok: true }
   }
 

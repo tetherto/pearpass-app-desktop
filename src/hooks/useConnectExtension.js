@@ -108,6 +108,11 @@ export const useConnectExtension = () => {
       : // Just load existing identity
         await getOrCreateIdentity(client)
 
+    // Mark pairing as approved for this identity so that nmBeginHandshake is allowed
+    await client
+      .encryptionAdd('nm.identity.pairingApproved', 'true')
+      .catch(() => {})
+
     const code = getPairingCode(id.ed25519PublicKey)
     const fingerprint = getFingerprint(id.ed25519PublicKey)
     // Create a combined token for secure pairing

@@ -58,6 +58,9 @@ export class SecureRequestHandler {
     if (!session) {
       throw new Error('SessionNotFound')
     }
+    if (!session.clientVerified) {
+      throw new Error('ClientNotVerified')
+    }
     recordIncomingSeq(sessionId, seq)
     return session
   }

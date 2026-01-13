@@ -4,7 +4,7 @@
 
 import sodium from 'sodium-native'
 
-/** @typedef {{ key: Uint8Array, sendSeq: number, lastRecvSeq: number }} Session */
+/** @typedef {{ key: Uint8Array, sendSeq: number, lastRecvSeq: number, transcript: Uint8Array, clientVerified: boolean }} Session */
 
 const SESSIONS = new Map()
 
@@ -49,7 +49,13 @@ export const createSession = (sharedSecret, transcript) => {
   const key = deriveSessionKey(sharedSecret, transcript)
   const sessionIdBytes = randomBytes(16)
   const sessionId = Buffer.from(sessionIdBytes).toString('hex')
-  SESSIONS.set(sessionId, { key, sendSeq: 0, lastRecvSeq: 0 })
+  SESSIONS.set(sessionId, {
+    key,
+    sendSeq: 0,
+    lastRecvSeq: 0,
+    transcript,
+    clientVerified: false
+  })
   return { sessionId, key }
 }
 
