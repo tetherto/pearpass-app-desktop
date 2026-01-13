@@ -44,7 +44,8 @@
     "lingui:compile": "lingui compile",
     "update-submodules": "bash scripts/update-submodules.sh",
     "prepare": "husky",
-    "dev": "tsc && concurrently -n \"TypeScript,Pear\" -c \"blue,green\" \"tsc --watch\" \"pear run -d .\""
+    "dev": "tsc && concurrently -n \"TypeScript,Pear\" -c \"blue,green\" \"tsc --watch\" \"pear run -d .\"",
+    "dev:e2e": "tsc && pear run -d ."
   },
   "devDependencies": {
     "@babel/core": "7.26.10",
