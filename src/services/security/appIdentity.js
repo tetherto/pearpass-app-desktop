@@ -12,6 +12,7 @@ const ENC_KEY_X25519 = 'nm.identity.x25519'
 const ENC_KEY_CREATION_DATE = 'nm.identity.creationDate'
 const ENC_KEY_PAIRING_APPROVED = 'nm.identity.pairingApproved'
 const ENC_KEY_CLIENT_ED25519_PUB = 'nm.client.identity.ed25519Pub'
+const ENC_KEY_PAIRING_SECRET = 'nm.identity.pairingSecret'
 
 // In-memory fallback cache if persistence is unavailable (e.g., before unlock)
 // Structure: { ed25519PublicKeyBytes, ed25519PrivateKeyBytes, x25519PublicKeyBytes, x25519PrivateKeyBytes, creationDate }
@@ -45,6 +46,29 @@ const toBase64 = (bytes) => Buffer.from(bytes).toString('base64')
  */
 const fromBase64 = (base64String) =>
   new Uint8Array(Buffer.from(base64String, 'base64'))
+
+/**
+ * Load or create the pairing secret used for pairing token derivation.
+ * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
+ * @returns {Promise<string>} base64-encoded secret
+ */
+const getOrCreatePairingSecret = async (client) => {
+  let pairingSecretB64 = normalizeEncryptionGet(
+    await client.encryptionGet(ENC_KEY_PAIRING_SECRET).catch(() => null)
+  )
+
+  if (!pairingSecretB64) {
+    const secretBytes = new Uint8Array(32)
+    sodium.randombytes_buf(secretBytes)
+    pairingSecretB64 = Buffer.from(secretBytes).toString('base64')
+
+    await client
+      .encryptionAdd(ENC_KEY_PAIRING_SECRET, pairingSecretB64)
+      .catch(() => {})
+  }
+
+  return pairingSecretB64
+}
 
 /**
  * Create or load the long-term identity keypairs.
@@ -86,6 +110,13 @@ export const getOrCreateIdentity = async (client) => {
         )
       }
     }
+  }
+
+  // Ensure there is a pairing secret associated with this identity
+  try {
+    await getOrCreatePairingSecret(client)
+  } catch {
+    // Non-fatal: pairing token can be generated later when storage is available
   }
 
   // Try load encrypted blobs first (normalize to base64 string)
@@ -210,18 +241,33 @@ export const getOrCreateIdentity = async (client) => {
 }
 
 /**
- * Compute a short fingerprint from Ed25519 public key (base64 input)
- * Uses SHA-256 and returns hex of first 20 bits as 5-digit code.
+ * Compute a pairing token from Ed25519 public key and a secret
+ * using SHA-256 over secret || publicKey.
+ * Format: XXXXXX-YYYY where XXXXXX is a 6-digit code and YYYY is 4 hex chars.
  * @param {string} ed25519PublicKeyB64
+ * @param {string} pairingSecretB64
  * @returns {string}
  */
-export const getPairingCode = (ed25519PublicKeyB64) => {
-  const fingerprint = getFingerprint(ed25519PublicKeyB64)
-  // Use first 5 bytes -> numeric short code (e.g., 6 digits)
-  const firstBytes = Buffer.from(fingerprint.slice(0, 8), 'hex') // 4 bytes
-  const num = firstBytes.readUInt32BE(0)
+export const getPairingCode = (ed25519PublicKeyB64, pairingSecretB64) => {
+  const secret = fromBase64(pairingSecretB64)
+  const publicKey = fromBase64(ed25519PublicKeyB64)
+
+  // Compute H = SHA-256(secret || publicKey)
+  const input = new Uint8Array(secret.length + publicKey.length)
+  input.set(secret, 0)
+  input.set(publicKey, secret.length)
+
+  const out = new Uint8Array(32)
+  sodium.crypto_hash_sha256(out, input)
+
+  // First 4 bytes → 6-digit code
+  const num = Buffer.from(out.slice(0, 4)).readUInt32BE(0)
   const code = (num % 1000000).toString().padStart(6, '0')
-  return code
+
+  // Next 2 bytes → 4 hex chars as suffix
+  const suffix = Buffer.from(out.slice(4, 6)).toString('hex').toUpperCase()
+
+  return `${code}-${suffix}`
 }
 
 /**
@@ -236,28 +282,36 @@ export const getFingerprint = (ed25519PublicKeyB64) => {
 }
 
 /**
- * Verify a pairing token against the expected value
- * The pairing token is a combination of the pairing code and a portion of the fingerprint
- * Format: XXXXXX-YYYY where XXXXXX is the 6-digit pairing code and YYYY is fingerprint chars
+ * Derive the pairing token for the given identity from the stored pairing secret.
+ * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
+ * @param {string} ed25519PublicKeyB64
+ * @returns {Promise<string>}
+ */
+export const getPairingToken = async (client, ed25519PublicKeyB64) => {
+  const pairingSecretB64 = await getOrCreatePairingSecret(client)
+  return getPairingCode(ed25519PublicKeyB64, pairingSecretB64)
+}
+
+/**
+ * Verify a pairing token against the expected value derived from the stored secret.
+ * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
  * @param {string} ed25519PublicKeyB64
  * @param {string} userProvidedToken
- * @returns {boolean}
+ * @returns {Promise<boolean>}
  */
-export const verifyPairingToken = (ed25519PublicKeyB64, userProvidedToken) => {
+export const verifyPairingToken = async (
+  client,
+  ed25519PublicKeyB64,
+  userProvidedToken
+) => {
   if (!userProvidedToken || typeof userProvidedToken !== 'string') {
     return false
   }
 
-  // Generate the expected token
-  const pairingCode = getPairingCode(ed25519PublicKeyB64)
-  const fingerprint = getFingerprint(ed25519PublicKeyB64)
-
-  // Create a token format: pairing code + first 4 chars of fingerprint
-  // This provides both user-friendly verification and cryptographic binding
-  const expectedToken = `${pairingCode}-${fingerprint.slice(0, 4).toUpperCase()}`
+  const expectedToken = await getPairingToken(client, ed25519PublicKeyB64)
 
   // Case-insensitive comparison
-  return userProvidedToken.toUpperCase() === expectedToken
+  return userProvidedToken.toUpperCase() === expectedToken.toUpperCase()
 }
 
 /**
@@ -280,6 +334,7 @@ export const resetIdentity = async (client) => {
     await client.encryptionAdd(ENC_KEY_CREATION_DATE, '').catch(() => {})
     await client.encryptionAdd(ENC_KEY_PAIRING_APPROVED, '').catch(() => {})
     await client.encryptionAdd(ENC_KEY_CLIENT_ED25519_PUB, '').catch(() => {})
+    await client.encryptionAdd(ENC_KEY_PAIRING_SECRET, '').catch(() => {})
 
     logger.info('APP-IDENTITY', 'Cleared existing identity keys')
   } catch (err) {

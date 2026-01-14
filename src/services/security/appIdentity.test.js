@@ -79,7 +79,7 @@ describe('appIdentity', () => {
 
       expect(sodium.crypto_sign_keypair).toHaveBeenCalled()
       expect(sodium.crypto_box_keypair).toHaveBeenCalled()
-      expect(mockClient.encryptionAdd).toHaveBeenCalledTimes(3) // ed25519, x25519, and creationDate
+      expect(mockClient.encryptionAdd).toHaveBeenCalledTimes(4) // ed25519, x25519, creationDate, and pairingSecret
       expect(result).toHaveProperty('ed25519PublicKey')
       expect(result).toHaveProperty('x25519PublicKey')
       expect(result).toHaveProperty('creationDate')
@@ -199,30 +199,32 @@ describe('appIdentity', () => {
   })
 
   describe('getPairingCode', () => {
-    it('should generate a 6-digit pairing code from public key', () => {
+    it('should generate a pairing token from public key and secret', () => {
       const publicKeyB64 = Buffer.alloc(32, 42).toString('base64')
-      const code = getPairingCode(publicKeyB64)
+      const pairingSecretB64 = Buffer.alloc(32, 7).toString('base64')
+      const token = getPairingCode(publicKeyB64, pairingSecretB64)
 
-      expect(code).toMatch(/^\d{6}$/)
-      expect(code.length).toBe(6)
+      expect(token).toMatch(/^\d{6}-[0-9A-F]{4}$/)
     })
 
-    it('should generate consistent codes for the same key', () => {
+    it('should generate consistent tokens for the same key and secret', () => {
       const publicKeyB64 = Buffer.alloc(32, 123).toString('base64')
-      const code1 = getPairingCode(publicKeyB64)
-      const code2 = getPairingCode(publicKeyB64)
+      const pairingSecretB64 = Buffer.alloc(32, 9).toString('base64')
+      const token1 = getPairingCode(publicKeyB64, pairingSecretB64)
+      const token2 = getPairingCode(publicKeyB64, pairingSecretB64)
 
-      expect(code1).toBe(code2)
+      expect(token1).toBe(token2)
     })
 
-    it('should generate different codes for different keys', () => {
+    it('should generate different tokens for different keys', () => {
       const key1 = Buffer.alloc(32, 1).toString('base64')
       const key2 = Buffer.alloc(32, 2).toString('base64')
+      const pairingSecretB64 = Buffer.alloc(32, 11).toString('base64')
 
-      const code1 = getPairingCode(key1)
-      const code2 = getPairingCode(key2)
+      const token1 = getPairingCode(key1, pairingSecretB64)
+      const token2 = getPairingCode(key2, pairingSecretB64)
 
-      expect(code1).not.toBe(code2)
+      expect(token1).not.toBe(token2)
     })
   })
 

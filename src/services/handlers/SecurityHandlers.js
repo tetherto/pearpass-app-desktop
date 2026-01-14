@@ -43,6 +43,7 @@ export class SecurityHandlers {
 
     // Verify the pairing token matches what the desktop app expects
     const isValidToken = await verifyPairingToken(
+      this.client,
       id.ed25519PublicKey,
       pairingToken
     )

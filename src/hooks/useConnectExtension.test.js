@@ -34,7 +34,7 @@ import {
 import {
   getFingerprint,
   getOrCreateIdentity,
-  getPairingCode
+  getPairingToken
 } from '../services/security/appIdentity'
 import {
   killNativeMessagingHostProcesses,
@@ -72,7 +72,7 @@ jest.mock('../services/nativeMessagingPreferences', () => ({
 jest.mock('../services/security/appIdentity', () => ({
   getFingerprint: jest.fn(),
   getOrCreateIdentity: jest.fn(),
-  getPairingCode: jest.fn(),
+  getPairingToken: jest.fn(),
   resetIdentity: jest.fn()
 }))
 jest.mock('../utils/nativeMessagingSetup', () => ({
@@ -113,7 +113,7 @@ describe('useConnectExtension', () => {
     killNativeMessagingHostProcesses.mockResolvedValue()
     createOrGetPearpassClient.mockReturnValue({})
     getOrCreateIdentity.mockResolvedValue(fakeIdentity)
-    getPairingCode.mockReturnValue('PAIRCODE')
+    getPairingToken.mockResolvedValue('PAIRCODE-ABCD')
     getFingerprint.mockReturnValue('ABCD1234')
 
     const { result } = renderHook(() => useConnectExtension())
@@ -167,7 +167,7 @@ describe('useConnectExtension', () => {
     startNativeMessagingIPC.mockResolvedValue()
     killNativeMessagingHostProcesses.mockResolvedValue()
     getOrCreateIdentity.mockResolvedValue(fakeIdentity)
-    getPairingCode.mockReturnValue('PAIRCODE')
+    getPairingToken.mockResolvedValue('PAIRCODE-ABCD')
     getFingerprint.mockReturnValue('ABCD1234')
 
     getNativeMessagingEnabled.mockReturnValue(false)
@@ -182,7 +182,7 @@ describe('useConnectExtension', () => {
 
     await waitFor(() => {
       expect(getOrCreateIdentity).toHaveBeenCalled()
-      expect(getPairingCode).toHaveBeenCalledWith('pubkey')
+      expect(getPairingToken).toHaveBeenCalled()
       expect(getFingerprint).toHaveBeenCalledWith('pubkey')
     })
   })

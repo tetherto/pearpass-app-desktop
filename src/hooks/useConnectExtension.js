@@ -23,7 +23,7 @@ import {
 import {
   getFingerprint,
   getOrCreateIdentity,
-  getPairingCode,
+  getPairingToken,
   resetIdentity
 } from '../services/security/appIdentity'
 import { clearAllSessions } from '../services/security/sessionStore.js'
@@ -113,12 +113,10 @@ export const useConnectExtension = () => {
       .encryptionAdd('nm.identity.pairingApproved', 'true')
       .catch(() => {})
 
-    const code = getPairingCode(id.ed25519PublicKey)
+    const pairingToken = await getPairingToken(client, id.ed25519PublicKey)
     const fingerprint = getFingerprint(id.ed25519PublicKey)
-    // Create a combined token for secure pairing
-    const token = `${code}-${fingerprint.slice(0, 4).toUpperCase()}`
     const result = {
-      pairingToken: token,
+      pairingToken,
       fingerprint,
       tokenCreationDate: id.creationDate
     }
