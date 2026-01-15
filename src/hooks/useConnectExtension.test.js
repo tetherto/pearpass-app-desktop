@@ -111,7 +111,9 @@ describe('useConnectExtension', () => {
     setupNativeMessaging.mockResolvedValue({ success: true })
     startNativeMessagingIPC.mockResolvedValue()
     killNativeMessagingHostProcesses.mockResolvedValue()
-    createOrGetPearpassClient.mockReturnValue({})
+    createOrGetPearpassClient.mockReturnValue({
+      encryptionAdd: jest.fn().mockResolvedValue(undefined)
+    })
     getOrCreateIdentity.mockResolvedValue(fakeIdentity)
     getPairingToken.mockResolvedValue('PAIRCODE-ABCD')
     getFingerprint.mockReturnValue('ABCD1234')
@@ -172,7 +174,9 @@ describe('useConnectExtension', () => {
 
     getNativeMessagingEnabled.mockReturnValue(false)
     isNativeMessagingIPCRunning.mockReturnValue(false)
-    createOrGetPearpassClient.mockReturnValue({})
+    createOrGetPearpassClient.mockReturnValue({
+      encryptionAdd: jest.fn().mockResolvedValue(undefined)
+    })
 
     const { result } = renderHook(() => useConnectExtension())
 

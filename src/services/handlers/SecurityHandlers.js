@@ -51,8 +51,12 @@ export class SecurityHandlers {
       throw new Error('InvalidPairingToken: The pairing token is incorrect')
     }
 
-    // Persist that user has approved pairing for this identity
-    await setPairingApproved(this.client).catch(() => {})
+    // Best-effort: record that the user approved pairing
+    try {
+      await setPairingApproved(this.client)
+    } catch {
+      // If this fails, the user will just need to approve pairing again later
+    }
 
     // If client identity was provided, store its public key for mutual auth
     if (clientEd25519PublicKeyB64) {

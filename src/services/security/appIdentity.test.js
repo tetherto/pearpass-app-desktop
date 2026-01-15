@@ -32,9 +32,13 @@ jest.mock('sodium-native', () => ({
     sk.fill(4)
   }),
   crypto_hash_sha256: jest.fn((out, input) => {
-    // Mock SHA256 - just fill with deterministic data
-    for (let i = 0; i < out.length; i++) {
-      out[i] = (input[0] + i) % 256
+    // Mock SHA256 - deterministic but sensitive to full input so different keys/secrets change output
+    let acc = 0
+    for (let i = 0; i < input.length; i += 1) {
+      acc = (acc + input[i] + i) % 256
+    }
+    for (let i = 0; i < out.length; i += 1) {
+      out[i] = (acc + i) % 256
     }
   })
 }))
@@ -79,7 +83,7 @@ describe('appIdentity', () => {
 
       expect(sodium.crypto_sign_keypair).toHaveBeenCalled()
       expect(sodium.crypto_box_keypair).toHaveBeenCalled()
-      expect(mockClient.encryptionAdd).toHaveBeenCalledTimes(4) // ed25519, x25519, creationDate, and pairingSecret
+      expect(mockClient.encryptionAdd).toHaveBeenCalledTimes(3) // ed25519, x25519, and creationDate (pairing secret is handled separately)
       expect(result).toHaveProperty('ed25519PublicKey')
       expect(result).toHaveProperty('x25519PublicKey')
       expect(result).toHaveProperty('creationDate')
@@ -105,6 +109,7 @@ describe('appIdentity', () => {
       const creationDate = '2024-01-01T00:00:00.000Z'
 
       mockClient.encryptionGet
+        .mockResolvedValueOnce(null) // pairing secret missing initially
         .mockResolvedValueOnce(ed25519Mock)
         .mockResolvedValueOnce(x25519Mock)
         .mockResolvedValueOnce(creationDate)
@@ -136,6 +141,7 @@ describe('appIdentity', () => {
       const creationDate = '2024-01-01T00:00:00.000Z'
 
       mockClient.encryptionGet
+        .mockResolvedValueOnce({ data: null }) // pairing secret missing initially
         .mockResolvedValueOnce({ data: ed25519Mock })
         .mockResolvedValueOnce({ data: x25519Mock })
         .mockResolvedValueOnce({ data: creationDate })
