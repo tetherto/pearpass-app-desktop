@@ -77,6 +77,7 @@ describe('SecurityHandlers', () => {
       appIdentity.verifyPairingToken.mockResolvedValue(true)
       appIdentity.getFingerprint.mockReturnValue('fingerprint')
       appIdentity.setClientIdentityPublicKey.mockResolvedValue(undefined)
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue(null)
 
       const result = await handlers.nmGetAppIdentity({
         pairingToken: 'token',
@@ -86,6 +87,52 @@ describe('SecurityHandlers', () => {
       expect(appIdentity.setClientIdentityPublicKey).toHaveBeenCalledWith(
         client,
         'clientPub'
+      )
+      expect(result).toEqual({
+        ed25519PublicKey: 'pubKey',
+        x25519PublicKey: 'xPubKey',
+        fingerprint: 'fingerprint'
+      })
+    })
+
+    it('throws if a different client is already paired', async () => {
+      appIdentity.getOrCreateIdentity.mockResolvedValue({
+        ed25519PublicKey: 'pubKey',
+        x25519PublicKey: 'xPubKey'
+      })
+      appIdentity.verifyPairingToken.mockResolvedValue(true)
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue(
+        'existingClientPub'
+      )
+
+      await expect(
+        handlers.nmGetAppIdentity({
+          pairingToken: 'token',
+          clientEd25519PublicKeyB64: 'differentClientPub'
+        })
+      ).rejects.toThrow(/ClientAlreadyPaired/)
+
+      expect(appIdentity.setClientIdentityPublicKey).not.toHaveBeenCalled()
+    })
+
+    it('allows re-pairing same client with valid token', async () => {
+      appIdentity.getOrCreateIdentity.mockResolvedValue({
+        ed25519PublicKey: 'pubKey',
+        x25519PublicKey: 'xPubKey'
+      })
+      appIdentity.verifyPairingToken.mockResolvedValue(true)
+      appIdentity.getFingerprint.mockReturnValue('fingerprint')
+      appIdentity.setClientIdentityPublicKey.mockResolvedValue(undefined)
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue('sameClientPub')
+
+      const result = await handlers.nmGetAppIdentity({
+        pairingToken: 'token',
+        clientEd25519PublicKeyB64: 'sameClientPub'
+      })
+
+      expect(appIdentity.setClientIdentityPublicKey).toHaveBeenCalledWith(
+        client,
+        'sameClientPub'
       )
       expect(result).toEqual({
         ed25519PublicKey: 'pubKey',

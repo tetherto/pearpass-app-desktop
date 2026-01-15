@@ -56,6 +56,17 @@ export class SecurityHandlers {
       throw new Error('InvalidPairingToken: The pairing token is incorrect')
     }
 
+    // Check if a different client is already paired
+    const existingClientPubB64 = await getClientIdentityPublicKey(this.client)
+    if (
+      existingClientPubB64 &&
+      existingClientPubB64 !== clientEd25519PublicKeyB64
+    ) {
+      throw new Error(
+        'ClientAlreadyPaired: A different extension is already paired. Reset pairing in the desktop app first.'
+      )
+    }
+
     // Store the client's public key for mutual auth in future handshakes
     await setClientIdentityPublicKey(this.client, clientEd25519PublicKeyB64)
 
