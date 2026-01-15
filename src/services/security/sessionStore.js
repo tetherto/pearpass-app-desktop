@@ -4,9 +4,12 @@
 
 import sodium from 'sodium-native'
 
-/** @typedef {{ key: Uint8Array, sendSeq: number, lastRecvSeq: number, transcript: Uint8Array, clientVerified: boolean }} Session */
+/** @typedef {{ key: Uint8Array, sendSeq: number, lastRecvSeq: number, transcript: Uint8Array, clientVerified: boolean, createdAt: number }} Session */
 
 const SESSIONS = new Map()
+
+// Session TTL: 1 hour in milliseconds
+const SESSION_TTL_MS = 60 * 60 * 1000
 
 /**
  * @param {number} size
@@ -54,7 +57,8 @@ export const createSession = (sharedSecret, transcript) => {
     sendSeq: 0,
     lastRecvSeq: 0,
     transcript,
-    clientVerified: false
+    clientVerified: false,
+    createdAt: Date.now()
   })
   return { sessionId, key }
 }
@@ -63,7 +67,18 @@ export const createSession = (sharedSecret, transcript) => {
  * @param {string} sessionId
  * @returns {Session | null}
  */
-export const getSession = (sessionId) => SESSIONS.get(sessionId) || null
+export const getSession = (sessionId) => {
+  const session = SESSIONS.get(sessionId)
+  if (!session) return null
+
+  // Check if session has expired
+  if (Date.now() - session.createdAt > SESSION_TTL_MS) {
+    SESSIONS.delete(sessionId)
+    return null
+  }
+
+  return session
+}
 
 /**
  * @param {string} sessionId
