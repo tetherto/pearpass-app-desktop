@@ -15,7 +15,8 @@ jest.mock('sodium-native', () => ({
   crypto_kx_SECRETKEYBYTES: 32,
   crypto_kx_SESSIONKEYBYTES: 32,
   crypto_secretbox_NONCEBYTES: 24,
-  crypto_secretbox_MACBYTES: 16
+  crypto_secretbox_MACBYTES: 16,
+  crypto_sign_verify_detached: jest.fn()
 }))
 
 import { SecurityHandlers } from './SecurityHandlers'
@@ -42,6 +43,12 @@ describe('SecurityHandlers', () => {
   })
 
   describe('nmGetAppIdentity', () => {
+    beforeEach(() => {
+      // setPairingApproved is awaited and then caught in implementation
+      // so it must return a Promise in tests
+      appIdentity.setPairingApproved.mockResolvedValue(undefined)
+    })
+
     it('throws if pairingToken is missing', async () => {
       await expect(handlers.nmGetAppIdentity({})).rejects.toThrow(
         /PairingTokenRequired/
@@ -78,6 +85,8 @@ describe('SecurityHandlers', () => {
   describe('nmBeginHandshake', () => {
     beforeEach(() => {
       getNativeMessagingEnabled.mockReturnValue(true)
+      // By default, simulate approved pairing so handshake can proceed
+      appIdentity.isPairingApproved.mockResolvedValue(true)
     })
 
     it('throws if native messaging is disabled', async () => {
@@ -93,13 +102,23 @@ describe('SecurityHandlers', () => {
       )
     })
 
-    it('calls beginHandshake with correct params', async () => {
+    it('calls beginHandshake with correct params when pairing approved', async () => {
       sessionManager.beginHandshake.mockResolvedValue('handshake-result')
       const result = await handlers.nmBeginHandshake({
         extEphemeralPubB64: 'abc'
       })
+      expect(appIdentity.isPairingApproved).toHaveBeenCalledWith(client)
       expect(sessionManager.beginHandshake).toHaveBeenCalledWith(client, 'abc')
       expect(result).toBe('handshake-result')
+    })
+
+    it('throws if pairing has not been approved', async () => {
+      appIdentity.isPairingApproved.mockResolvedValue(false)
+
+      await expect(
+        handlers.nmBeginHandshake({ extEphemeralPubB64: 'abc' })
+      ).rejects.toThrow(/NotPaired/)
+      expect(sessionManager.beginHandshake).not.toHaveBeenCalled()
     })
   })
 
@@ -110,17 +129,55 @@ describe('SecurityHandlers', () => {
       )
     })
 
+    it('throws if clientSigB64 is missing', async () => {
+      await expect(
+        handlers.nmFinishHandshake({ sessionId: 'sid' })
+      ).rejects.toThrow(/MissingClientSignature/)
+    })
+
     it('throws if session not found', async () => {
       sessionStore.getSession.mockReturnValue(undefined)
       await expect(
-        handlers.nmFinishHandshake({ sessionId: 'sid' })
+        handlers.nmFinishHandshake({
+          sessionId: 'sid',
+          clientSigB64: 'sig'
+        })
       ).rejects.toThrow(/SessionNotFound/)
     })
 
-    it('returns ok if session exists', async () => {
-      sessionStore.getSession.mockReturnValue({ id: 'sid' })
-      const result = await handlers.nmFinishHandshake({ sessionId: 'sid' })
-      expect(result).toEqual({ ok: true })
+    it('throws if client identity is not paired', async () => {
+      sessionStore.getSession.mockReturnValue({
+        id: 'sid',
+        transcript: new Uint8Array([1, 2, 3])
+      })
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue(null)
+
+      await expect(
+        handlers.nmFinishHandshake({
+          sessionId: 'sid',
+          clientSigB64: Buffer.from('sig').toString('base64')
+        })
+      ).rejects.toThrow(/ClientNotPaired/)
+    })
+
+    it('throws ClientSignatureInvalid and closes session when signature is invalid', async () => {
+      const session = { id: 'sid', transcript: new Uint8Array([1, 2, 3]) }
+      sessionStore.getSession.mockReturnValue(session)
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue(
+        Buffer.from('pub').toString('base64')
+      )
+      const sodium = require('sodium-native')
+      sodium.crypto_sign_verify_detached.mockReturnValue(false)
+
+      await expect(
+        handlers.nmFinishHandshake({
+          sessionId: 'sid',
+          clientSigB64: Buffer.from('sig').toString('base64')
+        })
+      ).rejects.toThrow(/ClientSignatureInvalid/)
+
+      expect(sessionStore.closeSession).toHaveBeenCalledWith('sid')
+      expect(session.clientVerified).not.toBe(true)
     })
   })
 
