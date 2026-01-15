@@ -61,12 +61,14 @@ import { UploadFilesModalContent } from '../../UploadImageModalContent'
  *    }
  *  }
  *  selectedFolder?: string
+ *  isFavorite?: boolean
  *  onTypeChange: (type: string) => void
  * }} props
  */
 export const CreateOrEditLoginModalContent = ({
   initialRecord,
   selectedFolder,
+  isFavorite,
   onTypeChange
 }) => {
   const { i18n } = useLingui()
@@ -168,7 +170,7 @@ export const CreateOrEditLoginModalContent = ({
     const data = {
       type: RECORD_TYPES.LOGIN,
       folder: values.folder,
-      isFavorite: initialRecord?.isFavorite,
+      isFavorite: initialRecord?.isFavorite ?? isFavorite,
       data: {
         title: values.title,
         username: values.username,

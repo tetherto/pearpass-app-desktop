@@ -41,6 +41,7 @@ export const sideBarContent = styled.div`
   width: 100%;
   gap: 20px;
   min-height: 0;
+  overflow: hidden;
 `
 
 export const SidebarNestedFoldersContainer = styled.div`

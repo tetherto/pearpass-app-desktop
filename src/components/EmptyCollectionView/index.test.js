@@ -31,7 +31,7 @@ describe('EmptyCollectionView component', () => {
   const renderComponent = () =>
     render(
       <ThemeProvider>
-        <EmptyCollectionView />
+        <EmptyCollectionView selectedFolder="test-folder" isFavoritesView />
       </ThemeProvider>
     )
 
@@ -55,7 +55,9 @@ describe('EmptyCollectionView component', () => {
 
     fireEvent.click(loginButton)
     expect(mockHandleCreateOrEditRecord).toHaveBeenCalledWith({
-      recordType: 'login'
+      recordType: 'login',
+      selectedFolder: 'test-folder',
+      isFavorite: true
     })
   })
 

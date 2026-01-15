@@ -21,7 +21,14 @@ jest.mock('../../context/LoadingContext', () => ({
 
 jest.mock('../../context/ModalContext', () => ({
   useModal: () => ({
-    setModal: jest.fn()
+    setModal: jest.fn(),
+    closeModal: jest.fn()
+  })
+}))
+
+jest.mock('../../hooks/useTranslation', () => ({
+  useTranslation: () => ({
+    t: (key) => key
   })
 }))
 
@@ -32,14 +39,15 @@ describe('DropdownSwapVault component', () => {
   ]
   const mockSelectedVault = { id: 'vault1', name: 'vault1' }
 
-  test('renders nothing when vaults array is empty', () => {
-    const { container } = render(
+  test('renders with selected vault even when vaults array is empty', () => {
+    const { getAllByText } = render(
       <ThemeProvider>
         <DropdownSwapVault vaults={[]} selectedVault={mockSelectedVault} />
       </ThemeProvider>
     )
-    expect(container.firstChild).toBeNull()
-    expect(container).toMatchSnapshot()
+
+    const elements = getAllByText('vault1')
+    expect(elements).toHaveLength(1)
   })
 
   test('renders with selected vault', () => {

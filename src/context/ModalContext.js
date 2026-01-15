@@ -132,7 +132,7 @@ export const ModalProvider = ({ children }) => {
 /**
  * @returns {{
  *   isOpen: boolean,
- *   setModal: () => void,
+ *   setModal: (content: any, params?: any) => void,
  *   closeModal: () => void
  * }}
  */

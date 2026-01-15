@@ -7,7 +7,10 @@ import { useModal } from '../context/ModalContext'
 /**
  * @returns {{
  *  handleCreateOrEditRecord: ({
- *    recordType: 'login' | 'creditCard' | 'identity' | 'note' | 'custom'
+ *    recordType: 'login' | 'creditCard' | 'identity' | 'note' | 'custom',
+ *    initialRecord?: any,
+ *    selectedFolder?: string,
+ *    isFavorite?: boolean
  *  }) => void
  * }}
  */
@@ -17,12 +20,14 @@ export const useCreateOrEditRecord = () => {
   const getModalContentByRecordType = ({
     recordType,
     initialRecord,
-    selectedFolder
+    selectedFolder,
+    isFavorite
   }) => html`
     <${CreateOrEditCategoryWrapper}
       recordType=${recordType}
       initialRecord=${initialRecord}
       selectedFolder=${selectedFolder}
+      isFavorite=${isFavorite}
     />
   `
 
@@ -38,6 +43,7 @@ export const useCreateOrEditRecord = () => {
     recordType,
     initialRecord,
     selectedFolder,
+    isFavorite,
     setValue
   }) => {
     if (recordType === 'password') {
@@ -49,7 +55,12 @@ export const useCreateOrEditRecord = () => {
     }
 
     setModal(
-      getModalContentByRecordType({ recordType, initialRecord, selectedFolder })
+      getModalContentByRecordType({
+        recordType,
+        initialRecord,
+        selectedFolder,
+        isFavorite
+      })
     )
   }
 

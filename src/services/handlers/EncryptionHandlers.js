@@ -58,11 +58,18 @@ export class EncryptionHandlers {
 
   async decryptVaultKey(params) {
     logger.debug('ENCRYPTION-HANDLER', `Decrypting vault key`)
-    return await this.client.decryptVaultKey({
+    const result = await this.client.decryptVaultKey({
       ciphertext: params.ciphertext,
       nonce: params.nonce,
       hashedPassword: params.hashedPassword
     })
+
+    if (!result) {
+      logger.info('ENCRYPTION-HANDLER', `Decryption failed, recording attempt`)
+      await this.client.recordFailedMasterPassword()
+    }
+
+    return result
   }
 
   async recordFailedMasterPassword() {

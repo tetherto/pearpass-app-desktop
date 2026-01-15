@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  PearPass Appling - macOS Code Signing Entitlements
+
+  SECURITY NOTICE:
+  These entitlements are required for the Bare runtime and native Node.js addons to function
+  correctly with macOS Hardened Runtime. They weaken the default security model and should
+  be understood before deployment.
+
+  Required Dependencies:
+  - sodium-native: Cryptographic operations require loading native libraries
+  - rocksdb-native: Database operations require loading native libraries
+  - udx-native, simdle-native, quickbit-native: P2P networking components
+
+  com.apple.security.cs.disable-library-validation:
+    Allows the app to load dynamic libraries that are not signed by the same team ID.
+    Required because native Node.js addons are compiled during npm install and are not
+    code-signed with the application's signing identity.
+
+  com.apple.security.cs.allow-dyld-environment-variables:
+    Allows DYLD_* environment variables to affect the process.
+    Required for the Bare runtime to properly load and resolve native modules.
+
+  RISK ASSESSMENT:
+  - These entitlements could allow library injection attacks if an attacker gains write
+    access to the application bundle or user's library paths.
+  - Mitigated by: macOS notarization, Gatekeeper, and the app's limited file system access.
+  - The Pear platform's P2P code is loaded through its own verified channels, not through
+    these library loading mechanisms.
+
+  ALTERNATIVES CONSIDERED:
+  - Bundling pre-signed native modules: Would break cross-platform build consistency
+  - Removing native dependencies: Would remove core functionality (encryption, database, P2P)
+-->
+<plist version="1.0">
+<dict>
+    <!-- Required for native Node.js addons (sodium-native, rocksdb-native, etc.) -->
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <true/>
+    <!-- Required for Bare runtime module resolution -->
+    <key>com.apple.security.cs.allow-dyld-environment-variables</key>
+    <true/>
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+</dict>
+</plist>

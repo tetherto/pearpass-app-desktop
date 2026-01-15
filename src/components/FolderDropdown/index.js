@@ -5,6 +5,7 @@ import { html } from 'htm/react'
 import { useFolders } from 'pearpass-lib-vault'
 
 import { StarIcon } from '../../lib-react-components'
+import { FAVORITES_FOLDER_ID } from '../../utils/isFavorite'
 import { MenuDropdown } from '../MenuDropdown'
 
 const NO_FOLDER = 'no-folder'
@@ -39,7 +40,7 @@ export const FolderDropdown = ({ selectedFolder, onFolderSelect, testId }) => {
     return mappedFolders
   }, [folders])
 
-  const isFavorite = selectedFolder === 'favorites'
+  const isFavorite = selectedFolder === FAVORITES_FOLDER_ID
   const name = isFavorite ? i18n._('Favorite') : selectedFolder
   const icon = isFavorite ? StarIcon : undefined
 

@@ -38,7 +38,6 @@ export const usePearUpdate = () => {
     }
 
     if (!Pear.config.key) {
-      Pear.reload()
       return
     }
 
@@ -55,7 +54,7 @@ export const usePearUpdate = () => {
 function hasNonIgnoredChanges(diff) {
   return diff?.some(
     ({ key: file }) =>
-      file.startsWith('/src') &&
+      !file.startsWith('/src') &&
       !file.startsWith('/logs') &&
       !file.includes('pearpass-native-messaging.sock')
   )

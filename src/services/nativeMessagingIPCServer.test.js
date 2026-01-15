@@ -180,10 +180,15 @@ const mockPearpassClient = {
 }
 
 describe('nativeMessagingIPCServer', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks()
+
     // Reset singleton instance state before each test
-    stopNativeMessagingIPC().catch(() => {})
+    try {
+      await stopNativeMessagingIPC()
+    } catch {
+      // ignore
+    }
   })
 
   describe('getIpcPath', () => {

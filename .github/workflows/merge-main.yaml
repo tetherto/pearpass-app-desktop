@@ -46,9 +46,9 @@ jobs:
           npm run lingui:extract
           npm run lingui:compile
       - name: Build application
-        run: npm run build
-      # - name: Prune dev dependencies
-      #   run: npm prune --omit=dev
+        run: npm run build:pear
+      - name: Prune dev dependencies
+        run: npm prune --omit=dev --omit=optional --install-links
       - name: "Stage to channel"
         run: |
           echo "CHANNEL_LINK: ${CHANNEL_LINK}"

@@ -26,8 +26,6 @@ jest.mock('../EditFolderPopupContent', () => ({
 }))
 
 jest.mock('../../lib-react-components', () => ({
-  ArrowDownIcon: () => <div data-testid="mock-arrow-icon"></div>,
-  ArrowUpIcon: () => <div data-testid="mock-arrowUp-icon"></div>,
   FolderIcon: () => <div data-testid="mock-folder-icon"></div>,
   KebabMenuIcon: () => <div data-testid="mock-kebab-icon"></div>,
   PlusIcon: () => <div data-testid="mock-plus-icon"></div>
@@ -50,13 +48,13 @@ describe('SidebarFolder Component', () => {
   })
 
   test('renders correctly with default props', () => {
-    const { container, getByText } = render(
+    const { getByText, getByTestId } = render(
       <ThemeProvider>
         <SidebarFolder {...defaultProps} />
       </ThemeProvider>
     )
     expect(getByText('Test Folder')).toBeInTheDocument()
-    expect(container).toMatchSnapshot()
+    expect(getByTestId('mock-icon')).toBeInTheDocument()
   })
 
   test('calls onClick handler when clicked', () => {
@@ -65,10 +63,10 @@ describe('SidebarFolder Component', () => {
         <SidebarFolder {...defaultProps} />
       </ThemeProvider>
     )
-    const wrapper = getByTestId('mock-arrowUp-icon')
+    const wrapper = getByTestId('sidebar-folder')
     fireEvent.click(wrapper)
 
-    expect(defaultProps.onDropDown).toHaveBeenCalledTimes(1)
+    expect(defaultProps.onClick).toHaveBeenCalledTimes(1)
   })
 
   test('renders with custom icon when provided', () => {

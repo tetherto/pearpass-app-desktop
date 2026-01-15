@@ -1,20 +1,21 @@
 import { useEffect, useRef } from 'react'
 
-import { MS_PER_MINUTE } from 'pearpass-lib-constants'
 import { closeAllInstances, useUserData, useVaults } from 'pearpass-lib-vault'
 
 import { NAVIGATION_ROUTES } from '../../../constants/navigation'
 import { useLoadingContext } from '../../../context/LoadingContext'
 import { useModal } from '../../../context/ModalContext'
 import { useRouter } from '../../../context/RouterContext'
+import {
+  getAutoLockTimeoutMs,
+  isAutoLockEnabled
+} from '../../../hooks/useAutoLockPreferences'
 import { logger } from '../../../utils/logger'
 
 /**
- * @param {Object} options - Configuration options for inactivity detection.
- * @param {number} [options.timeoutMs=60000] - Timeout duration in milliseconds before triggering inactivity actions.
  * @returns {void}
  */
-export function useInactivity({ timeoutMs = 5 * MS_PER_MINUTE } = {}) {
+export function useInactivity() {
   const { setIsLoading } = useLoadingContext()
   const { navigate } = useRouter()
   const { refetch: refetchUser } = useUserData()
@@ -27,6 +28,12 @@ export function useInactivity({ timeoutMs = 5 * MS_PER_MINUTE } = {}) {
     if (timerRef.current) {
       clearTimeout(timerRef.current)
     }
+
+    if (!isAutoLockEnabled()) {
+      return
+    }
+
+    const timeoutMs = getAutoLockTimeoutMs()
 
     timerRef.current = setTimeout(async () => {
       const userData = await refetchUser()
@@ -62,12 +69,19 @@ export function useInactivity({ timeoutMs = 5 * MS_PER_MINUTE } = {}) {
     // Handler for IPC activity
     const handleIPCActivity = () => resetTimer()
 
+    // Handler for settings changes - reset timer with new values
+    const handleSettingsChange = () => resetTimer()
+
     activityEvents.forEach((event) =>
       window.addEventListener(event, resetTimer)
     )
 
     // Listen for IPC activity events
     window.addEventListener('ipc-activity', handleIPCActivity)
+
+    // Listen for auto-lock settings changes
+    window.addEventListener('auto-lock-settings-changed', handleSettingsChange)
+
     resetTimer()
 
     return () => {
@@ -75,6 +89,10 @@ export function useInactivity({ timeoutMs = 5 * MS_PER_MINUTE } = {}) {
         window.removeEventListener(event, resetTimer)
       )
       window.removeEventListener('ipc-activity', handleIPCActivity)
+      window.removeEventListener(
+        'auto-lock-settings-changed',
+        handleSettingsChange
+      )
       if (timerRef.current) clearTimeout(timerRef.current)
     }
   }, [])

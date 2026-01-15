@@ -22,19 +22,15 @@ jest.mock('../styles', () => ({
   )
 }))
 
-// Mock i18n with simple {count} interpolation so labels match actual UI
+// Mock i18n to handle translation with interpolation
 jest.mock('@lingui/react', () => ({
   useLingui: () => ({
     i18n: {
-      _: (msg, vars) => {
-        if (
-          vars &&
-          typeof vars.count !== 'undefined' &&
-          msg.includes('{count}')
-        ) {
-          return msg.replace('{count}', String(vars.count))
+      _: (key, values) => {
+        if (values?.count !== undefined) {
+          return `${values.count} words`
         }
-        return msg
+        return key
       }
     }
   })

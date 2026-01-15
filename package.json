@@ -26,8 +26,12 @@
         "appling",
         ".git",
         ".gitignore",
+        ".husky",
+        "e2e",
         "packages",
-        "src"
+        "scripts",
+        "src",
+        "tsconfig.json"
       ]
     }
   },
@@ -44,9 +48,11 @@
     "lingui:compile": "lingui compile",
     "update-submodules": "bash scripts/update-submodules.sh",
     "prepare": "husky",
-    "dev": "tsc && concurrently -n \"TypeScript,Pear\" -c \"blue,green\" \"tsc --watch\" \"pear run -d .\""
+    "watch:packages": "nodemon --watch packages --ext js,json --exec \"echo 'Packages changed'\"",
+    "dev": "concurrently -n \"TypeScript,Packages,Pear\" -c \"blue,cyan,green\" \"tsc --watch\" \"npm run watch:packages\" \"pear run -d .\""
   },
   "devDependencies": {
+    "nodemon": "^3.0.0",
     "@babel/core": "7.26.10",
     "@babel/preset-env": "7.26.9",
     "@babel/preset-react": "7.26.3",

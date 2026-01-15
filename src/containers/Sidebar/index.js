@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
 
-import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import { matchPatternToValue } from 'pear-apps-utils-pattern-search'
 import {
@@ -11,7 +10,6 @@ import {
 } from 'pearpass-lib-vault'
 
 import { SideBarCategories } from './SidebarCategories'
-import { SidebarNestedFolders } from './SidebarNestedFolders'
 import {
   FoldersWrapper,
   LogoWrapper,
@@ -24,12 +22,13 @@ import {
   SidebarWrapper
 } from './styles'
 import { DropdownSwapVault } from '../../components/DropdownSwapVault'
+import { SidebarFolder } from '../../components/SidebarFolder'
 import { SidebarSearch } from '../../components/SidebarSearch'
 import { NAVIGATION_ROUTES } from '../../constants/navigation'
-import { RECORD_ICON_BY_TYPE } from '../../constants/recordIconByType'
 import { useLoadingContext } from '../../context/LoadingContext'
 import { useModal } from '../../context/ModalContext'
 import { useRouter } from '../../context/RouterContext'
+import { useTranslation } from '../../hooks/useTranslation.js'
 import {
   ButtonThin,
   ExitIcon,
@@ -38,7 +37,9 @@ import {
   UserSecurityIcon
 } from '../../lib-react-components'
 import { LogoLock } from '../../svgs/LogoLock'
+import { FAVORITES_FOLDER_ID } from '../../utils/isFavorite'
 import { AddDeviceModalContent } from '../Modal/AddDeviceModalContent'
+import { CreateFolderModalContent } from '../Modal/CreateFolderModalContent'
 
 /**
  * @param {{
@@ -46,18 +47,14 @@ import { AddDeviceModalContent } from '../Modal/AddDeviceModalContent'
  * }} props
  */
 export const Sidebar = ({ sidebarSize = 'tight' }) => {
-  const { i18n } = useLingui()
+  const { t } = useTranslation()
   const { navigate, data: routerData } = useRouter()
 
   const [searchValue, setSearchValue] = useState('')
 
-  const [expandedFolders, setExpandednFolders] = useState(['allFolders'])
-
   const { setIsLoading } = useLoadingContext()
 
-  const { data, isLoading } = useFolders({
-    variables: { searchPattern: searchValue }
-  })
+  const { data, isLoading } = useFolders()
 
   const {
     data: vaultsData,
@@ -88,61 +85,39 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
     setIsLoading(false)
   }
 
-  const matchesSearch = (records, searchValue) => {
-    if (!searchValue) {
-      return false
-    }
-
-    return records.some((record) =>
-      matchPatternToValue(searchValue, record?.data?.title ?? '')
-    )
-  }
-
   const folders = React.useMemo(() => {
-    const { favorites, noFolder, customFolders } = data || {}
+    const { customFolders } = data || {}
 
     const otherFolders = Object.values(customFolders ?? {})
+      .map(({ name }) => ({
+        name,
+        id: name,
+        isActive: routerData?.folder === name
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name))
 
-    return [
-      {
-        name: i18n._('Favorite'),
-        id: 'favorites',
-        icon: StarIcon,
-        isOpenInitially: expandedFolders.includes('favorites'),
-        children:
-          favorites?.records?.map((record) => ({
-            name: record?.data?.title,
-            id: record?.id,
-            icon: RECORD_ICON_BY_TYPE[record?.type]
-          })) ?? []
-      },
-      {
-        name: i18n._('All Folders'),
-        id: 'allFolders',
-        isOpenInitially: expandedFolders.includes('allFolders'),
-        children: [
-          ...otherFolders.map((folder) => ({
-            name: folder.name,
-            id: folder.name,
-            isActive: routerData?.folder === folder.name,
-            isOpenInitially:
-              matchesSearch(folder.records ?? [], searchValue) ||
-              expandedFolders.includes(folder.name),
-            children: folder.records?.map((record) => ({
-              name: record?.data?.title,
-              id: record?.id,
-              icon: RECORD_ICON_BY_TYPE[record?.type]
-            }))
-          })),
-          ...(noFolder?.records?.map((record) => ({
-            name: record?.data?.title,
-            id: record?.id,
-            icon: RECORD_ICON_BY_TYPE[record?.type]
-          })) ?? [])
-        ]
-      }
-    ]
-  }, [data, i18n, routerData, expandedFolders])
+    const filteredFolders = searchValue
+      ? otherFolders.filter((folder) =>
+          matchPatternToValue(searchValue, folder.name)
+        )
+      : otherFolders
+
+    const allItemsFolder = {
+      name: t('All Items'),
+      id: 'allItems',
+      isRoot: true,
+      isActive: !routerData?.folder && routerData?.recordType === 'all'
+    }
+
+    const favoritesFolder = {
+      name: t('Favorites'),
+      id: FAVORITES_FOLDER_ID,
+      icon: StarIcon,
+      isActive: routerData?.folder === FAVORITES_FOLDER_ID
+    }
+
+    return [allItemsFolder, favoritesFolder, ...filteredFolders]
+  }, [data, t, routerData, searchValue])
 
   const { setModal } = useModal()
 
@@ -150,16 +125,17 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
     setModal(html`<${AddDeviceModalContent} />`)
   }
 
-  const handleFolderExpandToggle = (id) => {
-    setExpandednFolders((prev) => {
-      const isFolderExpandend = prev.includes(id)
+  const handleAddFolderClick = () => {
+    setModal(html`<${CreateFolderModalContent} />`)
+  }
 
-      if (isFolderExpandend) {
-        return prev.filter((folderId) => folderId !== id)
-      }
+  const handleFolderClick = (id) => {
+    if (id === 'allItems') {
+      navigate('vault', { recordType: 'all' })
+      return
+    }
 
-      return [...prev, id]
-    })
+    navigate('vault', { recordType: 'all', folder: id })
   }
 
   useEffect(() => {
@@ -187,16 +163,22 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
               onChange=${setSearchValue}
             />
 
-            <${FoldersWrapper} data-testid="sidebar-folders-container">
-              ${folders.map(
-                (folder) =>
-                  html`<${SidebarNestedFolders}
-                    item=${folder}
-                    testId=${`sidebar-folder-${folder.id}`}
-                    onFolderExpandToggle=${handleFolderExpandToggle}
-                    key="rootFolder"
-                  />`
-              )}
+            <${FoldersWrapper}>
+              ${folders.map(({ id, isRoot, name, icon, isActive }) => {
+                const hasMenu = id !== FAVORITES_FOLDER_ID && !isRoot
+
+                return html`<${SidebarFolder}
+                  key=${id}
+                  isOpen=${false}
+                  onClick=${() => handleFolderClick(id)}
+                  onAddClick=${handleAddFolderClick}
+                  isRoot=${isRoot}
+                  name=${name}
+                  icon=${icon}
+                  isActive=${isActive}
+                  hasMenu=${hasMenu}
+                />`
+              })}
             <//>
           <//>
         `}
@@ -208,7 +190,7 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
           onClick=${handleSettingsClick}
         >
           <${SettingsIcon} size="24" />
-          ${i18n._('Settings')}
+          ${t('Settings')}
         <//>
 
         <${SettingsSeparator} />
@@ -218,7 +200,7 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
           startIcon=${UserSecurityIcon}
           onClick=${handleAddDevice}
         >
-          ${i18n._('Add a Device')}
+          ${t('Add a Device')}
         <//>
 
         <${ButtonThin}
@@ -226,7 +208,7 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
           startIcon=${ExitIcon}
           onClick=${handleExitVault}
         >
-          ${i18n._('Exit Vault')}
+          ${t('Exit Vault')}
         <//>
       <//>
     <//>

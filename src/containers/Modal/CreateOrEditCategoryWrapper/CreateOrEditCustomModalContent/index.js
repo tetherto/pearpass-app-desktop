@@ -44,6 +44,7 @@ import { UploadFilesModalContent } from '../../UploadImageModalContent'
  *   }
  *  }
  *  selectedFolder?: string
+ *  isFavorite?: boolean
  *  onTypeChange: (type: string) => void
  * }} props
  * @returns
@@ -51,6 +52,7 @@ import { UploadFilesModalContent } from '../../UploadImageModalContent'
 export const CreateOrEditCustomModalContent = ({
   initialRecord,
   selectedFolder,
+  isFavorite,
   onTypeChange
 }) => {
   const { i18n } = useLingui()
@@ -128,7 +130,7 @@ export const CreateOrEditCustomModalContent = ({
     const data = {
       type: RECORD_TYPES.CUSTOM,
       folder: values.folder,
-      isFavorite: initialRecord?.isFavorite,
+      isFavorite: initialRecord?.isFavorite ?? isFavorite,
       data: {
         title: values.title,
         customFields: values.customFields,

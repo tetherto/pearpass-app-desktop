@@ -52,6 +52,12 @@ class LoginPage {
   async hasError() {
     return await this.errorMessage.isVisible().catch(() => false)
   }
+
+  async loginToApplication(password) {
+    await expect(this.title).toHaveText('Enter your Master password')
+    await this.enterPassword(password)
+    await this.clickContinue()
+  }
 }
 
 module.exports = { LoginPage }

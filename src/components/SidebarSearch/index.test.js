@@ -42,7 +42,7 @@ describe('SidebarSearch Component', () => {
         <SidebarSearch {...defaultProps} />
       </ThemeProvider>
     )
-    const input = getByPlaceholderText('Search folder...')
+    const input = getByPlaceholderText('Search...')
     fireEvent.change(input, { target: { value: 'test search' } })
     expect(defaultProps.onChange).toHaveBeenCalledWith('test search')
   })
@@ -66,7 +66,7 @@ describe('SidebarSearch Component', () => {
         <SidebarSearch {...defaultProps} />
       </ThemeProvider>
     )
-    expect(getByPlaceholderText('Search folder...')).toBeInTheDocument()
+    expect(getByPlaceholderText('Search...')).toBeInTheDocument()
   })
 
   test('input has search type attribute', () => {
@@ -75,7 +75,7 @@ describe('SidebarSearch Component', () => {
         <SidebarSearch {...defaultProps} />
       </ThemeProvider>
     )
-    const input = getByPlaceholderText('Search folder...')
+    const input = getByPlaceholderText('Search...')
     expect(input).toHaveAttribute('type', 'search')
   })
 })

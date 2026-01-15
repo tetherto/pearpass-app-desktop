@@ -1,4 +1,5 @@
 import { html } from 'htm/react'
+import { MAX_IMPORT_RECORDS } from 'pearpass-lib-constants'
 import {
   parse1PasswordData,
   parseBitwardenData,
@@ -130,7 +131,21 @@ export const ImportTab = () => {
         return
       }
 
-      await Promise.all(result.map((record) => createRecord(record, onError)))
+      if (result.length > MAX_IMPORT_RECORDS) {
+        setToast({
+          message: t(`Too many records. Maximum is ${MAX_IMPORT_RECORDS}.`)
+        })
+        return
+      }
+
+      const BATCH_SIZE = 100
+      const totalRecords = result.length
+
+      for (let i = 0; i < totalRecords; i += BATCH_SIZE) {
+        const batch = result.slice(i, i + BATCH_SIZE)
+        await Promise.all(batch.map((record) => createRecord(record, onError)))
+      }
+
       setToast({
         message: t('Data imported successfully')
       })

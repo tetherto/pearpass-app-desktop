@@ -2,7 +2,7 @@
 
 exports[`ButtonPrimary Component matches snapshot with default size ("md") 1`] = `
 <button
-  class="sc-bRKDuR hyWkNR"
+  class="sc-bRKDuR flWxLj"
   data-testid="button-primary"
   type="button"
 >
@@ -12,7 +12,7 @@ exports[`ButtonPrimary Component matches snapshot with default size ("md") 1`] =
 
 exports[`ButtonPrimary Component matches snapshot with large size ("lg") 1`] = `
 <button
-  class="sc-bRKDuR gbEtMn"
+  class="sc-bRKDuR YcwLB"
   data-testid="button-primary"
   type="button"
 >
@@ -22,7 +22,7 @@ exports[`ButtonPrimary Component matches snapshot with large size ("lg") 1`] = `
 
 exports[`ButtonPrimary Component matches snapshot with small size ("sm") 1`] = `
 <button
-  class="sc-bRKDuR jeXqYj"
+  class="sc-bRKDuR iIkeHh"
   data-testid="button-primary"
   type="button"
 >

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 
 import { html } from 'htm/react'
 
+import { AutoLockConfiguration } from './SettingsAutoLockConfiguration'
 import { SettingsBlindPeersSection } from './SettingsBlindPeersSection'
 import { SwitchList, SwitchWrapper } from './styles'
 import { CardSingleSetting } from '../../../components/CardSingleSetting'
@@ -108,6 +109,8 @@ export const SettingsAdvancedTab = () => {
           stretch=${false}
           setRules=${handleSetRules}
         />
+
+        <${AutoLockConfiguration} />
       <//>
     <//>
 

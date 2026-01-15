@@ -1,6 +1,6 @@
 /** @typedef {import('pear-interface')} */ /* global Pear */
 // We declare Pear here to ensure TypeScript is happy if the global types aren't automatically picked up
-declare const Pear: any;
+declare const Pear: any
 
 import { i18n } from '@lingui/core'
 import { I18nProvider } from '@lingui/react'
@@ -51,33 +51,9 @@ startNativeMessagingIPC(client).catch((err: unknown) => {
   logger.error('INDEX', 'Failed to start IPC server:', err)
 })
 
-let inactivityTimeout: ReturnType<typeof setTimeout>
-
-const resetInactivityTimer = () => {
-  clearTimeout(inactivityTimeout)
-
-  inactivityTimeout = setTimeout(() => {
-    window.dispatchEvent(new Event('user-inactive'))
-  }, 60 * 1000)
-}
-
-const activityEvents = [
-  'mousemove',
-  'mousedown',
-  'keydown',
-  'touchstart',
-  'scroll'
-]
-
-activityEvents.forEach((event) =>
-  window.addEventListener(event, resetInactivityTimer)
-)
-
-resetInactivityTimer()
-
 // Render the application
 const container = document.querySelector('#root')
-if (!container) throw new Error('Failed to find the root element');
+if (!container) throw new Error('Failed to find the root element')
 
 const root = createRoot(container)
 // const html = htm.bind(createElement) // Removed htm binding
