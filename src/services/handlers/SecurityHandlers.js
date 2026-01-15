@@ -6,8 +6,6 @@ import {
   getFingerprint,
   verifyPairingToken,
   resetIdentity,
-  setPairingApproved,
-  isPairingApproved,
   setClientIdentityPublicKey,
   getClientIdentityPublicKey
 } from '../security/appIdentity.js'
@@ -39,6 +37,13 @@ export class SecurityHandlers {
       )
     }
 
+    // Require the extension to provide its public key for mutual authentication
+    if (!clientEd25519PublicKeyB64) {
+      throw new Error(
+        'ClientPublicKeyRequired: Extension must provide its Ed25519 public key'
+      )
+    }
+
     const id = await getOrCreateIdentity(this.client)
 
     // Verify the pairing token matches what the desktop app expects
@@ -51,17 +56,8 @@ export class SecurityHandlers {
       throw new Error('InvalidPairingToken: The pairing token is incorrect')
     }
 
-    // Best-effort: record that the user approved pairing
-    try {
-      await setPairingApproved(this.client)
-    } catch {
-      // If this fails, the user will just need to approve pairing again later
-    }
-
-    // If client identity was provided, store its public key for mutual auth
-    if (clientEd25519PublicKeyB64) {
-      await setClientIdentityPublicKey(this.client, clientEd25519PublicKeyB64)
-    }
+    // Store the client's public key for mutual auth in future handshakes
+    await setClientIdentityPublicKey(this.client, clientEd25519PublicKeyB64)
 
     return {
       ed25519PublicKey: id.ed25519PublicKey,
@@ -82,11 +78,11 @@ export class SecurityHandlers {
       )
     }
 
-    // Require that user has approved pairing for this identity
-    const approved = await isPairingApproved(this.client)
-    if (!approved) {
+    // Require a pinned client public key (set during pairing via nmGetAppIdentity)
+    const clientPubB64 = await getClientIdentityPublicKey(this.client)
+    if (!clientPubB64) {
       throw new Error(
-        'NotPaired: Desktop app pairing has not been approved by the user'
+        'NotPaired: No client identity registered. Please complete pairing first.'
       )
     }
 

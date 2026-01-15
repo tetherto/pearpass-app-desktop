@@ -43,16 +43,16 @@ describe('SecurityHandlers', () => {
   })
 
   describe('nmGetAppIdentity', () => {
-    beforeEach(() => {
-      // setPairingApproved is awaited and then caught in implementation
-      // so it must return a Promise in tests
-      appIdentity.setPairingApproved.mockResolvedValue(undefined)
-    })
-
     it('throws if pairingToken is missing', async () => {
       await expect(handlers.nmGetAppIdentity({})).rejects.toThrow(
         /PairingTokenRequired/
       )
+    })
+
+    it('throws if clientEd25519PublicKeyB64 is missing', async () => {
+      await expect(
+        handlers.nmGetAppIdentity({ pairingToken: 'token' })
+      ).rejects.toThrow(/ClientPublicKeyRequired/)
     })
 
     it('throws if verifyPairingToken returns false', async () => {
@@ -62,18 +62,31 @@ describe('SecurityHandlers', () => {
       })
       appIdentity.verifyPairingToken.mockResolvedValue(false)
       await expect(
-        handlers.nmGetAppIdentity({ pairingToken: 'token' })
+        handlers.nmGetAppIdentity({
+          pairingToken: 'token',
+          clientEd25519PublicKeyB64: 'clientPub'
+        })
       ).rejects.toThrow(/InvalidPairingToken/)
     })
 
-    it('returns identity info if pairingToken is valid', async () => {
+    it('returns identity info and stores client public key if pairingToken is valid', async () => {
       appIdentity.getOrCreateIdentity.mockResolvedValue({
         ed25519PublicKey: 'pubKey',
         x25519PublicKey: 'xPubKey'
       })
       appIdentity.verifyPairingToken.mockResolvedValue(true)
       appIdentity.getFingerprint.mockReturnValue('fingerprint')
-      const result = await handlers.nmGetAppIdentity({ pairingToken: 'token' })
+      appIdentity.setClientIdentityPublicKey.mockResolvedValue(undefined)
+
+      const result = await handlers.nmGetAppIdentity({
+        pairingToken: 'token',
+        clientEd25519PublicKeyB64: 'clientPub'
+      })
+
+      expect(appIdentity.setClientIdentityPublicKey).toHaveBeenCalledWith(
+        client,
+        'clientPub'
+      )
       expect(result).toEqual({
         ed25519PublicKey: 'pubKey',
         x25519PublicKey: 'xPubKey',
@@ -85,8 +98,8 @@ describe('SecurityHandlers', () => {
   describe('nmBeginHandshake', () => {
     beforeEach(() => {
       getNativeMessagingEnabled.mockReturnValue(true)
-      // By default, simulate approved pairing so handshake can proceed
-      appIdentity.isPairingApproved.mockResolvedValue(true)
+      // By default, simulate a paired client with a stored public key
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue('clientPubKey')
     })
 
     it('throws if native messaging is disabled', async () => {
@@ -96,29 +109,31 @@ describe('SecurityHandlers', () => {
       ).rejects.toThrow(/NativeMessagingDisabled/)
     })
 
+    it('throws if no client public key is stored (not paired)', async () => {
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue(null)
+
+      await expect(
+        handlers.nmBeginHandshake({ extEphemeralPubB64: 'abc' })
+      ).rejects.toThrow(/NotPaired/)
+      expect(sessionManager.beginHandshake).not.toHaveBeenCalled()
+    })
+
     it('throws if extEphemeralPubB64 is missing', async () => {
       await expect(handlers.nmBeginHandshake({})).rejects.toThrow(
         /Missing extEphemeralPubB64/
       )
     })
 
-    it('calls beginHandshake with correct params when pairing approved', async () => {
+    it('calls beginHandshake with correct params when client is paired', async () => {
       sessionManager.beginHandshake.mockResolvedValue('handshake-result')
       const result = await handlers.nmBeginHandshake({
         extEphemeralPubB64: 'abc'
       })
-      expect(appIdentity.isPairingApproved).toHaveBeenCalledWith(client)
+      expect(appIdentity.getClientIdentityPublicKey).toHaveBeenCalledWith(
+        client
+      )
       expect(sessionManager.beginHandshake).toHaveBeenCalledWith(client, 'abc')
       expect(result).toBe('handshake-result')
-    })
-
-    it('throws if pairing has not been approved', async () => {
-      appIdentity.isPairingApproved.mockResolvedValue(false)
-
-      await expect(
-        handlers.nmBeginHandshake({ extEphemeralPubB64: 'abc' })
-      ).rejects.toThrow(/NotPaired/)
-      expect(sessionManager.beginHandshake).not.toHaveBeenCalled()
     })
   })
 

@@ -10,7 +10,6 @@ import { logger } from '../../utils/logger.js'
 const ENC_KEY_ED25519 = 'nm.identity.ed25519'
 const ENC_KEY_X25519 = 'nm.identity.x25519'
 const ENC_KEY_CREATION_DATE = 'nm.identity.creationDate'
-const ENC_KEY_PAIRING_APPROVED = 'nm.identity.pairingApproved'
 const ENC_KEY_CLIENT_ED25519_PUB = 'nm.client.identity.ed25519Pub'
 const ENC_KEY_PAIRING_SECRET = 'nm.identity.pairingSecret'
 
@@ -332,7 +331,6 @@ export const resetIdentity = async (client) => {
     await client.encryptionAdd(ENC_KEY_ED25519, '').catch(() => {})
     await client.encryptionAdd(ENC_KEY_X25519, '').catch(() => {})
     await client.encryptionAdd(ENC_KEY_CREATION_DATE, '').catch(() => {})
-    await client.encryptionAdd(ENC_KEY_PAIRING_APPROVED, '').catch(() => {})
     await client.encryptionAdd(ENC_KEY_CLIENT_ED25519_PUB, '').catch(() => {})
     await client.encryptionAdd(ENC_KEY_PAIRING_SECRET, '').catch(() => {})
 
@@ -358,24 +356,6 @@ export const resetIdentity = async (client) => {
 // Internal: expose in-memory identity for session fallback
 // eslint-disable-next-line no-underscore-dangle
 export const __getMemIdentity = () => MEMORY_IDENTITY
-
-/**
- * Mark that the user has approved pairing for the current identity.
- */
-export const setPairingApproved = async (client) => {
-  await client.encryptionAdd(ENC_KEY_PAIRING_APPROVED, 'true')
-}
-
-/**
- * Check if pairing has been approved for the current identity.
- * @returns {Promise<boolean>}
- */
-export const isPairingApproved = async (client) => {
-  const val = normalizeEncryptionGet(
-    await client.encryptionGet(ENC_KEY_PAIRING_APPROVED).catch(() => null)
-  )
-  return !!val
-}
 
 /**
  * Store client (extension) Ed25519 public key.
