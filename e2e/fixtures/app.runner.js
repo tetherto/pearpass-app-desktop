@@ -19,14 +19,10 @@ async function connectWithRetries(wsEndpoint, maxRetries) {
   
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      if (isWindows) {
-        // Windows: first attempt immediate, then 1s delays
-        if (attempt > 0) {
-          await sleep(1000)
-        }
-      } else {
-        // Mac: exponential backoff
-        await sleep(2 ** attempt * 1000)
+      // Sleep AFTER first attempt fails, not before
+      if (attempt > 0) {
+        const delay = isWindows ? 1000 : 2 ** attempt * 1000
+        await sleep(delay)
       }
       
       console.log(`[CDP] Attempting connection to ${wsEndpoint} (attempt ${attempt + 1}/${retries + 1})`)
@@ -116,12 +112,10 @@ async function launchApp(appDir) {
     proc.unref()
   }
 
-  // Windows needs a longer initial delay
-  const initialDelay = isWindows ? 3000 : 0
-  if (initialDelay > 0) {
-    console.log(`[Launch] Waiting ${initialDelay}ms for app to initialize...`)
-    await sleep(initialDelay)
-  }
+  // Give the app time to start before trying to connect
+  const initialDelay = isWindows ? 3000 : 1000
+  console.log(`[Launch] Waiting ${initialDelay}ms for app to initialize...`)
+  await sleep(initialDelay)
 
   const browser = await connectWithRetries(`http://localhost:${port}`)
   
@@ -139,26 +133,62 @@ async function launchApp(appDir) {
     throw new Error('Could not find app page')
   }
 
-  // Windows: wait for page to be fully loaded
+  // Wait for page to be fully loaded on all platforms
+  console.log('[Launch] Waiting for page to be ready...')
+  await page.waitForLoadState('domcontentloaded')
+  
+  // Windows needs additional settling time
   if (isWindows) {
-    console.log('[Launch] Waiting for page to be ready...')
-    await page.waitForLoadState('domcontentloaded')
     await sleep(2000)
   }
 
   return { proc, browser, page, isWindows }
 }
 
+const { spawnSync } = require('child_process');
+
 async function teardown({ proc, browser, isWindows }) {
-  await browser.close()
-  if (isWindows) {
-    spawn('taskkill', ['/PID', String(proc.pid), '/T', '/F'], {
-      stdio: 'inherit'
-    })
-  } else {
-    process.kill(-proc.pid, 'SIGKILL')
+  try {
+    if (proc?.pid) {
+      if (isWindows) {
+        // ❌ spawn async taskkill često ne ubije sve child procese
+        // ✅ koristimo spawnSync da sačekamo
+        console.log(`[Teardown] Killing Electron process PID=${proc.pid} ...`);
+        spawnSync('taskkill', ['/PID', String(proc.pid), '/T', '/F'], { stdio: 'inherit' });
+      } else {
+        console.log(`[Teardown] Killing Electron process PID=${proc.pid} ...`);
+        process.kill(-proc.pid, 'SIGKILL');
+      }
+    }
+  } catch (e) {
+    console.warn('Electron process already terminated or could not be killed', e.message);
+  }
+
+  // Mali delay da OS oslobodi port i prozore
+  await new Promise(r => setTimeout(r, 500));
+
+  // Close CDP browser connection
+  try {
+    if (browser) {
+      console.log('[Teardown] Closing CDP browser connection...');
+      await browser.close();
+    }
+  } catch (e) {
+    console.warn('Browser already closed', e.message);
   }
 }
+
+
+// async function teardown({ proc, browser, isWindows }) {
+//   await browser.close()
+//   if (isWindows) {
+//     spawn('taskkill', ['/PID', String(proc.pid), '/T', '/F'], {
+//       stdio: 'inherit'
+//     })
+//   } else {
+//     process.kill(-proc.pid, 'SIGKILL')
+//   }
+// }
 
 exports.test = base.extend({
   app: [

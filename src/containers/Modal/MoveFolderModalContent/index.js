@@ -4,16 +4,16 @@ import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import { useRecords, useFolders } from 'pearpass-lib-vault'
 
-import { useModal } from '../../../context/ModalContext'
-import { ModalContent } from '../ModalContent'
 import { FolderList, HeaderWrapper } from './styles'
 import { useGlobalLoading } from '../../../context/LoadingContext'
+import { useModal } from '../../../context/ModalContext'
 import {
   ButtonFolder,
   ButtonSingleInput,
   NewFolderIcon
 } from '../../../lib-react-components'
 import { CreateFolderModalContent } from '../CreateFolderModalContent'
+import { ModalContent } from '../ModalContent'
 
 /**
  * @param {{

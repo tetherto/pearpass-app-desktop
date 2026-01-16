@@ -1,10 +1,10 @@
 import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 
+import { ButtonWrapper, HeaderWrapper, TextWrapper } from './styles'
 import { useModal } from '../../../context/ModalContext'
 import { ButtonPrimary, ButtonSecondary } from '../../../lib-react-components'
 import { ModalContent } from '../ModalContent'
-import { ButtonWrapper, HeaderWrapper, TextWrapper } from './styles'
 
 /**
  * @param {{
