@@ -9,11 +9,13 @@ import {
   setClientIdentityPublicKey,
   getClientIdentityPublicKey
 } from '../security/appIdentity.js'
+import { PROTOCOL_TAGS } from '../security/protocolConstants.js'
 import { beginHandshake } from '../security/sessionManager.js'
 import {
   getSession,
   closeSession,
-  clearAllSessions
+  clearAllSessions,
+  concatBytes
 } from '../security/sessionStore.js'
 
 /**
@@ -132,10 +134,19 @@ export class SecurityHandlers {
       throw new Error('InvalidTranscript')
     }
 
-    // Verify client Ed25519 signature over transcript
+    // Build client transcript with protocol tag + session ID binding
+    // Client signs: tag || session_id || host_eph_pk || ext_eph_pk || client_ed25519_pk
+    const protocolTag = Buffer.from(PROTOCOL_TAGS.CLIENT_FINISH, 'utf8')
+    const sessionIdBytes = Buffer.from(String(sessionId), 'utf8')
+    const clientTranscript = concatBytes(
+      concatBytes(protocolTag, sessionIdBytes),
+      session.transcript
+    )
+
+    // Verify client Ed25519 signature over enhanced transcript
     const ok = sodium.crypto_sign_verify_detached(
       sigBytes,
-      session.transcript,
+      clientTranscript,
       clientPubBytes
     )
 
