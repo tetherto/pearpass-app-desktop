@@ -10,6 +10,7 @@ jest.mock('sodium-native', () => ({
   randombytes_buf: jest.fn(),
   sodium_malloc: jest.fn((size) => Buffer.alloc(size)),
   crypto_sign_PUBLICKEYBYTES: 32,
+  crypto_sign_BYTES: 64,
   crypto_sign_SECRETKEYBYTES: 64,
   crypto_kx_PUBLICKEYBYTES: 32,
   crypto_kx_SECRETKEYBYTES: 32,
@@ -226,7 +227,7 @@ describe('SecurityHandlers', () => {
       const session = { id: 'sid', transcript: new Uint8Array([1, 2, 3]) }
       sessionStore.getSession.mockReturnValue(session)
       appIdentity.getClientIdentityPublicKey.mockResolvedValue(
-        Buffer.from('pub').toString('base64')
+        Buffer.alloc(32, 1).toString('base64')
       )
       const sodium = require('sodium-native')
       sodium.crypto_sign_verify_detached.mockReturnValue(false)
@@ -234,7 +235,7 @@ describe('SecurityHandlers', () => {
       await expect(
         handlers.nmFinishHandshake({
           sessionId: 'sid',
-          clientSigB64: Buffer.from('sig').toString('base64')
+          clientSigB64: Buffer.alloc(64, 2).toString('base64')
         })
       ).rejects.toThrow(/ClientSignatureInvalid/)
 
