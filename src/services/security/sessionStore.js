@@ -70,9 +70,16 @@ export const createSession = (sharedSecret, transcript) => {
 export const getSession = (sessionId) => {
   const session = SESSIONS.get(sessionId)
   if (!session) return null
+  if (
+    typeof session.createdAt !== 'number' ||
+    !Number.isFinite(session.createdAt)
+  ) {
+    SESSIONS.delete(sessionId)
+    return null
+  }
 
   // Check if session has expired
-  if (Date.now() - session.createdAt > SESSION_TTL_MS) {
+  if (Date.now() - session.createdAt >= SESSION_TTL_MS) {
     SESSIONS.delete(sessionId)
     return null
   }

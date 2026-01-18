@@ -12,6 +12,7 @@ const ENC_KEY_X25519 = 'nm.identity.x25519'
 const ENC_KEY_CREATION_DATE = 'nm.identity.creationDate'
 const ENC_KEY_CLIENT_ED25519_PUB = 'nm.client.identity.ed25519Pub'
 const ENC_KEY_PAIRING_SECRET = 'nm.identity.pairingSecret'
+const PAIRING_CODE_TAG = Buffer.from('pearpass/pairingcode/v1', 'utf8')
 
 // In-memory fallback cache if persistence is unavailable (e.g., before unlock)
 // Structure: { ed25519PublicKeyBytes, ed25519PrivateKeyBytes, x25519PublicKeyBytes, x25519PrivateKeyBytes, creationDate }
@@ -55,15 +56,24 @@ const getOrCreatePairingSecret = async (client) => {
   let pairingSecretB64 = normalizeEncryptionGet(
     await client.encryptionGet(ENC_KEY_PAIRING_SECRET).catch(() => null)
   )
+  if (pairingSecretB64) {
+    const bytes = Buffer.from(pairingSecretB64, 'base64')
+    if (bytes.length !== 32) {
+      throw new Error('InvalidPairingSecret')
+    }
+  }
 
   if (!pairingSecretB64) {
     const secretBytes = new Uint8Array(32)
     sodium.randombytes_buf(secretBytes)
     pairingSecretB64 = Buffer.from(secretBytes).toString('base64')
-
-    await client
-      .encryptionAdd(ENC_KEY_PAIRING_SECRET, pairingSecretB64)
-      .catch(() => {})
+    try {
+      await client.encryptionAdd(ENC_KEY_PAIRING_SECRET, pairingSecretB64)
+    } catch (err) {
+      throw new Error(
+        `PairingSecretPersistenceFailed: ${err?.message || 'Unknown error'}`
+      )
+    }
   }
 
   return pairingSecretB64
@@ -250,10 +260,13 @@ export const getOrCreateIdentity = async (client) => {
 export const getPairingCode = (ed25519PublicKeyB64, pairingSecretB64) => {
   const secret = fromBase64(pairingSecretB64)
   const publicKey = fromBase64(ed25519PublicKeyB64)
-
-  // Compute H = SHA-256(secret || publicKey)
-  const input = new Uint8Array(secret.length + publicKey.length)
-  input.set(secret, 0)
+  // Compute H = SHA-256(tag || secret || publicKey) for domain separation
+  const input = new Uint8Array(
+    PAIRING_CODE_TAG.length + secret.length + publicKey.length
+  )
+  input.set(PAIRING_CODE_TAG, 0)
+  input.set(secret, PAIRING_CODE_TAG.length)
+  input.set(publicKey, PAIRING_CODE_TAG.length + secret.length)
   input.set(publicKey, secret.length)
 
   const out = new Uint8Array(32)

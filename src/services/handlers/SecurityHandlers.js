@@ -112,6 +112,7 @@ export class SecurityHandlers {
 
     const session = getSession(sessionId)
     if (!session) throw new Error('SessionNotFound')
+    if (session.clientVerified) return { ok: true }
 
     // Load pinned client identity
     const clientPubB64 = await getClientIdentityPublicKey(this.client)
@@ -121,6 +122,15 @@ export class SecurityHandlers {
 
     const clientPubBytes = new Uint8Array(Buffer.from(clientPubB64, 'base64'))
     const sigBytes = new Uint8Array(Buffer.from(clientSigB64, 'base64'))
+    if (clientPubBytes.length !== sodium.crypto_sign_PUBLICKEYBYTES) {
+      throw new Error('InvalidClientPublicKey')
+    }
+    if (sigBytes.length !== sodium.crypto_sign_BYTES) {
+      throw new Error('InvalidClientSignature')
+    }
+    if (!session.transcript || session.transcript.length === 0) {
+      throw new Error('InvalidTranscript')
+    }
 
     // Verify client Ed25519 signature over transcript
     const ok = sodium.crypto_sign_verify_detached(
