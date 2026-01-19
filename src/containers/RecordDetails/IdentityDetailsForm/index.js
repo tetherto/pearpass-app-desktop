@@ -189,10 +189,15 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
   return html`
     <${FormWrapper}>
       ${(hasFullName || hasEmail || hasPhoneNumber) &&
-      html` <${FormGroup} title=${i18n._('Personal information')} isCollapse>
+      html` <${FormGroup}
+        testId="identitydetails-section-personalinfo"
+        title=${i18n._('Personal information')}
+        isCollapse
+      >
         ${!!values?.fullName?.length &&
         html`
           <${InputField}
+            testId="identitydetails-field-fullname"
             label=${i18n._('Full name')}
             placeholder=${i18n._('Full name')}
             variant="outline"
@@ -204,6 +209,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
         `}
         ${!!values?.email?.length &&
         html` <${InputField}
+          testId="identitydetails-field-email"
           label=${i18n._('Email')}
           placeholder=${i18n._('Insert email')}
           variant="outline"
@@ -215,6 +221,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
         ${!!values?.phoneNumber?.length &&
         html`
           <${InputField}
+            testId="identitydetails-field-phonenumber"
             label=${i18n._('Phone number ')}
             placeholder=${i18n._('Phone number ')}
             variant="outline"
@@ -227,10 +234,15 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
       <//>`}
       ${(hasAddress || hasZip || hasCity || hasRegion || hasCountry) &&
       html`
-        <${FormGroup} title=${i18n._('Detail of address')} isCollapse>
+        <${FormGroup}
+          testId="identitydetails-section-address"
+          title=${i18n._('Detail of address')}
+          isCollapse
+        >
           ${!!values?.address?.length &&
           html`
             <${InputField}
+              testId="identitydetails-field-address"
               label=${i18n._('Address')}
               placeholder=${i18n._('Address')}
               variant="outline"
@@ -242,6 +254,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
           ${!!values?.zip?.length &&
           html`
             <${InputField}
+              testId="identitydetails-field-zip"
               label=${i18n._('ZIP')}
               placeholder=${i18n._('Insert zip')}
               variant="outline"
@@ -253,6 +266,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
           ${!!values?.city?.length &&
           html`
             <${InputField}
+              testId="identitydetails-field-city"
               label=${i18n._('City')}
               placeholder=${i18n._('City')}
               variant="outline"
@@ -264,6 +278,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
           ${!!values?.region?.length &&
           html`
             <${InputField}
+              testId="identitydetails-field-region"
               label=${i18n._('Region')}
               placeholder=${i18n._('Region')}
               variant="outline"
@@ -275,6 +290,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
           ${!!values?.country?.length &&
           html`
             <${InputField}
+              testId="identitydetails-field-country"
               label=${i18n._('Country')}
               placeholder=${i18n._('Country')}
               variant="outline"
@@ -287,11 +303,16 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
       `}
       ${hasPassport &&
       html`
-        <${FormGroup} title=${i18n._('Passport')} isCollapse>
+        <${FormGroup}
+          testId="identitydetails-section-passport"
+          title=${i18n._('Passport')}
+          isCollapse
+        >
           <div>
             ${hasPassportFullName &&
             html`
               <${InputField}
+                testId="identitydetails-field-passportfullname"
                 label=${i18n._('Full name')}
                 placeholder=${i18n._('John Smith')}
                 variant="outline"
@@ -303,6 +324,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
             ${hasPassportNumber &&
             html`
               <${InputField}
+                testId="identitydetails-field-passportnumber"
                 label=${i18n._('Passport number')}
                 placeholder=${i18n._('Insert numbers')}
                 variant="outline"
@@ -314,6 +336,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
             ${hasPassportIssuingCountry &&
             html`
               <${InputField}
+                testId="identitydetails-field-passportissuingcountry"
                 label=${i18n._('Issuing country')}
                 placeholder=${i18n._('Insert country')}
                 variant="outline"
@@ -325,6 +348,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
             ${hasPassportDateOfIssue &&
             html`
               <${InputField}
+                testId="identitydetails-field-passportdateofissue"
                 label=${i18n._('Date of issue')}
                 placeholder=${DATE_FORMAT}
                 variant="outline"
@@ -336,6 +360,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
             ${hasPassportExpiryDate &&
             html`
               <${InputField}
+                testId="identitydetails-field-passportexpirydate"
                 label=${i18n._('Expiry date')}
                 placeholder=${DATE_FORMAT}
                 variant="outline"
@@ -347,6 +372,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
             ${hasPassportNationality &&
             html`
               <${InputField}
+                testId="identitydetails-field-passportnationality"
                 label=${i18n._('Nationality')}
                 placeholder=${i18n._('Insert your nationality')}
                 variant="outline"
@@ -358,6 +384,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
             ${hasPassportDob &&
             html`
               <${InputField}
+                testId="identitydetails-field-passportdob"
                 label=${i18n._('Date of birth')}
                 placeholder=${DATE_FORMAT}
                 variant="outline"
@@ -369,6 +396,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
             ${hasPassportGender &&
             html`
               <${InputField}
+                testId="identitydetails-field-passportgender"
                 label=${i18n._('Gender')}
                 placeholder=${i18n._('M/F')}
                 variant="outline"
@@ -380,6 +408,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
           <//>
           ${hasPassportPicture &&
           html` <${ImagesField}
+            testId="identitydetails-imagesfield-passport"
             title=${i18n._('Passport Images')}
             pictures=${values.passportPicture}
           />`}
@@ -387,11 +416,16 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
       `}
       ${hasIdCard &&
       html`
-        <${FormGroup} title=${i18n._('Identity Card')} isCollapse>
+        <${FormGroup}
+          testId="identitydetails-section-idcard"
+          title=${i18n._('Identity Card')}
+          isCollapse
+        >
           <div>
             ${hasIdCardNumber &&
             html`
               <${InputField}
+                testId="identitydetails-field-idcardnumber"
                 label=${i18n._('ID card number')}
                 placeholder="123456789"
                 variant="outline"
@@ -403,6 +437,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
             ${hasIdCardDateOfIssue &&
             html`
               <${InputField}
+                testId="identitydetails-field-idcarddateofissue"
                 label=${i18n._('Creation date')}
                 placeholder=${DATE_FORMAT}
                 variant="outline"
@@ -414,6 +449,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
             ${hasIdCardExpiryDate &&
             html`
               <${InputField}
+                testId="identitydetails-field-idcardexpirydate"
                 label=${i18n._('Expiry date')}
                 placeholder=${DATE_FORMAT}
                 variant="outline"
@@ -425,6 +461,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
             ${hasIdCardIssuingCountry &&
             html`
               <${InputField}
+                testId="identitydetails-field-idcardissuingcountry"
                 label=${i18n._('Issuing country')}
                 placeholder=${i18n._('Insert country')}
                 variant="outline"
@@ -436,17 +473,23 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
           <//>
           ${hasIdCardPicture &&
           html` <${ImagesField}
+            testId="identitydetails-imagesfield-idcard"
             title=${i18n._('Identity Card Images')}
             pictures=${values.idCardPicture}
           />`}
         <//>
       `}
       ${hasDrivingLicense &&
-      html` <${FormGroup} title=${i18n._('Driving license')} isCollapse>
+      html` <${FormGroup}
+        testId="identitydetails-section-drivinglicense"
+        title=${i18n._('Driving license')}
+        isCollapse
+      >
         <div>
           ${hasDrivingLicenseNumber &&
           html`
             <${InputField}
+              testId="identitydetails-field-drivinglicensenumber"
               label=${i18n._('Driving license number')}
               placeholder="123456789"
               variant="outline"
@@ -458,6 +501,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
           ${hasDrivingLicenseDateOfIssue &&
           html`
             <${InputField}
+              testId="identitydetails-field-drivinglicensedateofissue"
               label=${i18n._('Creation date')}
               placeholder=${DATE_FORMAT}
               variant="outline"
@@ -469,6 +513,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
           ${hasDrivingLicenseExpiryDate &&
           html`
             <${InputField}
+              testId="identitydetails-field-drivinglicenseexpirydate"
               label=${i18n._('Expiry date')}
               placeholder=${DATE_FORMAT}
               variant="outline"
@@ -480,6 +525,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
           ${hasDrivingLicenseIssuingCountry &&
           html`
             <${InputField}
+              testId="identitydetails-field-drivinglicenseissuingcountry"
               label=${i18n._('Issuing country')}
               placeholder=${i18n._('Insert country')}
               variant="outline"
@@ -491,6 +537,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
         <//>
         ${hasDrivingLicensePicture &&
         html` <${ImagesField}
+          testId="identitydetails-imagesfield-drivinglicense"
           title=${i18n._('Driving License Images')}
           pictures=${values.drivingLicensePicture}
         />`}
@@ -501,6 +548,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
           ${values.attachments.map(
             (attachment) => html`
               <${AttachmentField}
+                testId="identitydetails-attachment"
                 label=${i18n._('File')}
                 attachment=${attachment}
               />
@@ -512,6 +560,7 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
       html`
         <${FormGroup}>
           <${InputFieldNote}
+            testId="identitydetails-field-note"
             onClick=${handleCopy}
             isDisabled
             ...${register('note')}
