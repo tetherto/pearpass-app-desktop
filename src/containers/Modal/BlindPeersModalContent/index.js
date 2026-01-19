@@ -9,14 +9,7 @@ import {
 } from 'pearpass-lib-constants'
 import { useBlindMirrors } from 'pearpass-lib-vault'
 
-import {
-  ActionsContainer,
-  ContentWrapper,
-  FormWrapper,
-  HeaderWrapper
-} from './styles'
 import { RadioSelect } from '../../../components/RadioSelect'
-import { useTranslation } from '../../../hooks/useTranslation'
 import {
   ButtonPrimary,
   ButtonSecondary,
@@ -27,6 +20,13 @@ import {
   PlusIcon
 } from '../../../lib-react-components'
 import { ModalContent } from '../ModalContent'
+import {
+  ActionsContainer,
+  ContentWrapper,
+  FormWrapper,
+  HeaderWrapper
+} from './styles'
+import { useTranslation } from '../../../hooks/useTranslation'
 
 const { DEFAULT, PERSONAL } = BLIND_PEER_TYPE
 /**

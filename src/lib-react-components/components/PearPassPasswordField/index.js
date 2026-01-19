@@ -2,6 +2,10 @@ import { useState } from 'react'
 
 import { html } from 'htm/react'
 
+import { EyeClosedIcon } from '../../icons/EyeClosedIcon'
+import { EyeIcon } from '../../icons/EyeIcon'
+import { LockCircleIcon } from '../../icons/LockCircleIcon'
+import { ButtonRoundIcon } from '../ButtonRoundIcon'
 import {
   AdditionalItems,
   IconWrapper,
@@ -11,10 +15,6 @@ import {
   MainWrapper,
   NoticeWrapper
 } from './styles'
-import { EyeClosedIcon } from '../../icons/EyeClosedIcon'
-import { EyeIcon } from '../../icons/EyeIcon'
-import { LockCircleIcon } from '../../icons/LockCircleIcon'
-import { ButtonRoundIcon } from '../ButtonRoundIcon'
 import { NoticeText } from '../NoticeText'
 
 /**
