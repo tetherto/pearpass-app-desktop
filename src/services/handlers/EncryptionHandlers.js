@@ -90,8 +90,6 @@ export class EncryptionHandlers {
   }
 
   async initWithPassword(params) {
-    console.log('AAAAA', params)
-
     logger.info('ENCRYPTION-HANDLER', `Initializing with password`)
     if (!params.password) {
       throw new Error('Password is required')
