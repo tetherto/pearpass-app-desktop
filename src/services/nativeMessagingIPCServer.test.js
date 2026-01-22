@@ -101,6 +101,7 @@ jest.mock('./handlers/EncryptionHandlers', () => ({
       .fn()
       .mockResolvedValue({ isLocked: false, failedAttempts: 0 })
     this.resetFailedAttempts = jest.fn().mockResolvedValue({ success: true })
+    this.initWithPassword = jest.fn().mockResolvedValue(true)
   })
 }))
 
