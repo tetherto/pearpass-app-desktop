@@ -7,7 +7,7 @@ const testData = require('../../fixtures/test-data')
 test.describe('Password', () => {
   test.describe.configure({ mode: 'serial' })
 
-  let loginPage, vaultSelectPage, mainView, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
+  let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
 
   test.beforeAll(async ({ app }) => {
     page = app.page

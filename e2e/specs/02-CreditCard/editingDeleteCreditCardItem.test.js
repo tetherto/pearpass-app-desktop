@@ -122,7 +122,7 @@ test.describe('Editing/Deleting Credit Card Item', () => {
       await detailsPage.clickConfirmYes()
     })
 
-    await test.step('VERIFY LOGIN ELEMENT IS NOT VISIBLE', async () => {
+    await test.step('VERIFY CREDIT CARD ELEMENT IS NOT VISIBLE', async () => {
       await mainPage.verifyElementIsNotVisible()
     })
 
