@@ -62,7 +62,8 @@ export class MethodRegistry {
       'vaultsInit',
       'recordFailedMasterPassword',
       'getMasterPasswordStatus',
-      'resetFailedAttempts'
+      'resetFailedAttempts',
+      'initWithPassword'
     ]
     const statusMethods = [
       'encryptionGetStatus',
