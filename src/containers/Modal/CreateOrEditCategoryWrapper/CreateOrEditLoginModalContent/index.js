@@ -36,6 +36,7 @@ import {
   WorldIcon
 } from '../../../../lib-react-components'
 import { addHttps } from '../../../../utils/addHttps'
+import { formatPasskeyDate } from '../../../../utils/formatPasskeyDate'
 import { getFilteredAttachmentsById } from '../../../../utils/getFilteredAttachmentsById'
 import { handleFileSelect } from '../../../../utils/handleFileSelect'
 import { AttachmentField } from '../../../AttachmentField'
@@ -141,7 +142,9 @@ export const CreateOrEditLoginModalContent = ({
         : [{ name: 'website' }],
       customFields: initialRecord?.data.customFields ?? [],
       folder: selectedFolder ?? initialRecord?.folder,
-      attachments: initialRecord?.attachments ?? []
+      attachments: initialRecord?.attachments ?? [],
+      credential: initialRecord?.data?.credential?.id ?? '',
+      passkeyCreatedAt: initialRecord?.data?.passkeyCreatedAt
     },
     validate: (values) => schema.validate(values)
   })
@@ -300,6 +303,20 @@ export const CreateOrEditLoginModalContent = ({
             ...${register('password')}
           />
         <//>
+
+        ${!!values?.credential &&
+        html`
+          <${FormGroup}>
+            <${InputField}
+              label=${i18n._('Passkey')}
+              value=${formatPasskeyDate(values.passkeyCreatedAt) ||
+              i18n._('Passkey Stored')}
+              variant="outline"
+              icon=${KeyIcon}
+              isDisabled
+            />
+          <//>
+        `}
 
         <${CompoundField}>
           ${websitesList.map(
