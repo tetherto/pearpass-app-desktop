@@ -54,6 +54,7 @@ export const EmptyCollectionView = ({ selectedFolder, isFavoritesView }) => {
             (option) => html`
               <${ButtonCreate}
                 key=${option.type}
+                testId=${`emptycollection-button-create-${option.type}`}
                 startIcon=${RECORD_ICON_BY_TYPE[option.type]}
                 onClick=${() =>
                   handleCreateOrEditRecord({

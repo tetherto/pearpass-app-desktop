@@ -69,4 +69,17 @@ describe('ButtonCreate Component', () => {
 
     expect(container.firstChild).toMatchSnapshot()
   })
+
+  test('renders with testId attribute', () => {
+    const handleClick = jest.fn()
+    const { getByTestId } = render(
+      <ThemeProvider>
+        <ButtonCreate onClick={handleClick} testId="test-button-id">
+          Test Button
+        </ButtonCreate>
+      </ThemeProvider>
+    )
+
+    expect(getByTestId('test-button-id')).toBeInTheDocument()
+  })
 })

@@ -92,6 +92,7 @@ export const WifiDetailsForm = ({ initialRecord, selectedFolder }) => {
         ${!!values?.password?.length &&
         html`
           <${PasswordField}
+            testId="wifidetails-field-password"
             label=${i18n._('Password')}
             placeholder=${i18n._('Password')}
             belowInputContent=${html`
@@ -113,6 +114,7 @@ export const WifiDetailsForm = ({ initialRecord, selectedFolder }) => {
         ${!!values?.note?.length &&
         html`
           <${InputFieldNote}
+            testId="wifidetails-field-note"
             ...${register('note')}
             onClick=${handleCopy}
             isDisabled
@@ -125,6 +127,7 @@ export const WifiDetailsForm = ({ initialRecord, selectedFolder }) => {
           ${values.attachments.map(
             (attachment) => html`
               <${AttachmentField}
+                testId="wifidetails-attachment"
                 key=${attachment.id}
                 label=${i18n._('File')}
                 attachment=${attachment}

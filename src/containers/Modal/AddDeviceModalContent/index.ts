@@ -195,8 +195,8 @@ export const AddDeviceModalContent = () => {
         <${PairingDescription}>
           ${t(
             scanQRStep
-              ? 'Scan this QR code or paste the vault key into the PearPass app on your other device to connect it to your vault. This method keeps your vault secure.'
-              : 'Paste the vault key from the PearPass app on your other device to connect it to your vault. This method keeps your vault secure.'
+              ? 'Scan this QR code or paste the vault key into the PearPass app on your other device to connect it to your account. This method keeps your account secure.'
+              : 'Paste the vault key from the PearPass app on your other device to connect it to your account. This method keeps your account secure.'
           )}
         <//>
         <${PairTabs}>
@@ -212,7 +212,7 @@ export const AddDeviceModalContent = () => {
             $active=${!scanQRStep}
             onClick=${() => setScanQRStep(false)}
           >
-            ${t('Load a vault')}
+            ${t('Import vault')}
           <//>
         <//>
         ${scanQRStep

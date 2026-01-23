@@ -38,6 +38,7 @@ import {
 } from '../../lib-react-components'
 import { LogoLock } from '../../svgs/LogoLock'
 import { FAVORITES_FOLDER_ID } from '../../utils/isFavorite'
+import { sortByName } from '../../utils/sortByName'
 import { AddDeviceModalContent } from '../Modal/AddDeviceModalContent'
 import { CreateFolderModalContent } from '../Modal/CreateFolderModalContent'
 
@@ -65,7 +66,7 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
   const { data: vaultData } = useVault()
 
   const vaults = useMemo(
-    () => vaultsData?.filter((vault) => vault.id !== vaultData?.id),
+    () => sortByName(vaultsData?.filter((vault) => vault.id !== vaultData?.id)),
     [vaultsData, vaultData]
   )
 

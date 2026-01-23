@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import { html } from 'htm/react'
+import { AUTO_LOCK_ENABLED } from 'pearpass-lib-constants'
 
 import { AutoLockConfiguration } from './SettingsAutoLockConfiguration'
 import { SettingsBlindPeersSection } from './SettingsBlindPeersSection'
@@ -110,7 +111,7 @@ export const SettingsAdvancedTab = () => {
           setRules=${handleSetRules}
         />
 
-        <${AutoLockConfiguration} />
+        ${AUTO_LOCK_ENABLED ? html`<${AutoLockConfiguration} />` : null}
       <//>
     <//>
 

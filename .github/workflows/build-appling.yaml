@@ -96,7 +96,7 @@ jobs:
 
       - name: Build Linux AppImage
         run: |
-          bare-build --target=linux-${{ matrix.arch }} --package --icon lib/icons/linux/icon.png ${{ env.APP_FILE }}
+          bare-build --host=linux-${{ matrix.arch }} --package --icon lib/icons/linux/icon.png ${{ env.APP_FILE }}
       
       - name: Find & rename AppImage file
         id: find_file
@@ -213,7 +213,7 @@ jobs:
         run: |
           bare-build \
             --identifier "com.pears.pass" \
-            --target=darwin-${{ matrix.arch }} \
+            --host=darwin-${{ matrix.arch }} \
             --icon lib/icons/darwin/icon.png \
             --sign \
             --identity "$APPLE_SIGNING_IDENTITY" \

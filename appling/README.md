@@ -45,19 +45,19 @@ npm install
 ### macOS (Apple Silicon)
 
 ```sh
-bare-build --target=darwin-arm64 --icon lib/icons/darwin/icon.png app.cjs
+bare-build --host=darwin-arm64 --icon lib/icons/darwin/icon.png app.cjs
 ```
 
 ### macOS (Intel)
 
 ```sh
-bare-build --target=darwin-x64 --icon lib/icons/darwin/icon.png app.cjs
+bare-build --host=darwin-x64 --icon lib/icons/darwin/icon.png app.cjs
 ```
 
 ### Linux
 
 ```sh
-bare-build --target=linux-x64 --icon lib/icons/linux/icon.png --package app.cjs
+bare-build --host=linux-x64 --icon lib/icons/linux/icon.png --package app.cjs
 ```
 
 ### Signed macOS Build

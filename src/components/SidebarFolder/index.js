@@ -64,6 +64,7 @@ export const SidebarFolder = ({
               isOpen=${isNewPopupMenuOpen}
               setIsOpen=${setIsNewPopupMenuOpen}
               content=${html` <${EditFolderPopupContent} name=${name} /> `}
+              testId="sidebar-folder-options"
             >
               <${KebabMenuIcon} />
             <//>`}

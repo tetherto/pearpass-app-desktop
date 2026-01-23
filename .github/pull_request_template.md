@@ -1,5 +1,3 @@
-[Ticket ID](url)
-
 ### Requirements
 <!-- List the requirements for this PR -->
 

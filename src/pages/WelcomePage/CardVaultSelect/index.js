@@ -20,6 +20,7 @@ import {
   ButtonSecondary,
   CommonFileIcon
 } from '../../../lib-react-components'
+import { sortByName } from '../../../utils/sortByName'
 import { vaultCreatedFormat } from '../../../utils/vaultCreated'
 
 export const CardVaultSelect = () => {
@@ -63,14 +64,14 @@ export const CardVaultSelect = () => {
       <${CardTitle}>
         <${Title} data-testid="vault-title">
           ${data.length > 0
-            ? i18n._('Select a vault, create a new one or load another one')
-            : i18n._('Create or Load Vault')}
+            ? i18n._('Open an existing vault or create a new one.')
+            : i18n._('Set up your vault')}
         <//>
       <//>
 
       ${hasVaults
         ? html` <${VaultsContainer}>
-            ${data.map(
+            ${sortByName(data).map(
               (vault) =>
                 html`<${ListItem}
                   onClick=${() => handleSelectVault(vault.id)}
@@ -82,7 +83,7 @@ export const CardVaultSelect = () => {
           <//>`
         : html`<${CardNoVaultsText}>
             ${i18n._(
-              'Now create a secure vault or load an existing one to get started.'
+              'Start fresh with a new vault or import an existing one to continue.'
             )}
           <//> `}
 
@@ -98,7 +99,7 @@ export const CardVaultSelect = () => {
           testId="vault-load-button"
           onClick=${handleLoadVault}
         >
-          ${i18n._('Load a vault')}
+          ${i18n._('Import existing vault')}
         <//>
       <//>
 

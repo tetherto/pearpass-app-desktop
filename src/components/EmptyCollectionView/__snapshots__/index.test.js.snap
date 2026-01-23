@@ -21,6 +21,7 @@ exports[`EmptyCollectionView component renders empty collection message 1`] = `
       </div>
       <button
         class="sc-dYwGCk eVgwkO"
+        data-testid="emptycollection-button-create-login"
         type="button"
       >
         <div
@@ -46,6 +47,7 @@ exports[`EmptyCollectionView component renders empty collection message 1`] = `
       </button>
       <button
         class="sc-dYwGCk eVgwkO"
+        data-testid="emptycollection-button-create-identity"
         type="button"
       >
         <div
@@ -71,6 +73,7 @@ exports[`EmptyCollectionView component renders empty collection message 1`] = `
       </button>
       <button
         class="sc-dYwGCk eVgwkO"
+        data-testid="emptycollection-button-create-creditCard"
         type="button"
       >
         <div
@@ -96,6 +99,7 @@ exports[`EmptyCollectionView component renders empty collection message 1`] = `
       </button>
       <button
         class="sc-dYwGCk eVgwkO"
+        data-testid="emptycollection-button-create-wifiPassword"
         type="button"
       >
         <div
@@ -121,6 +125,7 @@ exports[`EmptyCollectionView component renders empty collection message 1`] = `
       </button>
       <button
         class="sc-dYwGCk eVgwkO"
+        data-testid="emptycollection-button-create-passPhrase"
         type="button"
       >
         <div
@@ -146,6 +151,7 @@ exports[`EmptyCollectionView component renders empty collection message 1`] = `
       </button>
       <button
         class="sc-dYwGCk eVgwkO"
+        data-testid="emptycollection-button-create-note"
         type="button"
       >
         <div
@@ -171,6 +177,7 @@ exports[`EmptyCollectionView component renders empty collection message 1`] = `
       </button>
       <button
         class="sc-dYwGCk eVgwkO"
+        data-testid="emptycollection-button-create-custom"
         type="button"
       >
         <div

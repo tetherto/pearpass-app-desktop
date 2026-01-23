@@ -7,6 +7,7 @@ import { CardSingleSetting } from '../../../components/CardSingleSetting'
 import { ListItem } from '../../../components/ListItem'
 import { ModifyVaultModalContent } from '../../../containers/Modal/ModifyVaultModalContent'
 import { useModal } from '../../../context/ModalContext'
+import { sortByName } from '../../../utils/sortByName'
 import { vaultCreatedFormat } from '../../../utils/vaultCreated'
 
 export const SettingsVaultsTab = () => {
@@ -17,7 +18,7 @@ export const SettingsVaultsTab = () => {
   return html`
     <${CardSingleSetting} title=${i18n._('Manage Vaults')}>
       <${Content}>
-        ${data?.map(
+        ${sortByName(data).map(
           (vault) =>
             html`<${ListItem}
               key=${vault.name}

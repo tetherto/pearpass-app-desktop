@@ -1,5 +1,5 @@
-const { install } = require("./lib/install");
+const { install } = require('./lib/install')
 
 // NOTE: Change the key when dev key changes
 
-install("niekhhqxqb3shrjy5dgefih5oo614n9cb1qwsb97xkn3cbs589do");
+install('4mg1faoan7jgp85dh3y5pxpm6yckfgqk99g6o7humaaayasznp1y')
