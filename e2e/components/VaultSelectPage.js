@@ -46,7 +46,7 @@ class VaultSelectPage {
   }
 
   async selectVaultbyName(vaultName) {
-    await expect(this.title).toHaveText('Select a vault, create a new one or load another one')
+    await expect(this.title).toHaveText('Open an existing vault or create a new one.')
     const vault = this.getVaultItem(vaultName)
     await expect(vault).toBeVisible()
     await vault.click()

@@ -93,7 +93,21 @@ class CreateOrEditPage {
     return this.root.getByTestId('createoredit-input-password')
   }
 
+  getSection(sectionname) {
+    return this.root.getByTestId(`createoredit-section-${sectionname}`)
+  }
+
+  get identitySection() {
+    return this.root.getByTestId(`createoredit-section-personalinfo`)
+  }
+
   // ==== ACTIONS ==== 
+
+  async clickOnIdentitySection(sectionname) {
+    const section = this.getSection(sectionname)
+    await section.waitFor({ state: 'visible' })
+    await section.click()
+  }
 
   async clickOnCreateOrEditButton(button) {
     const input = this.getCreateOrEditButton(button)

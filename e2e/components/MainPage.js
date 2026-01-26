@@ -29,8 +29,12 @@ class MainPage {
     return this.root.getByTestId('main-plus-button')
   }
 
+  // getElementFavoriteIcon(initials) {
+  //   return this.root.getByTestId(`avatar-favorite-${initials}`)
+  // }
+
   getElementFavoriteIcon(initials) {
-    return this.root.getByTestId(`avatar-favorite-${initials}`)
+    return this.root.getByTestId(`avatar-favorite-${initials}`).last()
   }
 
   // ==== ACTIONS ====

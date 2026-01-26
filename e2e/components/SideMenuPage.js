@@ -13,9 +13,20 @@ class SideMenuPage {
     return this.root.getByTestId('sidebar-exit-button')
   }
 
-  getSidebarFolder(foldername) {
-    return this.root.getByTestId(`sidebar-folder-${foldername}`)
+  getSideMenuFolder(folderName) {
+    return this.root
+      .getByTestId('sidebar-folder')
+      .getByText(folderName, { exact: true });
   }
+
+  async verifySideMenuFolderName(folderName) {
+    await expect(this.getSideMenuFolder(folderName)).toBeVisible();
+  }
+
+
+  // getSideMenuFolder(foldername) {
+  //   return this.root.getByTestId(`sidebar-folder-${foldername}`)
+  // }
 
   getSidebarCategory(categoryname) {
     return this.root.getByTestId(`sidebar-category-${categoryname}`)
@@ -29,29 +40,46 @@ class SideMenuPage {
     return this.root.getByTestId('button-primary');
   }
 
+  // get favoritesFolder() {
+  //   return this.page.getByTestId('sidebar-folder-favorites')
+  // }
+
   get favoritesFolder() {
-    return this.page.getByTestId('sidebar-folder-favorites')
-  }
+  return this.root.getByTestId('sidebar-folder-favorites')
+}
 
   // ==== ACTIONS ====
 
   async selectSideBarCategory(name) {
-    const category = this.getSidebarCategory(name);
+    const category = this.getSidebarCategory(name)
     await expect(category).toBeVisible()
     await category.click()
   }
 
   async deleteFolder(foldername) {
-    const folder = this.getSidebarFolder(foldername);
+    const folder = this.getSideMenuFolder(foldername)
+    await expect(folder).toBeVisible()
+
+    // Reveal action buttons (Delete)
+    // await folder.click()
+
     await folder
-      .getByText(foldername, { exact: true })
+      .getByText(foldername)
       .locator('..')
       .locator('div')
       .first()
-      .click();
-    await folder.getByText('Delete', { exact: true }).click();
-    await this.confirmButton.click();
-  }
+      .click()
+
+    const deleteButton = folder
+      .locator('..') // parent container
+      .getByText('Delete', { exact: true })
+
+    // await expect(deleteButton).toBeVisible()
+    await deleteButton.click()
+
+    await expect(this.confirmButton).toBeVisible()
+    await this.confirmButton.click()
+}
 
   async clickSidebarAddButton() {
     await expect(this.sidebarAddButton).toBeVisible()
@@ -64,8 +92,8 @@ class SideMenuPage {
   }
 
   async openSideBarFolder(foldername) {
-    await expect(this.getSidebarFolder(foldername)).toBeVisible()
-    await this.getSidebarFolder(foldername).click()
+    await expect(this.getSideMenuFolder(foldername)).toBeVisible()
+    await this.getSideMenuFolder(foldername).click()
   }
 
   getFavoriteFileName() {
@@ -75,17 +103,17 @@ class SideMenuPage {
   // ==== VERIFICATIONS ====
 
   async verifySidebarFolderName(foldername) {
-    const folder = this.getSidebarFolder(foldername);
+    const folder = this.getSideMenuFolder(foldername);
     await expect(folder).toBeVisible()
   }
 
   async verifyFavoriteFolderIsNotVisible(foldername) {
-    const folder = this.getSidebarFolder(foldername);
+    const folder = this.getSideMenuFolder(foldername);
     await expect(folder).not.toBeVisible();
   }
 
   async verifyFavoriteFileIsVisible(foldername, filename) {
-    const folder = this.getSidebarFolder(foldername);
+    const folder = this.getSideMenuFolder(foldername);
     await expect(folder).toBeVisible();
     await expect(folder).toContainText(filename);
   }
