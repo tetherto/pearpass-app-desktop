@@ -81,8 +81,8 @@ export class NativeMessagingIPCServer {
       securityHandlers.nmResetPairing.bind(securityHandlers)
     )
     this.methodRegistry.register(
-      'checkAvailability',
-      securityHandlers.checkAvailability.bind(securityHandlers)
+      'checkExtensionPairingStatus',
+      securityHandlers.checkExtensionPairingStatus.bind(securityHandlers)
     )
 
     // Register encryption bootstrap methods

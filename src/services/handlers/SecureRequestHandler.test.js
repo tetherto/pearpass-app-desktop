@@ -19,6 +19,7 @@ jest.mock('sodium-native', () => ({
 }))
 
 import { SecureRequestHandler } from './SecureRequestHandler'
+import { SecurityErrorCodes } from '../../constants/securityErrors'
 import { logger } from '../../utils/logger'
 import * as sessionManager from '../security/sessionManager.js'
 import * as sessionStore from '../security/sessionStore.js'
@@ -86,11 +87,13 @@ describe('SecureRequestHandler.handle', () => {
     )
   })
 
-  it('should throw InvalidSecurePayload if payload is missing fields', async () => {
-    await expect(handler.handle({})).rejects.toThrow('InvalidSecurePayload')
+  it('should throw INVALID_SECURE_PAYLOAD if payload is missing fields', async () => {
+    await expect(handler.handle({})).rejects.toThrow(
+      SecurityErrorCodes.INVALID_SECURE_PAYLOAD
+    )
   })
 
-  it('should throw SessionNotFound if session does not exist', async () => {
+  it('should throw SESSION_NOT_FOUND if session does not exist', async () => {
     sessionStore.getSession.mockReturnValue(undefined)
     const params = {
       sessionId: 'bad-session',
@@ -98,6 +101,8 @@ describe('SecureRequestHandler.handle', () => {
       ciphertextB64: 'ciphertext',
       seq: 1
     }
-    await expect(handler.handle(params)).rejects.toThrow('SessionNotFound')
+    await expect(handler.handle(params)).rejects.toThrow(
+      SecurityErrorCodes.SESSION_NOT_FOUND
+    )
   })
 })

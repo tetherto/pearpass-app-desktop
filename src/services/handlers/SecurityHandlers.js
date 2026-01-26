@@ -1,5 +1,7 @@
 import sodium from 'sodium-native'
 
+import { SecurityErrorCodes } from '../../constants/securityErrors.js'
+import { createErrorWithCode } from '../../utils/createErrorWithCode.js'
 import { getNativeMessagingEnabled } from '../nativeMessagingPreferences.js'
 import {
   getOrCreateIdentity,
@@ -35,14 +37,20 @@ export class SecurityHandlers {
     // Require a pairing token that the user manually copied from desktop app
     if (!pairingToken) {
       throw new Error(
-        'PairingTokenRequired: Please enter the pairing token from the desktop app'
+        createErrorWithCode(
+          SecurityErrorCodes.PAIRING_TOKEN_REQUIRED,
+          'Please enter the pairing token from the desktop app'
+        )
       )
     }
 
     // Require the extension to provide its public key for mutual authentication
     if (!clientEd25519PublicKeyB64) {
       throw new Error(
-        'ClientPublicKeyRequired: Extension must provide its Ed25519 public key'
+        createErrorWithCode(
+          SecurityErrorCodes.CLIENT_PUBLIC_KEY_REQUIRED,
+          'Extension must provide its Ed25519 public key'
+        )
       )
     }
 
@@ -55,7 +63,12 @@ export class SecurityHandlers {
       pairingToken
     )
     if (!isValidToken) {
-      throw new Error('InvalidPairingToken: The pairing token is incorrect')
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.INVALID_PAIRING_TOKEN,
+          'The pairing token is incorrect'
+        )
+      )
     }
 
     // Check if a different client is already paired
@@ -65,7 +78,10 @@ export class SecurityHandlers {
       existingClientPubB64 !== clientEd25519PublicKeyB64
     ) {
       throw new Error(
-        'ClientAlreadyPaired: A different extension is already paired. Reset pairing in the desktop app first.'
+        createErrorWithCode(
+          SecurityErrorCodes.CLIENT_ALREADY_PAIRED,
+          'A different extension is already paired. Reset pairing in the desktop app first.'
+        )
       )
     }
 
@@ -87,7 +103,10 @@ export class SecurityHandlers {
     // This prevents previously paired extensions from reconnecting after being disabled
     if (!getNativeMessagingEnabled()) {
       throw new Error(
-        'NativeMessagingDisabled: Extension connection is disabled'
+        createErrorWithCode(
+          SecurityErrorCodes.NATIVE_MESSAGING_DISABLED,
+          'Extension connection is disabled'
+        )
       )
     }
 
@@ -95,12 +114,22 @@ export class SecurityHandlers {
     const clientPubB64 = await getClientIdentityPublicKey(this.client)
     if (!clientPubB64) {
       throw new Error(
-        'NotPaired: No client identity registered. Please complete pairing first.'
+        createErrorWithCode(
+          SecurityErrorCodes.NOT_PAIRED,
+          'No client identity registered. Please complete pairing first.'
+        )
       )
     }
 
     const { extEphemeralPubB64 } = params || {}
-    if (!extEphemeralPubB64) throw new Error('Missing extEphemeralPubB64')
+    if (!extEphemeralPubB64) {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.MISSING_EPHEMERAL_PUBLIC_KEY,
+          'extEphemeralPubB64 is required'
+        )
+      )
+    }
     return beginHandshake(this.client, extEphemeralPubB64)
   }
 
@@ -109,29 +138,70 @@ export class SecurityHandlers {
    */
   async nmFinishHandshake(params) {
     const { sessionId, clientSigB64 } = params || {}
-    if (!sessionId) throw new Error('Missing sessionId')
-    if (!clientSigB64) throw new Error('MissingClientSignature')
+    if (!sessionId) {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.MISSING_SESSION_ID,
+          'sessionId is required'
+        )
+      )
+    }
+    if (!clientSigB64) {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.MISSING_CLIENT_SIGNATURE,
+          'clientSigB64 is required'
+        )
+      )
+    }
 
     const session = getSession(sessionId)
-    if (!session) throw new Error('SessionNotFound')
+    if (!session) {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.SESSION_NOT_FOUND,
+          'Session not found or expired'
+        )
+      )
+    }
     if (session.clientVerified) return { ok: true }
 
     // Load pinned client identity
     const clientPubB64 = await getClientIdentityPublicKey(this.client)
     if (!clientPubB64) {
-      throw new Error('ClientNotPaired: No client identity registered')
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.CLIENT_NOT_PAIRED,
+          'No client identity registered'
+        )
+      )
     }
 
     const clientPubBytes = new Uint8Array(Buffer.from(clientPubB64, 'base64'))
     const sigBytes = new Uint8Array(Buffer.from(clientSigB64, 'base64'))
     if (clientPubBytes.length !== sodium.crypto_sign_PUBLICKEYBYTES) {
-      throw new Error('InvalidClientPublicKey')
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.INVALID_CLIENT_PUBLIC_KEY,
+          'Invalid client public key length'
+        )
+      )
     }
     if (sigBytes.length !== sodium.crypto_sign_BYTES) {
-      throw new Error('InvalidClientSignature')
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.INVALID_CLIENT_SIGNATURE,
+          'Invalid signature length'
+        )
+      )
     }
     if (!session.transcript || session.transcript.length === 0) {
-      throw new Error('InvalidTranscript')
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.INVALID_TRANSCRIPT,
+          'Session transcript is missing or empty'
+        )
+      )
     }
 
     // Build client transcript with protocol tag + session ID binding
@@ -153,7 +223,12 @@ export class SecurityHandlers {
     if (!ok) {
       // On failure, drop the session
       closeSession(sessionId)
-      throw new Error('ClientSignatureInvalid')
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.CLIENT_SIGNATURE_INVALID,
+          'Client signature verification failed'
+        )
+      )
     }
 
     // Mark session as verified
@@ -167,19 +242,40 @@ export class SecurityHandlers {
    */
   async nmCloseSession(params) {
     const { sessionId } = params || {}
-    if (!sessionId) throw new Error('Missing sessionId')
+    if (!sessionId) {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.MISSING_SESSION_ID,
+          'sessionId is required'
+        )
+      )
+    }
     closeSession(sessionId)
     return { ok: true }
   }
 
   /**
-   * Check if desktop app is available
+   * Check if an extension is paired with this desktop app
+   * @param {Object} params
+   * @param {string} params.clientEd25519PublicKeyB64 - Extension's public key
    */
-  async checkAvailability() {
+  async checkExtensionPairingStatus(params) {
+    const { clientEd25519PublicKeyB64 } = params || {}
+
+    if (!clientEd25519PublicKeyB64) {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.CLIENT_PUBLIC_KEY_REQUIRED,
+          'clientEd25519PublicKeyB64 is required'
+        )
+      )
+    }
+
+    const storedClientPubB64 = await getClientIdentityPublicKey(this.client)
+    const paired = storedClientPubB64 === clientEd25519PublicKeyB64
+
     return {
-      available: true,
-      status: 'running',
-      message: 'Desktop app is running'
+      paired
     }
   }
 

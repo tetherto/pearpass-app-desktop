@@ -5,6 +5,8 @@
 import sodium from 'sodium-native'
 
 import { clearAllSessions } from './sessionStore.js'
+import { SecurityErrorCodes } from '../../constants/securityErrors.js'
+import { createErrorWithCode } from '../../utils/createErrorWithCode.js'
 import { logger } from '../../utils/logger.js'
 
 const ENC_KEY_ED25519 = 'nm.identity.ed25519'
@@ -59,7 +61,12 @@ const getOrCreatePairingSecret = async (client) => {
   if (pairingSecretB64) {
     const bytes = Buffer.from(pairingSecretB64, 'base64')
     if (bytes.length !== 32) {
-      throw new Error('InvalidPairingSecret')
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.INVALID_PAIRING_SECRET,
+          'Invalid pairing secret'
+        )
+      )
     }
   }
 
@@ -380,7 +387,12 @@ export const setClientIdentityPublicKey = async (
   ed25519PublicKeyB64
 ) => {
   if (!ed25519PublicKeyB64) {
-    throw new Error('MissingClientPublicKey')
+    throw new Error(
+      createErrorWithCode(
+        SecurityErrorCodes.MISSING_CLIENT_PUBLIC_KEY,
+        'Client public key is required'
+      )
+    )
   }
   await client.encryptionAdd(ENC_KEY_CLIENT_ED25519_PUB, ed25519PublicKeyB64)
 }

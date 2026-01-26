@@ -21,6 +21,7 @@ jest.mock('sodium-native', () => ({
 }))
 
 import { SecurityHandlers } from './SecurityHandlers'
+import { SecurityErrorCodes } from '../../constants/securityErrors'
 import { getNativeMessagingEnabled } from '../nativeMessagingPreferences'
 import * as appIdentity from '../security/appIdentity'
 import * as sessionManager from '../security/sessionManager'
@@ -46,14 +47,14 @@ describe('SecurityHandlers', () => {
   describe('nmGetAppIdentity', () => {
     it('throws if pairingToken is missing', async () => {
       await expect(handlers.nmGetAppIdentity({})).rejects.toThrow(
-        /PairingTokenRequired/
+        SecurityErrorCodes.PAIRING_TOKEN_REQUIRED
       )
     })
 
     it('throws if clientEd25519PublicKeyB64 is missing', async () => {
       await expect(
         handlers.nmGetAppIdentity({ pairingToken: 'token' })
-      ).rejects.toThrow(/ClientPublicKeyRequired/)
+      ).rejects.toThrow(SecurityErrorCodes.CLIENT_PUBLIC_KEY_REQUIRED)
     })
 
     it('throws if verifyPairingToken returns false', async () => {
@@ -67,7 +68,7 @@ describe('SecurityHandlers', () => {
           pairingToken: 'token',
           clientEd25519PublicKeyB64: 'clientPub'
         })
-      ).rejects.toThrow(/InvalidPairingToken/)
+      ).rejects.toThrow(SecurityErrorCodes.INVALID_PAIRING_TOKEN)
     })
 
     it('returns identity info and stores client public key if pairingToken is valid', async () => {
@@ -111,7 +112,7 @@ describe('SecurityHandlers', () => {
           pairingToken: 'token',
           clientEd25519PublicKeyB64: 'differentClientPub'
         })
-      ).rejects.toThrow(/ClientAlreadyPaired/)
+      ).rejects.toThrow(SecurityErrorCodes.CLIENT_ALREADY_PAIRED)
 
       expect(appIdentity.setClientIdentityPublicKey).not.toHaveBeenCalled()
     })
@@ -154,7 +155,7 @@ describe('SecurityHandlers', () => {
       getNativeMessagingEnabled.mockReturnValue(false)
       await expect(
         handlers.nmBeginHandshake({ extEphemeralPubB64: 'abc' })
-      ).rejects.toThrow(/NativeMessagingDisabled/)
+      ).rejects.toThrow(SecurityErrorCodes.NATIVE_MESSAGING_DISABLED)
     })
 
     it('throws if no client public key is stored (not paired)', async () => {
@@ -162,13 +163,13 @@ describe('SecurityHandlers', () => {
 
       await expect(
         handlers.nmBeginHandshake({ extEphemeralPubB64: 'abc' })
-      ).rejects.toThrow(/NotPaired/)
+      ).rejects.toThrow(SecurityErrorCodes.NOT_PAIRED)
       expect(sessionManager.beginHandshake).not.toHaveBeenCalled()
     })
 
     it('throws if extEphemeralPubB64 is missing', async () => {
       await expect(handlers.nmBeginHandshake({})).rejects.toThrow(
-        /Missing extEphemeralPubB64/
+        SecurityErrorCodes.MISSING_EPHEMERAL_PUBLIC_KEY
       )
     })
 
@@ -188,14 +189,14 @@ describe('SecurityHandlers', () => {
   describe('nmFinishHandshake', () => {
     it('throws if sessionId is missing', async () => {
       await expect(handlers.nmFinishHandshake({})).rejects.toThrow(
-        /Missing sessionId/
+        SecurityErrorCodes.MISSING_SESSION_ID
       )
     })
 
     it('throws if clientSigB64 is missing', async () => {
       await expect(
         handlers.nmFinishHandshake({ sessionId: 'sid' })
-      ).rejects.toThrow(/MissingClientSignature/)
+      ).rejects.toThrow(SecurityErrorCodes.MISSING_CLIENT_SIGNATURE)
     })
 
     it('throws if session not found', async () => {
@@ -205,7 +206,7 @@ describe('SecurityHandlers', () => {
           sessionId: 'sid',
           clientSigB64: 'sig'
         })
-      ).rejects.toThrow(/SessionNotFound/)
+      ).rejects.toThrow(SecurityErrorCodes.SESSION_NOT_FOUND)
     })
 
     it('throws if client identity is not paired', async () => {
@@ -220,7 +221,7 @@ describe('SecurityHandlers', () => {
           sessionId: 'sid',
           clientSigB64: Buffer.from('sig').toString('base64')
         })
-      ).rejects.toThrow(/ClientNotPaired/)
+      ).rejects.toThrow(SecurityErrorCodes.CLIENT_NOT_PAIRED)
     })
 
     it('throws ClientSignatureInvalid and closes session when signature is invalid', async () => {
@@ -237,7 +238,7 @@ describe('SecurityHandlers', () => {
           sessionId: 'sid',
           clientSigB64: Buffer.alloc(64, 2).toString('base64')
         })
-      ).rejects.toThrow(/ClientSignatureInvalid/)
+      ).rejects.toThrow(SecurityErrorCodes.CLIENT_SIGNATURE_INVALID)
 
       expect(sessionStore.closeSession).toHaveBeenCalledWith('sid')
       expect(session.clientVerified).not.toBe(true)
@@ -247,7 +248,7 @@ describe('SecurityHandlers', () => {
   describe('nmCloseSession', () => {
     it('throws if sessionId is missing', async () => {
       await expect(handlers.nmCloseSession({})).rejects.toThrow(
-        /Missing sessionId/
+        SecurityErrorCodes.MISSING_SESSION_ID
       )
     })
 
@@ -259,14 +260,37 @@ describe('SecurityHandlers', () => {
     })
   })
 
-  describe('checkAvailability', () => {
-    it('returns available status', async () => {
-      const result = await handlers.checkAvailability()
-      expect(result).toEqual({
-        available: true,
-        status: 'running',
-        message: 'Desktop app is running'
+  describe('checkExtensionPairingStatus', () => {
+    it('throws if clientEd25519PublicKeyB64 is missing', async () => {
+      await expect(handlers.checkExtensionPairingStatus({})).rejects.toThrow(
+        SecurityErrorCodes.CLIENT_PUBLIC_KEY_REQUIRED
+      )
+    })
+
+    it('returns paired=true when client key matches', async () => {
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue(
+        'clientPubKey123'
+      )
+      const result = await handlers.checkExtensionPairingStatus({
+        clientEd25519PublicKeyB64: 'clientPubKey123'
       })
+      expect(result.paired).toBe(true)
+    })
+
+    it('returns paired=false when key does not match', async () => {
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue('differentKey')
+      const result = await handlers.checkExtensionPairingStatus({
+        clientEd25519PublicKeyB64: 'clientPubKey123'
+      })
+      expect(result.paired).toBe(false)
+    })
+
+    it('returns paired=false when no client key is stored', async () => {
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue(null)
+      const result = await handlers.checkExtensionPairingStatus({
+        clientEd25519PublicKeyB64: 'clientPubKey123'
+      })
+      expect(result.paired).toBe(false)
     })
   })
 
