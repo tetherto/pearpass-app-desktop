@@ -262,6 +262,15 @@ export class SecurityHandlers {
   async checkExtensionPairingStatus(params) {
     const { clientEd25519PublicKeyB64 } = params || {}
 
+    if (!getNativeMessagingEnabled()) {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.NATIVE_MESSAGING_DISABLED,
+          'Extension connection is disabled'
+        )
+      )
+    }
+
     if (!clientEd25519PublicKeyB64) {
       throw new Error(
         createErrorWithCode(
