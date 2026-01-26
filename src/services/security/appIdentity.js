@@ -5,6 +5,7 @@
 import sodium from 'sodium-native'
 
 import { clearAllSessions } from './sessionStore.js'
+import { LOCAL_STORAGE_KEYS } from '../../constants/localStorage.js'
 import { SecurityErrorCodes } from '../../constants/securityErrors.js'
 import { createErrorWithCode } from '../../utils/createErrorWithCode.js'
 import { logger } from '../../utils/logger.js'
@@ -354,6 +355,9 @@ export const resetIdentity = async (client) => {
     await client.encryptionAdd(ENC_KEY_CLIENT_ED25519_PUB, '').catch(() => {})
     await client.encryptionAdd(ENC_KEY_PAIRING_SECRET, '').catch(() => {})
 
+    // Also clear client public key from localStorage
+    localStorage.removeItem(LOCAL_STORAGE_KEYS.NM_CLIENT_PUBLIC_KEY)
+
     logger.info('APP-IDENTITY', 'Cleared existing identity keys')
   } catch (err) {
     logger.error(
@@ -394,7 +398,11 @@ export const setClientIdentityPublicKey = async (
       )
     )
   }
-  await client.encryptionAdd(ENC_KEY_CLIENT_ED25519_PUB, ed25519PublicKeyB64)
+  // Store in localStorage (accessible even when locked) since it's public data
+  localStorage.setItem(
+    LOCAL_STORAGE_KEYS.NM_CLIENT_PUBLIC_KEY,
+    ed25519PublicKeyB64
+  )
 }
 
 /**
@@ -402,7 +410,9 @@ export const setClientIdentityPublicKey = async (
  * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
  * @returns {Promise<string|null>}
  */
-export const getClientIdentityPublicKey = async (client) =>
-  normalizeEncryptionGet(
-    await client.encryptionGet(ENC_KEY_CLIENT_ED25519_PUB).catch(() => null)
+export const getClientIdentityPublicKey = async () => {
+  const fromLocalStorage = localStorage.getItem(
+    LOCAL_STORAGE_KEYS.NM_CLIENT_PUBLIC_KEY
   )
+  return fromLocalStorage || null
+}

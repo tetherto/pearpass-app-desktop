@@ -72,7 +72,7 @@ export class SecurityHandlers {
     }
 
     // Check if a different client is already paired
-    const existingClientPubB64 = await getClientIdentityPublicKey(this.client)
+    const existingClientPubB64 = await getClientIdentityPublicKey()
     if (
       existingClientPubB64 &&
       existingClientPubB64 !== clientEd25519PublicKeyB64
@@ -111,7 +111,7 @@ export class SecurityHandlers {
     }
 
     // Require a pinned client public key (set during pairing via nmGetAppIdentity)
-    const clientPubB64 = await getClientIdentityPublicKey(this.client)
+    const clientPubB64 = await getClientIdentityPublicKey()
     if (!clientPubB64) {
       throw new Error(
         createErrorWithCode(
@@ -167,7 +167,7 @@ export class SecurityHandlers {
     if (session.clientVerified) return { ok: true }
 
     // Load pinned client identity
-    const clientPubB64 = await getClientIdentityPublicKey(this.client)
+    const clientPubB64 = await getClientIdentityPublicKey()
     if (!clientPubB64) {
       throw new Error(
         createErrorWithCode(
@@ -271,7 +271,7 @@ export class SecurityHandlers {
       )
     }
 
-    const storedClientPubB64 = await getClientIdentityPublicKey(this.client)
+    const storedClientPubB64 = await getClientIdentityPublicKey()
     const paired = storedClientPubB64 === clientEd25519PublicKeyB64
 
     return {

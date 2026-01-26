@@ -79,7 +79,8 @@ export class MethodRegistry {
       'nmGetPairingCode',
       'nmBeginHandshake',
       'nmFinishHandshake',
-      'nmCloseSession'
+      'nmCloseSession',
+      'checkExtensionPairingStatus'
     ]
     const exemptMethods = [...authMethods, ...statusMethods, ...pairingMethods]
     const shouldCheckAuth = !exemptMethods.includes(methodName)
