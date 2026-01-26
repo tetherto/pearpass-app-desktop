@@ -174,13 +174,12 @@ describe('SecurityHandlers', () => {
     })
 
     it('calls beginHandshake with correct params when client is paired', async () => {
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue('clientPubKey')
       sessionManager.beginHandshake.mockResolvedValue('handshake-result')
       const result = await handlers.nmBeginHandshake({
         extEphemeralPubB64: 'abc'
       })
-      expect(appIdentity.getClientIdentityPublicKey).toHaveBeenCalledWith(
-        client
-      )
+      expect(appIdentity.getClientIdentityPublicKey).toHaveBeenCalledWith()
       expect(sessionManager.beginHandshake).toHaveBeenCalledWith(client, 'abc')
       expect(result).toBe('handshake-result')
     })
