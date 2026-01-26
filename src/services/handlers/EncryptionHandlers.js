@@ -1,3 +1,5 @@
+import { stringToBuffer } from 'pearpass-lib-vault/src/utils/buffer'
+
 import { HANDLER_EVENTS } from '../../constants/services'
 import { logger } from '../../utils/logger'
 
@@ -80,5 +82,22 @@ export class EncryptionHandlers {
     }
 
     return status
+  }
+
+  async resetFailedAttempts() {
+    logger.info('ENCRYPTION-HANDLER', `Resetting failed attempts`)
+    return await this.client.resetFailedAttempts()
+  }
+
+  async initWithPassword(params) {
+    logger.info('ENCRYPTION-HANDLER', `Initializing with password`)
+    if (!params.password) {
+      throw new Error('Password is required')
+    }
+    const result = await this.client.initWithPassword(
+      stringToBuffer(params.password)
+    )
+    logger.info('ENCRYPTION-HANDLER', `Initialized with password`)
+    return result
   }
 }

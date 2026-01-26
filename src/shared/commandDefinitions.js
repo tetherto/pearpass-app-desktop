@@ -59,7 +59,11 @@ const COMMAND_DEFINITIONS = [
   { id: 1029, name: 'recordFailedMasterPassword' },
   { id: 1030, name: 'getMasterPasswordStatus' },
 
-  { id: 1031, name: 'activeVaultRemoveFile' }
+  { id: 1031, name: 'activeVaultRemoveFile' },
+  { id: 1032, name: 'resetFailedAttempts' },
+
+  // Master password commands
+  { id: 1033, name: 'initWithPassword' }
 ]
 
 /** @type {string[]} */

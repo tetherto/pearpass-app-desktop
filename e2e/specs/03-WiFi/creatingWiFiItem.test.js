@@ -299,7 +299,7 @@ test.describe('Creating WiFi Item', () => {
 
   })
 
-  test('Deleted WiFi Items are not displayed in view/details mode ', async ({ page }) => {
+  test('Deleted WiFi Items are not displayed in view/details mode ', async () => {
 
     await test.step('VERIFY WIFI ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('WiFi Title')

@@ -10,12 +10,14 @@ jest.mock('sodium-native', () => ({
   randombytes_buf: jest.fn(),
   sodium_malloc: jest.fn((size) => Buffer.alloc(size)),
   crypto_sign_PUBLICKEYBYTES: 32,
+  crypto_sign_BYTES: 64,
   crypto_sign_SECRETKEYBYTES: 64,
   crypto_kx_PUBLICKEYBYTES: 32,
   crypto_kx_SECRETKEYBYTES: 32,
   crypto_kx_SESSIONKEYBYTES: 32,
   crypto_secretbox_NONCEBYTES: 24,
-  crypto_secretbox_MACBYTES: 16
+  crypto_secretbox_MACBYTES: 16,
+  crypto_sign_verify_detached: jest.fn()
 }))
 
 import { SecurityHandlers } from './SecurityHandlers'
@@ -48,6 +50,12 @@ describe('SecurityHandlers', () => {
       )
     })
 
+    it('throws if clientEd25519PublicKeyB64 is missing', async () => {
+      await expect(
+        handlers.nmGetAppIdentity({ pairingToken: 'token' })
+      ).rejects.toThrow(/ClientPublicKeyRequired/)
+    })
+
     it('throws if verifyPairingToken returns false', async () => {
       appIdentity.getOrCreateIdentity.mockResolvedValue({
         ed25519PublicKey: 'pubKey',
@@ -55,18 +63,78 @@ describe('SecurityHandlers', () => {
       })
       appIdentity.verifyPairingToken.mockResolvedValue(false)
       await expect(
-        handlers.nmGetAppIdentity({ pairingToken: 'token' })
+        handlers.nmGetAppIdentity({
+          pairingToken: 'token',
+          clientEd25519PublicKeyB64: 'clientPub'
+        })
       ).rejects.toThrow(/InvalidPairingToken/)
     })
 
-    it('returns identity info if pairingToken is valid', async () => {
+    it('returns identity info and stores client public key if pairingToken is valid', async () => {
       appIdentity.getOrCreateIdentity.mockResolvedValue({
         ed25519PublicKey: 'pubKey',
         x25519PublicKey: 'xPubKey'
       })
       appIdentity.verifyPairingToken.mockResolvedValue(true)
       appIdentity.getFingerprint.mockReturnValue('fingerprint')
-      const result = await handlers.nmGetAppIdentity({ pairingToken: 'token' })
+      appIdentity.setClientIdentityPublicKey.mockResolvedValue(undefined)
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue(null)
+
+      const result = await handlers.nmGetAppIdentity({
+        pairingToken: 'token',
+        clientEd25519PublicKeyB64: 'clientPub'
+      })
+
+      expect(appIdentity.setClientIdentityPublicKey).toHaveBeenCalledWith(
+        client,
+        'clientPub'
+      )
+      expect(result).toEqual({
+        ed25519PublicKey: 'pubKey',
+        x25519PublicKey: 'xPubKey',
+        fingerprint: 'fingerprint'
+      })
+    })
+
+    it('throws if a different client is already paired', async () => {
+      appIdentity.getOrCreateIdentity.mockResolvedValue({
+        ed25519PublicKey: 'pubKey',
+        x25519PublicKey: 'xPubKey'
+      })
+      appIdentity.verifyPairingToken.mockResolvedValue(true)
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue(
+        'existingClientPub'
+      )
+
+      await expect(
+        handlers.nmGetAppIdentity({
+          pairingToken: 'token',
+          clientEd25519PublicKeyB64: 'differentClientPub'
+        })
+      ).rejects.toThrow(/ClientAlreadyPaired/)
+
+      expect(appIdentity.setClientIdentityPublicKey).not.toHaveBeenCalled()
+    })
+
+    it('allows re-pairing same client with valid token', async () => {
+      appIdentity.getOrCreateIdentity.mockResolvedValue({
+        ed25519PublicKey: 'pubKey',
+        x25519PublicKey: 'xPubKey'
+      })
+      appIdentity.verifyPairingToken.mockResolvedValue(true)
+      appIdentity.getFingerprint.mockReturnValue('fingerprint')
+      appIdentity.setClientIdentityPublicKey.mockResolvedValue(undefined)
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue('sameClientPub')
+
+      const result = await handlers.nmGetAppIdentity({
+        pairingToken: 'token',
+        clientEd25519PublicKeyB64: 'sameClientPub'
+      })
+
+      expect(appIdentity.setClientIdentityPublicKey).toHaveBeenCalledWith(
+        client,
+        'sameClientPub'
+      )
       expect(result).toEqual({
         ed25519PublicKey: 'pubKey',
         x25519PublicKey: 'xPubKey',
@@ -78,6 +146,8 @@ describe('SecurityHandlers', () => {
   describe('nmBeginHandshake', () => {
     beforeEach(() => {
       getNativeMessagingEnabled.mockReturnValue(true)
+      // By default, simulate a paired client with a stored public key
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue('clientPubKey')
     })
 
     it('throws if native messaging is disabled', async () => {
@@ -87,17 +157,29 @@ describe('SecurityHandlers', () => {
       ).rejects.toThrow(/NativeMessagingDisabled/)
     })
 
+    it('throws if no client public key is stored (not paired)', async () => {
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue(null)
+
+      await expect(
+        handlers.nmBeginHandshake({ extEphemeralPubB64: 'abc' })
+      ).rejects.toThrow(/NotPaired/)
+      expect(sessionManager.beginHandshake).not.toHaveBeenCalled()
+    })
+
     it('throws if extEphemeralPubB64 is missing', async () => {
       await expect(handlers.nmBeginHandshake({})).rejects.toThrow(
         /Missing extEphemeralPubB64/
       )
     })
 
-    it('calls beginHandshake with correct params', async () => {
+    it('calls beginHandshake with correct params when client is paired', async () => {
       sessionManager.beginHandshake.mockResolvedValue('handshake-result')
       const result = await handlers.nmBeginHandshake({
         extEphemeralPubB64: 'abc'
       })
+      expect(appIdentity.getClientIdentityPublicKey).toHaveBeenCalledWith(
+        client
+      )
       expect(sessionManager.beginHandshake).toHaveBeenCalledWith(client, 'abc')
       expect(result).toBe('handshake-result')
     })
@@ -110,17 +192,55 @@ describe('SecurityHandlers', () => {
       )
     })
 
+    it('throws if clientSigB64 is missing', async () => {
+      await expect(
+        handlers.nmFinishHandshake({ sessionId: 'sid' })
+      ).rejects.toThrow(/MissingClientSignature/)
+    })
+
     it('throws if session not found', async () => {
       sessionStore.getSession.mockReturnValue(undefined)
       await expect(
-        handlers.nmFinishHandshake({ sessionId: 'sid' })
+        handlers.nmFinishHandshake({
+          sessionId: 'sid',
+          clientSigB64: 'sig'
+        })
       ).rejects.toThrow(/SessionNotFound/)
     })
 
-    it('returns ok if session exists', async () => {
-      sessionStore.getSession.mockReturnValue({ id: 'sid' })
-      const result = await handlers.nmFinishHandshake({ sessionId: 'sid' })
-      expect(result).toEqual({ ok: true })
+    it('throws if client identity is not paired', async () => {
+      sessionStore.getSession.mockReturnValue({
+        id: 'sid',
+        transcript: new Uint8Array([1, 2, 3])
+      })
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue(null)
+
+      await expect(
+        handlers.nmFinishHandshake({
+          sessionId: 'sid',
+          clientSigB64: Buffer.from('sig').toString('base64')
+        })
+      ).rejects.toThrow(/ClientNotPaired/)
+    })
+
+    it('throws ClientSignatureInvalid and closes session when signature is invalid', async () => {
+      const session = { id: 'sid', transcript: new Uint8Array([1, 2, 3]) }
+      sessionStore.getSession.mockReturnValue(session)
+      appIdentity.getClientIdentityPublicKey.mockResolvedValue(
+        Buffer.alloc(32, 1).toString('base64')
+      )
+      const sodium = require('sodium-native')
+      sodium.crypto_sign_verify_detached.mockReturnValue(false)
+
+      await expect(
+        handlers.nmFinishHandshake({
+          sessionId: 'sid',
+          clientSigB64: Buffer.alloc(64, 2).toString('base64')
+        })
+      ).rejects.toThrow(/ClientSignatureInvalid/)
+
+      expect(sessionStore.closeSession).toHaveBeenCalledWith('sid')
+      expect(session.clientVerified).not.toBe(true)
     })
   })
 

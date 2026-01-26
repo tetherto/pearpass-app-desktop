@@ -49,8 +49,11 @@ describe('SecureRequestHandler.handle', () => {
       seq: 42
     }
 
-    // Mock session
-    sessionStore.getSession.mockReturnValue({ id: 'session123' })
+    // Mock verified session so handler does not reject with ClientNotVerified
+    sessionStore.getSession.mockReturnValue({
+      id: 'session123',
+      clientVerified: true
+    })
     sessionManager.recordIncomingSeq.mockImplementation(() => {})
     // Mock decryption
     const decryptedRequest = { method: 'testMethod', params: { foo: 'bar' } }

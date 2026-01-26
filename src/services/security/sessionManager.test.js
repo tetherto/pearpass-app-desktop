@@ -77,7 +77,10 @@ jest.mock('./appIdentity', () => ({
     ed25519PrivateKeyBytes: new Uint8Array(64).fill(11),
     x25519PublicKeyBytes: new Uint8Array(32).fill(12),
     x25519PrivateKeyBytes: new Uint8Array(32).fill(13)
-  }))
+  })),
+  getClientIdentityPublicKey: jest
+    .fn()
+    .mockResolvedValue(Buffer.alloc(32, 99).toString('base64'))
 }))
 
 describe('sessionManager', () => {
