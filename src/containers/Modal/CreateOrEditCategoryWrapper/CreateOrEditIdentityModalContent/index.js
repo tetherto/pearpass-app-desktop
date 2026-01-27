@@ -371,7 +371,11 @@ export const CreateOrEditIdentityModalContent = ({
           />
         <//>
 
-        <${FormGroup} title=${i18n._('Personal information')} isCollapse>
+        <${FormGroup}
+          testId="createoredit-section-personalinfo"
+          title=${i18n._('Personal information')}
+          isCollapse
+        >
           <${InputField}
             testId="createoredit-input-fullname"
             label=${i18n._('Full name')}
@@ -400,7 +404,11 @@ export const CreateOrEditIdentityModalContent = ({
           />
         <//>
 
-        <${FormGroup} title=${i18n._('Detail of address')} isCollapse>
+        <${FormGroup}
+          testId="createoredit-section-address"
+          title=${i18n._('Detail of address')}
+          isCollapse
+        >
           <${InputField}
             testId="createoredit-input-address"
             label=${i18n._('Address')}
@@ -443,6 +451,7 @@ export const CreateOrEditIdentityModalContent = ({
         <//>
 
         <${FormGroup}
+          testId="createoredit-section-passport"
           defaultOpenState=${false}
           title=${i18n._('Passport')}
           isCollapse
@@ -531,6 +540,7 @@ export const CreateOrEditIdentityModalContent = ({
         <//>
 
         <${FormGroup}
+          testId="createoredit-section-idcard"
           defaultOpenState=${false}
           title=${i18n._('Identity card')}
           isCollapse
@@ -583,6 +593,7 @@ export const CreateOrEditIdentityModalContent = ({
         <//>
 
         <${FormGroup}
+          testId="createoredit-section-drivinglicense"
           defaultOpenState=${false}
           title=${i18n._('Driving license')}
           isCollapse

@@ -34,7 +34,7 @@ import {
 import {
   getFingerprint,
   getOrCreateIdentity,
-  getPairingCode
+  getPairingToken
 } from '../services/security/appIdentity'
 import {
   killNativeMessagingHostProcesses,
@@ -72,7 +72,7 @@ jest.mock('../services/nativeMessagingPreferences', () => ({
 jest.mock('../services/security/appIdentity', () => ({
   getFingerprint: jest.fn(),
   getOrCreateIdentity: jest.fn(),
-  getPairingCode: jest.fn(),
+  getPairingToken: jest.fn(),
   resetIdentity: jest.fn()
 }))
 jest.mock('../utils/nativeMessagingSetup', () => ({
@@ -111,9 +111,11 @@ describe('useConnectExtension', () => {
     setupNativeMessaging.mockResolvedValue({ success: true })
     startNativeMessagingIPC.mockResolvedValue()
     killNativeMessagingHostProcesses.mockResolvedValue()
-    createOrGetPearpassClient.mockReturnValue({})
+    createOrGetPearpassClient.mockReturnValue({
+      encryptionAdd: jest.fn().mockResolvedValue(undefined)
+    })
     getOrCreateIdentity.mockResolvedValue(fakeIdentity)
-    getPairingCode.mockReturnValue('PAIRCODE')
+    getPairingToken.mockResolvedValue('PAIRCODE-ABCD')
     getFingerprint.mockReturnValue('ABCD1234')
 
     const { result } = renderHook(() => useConnectExtension())
@@ -167,12 +169,14 @@ describe('useConnectExtension', () => {
     startNativeMessagingIPC.mockResolvedValue()
     killNativeMessagingHostProcesses.mockResolvedValue()
     getOrCreateIdentity.mockResolvedValue(fakeIdentity)
-    getPairingCode.mockReturnValue('PAIRCODE')
+    getPairingToken.mockResolvedValue('PAIRCODE-ABCD')
     getFingerprint.mockReturnValue('ABCD1234')
 
     getNativeMessagingEnabled.mockReturnValue(false)
     isNativeMessagingIPCRunning.mockReturnValue(false)
-    createOrGetPearpassClient.mockReturnValue({})
+    createOrGetPearpassClient.mockReturnValue({
+      encryptionAdd: jest.fn().mockResolvedValue(undefined)
+    })
 
     const { result } = renderHook(() => useConnectExtension())
 
@@ -182,7 +186,7 @@ describe('useConnectExtension', () => {
 
     await waitFor(() => {
       expect(getOrCreateIdentity).toHaveBeenCalled()
-      expect(getPairingCode).toHaveBeenCalledWith('pubkey')
+      expect(getPairingToken).toHaveBeenCalled()
       expect(getFingerprint).toHaveBeenCalledWith('pubkey')
     })
   })

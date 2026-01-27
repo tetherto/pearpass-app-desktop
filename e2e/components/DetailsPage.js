@@ -9,10 +9,32 @@ class DetailsPage {
 
     // ==== LOCATORS ====
 
+    get getItemDetailsTitle() {
+        return this.root.locator('[data-testid^="details-title"]');
+    }
+
+    async verifyTitle(expectedTitle) {
+        await expect(this.getItemDetailsTitle).toHaveText(expectedTitle);
+    }
+
     getElementItemDetails(labelOrPlaceholder) {
         return this.root.locator('input', {
             has: this.root.locator('[data-testid="details-header"]', { hasText: labelOrPlaceholder })
         }).or(this.root.locator(`input[placeholder="${labelOrPlaceholder}"]`));
+    }
+
+    getIdentityDetails(name) {
+        return this.root.getByTestId(`identitydetails-field-${name}`)
+    }
+
+    async verifyIdentityDetails(name) {
+        const identityDetail = this.getIdentityDetails(name)
+        await expect(identityDetail).toBeVisible();
+    }
+
+    async verifyIdentityDetailsValue(name, expectedValue) {
+        const identityDetail = this.getIdentityDetails(name);
+        await expect(identityDetail).toHaveValue(expectedValue);
     }
 
     get elementItemFileLink() {
@@ -73,8 +95,8 @@ class DetailsPage {
         return this.root.getByTestId(`details-folder-${foldername}`)
     }
 
-    async verifyItemDetailsFolder() {
-        const itemDetailsFolder = this.getItemDetailsFolderName()
+    async verifyItemDetailsFolderName(foldername) {
+        const itemDetailsFolder = this.getItemDetailsFolderName(foldername)
         await expect(itemDetailsFolder).toBeVisible();
     }
 
@@ -83,7 +105,11 @@ class DetailsPage {
     }
 
     getFavoriteAvatar(initials) {
-        return this.recordListContainer.getByTestId(`avatar-favorite-${initials}`)
+        return this.recordListContainer.getByTestId(`avatar-favorite-${initials}`).first()
+    }
+
+    getFavoriteAvatarLast(initials) {
+        return this.recordListContainer.getByTestId(`avatar-favorite-${initials}`).last()
     }
 
     // ==== ACTIONS ====

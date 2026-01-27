@@ -63,11 +63,6 @@ jest.mock('./handlers/SecurityHandlers', () => ({
     })
     this.nmFinishHandshake = jest.fn().mockResolvedValue({ ok: true })
     this.nmCloseSession = jest.fn().mockResolvedValue({ ok: true })
-    this.checkAvailability = jest.fn().mockResolvedValue({
-      available: true,
-      status: 'running',
-      message: 'Desktop app is running'
-    })
     this.nmResetPairing = jest.fn().mockResolvedValue({
       ok: true,
       clearedSessions: 0,
@@ -76,6 +71,10 @@ jest.mock('./handlers/SecurityHandlers', () => ({
         x25519PublicKey: 'new-mock-x25519-key',
         creationDate: new Date().toISOString()
       }
+    })
+    this.checkExtensionPairingStatus = jest.fn().mockResolvedValue({
+      isPaired: false,
+      status: 'not_paired'
     })
   })
 }))
@@ -100,6 +99,8 @@ jest.mock('./handlers/EncryptionHandlers', () => ({
     this.getMasterPasswordStatus = jest
       .fn()
       .mockResolvedValue({ isLocked: false, failedAttempts: 0 })
+    this.resetFailedAttempts = jest.fn().mockResolvedValue({ success: true })
+    this.initWithPassword = jest.fn().mockResolvedValue(true)
   })
 }))
 
@@ -281,15 +282,6 @@ describe('nativeMessagingIPCServer', () => {
         // Test encryption bootstrap handlers
         expect(handlers.encryptionInit).toBeDefined()
         expect(handlers.encryptionGetStatus).toBeDefined()
-
-        // Test availability check handler
-        expect(handlers.checkAvailability).toBeDefined()
-        const availability = await handlers.checkAvailability()
-        expect(availability).toEqual({
-          available: true,
-          status: 'running',
-          message: 'Desktop app is running'
-        })
 
         // Test that sensitive handlers are NOT directly exposed
         // They should only be accessible via nmSecureRequest

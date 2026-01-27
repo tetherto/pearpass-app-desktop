@@ -22,6 +22,7 @@ import {
   UserIcon,
   WorldIcon
 } from '../../../lib-react-components'
+import { formatPasskeyDate } from '../../../utils/formatPasskeyDate'
 import { isPasswordChangeReminderDisabled } from '../../../utils/isPasswordChangeReminderDisabled'
 import { AttachmentField } from '../../AttachmentField'
 import { CustomFields } from '../../CustomFields'
@@ -69,7 +70,9 @@ export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
         : [{ name: 'website' }],
       customFields: initialRecord?.data.customFields ?? [],
       folder: selectedFolder ?? initialRecord?.folder,
-      attachments: initialRecord?.attachments ?? []
+      attachments: initialRecord?.attachments ?? [],
+      credential: initialRecord?.data?.credential?.id ?? '',
+      passkeyCreatedAt: initialRecord?.data?.passkeyCreatedAt
     }),
     [initialRecord, selectedFolder]
   )
@@ -121,7 +124,7 @@ export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
     html`
       <${AlertBox}
         message=${html`
-          ${i18n._('It’s been 6 months since you last updated this password')}
+          ${i18n._("It's been 6 months since you last updated this password")}
           <br />
           ${i18n._('Consider changing it to keep your account secure.')}
         `}
@@ -155,6 +158,19 @@ export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
         `}
       <//>
 
+      ${!!values?.credential &&
+      html`
+        <${FormGroup}>
+          <${InputField}
+            label=${i18n._('Passkey')}
+            value=${formatPasskeyDate(values.passkeyCreatedAt) ||
+            i18n._('Passkey Stored')}
+            variant="outline"
+            icon=${KeyIcon}
+            isDisabled
+          />
+        <//>
+      `}
       ${!!values?.websites?.length &&
       html`
         <${CompoundField}>

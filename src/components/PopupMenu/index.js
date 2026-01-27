@@ -21,6 +21,7 @@ import { toSentenceCase } from '../../utils/toSentenceCase'
  *  children: import('react').ReactNode,
  *  direction: 'top' | 'bottom' | 'left' | 'right' | 'topRight' | 'topLeft' | 'bottomRight' | 'bottomLeft'
  *  displayOnHover?: boolean
+ *  testId?: string
  * }} props
  */
 export const PopupMenu = ({
@@ -29,7 +30,8 @@ export const PopupMenu = ({
   children,
   content,
   direction = 'bottomLeft',
-  displayOnHover = false
+  displayOnHover = false,
+  testId
 }) => {
   const boxRef = useRef(null)
 
@@ -228,12 +230,13 @@ export const PopupMenu = ({
   }, [isOpen])
 
   return html`
-    <${MenuWrapper}
-      ref=${wrapperRef}
-      onMouseEnter=${displayOnHover ? handleOpen : undefined}
-      onMouseLeave=${displayOnHover ? handleClose : undefined}
-    >
-      <${MenuTrigger} onClick=${!displayOnHover && handleToggle}>
+    <${MenuWrapper} ref=${wrapperRef}>
+      <${MenuTrigger}
+        data-testid=${testId}
+        onClick=${!displayOnHover && handleToggle}
+        onMouseEnter=${displayOnHover ? handleOpen : undefined}
+        onMouseLeave=${displayOnHover ? handleClose : undefined}
+      >
         ${children}
       <//>
 

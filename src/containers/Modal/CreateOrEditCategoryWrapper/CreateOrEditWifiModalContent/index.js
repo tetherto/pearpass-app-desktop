@@ -275,6 +275,7 @@ export const CreateOrEditWifiModalContent = ({
                   label=${i18n._('File')}
                   additionalItems=${html`
                     <${ButtonSingleInput}
+                      testId="createoredit-button-deleteattachment"
                       startIcon=${DeleteIcon}
                       onClick=${() =>
                         setValue(

@@ -26,6 +26,7 @@ import { VaultPasswordFormModalContent } from '../../../containers/Modal/VaultPa
 import { useModal } from '../../../context/ModalContext'
 import { useTranslation } from '../../../hooks/useTranslation.js'
 import { ButtonSecondary } from '../../../lib-react-components'
+import { sortByName } from '../../../utils/sortByName'
 import { vaultCreatedFormat } from '../../../utils/vaultCreated'
 
 export const ExportTab = () => {
@@ -176,7 +177,7 @@ export const ExportTab = () => {
 
   return html` <${CardSingleSetting} title=${t('Export')}>
     <${ContentContainer}>
-      ${data?.map(
+      ${sortByName(data).map(
         (vault) =>
           html`<${ListItem}
             key=${vault.name}

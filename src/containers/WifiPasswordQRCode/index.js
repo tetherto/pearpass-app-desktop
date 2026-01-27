@@ -56,7 +56,7 @@ export const WifiPasswordQRCode = ({
   }
 
   return html`
-    <${Container}>
+    <${Container} data-testid="wifidetails-qrcode">
       <${Title}> ${i18n._(`Scan the QR-Code to connect to the Wi-Fi`)} <//>
       <${QrContainer}>
         <${QRCode}

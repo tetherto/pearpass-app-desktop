@@ -3,13 +3,19 @@
 
 import sodium from 'sodium-native'
 
-import { getOrCreateIdentity, __getMemIdentity } from './appIdentity.js'
+import {
+  getOrCreateIdentity,
+  __getMemIdentity,
+  getClientIdentityPublicKey
+} from './appIdentity.js'
 import {
   randomBytes,
   concatBytes,
   createSession,
   getSession
 } from './sessionStore.js'
+import { SecurityErrorCodes } from '../../constants/securityErrors.js'
+import { createErrorWithCode } from '../../utils/createErrorWithCode.js'
 
 /**
  * Encrypt payload with session key using secretbox (XSalsa20-Poly1305)
@@ -19,7 +25,13 @@ import {
  */
 export const encryptWithSession = (sessionId, plaintext) => {
   const session = getSession(sessionId)
-  if (!session) throw new Error('SessionNotFound')
+  if (!session)
+    throw new Error(
+      createErrorWithCode(
+        SecurityErrorCodes.SESSION_NOT_FOUND,
+        'Session not found or expired'
+      )
+    )
   const nonce = randomBytes(sodium.crypto_secretbox_NONCEBYTES)
   const ciphertext = new Uint8Array(
     plaintext.length + sodium.crypto_secretbox_MACBYTES
@@ -42,7 +54,13 @@ export const encryptWithSession = (sessionId, plaintext) => {
  */
 export const decryptWithSession = (sessionId, nonce, ciphertext) => {
   const session = getSession(sessionId)
-  if (!session) throw new Error('SessionNotFound')
+  if (!session)
+    throw new Error(
+      createErrorWithCode(
+        SecurityErrorCodes.SESSION_NOT_FOUND,
+        'Session not found or expired'
+      )
+    )
   const plaintext = new Uint8Array(
     ciphertext.length - sodium.crypto_secretbox_MACBYTES
   )
@@ -54,7 +72,12 @@ export const decryptWithSession = (sessionId, nonce, ciphertext) => {
       session.key
     )
   ) {
-    throw new Error('DecryptFailed')
+    throw new Error(
+      createErrorWithCode(
+        SecurityErrorCodes.DECRYPT_FAILED,
+        'Failed to decrypt message'
+      )
+    )
   }
   return plaintext
 }
@@ -72,6 +95,21 @@ export const beginHandshake = async (
 ) => {
   // Load or create identity, then load private parts from encryption store (or memory)
   await getOrCreateIdentity(client)
+
+  // Load pinned client public key (required for transcript binding)
+  const clientPubB64 = await getClientIdentityPublicKey(client)
+  if (!clientPubB64) {
+    throw new Error(
+      createErrorWithCode(
+        SecurityErrorCodes.CLIENT_NOT_PAIRED,
+        'No client identity registered'
+      )
+    )
+  }
+  const clientPublicKeyBytes = new Uint8Array(
+    Buffer.from(clientPubB64, 'base64')
+  )
+
   // Support both direct string and { data } shapes from encryptionGet
   const edResponse = await client
     .encryptionGet('nm.identity.ed25519')
@@ -89,11 +127,17 @@ export const beginHandshake = async (
       if (mem) {
         return finalizeHandshakeWithMemoryIdentity(
           mem,
-          extensionEphemeralPublicKeyB64
+          extensionEphemeralPublicKeyB64,
+          clientPublicKeyBytes
         )
       }
     } catch {}
-    throw new Error('IdentityKeysUnavailable')
+    throw new Error(
+      createErrorWithCode(
+        SecurityErrorCodes.IDENTITY_KEYS_UNAVAILABLE,
+        'Identity keys not available'
+      )
+    )
   }
   const edBuffer = Buffer.from(edBlobB64, 'base64')
 
@@ -124,10 +168,12 @@ export const beginHandshake = async (
     extensionEphemeralPublicKey
   )
 
-  // Transcript = host_eph_pk || ext_eph_pk
+  // Transcript = host_eph_pk || ext_eph_pk || client_ed25519_pk
+  // Including the pinned client public key binds the handshake to the specific
+  // extension identity that was registered during pairing.
   const transcript = concatBytes(
-    hostEphemeralPublicKey,
-    extensionEphemeralPublicKey
+    concatBytes(hostEphemeralPublicKey, extensionEphemeralPublicKey),
+    clientPublicKeyBytes
   )
 
   // Signature (Ed25519) over transcript
@@ -148,10 +194,12 @@ export const beginHandshake = async (
  * Fallback: finalize handshake using in-memory identity keys
  * @param {{ ed25519PublicKeyBytes: Uint8Array, ed25519PrivateKeyBytes: Uint8Array, x25519PublicKeyBytes: Uint8Array, x25519PrivateKeyBytes: Uint8Array } | { edPk: Uint8Array, edSk: Uint8Array, xPk: Uint8Array, xSk: Uint8Array }} mem
  * @param {string} extensionEphemeralPublicKeyB64
+ * @param {Uint8Array} clientPublicKeyBytes - The pinned client Ed25519 public key
  */
 function finalizeHandshakeWithMemoryIdentity(
   mem,
-  extensionEphemeralPublicKeyB64
+  extensionEphemeralPublicKeyB64,
+  clientPublicKeyBytes
 ) {
   const hostEphemeralPrivateKey = new Uint8Array(
     sodium.crypto_box_SECRETKEYBYTES
@@ -173,10 +221,10 @@ function finalizeHandshakeWithMemoryIdentity(
     extensionEphemeralPublicKey
   )
 
-  // Transcript = host_eph_pk || ext_eph_pk
+  // Transcript = host_eph_pk || ext_eph_pk || client_ed25519_pk
   const transcript = concatBytes(
-    hostEphemeralPublicKey,
-    extensionEphemeralPublicKey
+    concatBytes(hostEphemeralPublicKey, extensionEphemeralPublicKey),
+    clientPublicKeyBytes
   )
 
   // Signature (Ed25519) over transcript
@@ -202,9 +250,26 @@ function finalizeHandshakeWithMemoryIdentity(
  */
 export const recordIncomingSeq = (sessionId, seq) => {
   const session = getSession(sessionId)
-  if (!session) throw new Error('SessionNotFound')
+  if (!session)
+    throw new Error(
+      createErrorWithCode(
+        SecurityErrorCodes.SESSION_NOT_FOUND,
+        'Session not found or expired'
+      )
+    )
   if (typeof seq !== 'number' || !Number.isFinite(seq))
-    throw new Error('InvalidSeq')
-  if (seq <= session.lastRecvSeq) throw new Error('ReplayDetected')
+    throw new Error(
+      createErrorWithCode(
+        SecurityErrorCodes.INVALID_SEQ,
+        'Invalid sequence number'
+      )
+    )
+  if (seq <= session.lastRecvSeq)
+    throw new Error(
+      createErrorWithCode(
+        SecurityErrorCodes.REPLAY_DETECTED,
+        'Replay attack detected'
+      )
+    )
   session.lastRecvSeq = seq
 }

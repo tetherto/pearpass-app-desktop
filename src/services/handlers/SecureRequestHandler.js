@@ -1,3 +1,5 @@
+import { SecurityErrorCodes } from '../../constants/securityErrors.js'
+import { createErrorWithCode } from '../../utils/createErrorWithCode.js'
 import { logger } from '../../utils/logger'
 import {
   recordIncomingSeq,
@@ -49,14 +51,32 @@ export class SecureRequestHandler {
 
   validateSecurePayload(sessionId, nonceB64, ciphertextB64) {
     if (!sessionId || !nonceB64 || !ciphertextB64) {
-      throw new Error('InvalidSecurePayload')
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.INVALID_SECURE_PAYLOAD,
+          'Missing required secure payload parameters'
+        )
+      )
     }
   }
 
   async validateSession(sessionId, seq) {
     const session = getSession(sessionId)
     if (!session) {
-      throw new Error('SessionNotFound')
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.SESSION_NOT_FOUND,
+          'Session not found or expired'
+        )
+      )
+    }
+    if (!session.clientVerified) {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.CLIENT_NOT_VERIFIED,
+          'Client signature has not been verified'
+        )
+      )
     }
     recordIncomingSeq(sessionId, seq)
     return session

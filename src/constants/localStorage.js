@@ -4,5 +4,6 @@ export const LOCAL_STORAGE_KEYS = {
   COPY_TO_CLIPBOARD_DISABLED: 'copy-to-clipboard-disabled',
   PASSWORD_CHANGE_REMINDER_ENABLED: 'password-change-reminder-enabled',
   AUTO_LOCK_ENABLED: 'auto-lock-enabled',
-  AUTO_LOCK_TIMEOUT_MS: 'auto-lock-timeout-ms'
+  AUTO_LOCK_TIMEOUT_MS: 'auto-lock-timeout-ms',
+  NM_CLIENT_PUBLIC_KEY: 'nm-client-public-key'
 }

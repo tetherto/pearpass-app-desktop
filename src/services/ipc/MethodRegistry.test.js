@@ -1,4 +1,5 @@
 import { MethodRegistry } from './MethodRegistry'
+import { SecurityErrorCodes } from '../../constants/securityErrors'
 import { logger } from '../../utils/logger'
 
 // Mock logger
@@ -31,7 +32,7 @@ describe('MethodRegistry', () => {
     it('should throw UnknownMethod for unregistered methods', async () => {
       await expect(
         registry.execute('unknownMethod', {}, context)
-      ).rejects.toThrow('UnknownMethod: unknownMethod')
+      ).rejects.toThrow(SecurityErrorCodes.UNKNOWN_METHOD)
     })
 
     it('should execute registered methods', async () => {
@@ -61,9 +62,7 @@ describe('MethodRegistry', () => {
 
         await expect(
           registry.execute('secureMethod', {}, context)
-        ).rejects.toThrow(
-          'DesktopNotAuthenticated: Desktop app is not authenticated'
-        )
+        ).rejects.toThrow(SecurityErrorCodes.DESKTOP_NOT_AUTHENTICATED)
 
         expect(mockClient.vaultsGetStatus).toHaveBeenCalled()
       })
@@ -132,9 +131,7 @@ describe('MethodRegistry', () => {
 
         await expect(
           registry.execute('secureMethod', {}, context)
-        ).rejects.toThrow(
-          'DesktopNotAuthenticated: Desktop app is not authenticated'
-        )
+        ).rejects.toThrow(SecurityErrorCodes.DESKTOP_NOT_AUTHENTICATED)
       })
     })
 

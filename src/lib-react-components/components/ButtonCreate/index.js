@@ -9,7 +9,8 @@ import { ButtonContainer, IconWrapper } from './styles'
  *    endIcon?: import('react').ElementType,
  *    children: import('react').ReactNode,
  *    type?: 'button' | 'submit',
- *    onClick: () => void
+ *    onClick: () => void,
+ *    testId?: string
  * }} props
  */
 export const ButtonCreate = ({
@@ -17,9 +18,14 @@ export const ButtonCreate = ({
   endIcon,
   children,
   type = 'button',
-  onClick
+  onClick,
+  testId
 }) => html`
-  <${ButtonContainer} onClick=${() => onClick()} type=${type}>
+  <${ButtonContainer}
+    onClick=${() => onClick()}
+    type=${type}
+    data-testid=${testId}
+  >
     <${IconWrapper}>
       ${startIcon &&
       html`<${startIcon} color=${colors.black.mode1} size="24" />`}
