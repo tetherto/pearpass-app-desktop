@@ -34,11 +34,7 @@ export const useAutoLockPreferences = () => {
   }, [])
 
   const setTimeoutMs = useCallback((ms: number | null) => {
-    if (ms === null) {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.AUTO_LOCK_TIMEOUT_MS, 'null')
-    } else {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.AUTO_LOCK_TIMEOUT_MS, String(ms))
-    }
+    localStorage.setItem(LOCAL_STORAGE_KEYS.AUTO_LOCK_TIMEOUT_MS, String(ms))
     setTimeoutMsState(ms)
     window.dispatchEvent(new Event('auto-lock-settings-changed'))
   }, [])
