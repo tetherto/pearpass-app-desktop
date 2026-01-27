@@ -17,6 +17,7 @@ import { ToastProvider } from './src/context/ToastContext'
 import { messages } from './src/locales/en/messages.mjs'
 import { createOrGetPearpassClient } from './src/services/createOrGetPearpassClient'
 import { createOrGetPipe } from './src/services/createOrGetPipe'
+import { getNativeMessagingEnabled } from './src/services/nativeMessagingPreferences'
 import { startNativeMessagingIPC } from './src/services/nativeMessagingIPCServer'
 import { logger } from './src/utils/logger'
 import { setFontsAndResetCSS } from './styles'
@@ -45,11 +46,12 @@ const client = createOrGetPearpassClient(pipe, storage, {
 
 setPearpassVaultClient(client)
 
-// Check if native messaging is enabled and start IPC server
-// For testing, always start the IPC server
-startNativeMessagingIPC(client).catch((err: unknown) => {
-  logger.error('INDEX', 'Failed to start IPC server:', err)
-})
+// Start IPC server on startup if native messaging is enabled
+if (getNativeMessagingEnabled()) {
+  startNativeMessagingIPC(client).catch((err: unknown) => {
+    logger.error('INDEX', 'Failed to start IPC server:', err)
+  })
+}
 
 // Render the application
 const container = document.querySelector('#root')

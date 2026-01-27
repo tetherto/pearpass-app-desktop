@@ -11,13 +11,15 @@ import { ArrowDownIcon, ArrowUpIcon } from '../../lib-react-components'
  *  isCollapse: boolean
  *  defaultOpenState: boolean
  *  children: import('react').ReactNode
+ *  testId?: string
  * }} props
  */
 export const FormGroup = ({
   title,
   isCollapse,
   children,
-  defaultOpenState = true
+  defaultOpenState = true,
+  testId
 }) => {
   const [isOpen, setIsOpen] = useState(defaultOpenState)
 
@@ -30,7 +32,10 @@ export const FormGroup = ({
       ${!!title?.length &&
       isCollapse &&
       html`
-        <${TitleWrapper} onClick=${() => setIsOpen(!isOpen)}>
+        <${TitleWrapper}
+          data-testid=${testId}
+          onClick=${() => setIsOpen(!isOpen)}
+        >
           <${isOpen ? ArrowUpIcon : ArrowDownIcon} />
           ${title}
         <//>

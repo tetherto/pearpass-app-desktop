@@ -32,9 +32,13 @@ jest.mock('sodium-native', () => ({
     sk.fill(4)
   }),
   crypto_hash_sha256: jest.fn((out, input) => {
-    // Mock SHA256 - just fill with deterministic data
-    for (let i = 0; i < out.length; i++) {
-      out[i] = (input[0] + i) % 256
+    // Mock SHA256 - deterministic but sensitive to full input so different keys/secrets change output
+    let acc = 0
+    for (let i = 0; i < input.length; i += 1) {
+      acc = (acc + input[i] + i) % 256
+    }
+    for (let i = 0; i < out.length; i += 1) {
+      out[i] = (acc + i) % 256
     }
   })
 }))
@@ -79,7 +83,7 @@ describe('appIdentity', () => {
 
       expect(sodium.crypto_sign_keypair).toHaveBeenCalled()
       expect(sodium.crypto_box_keypair).toHaveBeenCalled()
-      expect(mockClient.encryptionAdd).toHaveBeenCalledTimes(3) // ed25519, x25519, and creationDate
+      expect(mockClient.encryptionAdd).toHaveBeenCalledTimes(3) // ed25519, x25519, and creationDate (pairing secret is handled separately)
       expect(result).toHaveProperty('ed25519PublicKey')
       expect(result).toHaveProperty('x25519PublicKey')
       expect(result).toHaveProperty('creationDate')
@@ -105,6 +109,7 @@ describe('appIdentity', () => {
       const creationDate = '2024-01-01T00:00:00.000Z'
 
       mockClient.encryptionGet
+        .mockResolvedValueOnce(null) // pairing secret missing initially
         .mockResolvedValueOnce(ed25519Mock)
         .mockResolvedValueOnce(x25519Mock)
         .mockResolvedValueOnce(creationDate)
@@ -136,6 +141,7 @@ describe('appIdentity', () => {
       const creationDate = '2024-01-01T00:00:00.000Z'
 
       mockClient.encryptionGet
+        .mockResolvedValueOnce({ data: null }) // pairing secret missing initially
         .mockResolvedValueOnce({ data: ed25519Mock })
         .mockResolvedValueOnce({ data: x25519Mock })
         .mockResolvedValueOnce({ data: creationDate })
@@ -199,30 +205,32 @@ describe('appIdentity', () => {
   })
 
   describe('getPairingCode', () => {
-    it('should generate a 6-digit pairing code from public key', () => {
+    it('should generate a pairing token from public key and secret', () => {
       const publicKeyB64 = Buffer.alloc(32, 42).toString('base64')
-      const code = getPairingCode(publicKeyB64)
+      const pairingSecretB64 = Buffer.alloc(32, 7).toString('base64')
+      const token = getPairingCode(publicKeyB64, pairingSecretB64)
 
-      expect(code).toMatch(/^\d{6}$/)
-      expect(code.length).toBe(6)
+      expect(token).toMatch(/^\d{6}-[0-9A-F]{4}$/)
     })
 
-    it('should generate consistent codes for the same key', () => {
+    it('should generate consistent tokens for the same key and secret', () => {
       const publicKeyB64 = Buffer.alloc(32, 123).toString('base64')
-      const code1 = getPairingCode(publicKeyB64)
-      const code2 = getPairingCode(publicKeyB64)
+      const pairingSecretB64 = Buffer.alloc(32, 9).toString('base64')
+      const token1 = getPairingCode(publicKeyB64, pairingSecretB64)
+      const token2 = getPairingCode(publicKeyB64, pairingSecretB64)
 
-      expect(code1).toBe(code2)
+      expect(token1).toBe(token2)
     })
 
-    it('should generate different codes for different keys', () => {
+    it('should generate different tokens for different keys', () => {
       const key1 = Buffer.alloc(32, 1).toString('base64')
       const key2 = Buffer.alloc(32, 2).toString('base64')
+      const pairingSecretB64 = Buffer.alloc(32, 11).toString('base64')
 
-      const code1 = getPairingCode(key1)
-      const code2 = getPairingCode(key2)
+      const token1 = getPairingCode(key1, pairingSecretB64)
+      const token2 = getPairingCode(key2, pairingSecretB64)
 
-      expect(code1).not.toBe(code2)
+      expect(token1).not.toBe(token2)
     })
   })
 

@@ -20,6 +20,7 @@ import {
   ButtonSecondary,
   CommonFileIcon
 } from '../../../lib-react-components'
+import { sortByName } from '../../../utils/sortByName'
 import { vaultCreatedFormat } from '../../../utils/vaultCreated'
 
 export const CardVaultSelect = () => {
@@ -70,7 +71,7 @@ export const CardVaultSelect = () => {
 
       ${hasVaults
         ? html` <${VaultsContainer}>
-            ${data.map(
+            ${sortByName(data).map(
               (vault) =>
                 html`<${ListItem}
                   onClick=${() => handleSelectVault(vault.id)}

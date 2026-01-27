@@ -7,6 +7,7 @@ import {
   decryptWithSession
 } from './sessionManager'
 import { getSession, closeSession } from './sessionStore'
+import { SecurityErrorCodes } from '../../constants/securityErrors'
 
 // Mock dependencies
 jest.mock('sodium-native', () => ({
@@ -77,7 +78,10 @@ jest.mock('./appIdentity', () => ({
     ed25519PrivateKeyBytes: new Uint8Array(64).fill(11),
     x25519PublicKeyBytes: new Uint8Array(32).fill(12),
     x25519PrivateKeyBytes: new Uint8Array(32).fill(13)
-  }))
+  })),
+  getClientIdentityPublicKey: jest
+    .fn()
+    .mockResolvedValue(Buffer.alloc(32, 99).toString('base64'))
 }))
 
 describe('sessionManager', () => {
@@ -234,18 +238,24 @@ describe('sessionManager', () => {
     it('should reject repeated sequence numbers', () => {
       recordIncomingSeq(sessionId, 5)
 
-      expect(() => recordIncomingSeq(sessionId, 5)).toThrow('ReplayDetected')
+      expect(() => recordIncomingSeq(sessionId, 5)).toThrow(
+        SecurityErrorCodes.REPLAY_DETECTED
+      )
     })
 
     it('should reject decreasing sequence numbers', () => {
       recordIncomingSeq(sessionId, 10)
 
-      expect(() => recordIncomingSeq(sessionId, 9)).toThrow('ReplayDetected')
+      expect(() => recordIncomingSeq(sessionId, 9)).toThrow(
+        SecurityErrorCodes.REPLAY_DETECTED
+      )
     })
 
     it('should handle sequence number 0 correctly', () => {
       // Sequence 0 should be rejected since initial lastRecvSeq is 0
-      expect(() => recordIncomingSeq(sessionId, 0)).toThrow('ReplayDetected')
+      expect(() => recordIncomingSeq(sessionId, 0)).toThrow(
+        SecurityErrorCodes.REPLAY_DETECTED
+      )
 
       // But sequence 1 should be accepted
       expect(() => recordIncomingSeq(sessionId, 1)).not.toThrow()
@@ -310,7 +320,7 @@ describe('sessionManager', () => {
       const plaintext = new Uint8Array([1, 2, 3])
 
       expect(() => encryptWithSession('invalid-id', plaintext)).toThrow(
-        'SessionNotFound'
+        SecurityErrorCodes.SESSION_NOT_FOUND
       )
     })
 
@@ -319,7 +329,7 @@ describe('sessionManager', () => {
       const ciphertext = new Uint8Array(32)
 
       expect(() => decryptWithSession('invalid-id', nonce, ciphertext)).toThrow(
-        'SessionNotFound'
+        SecurityErrorCodes.SESSION_NOT_FOUND
       )
     })
   })
