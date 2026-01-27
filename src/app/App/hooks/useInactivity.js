@@ -6,10 +6,7 @@ import { NAVIGATION_ROUTES } from '../../../constants/navigation'
 import { useLoadingContext } from '../../../context/LoadingContext'
 import { useModal } from '../../../context/ModalContext'
 import { useRouter } from '../../../context/RouterContext'
-import {
-  getAutoLockTimeoutMs,
-  isAutoLockEnabled
-} from '../../../hooks/useAutoLockPreferences'
+import { getAutoLockTimeoutMs } from '../../../hooks/useAutoLockPreferences'
 import { logger } from '../../../utils/logger'
 
 /**
@@ -29,11 +26,11 @@ export function useInactivity() {
       clearTimeout(timerRef.current)
     }
 
-    if (!isAutoLockEnabled()) {
+    const timeoutMs = getAutoLockTimeoutMs()
+
+    if (timeoutMs === null) {
       return
     }
-
-    const timeoutMs = getAutoLockTimeoutMs()
 
     timerRef.current = setTimeout(async () => {
       const userData = await refetchUser()
