@@ -11,6 +11,7 @@ export { ButtonRoundIcon } from './components/ButtonRoundIcon'
 export { CompoundField } from './components/CompoundField'
 export { InputField } from './components/InputField'
 export { TextArea } from './components/TextArea'
+
 export { NoticeText } from './components/NoticeText'
 export { PasswordField } from './components/PasswordField'
 export { PearPassPasswordField } from './components/PearPassPasswordField'

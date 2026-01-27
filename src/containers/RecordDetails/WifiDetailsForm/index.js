@@ -8,17 +8,15 @@ import { FormGroup } from '../../../components/FormGroup'
 import { FormWrapper } from '../../../components/FormWrapper'
 import { InputFieldNote } from '../../../components/InputFieldNote'
 import { ATTACHMENTS_FIELD_KEY } from '../../../constants/formFields'
-import { useToast } from '../../../context/ToastContext'
-import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard'
 import { useGetMultipleFiles } from '../../../hooks/useGetMultipleFiles'
 import {
-  CopyIcon,
   PasswordField,
   PasswordIcon
 } from '../../../lib-react-components'
 import { AttachmentField } from '../../AttachmentField'
 import { CustomFields } from '../../CustomFields'
 import { WifiPasswordQRCode } from '../../WifiPasswordQRCode'
+import { CopyButton } from '../../../components/CopyButton'
 
 /**
  * @param {{
@@ -39,17 +37,6 @@ import { WifiPasswordQRCode } from '../../WifiPasswordQRCode'
  */
 export const WifiDetailsForm = ({ initialRecord, selectedFolder }) => {
   const { i18n } = useLingui()
-
-  const { setToast } = useToast()
-
-  const { copyToClipboard } = useCopyToClipboard({
-    onCopy: () => {
-      setToast({
-        message: i18n._('Copied to clipboard'),
-        icon: CopyIcon
-      })
-    }
-  })
 
   const initialValues = React.useMemo(
     () => ({
@@ -74,14 +61,6 @@ export const WifiDetailsForm = ({ initialRecord, selectedFolder }) => {
     initialRecord
   })
 
-  const handleCopy = (value) => {
-    if (!value?.length) {
-      return
-    }
-
-    copyToClipboard(value)
-  }
-
   useEffect(() => {
     setValues(initialValues)
   }, [initialValues, setValues])
@@ -90,7 +69,7 @@ export const WifiDetailsForm = ({ initialRecord, selectedFolder }) => {
     <${FormWrapper}>
       <${FormGroup}>
         ${!!values?.password?.length &&
-        html`
+    html`
           <${PasswordField}
             testId="wifidetails-field-password"
             label=${i18n._('Password')}
@@ -103,29 +82,33 @@ export const WifiDetailsForm = ({ initialRecord, selectedFolder }) => {
             `}
             variant="outline"
             icon=${PasswordIcon}
-            onClick=${handleCopy}
             isDisabled
             ...${register('password')}
+            additionalItems=${html`
+              <${CopyButton} value=${values.password} />
+            `}
           />
         `}
       <//>
 
       <${FormGroup}>
         ${!!values?.note?.length &&
-        html`
+    html`
           <${InputFieldNote}
             testId="wifidetails-field-note"
             ...${register('note')}
-            onClick=${handleCopy}
             isDisabled
+            additionalItems=${html`
+              <${CopyButton} value=${values.note} />
+            `}
           />
         `}
       <//>
       ${values?.attachments?.length > 0 &&
-      html`
+    html`
         <${FormGroup}>
           ${values.attachments.map(
-            (attachment) => html`
+      (attachment) => html`
               <${AttachmentField}
                 testId="wifidetails-attachment"
                 key=${attachment.id}
@@ -133,13 +116,12 @@ export const WifiDetailsForm = ({ initialRecord, selectedFolder }) => {
                 attachment=${attachment}
               />
             `
-          )}
+    )}
         <//>
       `}
       <${CustomFields}
         areInputsDisabled=${true}
         customFields=${list}
-        onClick=${handleCopy}
         register=${registerItem}
       />
     <//>

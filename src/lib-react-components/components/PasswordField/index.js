@@ -17,6 +17,7 @@ import { YellowErrorIcon } from '../../icons/YellowErrorIcon'
 import { ButtonRoundIcon } from '../ButtonRoundIcon'
 import { HighlightString } from '../HighlightString'
 import { InputField } from '../InputField'
+import { CopyButton } from '../../../components/CopyButton'
 
 const PASSWORD_STRENGTH_ICONS = {
   error: ErrorIcon,
@@ -97,8 +98,8 @@ export const PasswordField = ({
       isDisabled=${isDisabled}
       value=${value}
       overlay=${isPasswordVisible
-        ? html` <${HighlightString} text=${value} /> `
-        : null}
+      ? html` <${HighlightString} text=${value} /> `
+      : null}
       onChange=${handleChange}
       onClick=${onClick}
       placeholder=${placeholder}
@@ -113,9 +114,9 @@ export const PasswordField = ({
             testId="passwordfield-button-togglevisibility"
             startIcon=${isPasswordVisible ? EyeClosedIcon : EyeIcon}
             onClick=${(e) => {
-              e.stopPropagation()
-              setIsPasswordVisible(!isPasswordVisible)
-            }}
+        e.stopPropagation()
+        setIsPasswordVisible(!isPasswordVisible)
+      }}
           />
 
           ${additionalItems}

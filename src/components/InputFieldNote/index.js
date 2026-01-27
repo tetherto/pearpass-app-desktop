@@ -1,6 +1,7 @@
 import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 
+import { CopyButton } from '../CopyButton'
 import { CommonFileIcon, InputField } from '../../lib-react-components'
 
 /**

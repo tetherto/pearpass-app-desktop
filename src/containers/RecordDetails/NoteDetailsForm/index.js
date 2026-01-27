@@ -7,12 +7,11 @@ import { useForm } from 'pear-apps-lib-ui-react-hooks'
 import { FormGroup } from '../../../components/FormGroup'
 import { FormWrapper } from '../../../components/FormWrapper'
 import { ATTACHMENTS_FIELD_KEY } from '../../../constants/formFields'
-import { useToast } from '../../../context/ToastContext'
-import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard'
 import { useGetMultipleFiles } from '../../../hooks/useGetMultipleFiles'
-import { CopyIcon, TextArea } from '../../../lib-react-components'
+import { TextArea } from '../../../lib-react-components'
 import { AttachmentField } from '../../AttachmentField'
 import { CustomFields } from '../../CustomFields'
+import { CopyButton } from '../../../components/CopyButton'
 
 /**
  * @param {{
@@ -32,17 +31,6 @@ import { CustomFields } from '../../CustomFields'
  */
 export const NoteDetailsForm = ({ initialRecord, selectedFolder }) => {
   const { i18n } = useLingui()
-
-  const { setToast } = useToast()
-
-  const { copyToClipboard } = useCopyToClipboard({
-    onCopy: () => {
-      setToast({
-        message: i18n._('Copied to clipboard'),
-        icon: CopyIcon
-      })
-    }
-  })
 
   const initialValues = React.useMemo(
     () => ({
@@ -66,14 +54,6 @@ export const NoteDetailsForm = ({ initialRecord, selectedFolder }) => {
     initialRecord
   })
 
-  const handleCopy = (value) => {
-    if (!value?.length) {
-      return
-    }
-
-    copyToClipboard(value)
-  }
-
   useEffect(() => {
     setValues(initialValues)
   }, [initialValues, setValues])
@@ -82,33 +62,32 @@ export const NoteDetailsForm = ({ initialRecord, selectedFolder }) => {
     <${FormWrapper}>
       <${FormGroup}>
         ${!!values?.note?.length &&
-        html`
+    html`
           <${TextArea}
             ...${register('note')}
             placeholder=${i18n._('Write a note...')}
-            onClick=${handleCopy}
             isDisabled
+            additionalItems=${html`<${CopyButton} value=${values.note} />`}
           />
         `}
       <//>
       ${values?.attachments?.length > 0 &&
-      html`
+    html`
         <${FormGroup}>
           ${values.attachments.map(
-            (attachment) => html`
+      (attachment) => html`
               <${AttachmentField}
                 key=${attachment.id}
                 label=${i18n._('File')}
                 attachment=${attachment}
               />
             `
-          )}
+    )}
         <//>
       `}
       <${CustomFields}
         areInputsDisabled=${true}
         customFields=${list}
-        onClick=${handleCopy}
         register=${registerItem}
       />
     <//>

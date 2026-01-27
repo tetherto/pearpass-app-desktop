@@ -10,22 +10,23 @@ import { FormGroup } from '../../../components/FormGroup'
 import { FormWrapper } from '../../../components/FormWrapper'
 import { InputFieldNote } from '../../../components/InputFieldNote'
 import { ATTACHMENTS_FIELD_KEY } from '../../../constants/formFields'
-import { useToast } from '../../../context/ToastContext'
-import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard'
 import { useGetMultipleFiles } from '../../../hooks/useGetMultipleFiles'
 import {
   CompoundField,
-  CopyIcon,
   InputField,
   KeyIcon,
   PasswordField,
   UserIcon,
   WorldIcon
 } from '../../../lib-react-components'
+
 import { formatPasskeyDate } from '../../../utils/formatPasskeyDate'
 import { isPasswordChangeReminderDisabled } from '../../../utils/isPasswordChangeReminderDisabled'
 import { AttachmentField } from '../../AttachmentField'
 import { CustomFields } from '../../CustomFields'
+import { WebsiteButton } from '../../../components/WebsiteButton'
+import { CopyButton } from '../../../components/CopyButton'
+
 
 /**
  * @param {{
@@ -48,17 +49,6 @@ import { CustomFields } from '../../CustomFields'
  */
 export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
   const { i18n } = useLingui()
-
-  const { setToast } = useToast()
-
-  const { copyToClipboard } = useCopyToClipboard({
-    onCopy: () => {
-      setToast({
-        message: i18n._('Copied to clipboard'),
-        icon: CopyIcon
-      })
-    }
-  })
 
   const initialValues = React.useMemo(
     () => ({
@@ -91,21 +81,7 @@ export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
     updateValues: setValue,
     initialRecord
   })
-  const handleWebsiteClick = (url) => {
-    if (!url?.length) {
-      return
-    }
 
-    window.open(url, '_blank')
-  }
-
-  const handleCopy = (value) => {
-    if (!value?.length) {
-      return
-    }
-
-    copyToClipboard(value)
-  }
   const isPasswordSixMonthsOld = () => {
     const { passwordUpdatedAt } = initialRecord?.data || {}
     return (
@@ -132,39 +108,45 @@ export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
     `}
     <${FormWrapper}>
       <${FormGroup}>
+
+
         ${!!values?.username?.length &&
-        html`
+    html`
           <${InputField}
             label=${i18n._('Email or username')}
             placeholder=${i18n._('Email or username')}
             variant="outline"
             icon=${UserIcon}
-            onClick=${handleCopy}
             isDisabled
             ...${register('username')}
+            additionalItems=${html`
+              <${CopyButton} value=${values.username} />
+            `}  
           />
         `}
         ${!!values?.password?.length &&
-        html`
+    html`
           <${PasswordField}
             label=${i18n._('Password')}
             placeholder=${i18n._('Password')}
             variant="outline"
             icon=${KeyIcon}
-            onClick=${handleCopy}
             isDisabled
             ...${register('password')}
+            additionalItems=${html`
+              <${CopyButton} value=${values.password} />
+            `}
           />
         `}
       <//>
 
       ${!!values?.credential &&
-      html`
+    html`
         <${FormGroup}>
           <${InputField}
             label=${i18n._('Passkey')}
             value=${formatPasskeyDate(values.passkeyCreatedAt) ||
-            i18n._('Passkey Stored')}
+      i18n._('Passkey Stored')}
             variant="outline"
             icon=${KeyIcon}
             isDisabled
@@ -172,10 +154,10 @@ export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
         <//>
       `}
       ${!!values?.websites?.length &&
-      html`
+    html`
         <${CompoundField}>
           ${websitesList.map(
-            (website, index) => html`
+      (website, index) => html`
               <${React.Fragment} key=${website.id}>
                 <${InputField}
                   label=${i18n._('Website')}
@@ -183,42 +165,46 @@ export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
                   icon=${WorldIcon}
                   ...${registerItem('website', index)}
                   isDisabled
-                  onClick=${() =>
-                    handleWebsiteClick(registerItem('website', index).value)}
+                  additionalItems=${html`
+                    <${WebsiteButton} url=${registerItem('website', index).value} />
+                    <${CopyButton} value=${registerItem('website', index).value} />
+                  `}
                 />
+
               <//>
             `
-          )}
+    )}
         <//>
       `}
       ${values?.attachments?.length > 0 &&
-      html`
+    html`
         <${FormGroup}>
           ${values.attachments.map(
-            (attachment) => html`
+      (attachment) => html`
               <${AttachmentField}
                 label=${i18n._('File')}
                 attachment=${attachment}
               />
             `
-          )}
+    )}
         <//>
       `}
 
       <${FormGroup}>
         ${!!values?.note?.length &&
-        html`
+    html`
           <${InputFieldNote}
             ...${register('note')}
-            onClick=${handleCopy}
             isDisabled
+            additionalItems=${html`
+              <${CopyButton} value=${values.note} />
+            `}
           />
         `}
       <//>
 
       <${CustomFields}
         customFields=${customFieldsList}
-        onClick=${handleCopy}
         register=${registerCustomFieldItem}
         areInputsDisabled=${true}
       />

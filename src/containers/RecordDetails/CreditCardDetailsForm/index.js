@@ -8,12 +8,9 @@ import { FormGroup } from '../../../components/FormGroup'
 import { FormWrapper } from '../../../components/FormWrapper'
 import { InputFieldNote } from '../../../components/InputFieldNote'
 import { ATTACHMENTS_FIELD_KEY } from '../../../constants/formFields'
-import { useToast } from '../../../context/ToastContext'
-import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard'
 import { useGetMultipleFiles } from '../../../hooks/useGetMultipleFiles'
 import {
   CalendarIcon,
-  CopyIcon,
   CreditCardIcon,
   InputField,
   NineDotsIcon,
@@ -21,6 +18,7 @@ import {
   UserIcon
 } from '../../../lib-react-components'
 import { AttachmentField } from '../../AttachmentField'
+import { CopyButton } from '../../../components/CopyButton'
 import { CustomFields } from '../../CustomFields'
 
 /**
@@ -46,17 +44,6 @@ import { CustomFields } from '../../CustomFields'
  */
 export const CreditCardDetailsForm = ({ initialRecord, selectedFolder }) => {
   const { i18n } = useLingui()
-
-  const { setToast } = useToast()
-
-  const { copyToClipboard } = useCopyToClipboard({
-    onCopy: () => {
-      setToast({
-        message: i18n._('Copied to clipboard'),
-        icon: CopyIcon
-      })
-    }
-  })
 
   const initialValues = React.useMemo(
     () => ({
@@ -85,14 +72,6 @@ export const CreditCardDetailsForm = ({ initialRecord, selectedFolder }) => {
     initialRecord
   })
 
-  const handleCopy = (value, stripSpaces = false) => {
-    if (!value?.length) {
-      return
-    }
-
-    const textToCopy = stripSpaces ? value.replace(/\s/g, '') : value
-    copyToClipboard(textToCopy)
-  }
   useEffect(() => {
     setValues(initialValues)
   }, [initialValues, setValues])
@@ -101,89 +80,101 @@ export const CreditCardDetailsForm = ({ initialRecord, selectedFolder }) => {
     <${FormWrapper}>
       <${FormGroup}>
         ${!!values?.name?.length &&
-        html`
+    html`
           <${InputField}
             label=${i18n._('Full name')}
             placeholder=${i18n._('Full name')}
             variant="outline"
             icon=${UserIcon}
-            onClick=${handleCopy}
             isDisabled
             ...${register('name')}
+            additionalItems=${html`
+              <${CopyButton} value=${values.name} />
+            `}
           />
         `}
         ${!!values?.number?.length &&
-        html`
+    html`
           <${InputField}
             label=${i18n._('Number on card')}
             placeholder="1234 1234 1234 1234 "
             variant="outline"
             icon=${CreditCardIcon}
-            onClick=${(value) => handleCopy(value, true)}
             isDisabled
             ...${register('number')}
             value=${values.number.replace(/(.{4})/g, '$1 ').trim()}
+            additionalItems=${html`
+              <${CopyButton} value=${values.number.replace(/\s/g, '')} />
+            `}
           />
         `}
         ${!!values?.expireDate?.length &&
-        html`
+    html`
           <${InputField}
             label=${i18n._('Date of expire')}
             placeholder="MM YY"
             variant="outline"
             icon=${CalendarIcon}
-            onClick=${handleCopy}
             isDisabled
             ...${register('expireDate')}
+            additionalItems=${html`
+              <${CopyButton} value=${values.expireDate} />
+            `}
           />
         `}
         ${!!values?.securityCode?.length &&
-        html`
+    html`
           <${PasswordField}
             label=${i18n._('Security code')}
             placeholder="123"
             variant="outline"
             icon=${CreditCardIcon}
-            onClick=${handleCopy}
             isDisabled
             ...${register('securityCode')}
+            additionalItems=${html`
+              <${CopyButton} value=${values.securityCode} />
+            `}
           />
         `}
         ${!!values?.pinCode?.length &&
-        html`
+    html`
           <${PasswordField}
             label=${i18n._('Pin code')}
             placeholder="1234"
             variant="outline"
             icon=${NineDotsIcon}
-            onClick=${handleCopy}
             isDisabled
             ...${register('pinCode')}
+            additionalItems=${html`
+              <${CopyButton} value=${values.pinCode} />
+            `}
           />
         `}
       <//>
 
       ${values?.attachments?.length > 0 &&
-      html`
+    html`
         <${FormGroup}>
           ${values.attachments.map(
-            (attachment) => html`
+      (attachment) => html`
               <${AttachmentField}
                 label=${i18n._('File')}
                 attachment=${attachment}
               />
             `
-          )}
+    )}
         <//>
       `}
 
       <${FormGroup}>
         ${!!values?.note?.length &&
-        html`
+    html`
           <${InputFieldNote}
-            onClick=${handleCopy}
             isDisabled
             ...${register('note')}
+            additionalItems=${html`
+              <${CopyButton} value=${values.note} />
+            `}
           />
         `}
       <//>
@@ -191,7 +182,6 @@ export const CreditCardDetailsForm = ({ initialRecord, selectedFolder }) => {
       <${CustomFields}
         areInputsDisabled=${true}
         customFields=${list}
-        onClick=${handleCopy}
         register=${registerItem}
       />
     <//>

@@ -1,5 +1,11 @@
 import styled from 'styled-components'
 
+interface InputProps {
+    hasOverlay?: boolean
+    isDisabled?: boolean
+    type?: string
+}
+
 export const InputWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -84,28 +90,34 @@ export const InputAreaWrapper = styled.div`
   align-items: center;
 `
 
-const getInputColor = ({ theme, type, hasOverlay }) => {
-  if (hasOverlay) {
-    return 'transparent'
-  }
+const getInputColor = (params: {
+    theme: { colors: Record<string, Record<string, string>> }
+    type?: string
+    hasOverlay?: boolean
+}): string => {
+    const { theme, type, hasOverlay } = params
 
-  if (type === 'url') {
-    return theme.colors.primary400.mode1
-  }
+    if (hasOverlay) {
+        return 'transparent'
+    }
 
-  return theme.colors.white.mode1
+    if (type === 'url') {
+        return theme.colors.primary400.mode1
+    }
+
+    return theme.colors.white.mode1
 }
 
 export const Input = styled.input.withConfig({
-  shouldForwardProp: (prop) => !['hasOverlay', 'isDisabled'].includes(prop)
-})`
+    shouldForwardProp: (prop) => !['hasOverlay', 'isDisabled'].includes(prop)
+}) <InputProps>`
   color: ${({ theme, type, hasOverlay }) =>
-    getInputColor({ theme, type, hasOverlay })};
+        getInputColor({ theme, type, hasOverlay })};
   font-family: 'Inter';
   font-size: 16px;
   font-weight: 700;
   caret-color: ${({ theme, hasOverlay }) =>
-    hasOverlay ? theme.colors.primary400.mode1 : ''};
+        hasOverlay ? theme.colors.primary400.mode1 : ''};
   width: 100%;
   user-select: ${({ isDisabled }) => (isDisabled ? 'none' : 'auto')};
   cursor: ${({ isDisabled }) => (isDisabled ? 'default' : 'text')};

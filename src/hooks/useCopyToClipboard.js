@@ -16,11 +16,12 @@ const CLEAR_CLIPBOARD_PATH_PROD =
  * @returns {{
  *  isCopied: boolean,
  *  copyToClipboard: (text: string) => boolean
+ *  isCopyToClipboardDisabled: boolean
  * }}
  */
 export const useCopyToClipboard = ({ onCopy } = {}) => {
   const [isCopyToClipboardDisabled, setIsCopyToClipboardDisabled] =
-    useState(false)
+    useState(true) // disabled by default to ensure visual stability
   const [isCopied, setIsCopied] = useState(false)
 
   const pipeRef = useRef(null)
@@ -79,5 +80,5 @@ export const useCopyToClipboard = ({ onCopy } = {}) => {
     return true
   }
 
-  return { isCopied, copyToClipboard }
+  return { isCopied, copyToClipboard, isCopyToClipboardDisabled }
 }
