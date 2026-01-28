@@ -4,6 +4,7 @@ import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import { useForm } from 'pear-apps-lib-ui-react-hooks'
 
+import { CopyButton } from '../../../components/CopyButton'
 import { FormGroup } from '../../../components/FormGroup'
 import { FormWrapper } from '../../../components/FormWrapper'
 import { ATTACHMENTS_FIELD_KEY } from '../../../constants/formFields'
@@ -11,7 +12,6 @@ import { useGetMultipleFiles } from '../../../hooks/useGetMultipleFiles'
 import { TextArea } from '../../../lib-react-components'
 import { AttachmentField } from '../../AttachmentField'
 import { CustomFields } from '../../CustomFields'
-import { CopyButton } from '../../../components/CopyButton'
 
 /**
  * @param {{
@@ -62,7 +62,7 @@ export const NoteDetailsForm = ({ initialRecord, selectedFolder }) => {
     <${FormWrapper}>
       <${FormGroup}>
         ${!!values?.note?.length &&
-    html`
+        html`
           <${TextArea}
             ...${register('note')}
             placeholder=${i18n._('Write a note...')}
@@ -72,17 +72,17 @@ export const NoteDetailsForm = ({ initialRecord, selectedFolder }) => {
         `}
       <//>
       ${values?.attachments?.length > 0 &&
-    html`
+      html`
         <${FormGroup}>
           ${values.attachments.map(
-      (attachment) => html`
+            (attachment) => html`
               <${AttachmentField}
                 key=${attachment.id}
                 label=${i18n._('File')}
                 attachment=${attachment}
               />
             `
-    )}
+          )}
         <//>
       `}
       <${CustomFields}

@@ -14,13 +14,13 @@ import { ToastContainer, ToastStack } from './styles'
 export const Toasts = ({ toasts }) => html`
   <${ToastStack}>
     ${toasts?.map((toast) => {
-  const Icon = toast.icon
-  return html`
+      const Icon = toast.icon
+      return html`
         <${ToastContainer}>
           ${Icon && html`<${Icon} color=${colors.black.mode1} />`}
           ${toast.message}
         <//>
       `
-})}
+    })}
   <//>
 `

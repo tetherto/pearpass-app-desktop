@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 
-import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import { useForm } from 'pear-apps-lib-ui-react-hooks'
 
@@ -27,7 +26,6 @@ import { PassPhrase } from '../../PassPhrase'
  * }} props
  */
 export const PassPhraseDetailsForm = ({ initialRecord, selectedFolder }) => {
-
   const initialValues = React.useMemo(
     () => ({
       title: initialRecord?.data?.title ?? '',
@@ -53,17 +51,12 @@ export const PassPhraseDetailsForm = ({ initialRecord, selectedFolder }) => {
     <${FormWrapper}>
       <${FormGroup}>
         ${!!values?.passPhrase?.length &&
-    html`<${PassPhrase} ...${register('passPhrase')} /> `}
+        html`<${PassPhrase} ...${register('passPhrase')} /> `}
       <//>
 
       <${FormGroup}>
         ${!!values?.note?.length &&
-    html`
-          <${InputFieldNote}
-            ...${register('note')}
-            isDisabled
-          />
-        `}
+        html` <${InputFieldNote} ...${register('note')} isDisabled /> `}
       <//>
 
       <${CustomFields}

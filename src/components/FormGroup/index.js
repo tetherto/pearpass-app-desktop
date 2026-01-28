@@ -30,8 +30,8 @@ export const FormGroup = ({
   return html`
     <${Wrapper}>
       ${!!title?.length &&
-    isCollapse &&
-    html`
+      isCollapse &&
+      html`
         <${TitleWrapper}
           data-testid=${testId}
           onClick=${() => setIsOpen(!isOpen)}

@@ -4,19 +4,16 @@ import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import { useForm } from 'pear-apps-lib-ui-react-hooks'
 
+import { CopyButton } from '../../../components/CopyButton'
 import { FormGroup } from '../../../components/FormGroup'
 import { FormWrapper } from '../../../components/FormWrapper'
 import { InputFieldNote } from '../../../components/InputFieldNote'
 import { ATTACHMENTS_FIELD_KEY } from '../../../constants/formFields'
 import { useGetMultipleFiles } from '../../../hooks/useGetMultipleFiles'
-import {
-  PasswordField,
-  PasswordIcon
-} from '../../../lib-react-components'
+import { PasswordField, PasswordIcon } from '../../../lib-react-components'
 import { AttachmentField } from '../../AttachmentField'
 import { CustomFields } from '../../CustomFields'
 import { WifiPasswordQRCode } from '../../WifiPasswordQRCode'
-import { CopyButton } from '../../../components/CopyButton'
 
 /**
  * @param {{
@@ -69,7 +66,7 @@ export const WifiDetailsForm = ({ initialRecord, selectedFolder }) => {
     <${FormWrapper}>
       <${FormGroup}>
         ${!!values?.password?.length &&
-    html`
+        html`
           <${PasswordField}
             testId="wifidetails-field-password"
             label=${i18n._('Password')}
@@ -93,22 +90,20 @@ export const WifiDetailsForm = ({ initialRecord, selectedFolder }) => {
 
       <${FormGroup}>
         ${!!values?.note?.length &&
-    html`
+        html`
           <${InputFieldNote}
             testId="wifidetails-field-note"
             ...${register('note')}
             isDisabled
-            additionalItems=${html`
-              <${CopyButton} value=${values.note} />
-            `}
+            additionalItems=${html` <${CopyButton} value=${values.note} /> `}
           />
         `}
       <//>
       ${values?.attachments?.length > 0 &&
-    html`
+      html`
         <${FormGroup}>
           ${values.attachments.map(
-      (attachment) => html`
+            (attachment) => html`
               <${AttachmentField}
                 testId="wifidetails-attachment"
                 key=${attachment.id}
@@ -116,7 +111,7 @@ export const WifiDetailsForm = ({ initialRecord, selectedFolder }) => {
                 attachment=${attachment}
               />
             `
-    )}
+          )}
         <//>
       `}
       <${CustomFields}

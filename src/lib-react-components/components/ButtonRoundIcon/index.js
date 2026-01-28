@@ -21,7 +21,7 @@ export const ButtonRoundIcon = ({
 }) => html`
   <${Button} type="button" onClick=${onClick} data-testid=${testId}>
     ${startIcon &&
-  html`<${startIcon}
+    html`<${startIcon}
       color=${colors.primary400.mode1}
       size=${iconSize || '24'}
     />`}

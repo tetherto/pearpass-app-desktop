@@ -4,6 +4,7 @@ import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import { useForm } from 'pear-apps-lib-ui-react-hooks'
 
+import { CopyButton } from '../../../components/CopyButton'
 import { FormGroup } from '../../../components/FormGroup'
 import { FormWrapper } from '../../../components/FormWrapper'
 import { InputFieldNote } from '../../../components/InputFieldNote'
@@ -18,7 +19,6 @@ import {
   UserIcon
 } from '../../../lib-react-components'
 import { AttachmentField } from '../../AttachmentField'
-import { CopyButton } from '../../../components/CopyButton'
 import { CustomFields } from '../../CustomFields'
 
 /**
@@ -80,7 +80,7 @@ export const CreditCardDetailsForm = ({ initialRecord, selectedFolder }) => {
     <${FormWrapper}>
       <${FormGroup}>
         ${!!values?.name?.length &&
-    html`
+        html`
           <${InputField}
             label=${i18n._('Full name')}
             placeholder=${i18n._('Full name')}
@@ -88,13 +88,11 @@ export const CreditCardDetailsForm = ({ initialRecord, selectedFolder }) => {
             icon=${UserIcon}
             isDisabled
             ...${register('name')}
-            additionalItems=${html`
-              <${CopyButton} value=${values.name} />
-            `}
+            additionalItems=${html` <${CopyButton} value=${values.name} /> `}
           />
         `}
         ${!!values?.number?.length &&
-    html`
+        html`
           <${InputField}
             label=${i18n._('Number on card')}
             placeholder="1234 1234 1234 1234 "
@@ -109,7 +107,7 @@ export const CreditCardDetailsForm = ({ initialRecord, selectedFolder }) => {
           />
         `}
         ${!!values?.expireDate?.length &&
-    html`
+        html`
           <${InputField}
             label=${i18n._('Date of expire')}
             placeholder="MM YY"
@@ -123,7 +121,7 @@ export const CreditCardDetailsForm = ({ initialRecord, selectedFolder }) => {
           />
         `}
         ${!!values?.securityCode?.length &&
-    html`
+        html`
           <${PasswordField}
             label=${i18n._('Security code')}
             placeholder="123"
@@ -137,7 +135,7 @@ export const CreditCardDetailsForm = ({ initialRecord, selectedFolder }) => {
           />
         `}
         ${!!values?.pinCode?.length &&
-    html`
+        html`
           <${PasswordField}
             label=${i18n._('Pin code')}
             placeholder="1234"
@@ -145,36 +143,32 @@ export const CreditCardDetailsForm = ({ initialRecord, selectedFolder }) => {
             icon=${NineDotsIcon}
             isDisabled
             ...${register('pinCode')}
-            additionalItems=${html`
-              <${CopyButton} value=${values.pinCode} />
-            `}
+            additionalItems=${html` <${CopyButton} value=${values.pinCode} /> `}
           />
         `}
       <//>
 
       ${values?.attachments?.length > 0 &&
-    html`
+      html`
         <${FormGroup}>
           ${values.attachments.map(
-      (attachment) => html`
+            (attachment) => html`
               <${AttachmentField}
                 label=${i18n._('File')}
                 attachment=${attachment}
               />
             `
-    )}
+          )}
         <//>
       `}
 
       <${FormGroup}>
         ${!!values?.note?.length &&
-    html`
+        html`
           <${InputFieldNote}
             isDisabled
             ...${register('note')}
-            additionalItems=${html`
-              <${CopyButton} value=${values.note} />
-            `}
+            additionalItems=${html` <${CopyButton} value=${values.note} /> `}
           />
         `}
       <//>

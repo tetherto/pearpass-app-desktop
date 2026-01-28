@@ -65,16 +65,16 @@ export const CustomDetailsForm = ({ initialRecord, selectedFolder }) => {
       />
 
       ${values?.attachments?.length > 0 &&
-    html`
+      html`
         <${FormGroup}>
           ${values.attachments.map(
-      (attachment) => html`
+            (attachment) => html`
               <${AttachmentField}
                 label=${i18n._('File')}
                 attachment=${attachment}
               />
             `
-    )}
+          )}
         <//>
       `}
     <//>
