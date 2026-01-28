@@ -29,7 +29,7 @@ jobs:
           # Add upstream remote to ensure we compare against real main, not stale fork main
           git remote add upstream https://github.com/tetherto/pearpass-app-desktop.git || true
           git fetch upstream main
-          
+
           BEHIND=$(git rev-list --count HEAD..upstream/main)
           if [ "$BEHIND" -gt 0 ]; then
             echo "::error::Branch is $BEHIND commits behind main. Please update your branch."
@@ -41,7 +41,10 @@ jobs:
           # Use upstream/main as the baseline
           MERGE_COMMITS=$(git log upstream/main..HEAD --merges --oneline | wc -l)
           if [ "$MERGE_COMMITS" -gt 0 ]; then
-            echo "::error: Found $MERGE_COMMITS merge commits"
+            echo "::error::Found $MERGE_COMMITS merge commits:"
+            # List the specific commits causing the issue
+            git log upstream/main..HEAD --merges --pretty=format:"%h %s (%an)"
+            echo "" # Ensure newline
             echo "::error::Merge commits detected. Please rebase to maintain linear history."
             exit 1
           fi
