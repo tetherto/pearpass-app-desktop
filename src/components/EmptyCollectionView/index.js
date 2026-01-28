@@ -37,7 +37,7 @@ export const EmptyCollectionView = ({ selectedFolder, isFavoritesView }) => {
   ]
 
   return html`
-    <${CollectionsWrapper}>
+    <${CollectionsWrapper} data-testid="empty-collection-view">
       <${CollectionsContainer}>
         <${CollectionsTitle}>
           <span> ${t('This collection is empty.')}</span>

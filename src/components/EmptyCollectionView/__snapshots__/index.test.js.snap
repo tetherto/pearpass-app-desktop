@@ -4,6 +4,7 @@ exports[`EmptyCollectionView component renders empty collection message 1`] = `
 <div>
   <div
     class="sc-bRKDuR iNCOfY"
+    data-testid="empty-collection-view"
   >
     <div
       class="sc-hvigdm jbyZno"

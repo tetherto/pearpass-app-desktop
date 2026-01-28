@@ -70,6 +70,7 @@ export const EditFolderPopupContent = ({ name }) => {
         const Icon = item.icon
 
         return html`<${MenuItem}
+          data-testid=${`folder-menuitem-${item.type}`}
           key=${item.type}
           onClick=${(e) => handleMenuItemClick(e, item)}
         >

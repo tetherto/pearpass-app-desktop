@@ -50,7 +50,7 @@ export const PassPhraseSettings = ({
         <${PassPraseSettingsRandomWordText}>${i18n._('+1 random word')}<//>
         <${SwitchWrapper}>
           <${SwitchWithLabel}
-            testId="passphrasesettings-switchwithlabel"
+            testId="passphrase-random-word-toggle"
             isOn=${withRandomWord}
             onChange=${(value) => setWithRandomWord(value)}
             disabled=${isDisabled}

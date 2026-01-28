@@ -129,6 +129,7 @@ export const PassPhrase = ({
         ${passphraseWords.map(
           (word, i) =>
             html`<${BadgeTextItem}
+              data-testid=${`passphrase-word-${i + 1}`}
               key=${`${word}-${i}`}
               count=${i + 1}
               word=${word || ''}
@@ -138,6 +139,9 @@ export const PassPhrase = ({
 
       <${CopyPasteButton}
         type="button"
+        data-testid=${isCreateOrEdit
+          ? 'passphrase-button-paste'
+          : 'passphrase-button-copy'}
         isPaste=${isCreateOrEdit}
         withExtraBottomSpace=${!isCreateOrEditWithValidRange}
         onClick=${isCreateOrEdit
