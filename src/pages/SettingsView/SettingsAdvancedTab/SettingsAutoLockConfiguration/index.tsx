@@ -1,9 +1,10 @@
 import { html } from 'htm/react'
-import { AUTO_LOCK_TIMEOUT_OPTIONS } from 'pearpass-lib-constants'
+import { AUTO_LOCK_TIMEOUT_OPTIONS, BE_AUTO_LOCK_ENABLED } from 'pearpass-lib-constants'
 import { useState } from 'react'
+import styled from 'styled-components'
 import { PopupMenu } from '../../../../components/PopupMenu'
 import { Select } from '../../../../components/Select'
-import { SwitchWithLabel } from '../../../../components/SwitchWithLabel'
+
 import { useAutoLockPreferences } from '../../../../hooks/useAutoLockPreferences'
 import { useTranslation } from '../../../../hooks/useTranslation'
 import { InfoIcon } from '../../../../lib-react-components'
@@ -16,6 +17,29 @@ import {
   Wrapper
 } from './styles'
 
+const Label = styled.div`
+  color: ${({ theme }) => theme.colors.white.mode1};
+  font-family: 'Inter';
+  font-size: 14px;
+  font-weight: 600;
+`
+
+const Description = styled.div`
+  color: ${({ theme }) => theme.colors.white.mode1};
+  font-family: 'Inter';
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: normal;
+`
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+`
+
 export const TIMEOUT_OPTIONS = Object.values(AUTO_LOCK_TIMEOUT_OPTIONS)
 
 export const AutoLockConfiguration = () => {
@@ -23,41 +47,35 @@ export const AutoLockConfiguration = () => {
 
   const [isTooltipOpen, setIsTooltipOpen] = useState(false)
 
-  const { isAutoLockEnabled, timeoutMs, setAutoLockEnabled, setTimeoutMs } =
-    useAutoLockPreferences()
+  const { timeoutMs, setTimeoutMs } = useAutoLockPreferences()
 
   const translatedOptions = TIMEOUT_OPTIONS.map((option) => ({
     ...option,
     label: t(option.label)
   }))
 
-  const selectedOption =
-    translatedOptions.find((option) => option.value === timeoutMs) ||
+  const selectedOption = timeoutMs === null
+    ? translatedOptions.find((option) => option.value === null)
+    : translatedOptions.find((option) => option.value === timeoutMs) ||
     translatedOptions[0]
 
   return html`
     <${Container}>
       <${Wrapper}>
-        <${SwitchWithLabel}
-          isOn=${isAutoLockEnabled}
-          onChange=${(isOn: boolean) => setAutoLockEnabled(isOn)}
-          label=${t('Auto Log-out')}
-          isSwitchFirst
-          stretch=${false}
-          description=${t(
-            'Automatically logs you out after you stop interacting with the app, based on the timeout you select.'
-          )}
+        <${ContentWrapper}>
+          <${Label}>${t('Auto Log-out')}<//>
+          <${Description}>
+            ${t(
+    'Automatically logs you out after you stop interacting with the app, based on the timeout you select.'
+  )}
+          <//>
+        <//>
+        <${Select}
+          items=${translatedOptions}
+          selectedItem=${selectedOption}
+          onItemSelect=${(item: { label: string; value: number | null }) => setTimeoutMs(item.value)}
+          placeholder=${t('Select a timeout')}
         />
-        ${isAutoLockEnabled &&
-        html`
-          <${Select}
-            items=${translatedOptions}
-            selectedItem=${selectedOption}
-            onItemSelect=${(item: { label: string; value: number }) =>
-              setTimeoutMs(item.value)}
-            placeholder=${t('Select a timeout')}
-          />
-        `}
       <//>
       <${TooltipContainer}>
         <${PopupMenu}
@@ -72,19 +90,19 @@ export const AutoLockConfiguration = () => {
                 <${ListContainer}>
                   <li>
                     ${t(
-                      "Auto-lock determines how long Pearpass stays unlocked when you're not actively using it."
-                    )}
+    "Auto-lock determines how long Pearpass stays unlocked when you're not actively using it."
+  )}
                   </li>
                   <li>
                     ${t(
-                      'Inactivity is based on your interaction with Pearpass, not on device idle time.'
-                    )}
+    'Inactivity is based on your interaction with Pearpass, not on device idle time.'
+  )}
                   </li>
-                  <li>
+                  ${BE_AUTO_LOCK_ENABLED && html`<li>
                     ${t(
-                      "On desktop and browser, Pearpass keeps your session aligned—activity in one helps keep the other unlocked while you're working. Mobile auto-lock is managed separately."
-                    )}
-                  </li>
+    "On desktop and browser, Pearpass keeps your session aligned—activity in one helps keep the other unlocked while you're working. Mobile auto-lock is managed separately."
+  )}
+                  </li>`}
                 <//>
               <//>
             <//>

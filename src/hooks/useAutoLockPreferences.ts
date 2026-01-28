@@ -12,11 +12,14 @@ export const useAutoLockPreferences = () => {
     return stored !== 'false'
   })
 
-  const [timeoutMs, setTimeoutMsState] = useState<number>(() => {
+  const [timeoutMs, setTimeoutMsState] = useState<number | null>(() => {
     if (!AUTO_LOCK_ENABLED) {
       return DEFAULT_AUTO_LOCK_TIMEOUT
     }
     const stored = localStorage.getItem(LOCAL_STORAGE_KEYS.AUTO_LOCK_TIMEOUT_MS)
+    if (stored === 'null') {
+      return null
+    }
     return stored ? Number(stored) : DEFAULT_AUTO_LOCK_TIMEOUT
   })
 
@@ -30,7 +33,7 @@ export const useAutoLockPreferences = () => {
     window.dispatchEvent(new Event('auto-lock-settings-changed'))
   }, [])
 
-  const setTimeoutMs = useCallback((ms: number) => {
+  const setTimeoutMs = useCallback((ms: number | null) => {
     localStorage.setItem(LOCAL_STORAGE_KEYS.AUTO_LOCK_TIMEOUT_MS, String(ms))
     setTimeoutMsState(ms)
     window.dispatchEvent(new Event('auto-lock-settings-changed'))
@@ -44,11 +47,14 @@ export const useAutoLockPreferences = () => {
   }
 }
 
-export function getAutoLockTimeoutMs(): number {
+export function getAutoLockTimeoutMs(): number | null {
   if (!AUTO_LOCK_ENABLED) {
     return DEFAULT_AUTO_LOCK_TIMEOUT
   }
   const stored = localStorage.getItem(LOCAL_STORAGE_KEYS.AUTO_LOCK_TIMEOUT_MS)
+  if (stored === 'null') {
+    return null
+  }
   return stored ? Number(stored) : DEFAULT_AUTO_LOCK_TIMEOUT
 }
 
