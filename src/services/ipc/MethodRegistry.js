@@ -80,6 +80,7 @@ export class MethodRegistry {
       'nmBeginHandshake',
       'nmFinishHandshake',
       'nmCloseSession',
+      'nmConfirmPairing',
       'checkExtensionPairingStatus'
     ]
     const exemptMethods = [...authMethods, ...statusMethods, ...pairingMethods]

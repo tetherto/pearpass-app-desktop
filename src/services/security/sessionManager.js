@@ -97,7 +97,7 @@ export const beginHandshake = async (
   await getOrCreateIdentity(client)
 
   // Load pinned client public key (required for transcript binding)
-  const clientPubB64 = await getClientIdentityPublicKey(client)
+  const clientPubB64 = await getClientIdentityPublicKey()
   if (!clientPubB64) {
     throw new Error(
       createErrorWithCode(
@@ -142,7 +142,7 @@ export const beginHandshake = async (
   const edBuffer = Buffer.from(edBlobB64, 'base64')
 
   const ed25519PrivateKeyBytes = new Uint8Array(
-    edBuffer.slice(
+    edBuffer.subarray(
       sodium.crypto_sign_PUBLICKEYBYTES,
       sodium.crypto_sign_PUBLICKEYBYTES + sodium.crypto_sign_SECRETKEYBYTES
     )
