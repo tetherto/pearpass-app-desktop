@@ -7,11 +7,9 @@ exports[`PasswordField Component matches snapshot for default variant 1`] = `
   <div
     class="sc-hwkwBN ilZgAg"
   >
-     
     <div
       class="sc-kNOymR hGUiDn"
     >
-       
       <svg
         fill="none"
         height="24"
@@ -24,7 +22,6 @@ exports[`PasswordField Component matches snapshot for default variant 1`] = `
           fill="#F6F6F6"
         />
       </svg>
-       
     </div>
     <div
       class="sc-dYwGCk eCjluX"
@@ -32,9 +29,7 @@ exports[`PasswordField Component matches snapshot for default variant 1`] = `
       <span
         class="sc-lgpSej kcJrqJ"
       >
-         
         Password
-         
       </span>
       <div
         class="sc-eqYatC iMyqZ"
@@ -48,10 +43,7 @@ exports[`PasswordField Component matches snapshot for default variant 1`] = `
         />
         <div
           class="sc-dntSTA BSppf"
-        >
-           
-           
-        </div>
+        />
       </div>
     </div>
     <div
@@ -87,11 +79,9 @@ exports[`PasswordField Component matches snapshot for outline variant 1`] = `
   <div
     class="sc-hwkwBN ilZgAg"
   >
-     
     <div
       class="sc-kNOymR hGUiDn"
     >
-       
       <svg
         fill="none"
         height="24"
@@ -104,7 +94,6 @@ exports[`PasswordField Component matches snapshot for outline variant 1`] = `
           fill="#F6F6F6"
         />
       </svg>
-       
     </div>
     <div
       class="sc-dYwGCk eCjluX"
@@ -112,9 +101,7 @@ exports[`PasswordField Component matches snapshot for outline variant 1`] = `
       <span
         class="sc-lgpSej kcJrqJ"
       >
-         
         Password
-         
       </span>
       <div
         class="sc-eqYatC iMyqZ"
@@ -128,10 +115,7 @@ exports[`PasswordField Component matches snapshot for outline variant 1`] = `
         />
         <div
           class="sc-dntSTA BSppf"
-        >
-           
-           
-        </div>
+        />
       </div>
     </div>
     <div

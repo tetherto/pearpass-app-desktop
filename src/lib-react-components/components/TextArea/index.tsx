@@ -40,6 +40,9 @@ export const TextArea = ({
   }
 
   const handleClick = () => {
+    if (isDisabled) {
+      return
+    }
     onClick?.(value)
   }
 
