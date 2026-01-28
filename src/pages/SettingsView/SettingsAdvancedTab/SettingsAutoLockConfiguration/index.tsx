@@ -1,5 +1,5 @@
 import { html } from 'htm/react'
-import { AUTO_LOCK_TIMEOUT_OPTIONS } from 'pearpass-lib-constants'
+import { AUTO_LOCK_TIMEOUT_OPTIONS, BE_AUTO_LOCK_ENABLED } from 'pearpass-lib-constants'
 import { useState } from 'react'
 import styled from 'styled-components'
 import { PopupMenu } from '../../../../components/PopupMenu'
@@ -98,11 +98,11 @@ export const AutoLockConfiguration = () => {
     'Inactivity is based on your interaction with Pearpass, not on device idle time.'
   )}
                   </li>
-                  <li>
+                  ${BE_AUTO_LOCK_ENABLED && html`<li>
                     ${t(
     "On desktop and browser, Pearpass keeps your session aligned—activity in one helps keep the other unlocked while you're working. Mobile auto-lock is managed separately."
   )}
-                  </li>
+                  </li>`}
                 <//>
               <//>
             <//>
