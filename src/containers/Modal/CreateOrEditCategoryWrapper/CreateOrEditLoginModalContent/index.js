@@ -175,7 +175,7 @@ export const CreateOrEditLoginModalContent = ({
       folder: values.folder,
       isFavorite: initialRecord?.isFavorite ?? isFavorite,
       data: {
-        ...initialRecord?.data,
+        ...(initialRecord?.data ? initialRecord.data : {}),
         title: values.title,
         username: values.username,
         password: values.password,
