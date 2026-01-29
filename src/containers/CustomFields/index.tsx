@@ -8,7 +8,7 @@ import { CopyButton } from '../../components/CopyButton'
 interface CustomField {
   id: string
   type: 'note'
-  props: Record<string, any>
+  props: Record<string, unknown>
 }
 
 interface CustomFieldsProps {
@@ -16,7 +16,7 @@ interface CustomFieldsProps {
     name: string;
     value: string;
     error?: string;
-    onChange: (e: any) => void;
+    onChange: (e: unknown) => void;
   }
   customFields?: CustomField[]
   onClick?: () => void
@@ -30,12 +30,12 @@ interface CustomFieldsProps {
  *   name: string;
  *   value: string;
  *   error?: string;
- *   onChange: (e: any) => void;
+ *   onChange: (e: unknown) => void;
  * }
  *  customFields?: {
  *      id: string
  *      type: 'note'
- *      props: Record<string, any>
+ *      props: Record<string, unknown>
  *  }[]
  *  onClick?: () => void
  *  areInputsDisabled: boolean
