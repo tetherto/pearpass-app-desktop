@@ -31,7 +31,11 @@
         "packages",
         "scripts",
         "src",
-        "tsconfig.json"
+        "tsconfig.json",
+        "eslint.config.js",
+        "jest.config.js",
+        "flatpak",
+        "snapcraft"
       ]
     }
   },
