@@ -48,8 +48,6 @@ export const TextArea = ({
 
   const TextAreaEl = variant === 'report' ? ReportTextAreaComponent : TextAreaComponent
 
-  console.log("additionalItems", additionalItems)
-
   return html`
     <${Wrapper} data-testid=${testId} onClick=${handleClick}>
       <${TextAreaWrapper}>

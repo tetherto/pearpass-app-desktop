@@ -1,13 +1,10 @@
 import React from 'react'
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard'
 import { useToast } from '../../context/ToastContext'
-import { useLingui } from '@lingui/react'
 import {
   CopyIcon,
 } from '../../lib-react-components'
-
-
-
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface CopyButtonProps {
   value?: string
@@ -15,15 +12,14 @@ interface CopyButtonProps {
 }
 
 const CopyButton = ({ value, testId }: CopyButtonProps): React.ReactElement => {
-
-  const { i18n } = useLingui()
+  const { t } = useTranslation()
 
   const { setToast } = useToast()
 
   const { copyToClipboard, isCopyToClipboardDisabled } = useCopyToClipboard({
     onCopy: () => {
       setToast({
-        message: i18n._('Copied to clipboard'),
+        message: t('Copied to clipboard'),
         icon: CopyIcon
       })
     }
@@ -34,11 +30,6 @@ const CopyButton = ({ value, testId }: CopyButtonProps): React.ReactElement => {
       copyToClipboard(value)
     }
   }
-
-  console.log("copybutton", {
-    isCopyToClipboardDisabled,
-
-  })
 
   if (isCopyToClipboardDisabled) {
     return <></>

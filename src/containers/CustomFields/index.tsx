@@ -8,11 +8,16 @@ import { CopyButton } from '../../components/CopyButton'
 interface CustomField {
   id: string
   type: 'note'
-  props: any
+  props: Record<string, any>
 }
 
 interface CustomFieldsProps {
-  register: (name: string, index: number) => any
+  register: (name: string, index: number) => {
+    name: string;
+    value: string;
+    error?: string;
+    onChange: (e: any) => void;
+  }
   customFields?: CustomField[]
   onClick?: () => void
   areInputsDisabled: boolean
@@ -21,11 +26,16 @@ interface CustomFieldsProps {
 
 /**
  * @param {{
- *  register: (name: string, index: number) => any
+ * register: (name: string, index: number) => {
+ *   name: string;
+ *   value: string;
+ *   error?: string;
+ *   onChange: (e: any) => void;
+ * }
  *  customFields?: {
  *      id: string
  *      type: 'note'
- *      props: any
+ *      props: Record<string, any>
  *  }[]
  *  onClick?: () => void
  *  areInputsDisabled: boolean
