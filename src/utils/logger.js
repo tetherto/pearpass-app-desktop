@@ -80,5 +80,5 @@ class Logger {
 //     process.env.NODE_ENV === 'production')
 
 export const logger = new Logger({
-  debugMode: true
+  debugMode: false
 })
