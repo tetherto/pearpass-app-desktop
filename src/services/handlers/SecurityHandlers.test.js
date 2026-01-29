@@ -89,7 +89,7 @@ describe('SecurityHandlers', () => {
       expect(appIdentity.setClientIdentityPublicKey).toHaveBeenCalledWith(
         client,
         'clientPub',
-        'pending'
+        'PENDING'
       )
       expect(result).toEqual({
         ed25519PublicKey: 'pubKey',
@@ -107,7 +107,7 @@ describe('SecurityHandlers', () => {
       appIdentity.getClientIdentityPublicKey.mockResolvedValue(
         'existingClientPub'
       )
-      appIdentity.getClientPairingState.mockResolvedValue('confirmed')
+      appIdentity.getClientPairingState.mockResolvedValue('CONFIRMED')
 
       await expect(
         handlers.nmGetAppIdentity({
