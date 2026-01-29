@@ -97,7 +97,7 @@ export const beginHandshake = async (
   await getOrCreateIdentity(client)
 
   // Load pinned client public key (required for transcript binding)
-  const clientPubB64 = await getClientIdentityPublicKey()
+  const clientPubB64 = await getClientIdentityPublicKey(client)
   if (!clientPubB64) {
     throw new Error(
       createErrorWithCode(
