@@ -27,7 +27,7 @@ export function getClipboardContent() {
       })
       collectOutput(child, resolve)
     } else if (platform === 'darwin') {
-      child = spawn('pbpaste', { shell: true })
+      child = spawn('/usr/bin/pbpaste', { shell: true })
       collectOutput(child, resolve)
     } else if (platform === 'linux') {
       child = spawn('xsel', ['--clipboard', '--output'], { shell: true })
@@ -72,7 +72,7 @@ function clearClipboard() {
       child.stdin.end() // Sending empty input clears it
     } else if (platform === 'darwin') {
       // macOS: pbcopy command
-      const child = spawn('pbcopy', { shell: true })
+      const child = spawn('/usr/bin/pbcopy', { shell: true })
       child.on('exit', resolve)
       child.on('error', resolve)
       child.stdin.end()
