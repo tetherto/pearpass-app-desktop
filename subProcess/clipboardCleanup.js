@@ -10,7 +10,7 @@ import { logger } from '../src/utils/logger'
 // eslint-disable-next-line
 const copiedValue = await getClipboardContent()
 
-console.log('Clipboard cleanup worker started')
+logger.log('Clipboard cleanup worker started')
 
 export function getClipboardContent() {
   return new Promise((resolve) => {
