@@ -10,61 +10,147 @@ import { logger } from '../src/utils/logger'
 const copiedValue = Pear.config?.args?.[0] || ''
 
 logger.log('Clipboard cleanup worker started')
-logger.log(`Monitoring value: "${copiedValue.substring(0, 20)}..."`)
 
 export function getClipboardContent() {
   return new Promise((resolve) => {
     const platform = os.platform()
     let child
 
-    if (platform === 'win32') {
-      child = spawn('powershell', ['-command', 'Get-Clipboard -Raw'], {
-        stdio: ['pipe', 'pipe', 'pipe']
-      })
-      collectOutput(child, resolve)
-    } else if (platform === 'darwin') {
-      child = spawn('/usr/bin/pbpaste', [], {
-        stdio: ['pipe', 'pipe', 'pipe']
-      })
-      collectOutput(child, resolve)
-    } else if (platform === 'linux') {
-      child = spawn('xsel', ['--clipboard', '--output'], {
-        stdio: ['pipe', 'pipe', 'pipe']
-      })
-      collectOutput(child, resolve, () => {
-        const xclip = spawn('xclip', ['-selection', 'clipboard', '-o'], {
+    switch (platform) {
+      case 'win32':
+        child = spawn('powershell', ['-command', 'Get-Clipboard -Raw'], {
           stdio: ['pipe', 'pipe', 'pipe']
         })
-        collectOutput(xclip, resolve)
-      })
-    } else {
-      resolve('')
+        collectOutput(child, resolve)
+        break
+      case 'darwin':
+        child = spawn('/usr/bin/pbpaste', [], {
+          stdio: ['pipe', 'pipe', 'pipe']
+        })
+        collectOutput(child, resolve)
+        break
+      case 'linux':
+        const xsel = spawn('xsel', ['--clipboard', '--output'], {
+          stdio: ['pipe', 'pipe', 'pipe']
+        })
+
+        collectOutput(
+          xsel,
+          resolve,
+          () => {
+            // Kill xsel if it's still around before fallback (prevents lingering procs)
+            try {
+              xsel.kill?.()
+            } catch {}
+
+            const xclip = spawn('xclip', ['-selection', 'clipboard', '-o'], {
+              stdio: ['pipe', 'pipe', 'pipe']
+            })
+
+            collectOutput(xclip, resolve, () => resolve(''), {
+              timeoutMs: 2000,
+              maxBytes: 1024 * 1024
+            })
+          },
+          { timeoutMs: 2000, maxBytes: 1024 * 1024 }
+        )
+        break
+      default:
+        resolve('')
+        break
     }
   })
 }
 
-function collectOutput(child, resolve, onError) {
+function collectOutput(child, resolve, onError, opts = {}) {
+  const {
+    timeoutMs = 2000,
+    maxBytes = 1024 * 1024 // 1MB cap
+  } = opts
+
   let data = ''
-  child.stdout.on('data', (chunk) => {
-    data += chunk.toString()
-  })
-  child.on('exit', (code) => {
-    if (code === 0) {
-      resolve(data)
-    } else if (onError) {
-      onError()
-    } else {
-      resolve('')
+  let settled = false
+  let timer = null
+
+  const settle = (value) => {
+    if (settled) return
+    settled = true
+    cleanup()
+    resolve(value)
+  }
+
+  const fail = (info) => {
+    if (settled) return
+    settled = true
+    cleanup()
+
+    if (typeof onError === 'function') onError(info)
+    else resolve('')
+  }
+
+  const cleanup = () => {
+    if (timer) {
+      clearTimeout(timer)
+      timer = null
     }
-  })
-  child.on('error', () => {
-    if (onError) {
-      onError()
-    } else {
-      resolve('')
+
+    child.removeListener('exit', onExit)
+    child.removeListener('error', onErr)
+
+    if (child.stdout) {
+      child.stdout.removeListener('data', onData)
+      child.stdout.removeListener('error', onErr)
     }
-  })
+  }
+
+  const onData = (chunk) => {
+    if (settled) return
+    const s = chunk.toString()
+
+    if (data.length + s.length > maxBytes) {
+      data += s.slice(0, Math.max(0, maxBytes - data.length))
+      try {
+        child.kill?.()
+      } catch {}
+      settle(data)
+      return
+    }
+
+    data += s
+  }
+
+  const onExit = (code) => {
+    if (settled) return
+    if (code === 0) settle(data)
+    else fail({ type: 'exit', code })
+  }
+
+  const onErr = (err) => {
+    if (settled) return
+    fail({ type: 'error', err })
+  }
+
+  if (!child.stdout || !child.stdout.on) {
+    fail({ type: 'nostdout' })
+    return
+  }
+
+  child.stdout.on('data', onData)
+  child.stdout.on('error', onErr)
   if (child.stdout.resume) child.stdout.resume()
+
+  child.on('exit', onExit)
+  child.on('error', onErr)
+
+  if (timeoutMs > 0) {
+    timer = setTimeout(() => {
+      if (settled) return
+      try {
+        child.kill?.()
+      } catch {}
+      fail({ type: 'timeout' })
+    }, timeoutMs)
+  }
 }
 
 function clearClipboard() {
