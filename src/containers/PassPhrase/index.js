@@ -129,7 +129,7 @@ export const PassPhrase = ({
         ${passphraseWords.map(
           (word, i) =>
             html`<${BadgeTextItem}
-              data-testid=${`passphrase-word-${i + 1}`}
+              testId=${`passphrase-word-${i + 1}`}
               key=${`${word}-${i}`}
               count=${i + 1}
               word=${word || ''}
