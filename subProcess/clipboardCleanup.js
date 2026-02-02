@@ -7,9 +7,10 @@ import { CLIPBOARD_CLEAR_TIMEOUT } from 'pearpass-lib-constants'
 import { logger } from '../src/utils/logger'
 
 // Get the text to monitor from command line args (passed by useCopyToClipboard)
-const copiedValue = Pear.config?.args?.[0] || ''
+// eslint-disable-next-line
+const copiedValue = await getClipboardContent()
 
-logger.log('Clipboard cleanup worker started')
+console.log('Clipboard cleanup worker started')
 
 export function getClipboardContent() {
   return new Promise((resolve) => {
@@ -158,11 +159,8 @@ function clearClipboard() {
     const platform = os.platform()
 
     if (platform === 'win32') {
-      const child = spawn('cmd', ['/c', 'echo.|clip'], {
-        stdio: ['pipe', 'pipe', 'pipe']
-      })
-      child.on('exit', resolve)
-      child.on('error', resolve)
+      const child = spawn('clip', { shell: true })
+      child.stdin.end()
     } else if (platform === 'darwin') {
       const child = spawn('/usr/bin/pbcopy', [], {
         stdio: ['pipe', 'pipe', 'pipe']
@@ -201,7 +199,6 @@ function clearClipboard() {
 }
 
 // Only run worker code if we have args (running as a worker, not imported for testing)
-if (Pear.config?.args?.[0] !== undefined) {
   // Convert timeout from ms to seconds
   const timeoutSeconds = Math.ceil(CLIPBOARD_CLEAR_TIMEOUT / 1000)
 
@@ -244,4 +241,4 @@ if (Pear.config?.args?.[0] !== undefined) {
     logger.error('Clipboard cleanup sleeper error:', err.message)
     Pear.exit(1)
   })
-}
+

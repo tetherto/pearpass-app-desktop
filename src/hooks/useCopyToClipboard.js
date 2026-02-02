@@ -74,7 +74,7 @@ export const useCopyToClipboard = ({ onCopy } = {}) => {
           ? CLEAR_CLIPBOARD_PATH_PROD
           : CLEAR_CLIPBOARD_PATH_DEV
 
-        pipeRef.current = pearRun(workerPath, [text])
+        pipeRef.current = pearRun(workerPath)
 
         pipeRef.current.on('error', (err) => {
           logger.error('useCopyToClipboard', 'Worker error', err)
