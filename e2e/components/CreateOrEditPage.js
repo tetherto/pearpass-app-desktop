@@ -1,6 +1,8 @@
-'use strict'
+// 'use strict'
 
-const { expect } = require('../fixtures/app.runner')
+// const { expect } = require('../fixtures/app.runner')
+
+import { test, expect } from '../fixtures/app.runner.js';
 
 class CreateOrEditPage {
   constructor(root) {
@@ -101,7 +103,17 @@ class CreateOrEditPage {
     return this.root.getByTestId(`createoredit-section-personalinfo`)
   }
 
+  get passPhrasePasteButton() {
+    return this.root.getByTestId(`passphrase-button-paste`)
+  }
+
   // ==== ACTIONS ==== 
+
+  async clickOnPasteFromClipboard() {
+    const pasteButton = this.passPhrasePasteButton
+    await expect(pasteButton).toBeVisible()
+    await pasteButton.click()
+  }
 
   async clickOnIdentitySection(sectionname) {
     const section = this.getSection(sectionname)
