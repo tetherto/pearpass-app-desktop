@@ -5,9 +5,9 @@ import pearRun from 'pear-run'
 import { LOCAL_STORAGE_KEYS } from '../constants/localStorage'
 import { logger } from '../utils/logger'
 
-const CLEAR_CLIPBOARD_PATH_DEV = './src/services/clipboardCleanup.js'
+const CLEAR_CLIPBOARD_PATH_DEV = './subProcess/clipboardCleanup.js'
 const CLEAR_CLIPBOARD_PATH_PROD =
-  Pear.config.applink + '/src/services/clipboardCleanup.js'
+  Pear.config.applink + '/subProcess/clipboardCleanup.js'
 
 /**
  * @param {{

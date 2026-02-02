@@ -4,7 +4,7 @@ import os from 'bare-os'
 import { spawn } from 'bare-subprocess'
 import { CLIPBOARD_CLEAR_TIMEOUT } from 'pearpass-lib-constants'
 
-import { logger } from '../utils/logger'
+import { logger } from '../src/utils/logger'
 
 // Get the text to monitor from command line args (passed by useCopyToClipboard)
 const copiedValue = Pear.config?.args?.[0] || ''
