@@ -6,34 +6,34 @@ import { CLIPBOARD_CLEAR_TIMEOUT } from 'pearpass-lib-constants'
 
 import { logger } from '../utils/logger'
 
-const pipe = Pear.worker.pipe()
+// Get the text to monitor from command line args (passed by useCopyToClipboard)
+const copiedValue = Pear.config.args[0] || ''
 
-let copiedValue = ''
+logger.log('Clipboard cleanup worker started')
+logger.log(`Monitoring value: "${copiedValue.substring(0, 20)}..."`)
 
-pipe.on('data', async (buffer) => {
-  copiedValue = buffer.toString('utf8')
-
-  logger.log('Received message clipboard')
-})
-
-export function getClipboardContent() {
+function getClipboardContent() {
   return new Promise((resolve) => {
     const platform = os.platform()
     let child
 
     if (platform === 'win32') {
       child = spawn('powershell', ['-command', 'Get-Clipboard -Raw'], {
-        shell: true
+        stdio: ['pipe', 'pipe', 'pipe']
       })
       collectOutput(child, resolve)
     } else if (platform === 'darwin') {
-      child = spawn('/usr/bin/pbpaste', { shell: true })
+      child = spawn('/usr/bin/pbpaste', [], {
+        stdio: ['pipe', 'pipe', 'pipe']
+      })
       collectOutput(child, resolve)
     } else if (platform === 'linux') {
-      child = spawn('xsel', ['--clipboard', '--output'], { shell: true })
+      child = spawn('xsel', ['--clipboard', '--output'], {
+        stdio: ['pipe', 'pipe', 'pipe']
+      })
       collectOutput(child, resolve, () => {
         const xclip = spawn('xclip', ['-selection', 'clipboard', '-o'], {
-          shell: true
+          stdio: ['pipe', 'pipe', 'pipe']
         })
         collectOutput(xclip, resolve)
       })
@@ -48,8 +48,14 @@ function collectOutput(child, resolve, onError) {
   child.stdout.on('data', (chunk) => {
     data += chunk.toString()
   })
-  child.on('exit', () => {
-    resolve(data)
+  child.on('exit', (code) => {
+    if (code === 0) {
+      resolve(data)
+    } else if (onError) {
+      onError()
+    } else {
+      resolve('')
+    }
   })
   child.on('error', () => {
     if (onError) {
@@ -58,6 +64,7 @@ function collectOutput(child, resolve, onError) {
       resolve('')
     }
   })
+  if (child.stdout.resume) child.stdout.resume()
 }
 
 function clearClipboard() {
@@ -65,21 +72,22 @@ function clearClipboard() {
     const platform = os.platform()
 
     if (platform === 'win32') {
-      // Windows: clip command
-      const child = spawn('clip', { shell: true })
+      const child = spawn('cmd', ['/c', 'echo.|clip'], {
+        stdio: ['pipe', 'pipe', 'pipe']
+      })
       child.on('exit', resolve)
       child.on('error', resolve)
-      child.stdin.end() // Sending empty input clears it
     } else if (platform === 'darwin') {
-      // macOS: pbcopy command
-      const child = spawn('/usr/bin/pbcopy', { shell: true })
+      const child = spawn('/usr/bin/pbcopy', [], {
+        stdio: ['pipe', 'pipe', 'pipe']
+      })
       child.on('exit', resolve)
       child.on('error', resolve)
-      child.stdin.end()
+      child.stdin.end('')
     } else if (platform === 'linux') {
-      // Linux: xsel or xclip (try xsel first, fallback to xclip)
-      // Note: This assumes one of these is installed, which is standard on most distros
-      const child = spawn('xsel', ['--clipboard', '--input'], { shell: true })
+      const child = spawn('xsel', ['--clipboard', '--input'], {
+        stdio: ['pipe', 'pipe', 'pipe']
+      })
       let handled = false
 
       const done = () => {
@@ -91,34 +99,60 @@ function clearClipboard() {
 
       child.on('error', () => {
         const xclip = spawn('xclip', ['-selection', 'clipboard'], {
-          shell: true
+          stdio: ['pipe', 'pipe', 'pipe']
         })
         xclip.on('exit', done)
         xclip.on('error', done)
-        xclip.stdin.end()
+        xclip.stdin.end('')
       })
 
       child.on('exit', done)
-      child.stdin.end()
+      child.stdin.end('')
     } else {
       resolve()
     }
   })
 }
 
-setTimeout(async () => {
-  const currentClipboard = await getClipboardContent()
+// Convert timeout from ms to seconds
+const timeoutSeconds = Math.ceil(CLIPBOARD_CLEAR_TIMEOUT / 1000)
 
-  if (currentClipboard === copiedValue) {
-    await clearClipboard()
-    logger.log('Clipboard cleared')
+// Use a subprocess to keep the worker alive - setTimeout doesn't keep Bare's event loop running
+const platform = os.platform()
+let sleeper
+
+if (platform === 'win32') {
+  // Windows: use ping localhost with count to create delay
+  sleeper = spawn('ping', ['-n', String(timeoutSeconds + 1), '127.0.0.1'], {
+    stdio: ['pipe', 'pipe', 'pipe']
+  })
+} else {
+  // macOS/Linux: use sleep command
+  sleeper = spawn('/bin/sleep', [String(timeoutSeconds)], {
+    stdio: ['pipe', 'pipe', 'pipe']
+  })
+}
+
+sleeper.on('exit', async () => {
+  logger.log('Clipboard cleanup timeout reached, checking...')
+
+  try {
+    const currentClipboard = await getClipboardContent()
+
+    if (currentClipboard === copiedValue) {
+      await clearClipboard()
+      logger.log('Clipboard cleared successfully')
+    } else {
+      logger.log('Clipboard changed, skipping clear')
+    }
+  } catch (err) {
+    logger.error('Clipboard cleanup error:', err.message)
   }
 
   Pear.exit(0)
-  logger.log('Clipboard cleanup worker exited')
-}, CLIPBOARD_CLEAR_TIMEOUT)
+})
 
-pipe.on('end', async () => {
-  Pear.exit(0)
-  logger.log('Clipboard cleanup worker pipe ended')
+sleeper.on('error', (err) => {
+  logger.error('Clipboard cleanup sleeper error:', err.message)
+  Pear.exit(1)
 })

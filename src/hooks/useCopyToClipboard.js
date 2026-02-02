@@ -59,14 +59,30 @@ export const useCopyToClipboard = ({ onCopy } = {}) => {
 
         onCopy?.()
 
+        // Clean up any existing worker
         if (pipeRef.current) {
-          pipeRef.current.end()
+          try {
+            pipeRef.current.destroy()
+          } catch {
+            // Ignore cleanup errors
+          }
         }
 
-        pipeRef.current = pearRun(
-          Pear.config.key ? CLEAR_CLIPBOARD_PATH_PROD : CLEAR_CLIPBOARD_PATH_DEV
-        )
-        pipeRef.current.write(text)
+        // Spawn worker with text as command-line argument
+        // This avoids the pipe closing issue that caused premature worker exit
+        const workerPath = Pear.config.key
+          ? CLEAR_CLIPBOARD_PATH_PROD
+          : CLEAR_CLIPBOARD_PATH_DEV
+
+        pipeRef.current = pearRun(workerPath, [text])
+
+        pipeRef.current.on('error', (err) => {
+          logger.error('useCopyToClipboard', 'Worker error', err)
+        })
+
+        pipeRef.current.on('crash', (info) => {
+          logger.error('useCopyToClipboard', 'Worker crashed', info)
+        })
       },
       (err) => {
         logger.error(
