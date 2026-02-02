@@ -3,8 +3,11 @@ import { EventEmitter } from 'events'
 import os from 'bare-os'
 import { spawn } from 'bare-subprocess'
 
-// Mock Pear global
+// Mock Pear global - use empty args array to prevent worker code from executing
 global.Pear = {
+  config: {
+    args: []
+  },
   worker: {
     pipe: () => ({
       on: jest.fn()
@@ -13,7 +16,7 @@ global.Pear = {
   exit: jest.fn()
 }
 
-const clipboardCleanup = require('./clipboardCleanup')
+import * as clipboardCleanup from './clipboardCleanup'
 
 // Mock dependencies
 jest.mock('bare-os', () => ({
@@ -83,7 +86,7 @@ describe('getClipboardContent', () => {
     expect(spawn).toHaveBeenCalledWith(
       'powershell',
       ['-command', 'Get-Clipboard -Raw'],
-      { shell: true }
+      { stdio: ['pipe', 'pipe', 'pipe'] }
     )
     expect(result).toBe('windows content')
   })
@@ -99,7 +102,9 @@ describe('getClipboardContent', () => {
 
     const result = await promise
 
-    expect(spawn).toHaveBeenCalledWith('/usr/bin/pbpaste', { shell: true })
+    expect(spawn).toHaveBeenCalledWith('/usr/bin/pbpaste', [], {
+      stdio: ['pipe', 'pipe', 'pipe']
+    })
     expect(result).toBe('mac content')
   })
 
@@ -115,7 +120,7 @@ describe('getClipboardContent', () => {
     const result = await promise
 
     expect(spawn).toHaveBeenCalledWith('xsel', ['--clipboard', '--output'], {
-      shell: true
+      stdio: ['pipe', 'pipe', 'pipe']
     })
     expect(result).toBe('linux content')
   })
@@ -145,12 +150,12 @@ describe('getClipboardContent', () => {
     const result = await promise
 
     expect(spawn).toHaveBeenCalledWith('xsel', ['--clipboard', '--output'], {
-      shell: true
+      stdio: ['pipe', 'pipe', 'pipe']
     })
     expect(spawn).toHaveBeenCalledWith(
       'xclip',
       ['-selection', 'clipboard', '-o'],
-      { shell: true }
+      { stdio: ['pipe', 'pipe', 'pipe'] }
     )
     expect(result).toBe('xclip content')
   })

@@ -1,3 +1,5 @@
+import { EventEmitter } from 'events'
+
 import { renderHook, act, waitFor } from '@testing-library/react'
 
 import { useCopyToClipboard } from './useCopyToClipboard'
@@ -10,11 +12,20 @@ jest.mock('../utils/logger', () => ({
   }
 }))
 
-// Mock pear-run module
-const mockPipe = {
-  write: jest.fn(),
-  end: jest.fn()
+// Mock Pear global
+global.Pear = {
+  config: {
+    key: undefined,
+    applink: ''
+  }
 }
+
+// Mock pear-run module
+const mockPipe = Object.assign(new EventEmitter(), {
+  write: jest.fn(),
+  end: jest.fn(),
+  destroy: jest.fn()
+})
 jest.mock('pear-run', () => jest.fn(() => mockPipe))
 
 Object.assign(navigator, {

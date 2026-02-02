@@ -7,12 +7,12 @@ import { CLIPBOARD_CLEAR_TIMEOUT } from 'pearpass-lib-constants'
 import { logger } from '../utils/logger'
 
 // Get the text to monitor from command line args (passed by useCopyToClipboard)
-const copiedValue = Pear.config.args[0] || ''
+const copiedValue = Pear.config?.args?.[0] || ''
 
 logger.log('Clipboard cleanup worker started')
 logger.log(`Monitoring value: "${copiedValue.substring(0, 20)}..."`)
 
-function getClipboardContent() {
+export function getClipboardContent() {
   return new Promise((resolve) => {
     const platform = os.platform()
     let child
@@ -114,45 +114,48 @@ function clearClipboard() {
   })
 }
 
-// Convert timeout from ms to seconds
-const timeoutSeconds = Math.ceil(CLIPBOARD_CLEAR_TIMEOUT / 1000)
+// Only run worker code if we have args (running as a worker, not imported for testing)
+if (Pear.config?.args?.[0] !== undefined) {
+  // Convert timeout from ms to seconds
+  const timeoutSeconds = Math.ceil(CLIPBOARD_CLEAR_TIMEOUT / 1000)
 
-// Use a subprocess to keep the worker alive - setTimeout doesn't keep Bare's event loop running
-const platform = os.platform()
-let sleeper
+  // Use a subprocess to keep the worker alive - setTimeout doesn't keep Bare's event loop running
+  const platform = os.platform()
+  let sleeper
 
-if (platform === 'win32') {
-  // Windows: use ping localhost with count to create delay
-  sleeper = spawn('ping', ['-n', String(timeoutSeconds + 1), '127.0.0.1'], {
-    stdio: ['pipe', 'pipe', 'pipe']
-  })
-} else {
-  // macOS/Linux: use sleep command
-  sleeper = spawn('/bin/sleep', [String(timeoutSeconds)], {
-    stdio: ['pipe', 'pipe', 'pipe']
-  })
-}
-
-sleeper.on('exit', async () => {
-  logger.log('Clipboard cleanup timeout reached, checking...')
-
-  try {
-    const currentClipboard = await getClipboardContent()
-
-    if (currentClipboard === copiedValue) {
-      await clearClipboard()
-      logger.log('Clipboard cleared successfully')
-    } else {
-      logger.log('Clipboard changed, skipping clear')
-    }
-  } catch (err) {
-    logger.error('Clipboard cleanup error:', err.message)
+  if (platform === 'win32') {
+    // Windows: use ping localhost with count to create delay
+    sleeper = spawn('ping', ['-n', String(timeoutSeconds + 1), '127.0.0.1'], {
+      stdio: ['pipe', 'pipe', 'pipe']
+    })
+  } else {
+    // macOS/Linux: use sleep command
+    sleeper = spawn('/bin/sleep', [String(timeoutSeconds)], {
+      stdio: ['pipe', 'pipe', 'pipe']
+    })
   }
 
-  Pear.exit(0)
-})
+  sleeper.on('exit', async () => {
+    logger.log('Clipboard cleanup timeout reached, checking...')
 
-sleeper.on('error', (err) => {
-  logger.error('Clipboard cleanup sleeper error:', err.message)
-  Pear.exit(1)
-})
+    try {
+      const currentClipboard = await getClipboardContent()
+
+      if (currentClipboard === copiedValue) {
+        await clearClipboard()
+        logger.log('Clipboard cleared successfully')
+      } else {
+        logger.log('Clipboard changed, skipping clear')
+      }
+    } catch (err) {
+      logger.error('Clipboard cleanup error:', err.message)
+    }
+
+    Pear.exit(0)
+  })
+
+  sleeper.on('error', (err) => {
+    logger.error('Clipboard cleanup sleeper error:', err.message)
+    Pear.exit(1)
+  })
+}
