@@ -28,7 +28,7 @@ jest.mock('bare-subprocess', () => ({
 jest.mock('pearpass-lib-constants', () => ({
   CLIPBOARD_CLEAR_TIMEOUT: 1000
 }))
-jest.mock('../utils/logger', () => ({
+jest.mock('../src/utils/logger', () => ({
   logger: {
     log: jest.fn()
   }
