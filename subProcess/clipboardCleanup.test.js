@@ -1,38 +1,36 @@
 import { EventEmitter } from 'events'
 
-import os from 'bare-os'
-import { spawn } from 'bare-subprocess'
-
-// Mock Pear global - use empty args array to prevent worker code from executing
-global.Pear = {
-  config: {
-    args: []
-  },
-  worker: {
-    pipe: () => ({
-      on: jest.fn()
-    })
-  },
-  exit: jest.fn()
-}
-
-import * as clipboardCleanup from './clipboardCleanup'
-
-// Mock dependencies
+// Mock all bare-* modules and dependencies BEFORE importing the module under test
+// Jest hoists these mocks automatically
 jest.mock('bare-os', () => ({
-  platform: jest.fn()
+  platform: jest.fn(),
+  tmpdir: jest.fn(() => '/tmp')
+}))
+jest.mock('bare-fs', () => ({
+  writeFileSync: jest.fn()
+}))
+jest.mock('bare-path', () => ({
+  join: jest.fn((...args) => args.join('/'))
 }))
 jest.mock('bare-subprocess', () => ({
-  spawn: jest.fn()
+  spawn: jest.fn(),
+  spawnSync: jest.fn()
 }))
 jest.mock('pearpass-lib-constants', () => ({
   CLIPBOARD_CLEAR_TIMEOUT: 1000
 }))
 jest.mock('../src/utils/logger', () => ({
   logger: {
-    log: jest.fn()
+    log: jest.fn(),
+    error: jest.fn()
   }
 }))
+
+// Now import after mocks are set up
+import os from 'bare-os'
+import { spawn } from 'bare-subprocess'
+
+import * as clipboardCleanup from './clipboardCleanup'
 
 // Since getClipboardContent is not exported, we need to import the module to trigger execution
 // However, the module executes side effects immediately (setTimeout).
