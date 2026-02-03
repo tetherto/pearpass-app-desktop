@@ -5,9 +5,9 @@ import pearRun from 'pear-run'
 import { LOCAL_STORAGE_KEYS } from '../constants/localStorage'
 import { logger } from '../utils/logger'
 
-const CLEAR_CLIPBOARD_PATH_DEV = './src/services/clipboardCleanup.js'
+const CLEAR_CLIPBOARD_PATH_DEV = './subProcess/clipboardCleanup.js'
 const CLEAR_CLIPBOARD_PATH_PROD =
-  Pear.config.applink + '/src/services/clipboardCleanup.js'
+  Pear.config.applink + '/subProcess/clipboardCleanup.js'
 
 /**
  * @param {{
@@ -59,14 +59,30 @@ export const useCopyToClipboard = ({ onCopy } = {}) => {
 
         onCopy?.()
 
+        // Clean up any existing worker
         if (pipeRef.current) {
-          pipeRef.current.end()
+          try {
+            pipeRef.current.destroy()
+          } catch {
+            // Ignore cleanup errors
+          }
         }
 
-        pipeRef.current = pearRun(
-          Pear.config.key ? CLEAR_CLIPBOARD_PATH_PROD : CLEAR_CLIPBOARD_PATH_DEV
-        )
-        pipeRef.current.write(text)
+        // Spawn worker with text as command-line argument
+        // This avoids the pipe closing issue that caused premature worker exit
+        const workerPath = Pear.config.key
+          ? CLEAR_CLIPBOARD_PATH_PROD
+          : CLEAR_CLIPBOARD_PATH_DEV
+
+        pipeRef.current = pearRun(workerPath)
+
+        pipeRef.current.on('error', (err) => {
+          logger.error('useCopyToClipboard', 'Worker error', err)
+        })
+
+        pipeRef.current.on('crash', (info) => {
+          logger.error('useCopyToClipboard', 'Worker crashed', info)
+        })
       },
       (err) => {
         logger.error(

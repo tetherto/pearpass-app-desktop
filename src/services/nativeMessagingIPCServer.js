@@ -85,6 +85,22 @@ export class NativeMessagingIPCServer {
       securityHandlers.nmResetPairing.bind(securityHandlers)
     )
     this.methodRegistry.register(
+      'getAutoLockSettings',
+      securityHandlers.getAutoLockSettings.bind(securityHandlers)
+    )
+    this.methodRegistry.register(
+      'setAutoLockTimeout',
+      securityHandlers.setAutoLockTimeout.bind(securityHandlers)
+    )
+    this.methodRegistry.register(
+      'setAutoLockEnabled',
+      securityHandlers.setAutoLockEnabled.bind(securityHandlers)
+    )
+    this.methodRegistry.register(
+      'resetTimer',
+      securityHandlers.resetTimer.bind(securityHandlers)
+    )
+    this.methodRegistry.register(
       'checkExtensionPairingStatus',
       securityHandlers.checkExtensionPairingStatus.bind(securityHandlers)
     )

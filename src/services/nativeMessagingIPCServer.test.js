@@ -77,6 +77,13 @@ jest.mock('./handlers/SecurityHandlers', () => ({
       isPaired: false,
       status: 'not_paired'
     })
+    this.getAutoLockSettings = jest.fn().mockResolvedValue({
+      autoLockEnabled: true,
+      autoLockTimeoutMs: 1234
+    })
+    this.setAutoLockTimeout = jest.fn().mockResolvedValue({ ok: true })
+    this.setAutoLockEnabled = jest.fn().mockResolvedValue({ ok: true })
+    this.resetTimer = jest.fn().mockResolvedValue({ ok: true })
   })
 }))
 
@@ -333,6 +340,37 @@ describe('nativeMessagingIPCServer', () => {
           ciphertextB64: 'mock-ciphertext',
           seq: 1
         })
+      })
+
+      it('should expose auto-lock handlers on the method registry', async () => {
+        await serverInstance.start()
+        const handlers = IPC.Server.mock.calls[0][0].handlers
+
+        expect(handlers.getAutoLockSettings).toBeDefined()
+        expect(handlers.setAutoLockTimeout).toBeDefined()
+        expect(handlers.setAutoLockEnabled).toBeDefined()
+        expect(handlers.resetTimer).toBeDefined()
+      })
+
+      it('should call auto-lock handlers correctly', async () => {
+        await serverInstance.start()
+        const handlers = IPC.Server.mock.calls[0][0].handlers
+
+        expect(await handlers.getAutoLockSettings()).toEqual({
+          autoLockEnabled: true,
+          autoLockTimeoutMs: 1234
+        })
+        expect(
+          await handlers.setAutoLockTimeout({ autoLockTimeoutMs: 5000 })
+        ).toEqual({
+          ok: true
+        })
+        expect(
+          await handlers.setAutoLockEnabled({ autoLockEnabled: false })
+        ).toEqual({
+          ok: true
+        })
+        expect(await handlers.resetTimer()).toEqual({ ok: true })
       })
     })
 

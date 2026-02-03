@@ -33,11 +33,14 @@ export const usePearUpdate = () => {
   }
 
   const onPearUpdate = (update) => {
-    if (!hasNonIgnoredChanges(update?.diff)) {
+    if (shouldIgnoreChanges(update?.diff)) {
       return
     }
 
+    // `key` is undefined in DEV mode.
     if (!Pear.config.key) {
+      // Reload is necessary for hot-reload after TS compile.
+      Pear.reload()
       return
     }
 
@@ -51,12 +54,12 @@ export const usePearUpdate = () => {
   }, [])
 }
 
-function hasNonIgnoredChanges(diff) {
-  return diff?.some(
+function shouldIgnoreChanges(diff) {
+  return diff?.every(
     ({ key: file }) =>
-      !file.startsWith('/src') &&
-      !file.startsWith('/logs') &&
-      !file.includes('pearpass-native-messaging.sock')
+      file.startsWith('/src') ||
+      file.startsWith('/logs') ||
+      file.includes('pearpass-native-messaging.sock')
   )
 }
 

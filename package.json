@@ -1,12 +1,13 @@
 {
   "name": "pearpass-app-desktop",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "pear": {
     "name": "pearpass-app-desktop",
     "pre": "pear-electron/pre",
     "routes": ".",
     "unrouted": [
-      "/node_modules/pearpass-lib-vault-core/src/worklet/app.js"
+      "/node_modules/pearpass-lib-vault-core/src/worklet/app.js",
+      "/subProcess/clipboardCleanup.js"
     ],
     "gui": {
       "backgroundColor": "#1F2430",
@@ -19,7 +20,8 @@
     ],
     "stage": {
       "entrypoints": [
-        "node_modules/pearpass-lib-vault-core/src/worklet/app.js"
+        "node_modules/pearpass-lib-vault-core/src/worklet/app.js",
+        "subProcess/clipboardCleanup.js"
       ],
       "ignore": [
         ".github",

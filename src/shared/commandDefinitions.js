@@ -66,7 +66,11 @@ const COMMAND_DEFINITIONS = [
   { id: 1033, name: 'checkExtensionPairingStatus' },
 
   // Master password commands
-  { id: 1034, name: 'initWithPassword' }
+  { id: 1034, name: 'initWithPassword' },
+  { id: 1035, name: 'getAutoLockSettings' },
+  { id: 1036, name: 'setAutoLockTimeout' },
+  { id: 1037, name: 'setAutoLockEnabled' },
+  { id: 1038, name: 'resetTimer' }
 ]
 
 /** @type {string[]} */
