@@ -1,7 +1,9 @@
 /** @typedef {import('pear-interface')} */ /* global Pear */
 
 import os from 'bare-os'
-import { spawn } from 'bare-subprocess'
+import fs from 'bare-fs'
+import path from 'bare-path'
+import { spawn, spawnSync } from 'bare-subprocess'
 import { CLIPBOARD_CLEAR_TIMEOUT } from 'pearpass-lib-constants'
 
 import { logger } from '../src/utils/logger'
@@ -159,8 +161,11 @@ function clearClipboard() {
     const platform = os.platform()
 
     if (platform === 'win32') {
-      const child = spawn('clip', { shell: true })
-      child.stdin.end()
+      const child = spawn('powershell', ['-command', 'Set-Clipboard -Value $null'], {
+        stdio: ['pipe', 'pipe', 'pipe']
+      })
+      child.on('exit', resolve)
+      child.on('error', resolve)
     } else if (platform === 'darwin') {
       const child = spawn('/usr/bin/pbcopy', [], {
         stdio: ['pipe', 'pipe', 'pipe']
@@ -199,24 +204,56 @@ function clearClipboard() {
 }
 
 // Only run worker code if we have args (running as a worker, not imported for testing)
-  // Convert timeout from ms to seconds
-  const timeoutSeconds = Math.ceil(CLIPBOARD_CLEAR_TIMEOUT / 1000)
+// Convert timeout from ms to seconds
+const timeoutSeconds = Math.ceil(CLIPBOARD_CLEAR_TIMEOUT / 1000)
 
-  // Use a subprocess to keep the worker alive - setTimeout doesn't keep Bare's event loop running
-  const platform = os.platform()
-  let sleeper
+// Use a subprocess to keep the worker alive - setTimeout doesn't keep Bare's event loop running
+const platform = os.platform()
 
-  if (platform === 'win32') {
-    // Windows: use ping localhost with count to create delay
-    sleeper = spawn('ping', ['-n', String(timeoutSeconds + 1), '127.0.0.1'], {
-      stdio: ['pipe', 'pipe', 'pipe']
-    })
-  } else {
-    // macOS/Linux: use sleep command
-    sleeper = spawn('/bin/sleep', [String(timeoutSeconds)], {
-      stdio: ['pipe', 'pipe', 'pipe']
-    })
-  }
+if (platform === 'win32') {
+  // Windows: write a PowerShell script to temp and run it via cmd start.
+  // The script file approach avoids command line escaping issues.
+  const base64Value = Buffer.from(copiedValue).toString('base64')
+  const scriptId = Date.now()
+  const tempDir = os.tmpdir()
+  const scriptPath = path.join(tempDir, `pearpass_clip_${scriptId}.ps1`)
+
+  // PowerShell script content - sleeps, checks clipboard, clears if unchanged, deletes itself
+  const scriptContent = `
+Start-Sleep -Seconds ${timeoutSeconds}
+$v = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64Value}'))
+$c = Get-Clipboard -Raw
+if ($c.Trim() -eq $v.Trim()) {
+  Set-Clipboard -Value $null
+}
+Remove-Item -Path '${scriptPath.replace(/\\/g, '\\\\')}' -Force -ErrorAction SilentlyContinue
+`
+
+  // Write the script file synchronously
+  fs.writeFileSync(scriptPath, scriptContent)
+  logger.log(`Windows clipboard cleanup script written`)
+
+  // Run the script via cmd start (creates independent process)
+  // Using start without /b to create truly detached process (may briefly flash)
+  const result = spawnSync('cmd', [
+    '/c',
+    'start',
+    '""',
+    '/min',
+    'powershell',
+    '-WindowStyle', 'Hidden',
+    '-ExecutionPolicy', 'Bypass',
+    '-File', scriptPath
+  ])
+
+  logger.log(`Windows clipboard cleanup started, exit code: ${result.status}`)
+  Pear.exit(0)
+} else {
+  // macOS/Linux: use sleep command - these platforms handle process groups differently
+  // and the worker survives long enough after app close for cleanup to complete
+  const sleeper = spawn('/bin/sleep', [String(timeoutSeconds)], {
+    stdio: ['pipe', 'pipe', 'pipe']
+  })
 
   sleeper.on('exit', async () => {
     logger.log('Clipboard cleanup timeout reached, checking...')
@@ -241,4 +278,6 @@ function clearClipboard() {
     logger.error('Clipboard cleanup sleeper error:', err.message)
     Pear.exit(1)
   })
+}
+
 
