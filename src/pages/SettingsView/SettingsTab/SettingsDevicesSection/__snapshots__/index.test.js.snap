@@ -21,7 +21,7 @@ exports[`SettingsDevicesSection matches snapshot 1`] = `
         <span
           class="sc-hvigdm cxDthX"
         >
-          Here you can find a list of the connected devices.
+          These are the devices with access to this Vault.
         </span>
         <div
           class="sc-hjsuWn fqhona"
@@ -122,6 +122,18 @@ exports[`SettingsDevicesSection matches snapshot 1`] = `
           <div
             class="sc-lgpSej dAwUOm"
           />
+        </div>
+        <div
+          style="display: flex; justify-content: center;"
+        >
+          <button
+            class="sc-dntSTA TsezX"
+            data-testid="button-primary"
+            type="button"
+            width="fit-content"
+          >
+            Connect a new device
+          </button>
         </div>
       </div>
     </div>

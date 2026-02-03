@@ -179,6 +179,14 @@ export const getNativeMessagingLocations = () => {
           'Microsoft Edge',
           'NativeMessagingHosts',
           manifestFile
+        ),
+        path.join(
+          home,
+          'Library',
+          'Application Support',
+          'Chromium',
+          'NativeMessagingHosts',
+          manifestFile
         )
       ]
       break
@@ -196,7 +204,8 @@ export const getNativeMessagingLocations = () => {
       ]
       registryKeys = [
         `HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\${MANIFEST_NAME}`,
-        `HKCU\\Software\\Microsoft\\Edge\\NativeMessagingHosts\\${MANIFEST_NAME}`
+        `HKCU\\Software\\Microsoft\\Edge\\NativeMessagingHosts\\${MANIFEST_NAME}`,
+        `HKCU\\Software\\Chromium\\NativeMessagingHosts\\${MANIFEST_NAME}`
       ]
       break
 

@@ -1,21 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`TextArea Component matches snapshot for default variant 1`] = `
-<textarea
-  class="sc-bRKDuR hTXFGS"
+<div
+  class="sc-fhHczv eLkUHf"
   data-testid="text-area"
-  placeholder="Enter text here"
 >
-  snapshot default
-</textarea>
+  <div
+    class="sc-ggWZvA evJOyk"
+  >
+    <textarea
+      class="sc-bRKDuR jTUtiG"
+      placeholder="Enter text here"
+    >
+      snapshot default
+    </textarea>
+  </div>
+</div>
 `;
 
 exports[`TextArea Component matches snapshot for report variant 1`] = `
-<textarea
-  class="sc-hvigdm fSepiK"
+<div
+  class="sc-fhHczv eLkUHf"
   data-testid="text-area"
-  placeholder="Report here"
 >
-  snapshot report
-</textarea>
+  <div
+    class="sc-ggWZvA evJOyk"
+  >
+    <textarea
+      class="sc-hvigdm hGcxTq"
+      placeholder="Report here"
+    >
+      snapshot report
+    </textarea>
+  </div>
+</div>
 `;

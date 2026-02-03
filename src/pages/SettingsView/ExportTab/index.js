@@ -175,7 +175,7 @@ export const ExportTab = () => {
     refetchVault()
   }, [])
 
-  return html` <${CardSingleSetting} title=${t('Export')}>
+  return html` <${CardSingleSetting} title=${t('Export Vault')}>
     <${ContentContainer}>
       ${sortByName(data).map(
         (vault) =>
@@ -200,7 +200,7 @@ export const ExportTab = () => {
       /> -->
 
       <${RadioSelect}
-        title=${t('Type')}
+        title=${t('Choose the file format to export your Vault')}
         options=${radioOptions}
         selectedOption=${exportType}
         onChange=${(type) => {

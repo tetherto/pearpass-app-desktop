@@ -18,11 +18,12 @@ export const SettingsReportSection = ({
   onSubmitReport,
   message,
   title,
+  description,
   buttonText,
   textAreaPlaceholder,
   textAreaOnChange
 }) => html`
-  <${CardSingleSetting} title=${title}>
+  <${CardSingleSetting} title=${title} description=${description}>
     <${Form}
       onSubmit=${(e) => {
         e.preventDefault()

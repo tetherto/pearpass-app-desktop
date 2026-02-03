@@ -7,9 +7,9 @@ import { ArrowDownIcon, ArrowUpIcon } from '../../lib-react-components'
 
 /**
  * @param {{
- *  title: string,
- *  isCollapse: boolean
- *  defaultOpenState: boolean
+ *  title?: string,
+ *  isCollapse?: boolean
+ *  defaultOpenState?: boolean
  *  children: import('react').ReactNode
  *  testId?: string
  * }} props

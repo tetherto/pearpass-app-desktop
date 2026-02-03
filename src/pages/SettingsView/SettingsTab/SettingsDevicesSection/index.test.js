@@ -48,6 +48,12 @@ jest.mock('pearpass-lib-vault', () => ({
   })
 }))
 
+jest.mock('../../../../context/ModalContext', () => ({
+  useModal: () => ({
+    setModal: jest.fn()
+  })
+}))
+
 describe('SettingsDevicesSection', () => {
   const renderWithProviders = (component) =>
     render(<ThemeProvider>{component}</ThemeProvider>)

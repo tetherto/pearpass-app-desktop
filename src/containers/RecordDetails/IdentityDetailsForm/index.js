@@ -5,15 +5,13 @@ import { html } from 'htm/react'
 import { useForm } from 'pear-apps-lib-ui-react-hooks'
 import { DATE_FORMAT } from 'pearpass-lib-constants'
 
+import { CopyButton } from '../../../components/CopyButton'
 import { FormGroup } from '../../../components/FormGroup'
 import { FormWrapper } from '../../../components/FormWrapper'
 import { InputFieldNote } from '../../../components/InputFieldNote'
 import { ATTACHMENTS_FIELD_KEY } from '../../../constants/formFields'
-import { useToast } from '../../../context/ToastContext'
-import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard'
 import { useGetMultipleFiles } from '../../../hooks/useGetMultipleFiles'
 import {
-  CopyIcon,
   EmailIcon,
   InputField,
   PhoneIcon,
@@ -49,18 +47,6 @@ import { ImagesField } from '../../ImagesField'
  */
 export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
   const { i18n } = useLingui()
-
-  const { setToast } = useToast()
-
-  const { copyToClipboard } = useCopyToClipboard({
-    onCopy: () => {
-      setToast({
-        message: i18n._('Copied to clipboard'),
-        icon: CopyIcon
-      })
-    }
-  })
-
   const initialValues = React.useMemo(
     () => ({
       fullName: initialRecord?.data?.fullName ?? '',
@@ -118,13 +104,6 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
     initialRecord
   })
 
-  const handleCopy = (value) => {
-    if (!value?.length) {
-      return
-    }
-
-    copyToClipboard(value)
-  }
   useEffect(() => {
     setValues(initialValues)
   }, [initialValues, setValues])
@@ -202,9 +181,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
             placeholder=${i18n._('Full name')}
             variant="outline"
             icon=${UserIcon}
-            onClick=${handleCopy}
             isDisabled
             ...${register('fullName')}
+            additionalItems=${html`
+              <${CopyButton} value=${values.fullName} />
+            `}
           />
         `}
         ${!!values?.email?.length &&
@@ -214,9 +195,9 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
           placeholder=${i18n._('Insert email')}
           variant="outline"
           icon=${EmailIcon}
-          onClick=${handleCopy}
           isDisabled
           ...${register('email')}
+          additionalItems=${html` <${CopyButton} value=${values.email} /> `}
         />`}
         ${!!values?.phoneNumber?.length &&
         html`
@@ -226,9 +207,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
             placeholder=${i18n._('Phone number ')}
             variant="outline"
             icon=${PhoneIcon}
-            onClick=${handleCopy}
             isDisabled
             ...${register('phoneNumber')}
+            additionalItems=${html`
+              <${CopyButton} value=${values.phoneNumber} />
+            `}
           />
         `}
       <//>`}
@@ -246,9 +229,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
               label=${i18n._('Address')}
               placeholder=${i18n._('Address')}
               variant="outline"
-              onClick=${handleCopy}
               isDisabled
               ...${register('address')}
+              additionalItems=${html`
+                <${CopyButton} value=${values.address} />
+              `}
             />
           `}
           ${!!values?.zip?.length &&
@@ -258,9 +243,9 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
               label=${i18n._('ZIP')}
               placeholder=${i18n._('Insert zip')}
               variant="outline"
-              onClick=${handleCopy}
               isDisabled
               ...${register('zip')}
+              additionalItems=${html` <${CopyButton} value=${values.zip} /> `}
             />
           `}
           ${!!values?.city?.length &&
@@ -270,9 +255,9 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
               label=${i18n._('City')}
               placeholder=${i18n._('City')}
               variant="outline"
-              onClick=${handleCopy}
               isDisabled
               ...${register('city')}
+              additionalItems=${html` <${CopyButton} value=${values.city} /> `}
             />
           `}
           ${!!values?.region?.length &&
@@ -282,9 +267,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
               label=${i18n._('Region')}
               placeholder=${i18n._('Region')}
               variant="outline"
-              onClick=${handleCopy}
               isDisabled
               ...${register('region')}
+              additionalItems=${html`
+                <${CopyButton} value=${values.region} />
+              `}
             />
           `}
           ${!!values?.country?.length &&
@@ -294,9 +281,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
               label=${i18n._('Country')}
               placeholder=${i18n._('Country')}
               variant="outline"
-              onClick=${handleCopy}
               isDisabled
               ...${register('country')}
+              additionalItems=${html`
+                <${CopyButton} value=${values.country} />
+              `}
             />
           `}
         <//>
@@ -316,9 +305,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
                 label=${i18n._('Full name')}
                 placeholder=${i18n._('John Smith')}
                 variant="outline"
-                onClick=${handleCopy}
                 isDisabled
                 ...${register('passportFullName')}
+                additionalItems=${html`
+                  <${CopyButton} value=${values.passportFullName} />
+                `}
               />
             `}
             ${hasPassportNumber &&
@@ -328,9 +319,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
                 label=${i18n._('Passport number')}
                 placeholder=${i18n._('Insert numbers')}
                 variant="outline"
-                onClick=${handleCopy}
                 isDisabled
                 ...${register('passportNumber')}
+                additionalItems=${html`
+                  <${CopyButton} value=${values.passportNumber} />
+                `}
               />
             `}
             ${hasPassportIssuingCountry &&
@@ -340,9 +333,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
                 label=${i18n._('Issuing country')}
                 placeholder=${i18n._('Insert country')}
                 variant="outline"
-                onClick=${handleCopy}
                 isDisabled
                 ...${register('passportIssuingCountry')}
+                additionalItems=${html`
+                  <${CopyButton} value=${values.passportIssuingCountry} />
+                `}
               />
             `}
             ${hasPassportDateOfIssue &&
@@ -352,9 +347,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
                 label=${i18n._('Date of issue')}
                 placeholder=${DATE_FORMAT}
                 variant="outline"
-                onClick=${handleCopy}
                 isDisabled
                 ...${register('passportDateOfIssue')}
+                additionalItems=${html`
+                  <${CopyButton} value=${values.passportDateOfIssue} />
+                `}
               />
             `}
             ${hasPassportExpiryDate &&
@@ -364,9 +361,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
                 label=${i18n._('Expiry date')}
                 placeholder=${DATE_FORMAT}
                 variant="outline"
-                onClick=${handleCopy}
                 isDisabled
                 ...${register('passportExpiryDate')}
+                additionalItems=${html`
+                  <${CopyButton} value=${values.passportExpiryDate} />
+                `}
               />
             `}
             ${hasPassportNationality &&
@@ -376,9 +375,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
                 label=${i18n._('Nationality')}
                 placeholder=${i18n._('Insert your nationality')}
                 variant="outline"
-                onClick=${handleCopy}
                 isDisabled
                 ...${register('passportNationality')}
+                additionalItems=${html`
+                  <${CopyButton} value=${values.passportNationality} />
+                `}
               />
             `}
             ${hasPassportDob &&
@@ -388,9 +389,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
                 label=${i18n._('Date of birth')}
                 placeholder=${DATE_FORMAT}
                 variant="outline"
-                onClick=${handleCopy}
                 isDisabled
                 ...${register('passportDob')}
+                additionalItems=${html`
+                  <${CopyButton} value=${values.passportDob} />
+                `}
               />
             `}
             ${hasPassportGender &&
@@ -400,9 +403,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
                 label=${i18n._('Gender')}
                 placeholder=${i18n._('M/F')}
                 variant="outline"
-                onClick=${handleCopy}
                 isDisabled
                 ...${register('passportGender')}
+                additionalItems=${html`
+                  <${CopyButton} value=${values.passportGender} />
+                `}
               />
             `}
           <//>
@@ -429,9 +434,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
                 label=${i18n._('ID card number')}
                 placeholder="123456789"
                 variant="outline"
-                onClick=${handleCopy}
                 isDisabled
                 ...${register('idCardNumber')}
+                additionalItems=${html`
+                  <${CopyButton} value=${values.idCardNumber} />
+                `}
               />
             `}
             ${hasIdCardDateOfIssue &&
@@ -441,9 +448,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
                 label=${i18n._('Creation date')}
                 placeholder=${DATE_FORMAT}
                 variant="outline"
-                onClick=${handleCopy}
                 isDisabled
                 ...${register('idCardDateOfIssue')}
+                additionalItems=${html`
+                  <${CopyButton} value=${values.idCardDateOfIssue} />
+                `}
               />
             `}
             ${hasIdCardExpiryDate &&
@@ -453,9 +462,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
                 label=${i18n._('Expiry date')}
                 placeholder=${DATE_FORMAT}
                 variant="outline"
-                onClick=${handleCopy}
                 isDisabled
                 ...${register('idCardExpiryDate')}
+                additionalItems=${html`
+                  <${CopyButton} value=${values.idCardExpiryDate} />
+                `}
               />
             `}
             ${hasIdCardIssuingCountry &&
@@ -465,9 +476,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
                 label=${i18n._('Issuing country')}
                 placeholder=${i18n._('Insert country')}
                 variant="outline"
-                onClick=${handleCopy}
                 isDisabled
                 ...${register('idCardIssuingCountry')}
+                additionalItems=${html`
+                  <${CopyButton} value=${values.idCardIssuingCountry} />
+                `}
               />
             `}
           <//>
@@ -493,9 +506,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
               label=${i18n._('Driving license number')}
               placeholder="123456789"
               variant="outline"
-              onClick=${handleCopy}
               isDisabled
               ...${register('drivingLicenseNumber')}
+              additionalItems=${html`
+                <${CopyButton} value=${values.drivingLicenseNumber} />
+              `}
             />
           `}
           ${hasDrivingLicenseDateOfIssue &&
@@ -505,9 +520,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
               label=${i18n._('Creation date')}
               placeholder=${DATE_FORMAT}
               variant="outline"
-              onClick=${handleCopy}
               isDisabled
               ...${register('drivingLicenseDateOfIssue')}
+              additionalItems=${html`
+                <${CopyButton} value=${values.drivingLicenseDateOfIssue} />
+              `}
             />
           `}
           ${hasDrivingLicenseExpiryDate &&
@@ -517,9 +534,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
               label=${i18n._('Expiry date')}
               placeholder=${DATE_FORMAT}
               variant="outline"
-              onClick=${handleCopy}
               isDisabled
               ...${register('drivingLicenseExpiryDate')}
+              additionalItems=${html`
+                <${CopyButton} value=${values.drivingLicenseExpiryDate} />
+              `}
             />
           `}
           ${hasDrivingLicenseIssuingCountry &&
@@ -529,9 +548,11 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
               label=${i18n._('Issuing country')}
               placeholder=${i18n._('Insert country')}
               variant="outline"
-              onClick=${handleCopy}
               isDisabled
               ...${register('drivingLicenseIssuingCountry')}
+              additionalItems=${html`
+                <${CopyButton} value=${values.drivingLicenseIssuingCountry} />
+              `}
             />
           `}
         <//>
@@ -561,9 +582,9 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
         <${FormGroup}>
           <${InputFieldNote}
             testId="identitydetails-field-note"
-            onClick=${handleCopy}
             isDisabled
             ...${register('note')}
+            additionalItems=${html` <${CopyButton} value=${values.note} /> `}
           />
         <//>
       `}
@@ -573,7 +594,6 @@ export const IdentityDetailsForm = ({ initialRecord, selectedFolder }) => {
           <${CustomFields}
             areInputsDisabled=${true}
             customFields=${list}
-            onClick=${handleCopy}
             register=${registerItem}
           />
         <//>

@@ -13,8 +13,8 @@ export const SettingsPasswordsSection = () => {
 
   return html`
     <${CardSingleSetting}
-      title=${i18n._('Passwords')}
-      description=${i18n._('Here you can modify yours passwords')}
+      title=${i18n._('Master Password')}
+      description=${i18n._('Manage the password that protects your app.')}
     >
       <${Content}>
         <${ListItem}

@@ -99,7 +99,7 @@ describe('getClipboardContent', () => {
 
     const result = await promise
 
-    expect(spawn).toHaveBeenCalledWith('pbpaste', { shell: true })
+    expect(spawn).toHaveBeenCalledWith('/usr/bin/pbpaste', { shell: true })
     expect(result).toBe('mac content')
   })
 

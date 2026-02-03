@@ -16,7 +16,10 @@ export const SettingsVaultsTab = () => {
   const { setModal } = useModal()
 
   return html`
-    <${CardSingleSetting} title=${i18n._('Manage Vaults')}>
+    <${CardSingleSetting}
+      title=${i18n._('Your Vault')}
+      description=${i18n._('Share, edit, or delete your vault from one place.')}
+    >
       <${Content}>
         ${sortByName(data).map(
           (vault) =>

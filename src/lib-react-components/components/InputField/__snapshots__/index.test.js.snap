@@ -13,9 +13,7 @@ exports[`InputField Component matches snapshot for default variant 1`] = `
       <span
         class="sc-hjsuWn iagtKj"
       >
-         
         Label
-         
       </span>
       <div
         class="sc-jJLAfE gttYtk"
@@ -29,10 +27,7 @@ exports[`InputField Component matches snapshot for default variant 1`] = `
         />
         <div
           class="sc-kNOymR iQIqLX"
-        >
-           
-           
-        </div>
+        />
       </div>
     </div>
   </div>
@@ -52,9 +47,7 @@ exports[`InputField Component matches snapshot for outline variant 1`] = `
       <span
         class="sc-hjsuWn iagtKj"
       >
-         
         Outline Label
-         
       </span>
       <div
         class="sc-jJLAfE gttYtk"
@@ -68,10 +61,7 @@ exports[`InputField Component matches snapshot for outline variant 1`] = `
         />
         <div
           class="sc-kNOymR iQIqLX"
-        >
-           
-           
-        </div>
+        />
       </div>
     </div>
   </div>

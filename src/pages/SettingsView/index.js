@@ -1,26 +1,58 @@
 import { useState } from 'react'
 
 import { html } from 'htm/react'
-import { PRIVACY_POLICY, TERMS_OF_USE } from 'pearpass-lib-constants'
+import { colors } from 'pearpass-lib-ui-theme-provider'
 
-import { ExportTab } from './ExportTab'
-import { ImportTab } from './ImportTab'
-import { SettingsAdvancedTab } from './SettingsAdvancedTab'
-import { SettingsTab } from './SettingsTab'
-import { SettingsVaultsTab } from './SettingsVaultsTab'
+import { AboutContent } from './AboutContent'
+import { AppearanceContent } from './AppearanceContent'
+import { SecurityContent } from './SecurityContent'
 import {
-  ContentContainer,
-  Link,
   NavBar,
-  TabContainer,
-  TabFooter,
-  Tabs,
-  TabTitle,
+  NavItems,
+  SettingsContentArea,
+  SettingsContentInner,
+  SettingsNavItem,
+  SettingsSidebar,
   Wrapper
 } from './styles'
+import { SyncingContent } from './SyncingContent'
+import { VaultContent } from './VaultContent'
 import { useRouter } from '../../context/RouterContext'
 import { useTranslation } from '../../hooks/useTranslation'
-import { BackIcon, ButtonRoundIcon } from '../../lib-react-components'
+import {
+  AboutIcon,
+  AppearanceIcon,
+  BackIcon,
+  ButtonRoundIcon,
+  SecurityIcon,
+  SyncingIcon,
+  VaultIcon
+} from '../../lib-react-components'
+
+const NAV_ITEMS = [
+  { key: 'security', label: 'Security', icon: SecurityIcon },
+  { key: 'syncing', label: 'Syncing', icon: SyncingIcon },
+  { key: 'vault', label: 'Vault', icon: VaultIcon },
+  { key: 'appearance', label: 'Appearance', icon: AppearanceIcon },
+  { key: 'about', label: 'About', icon: AboutIcon }
+]
+
+const renderActiveContent = (activeTab) => {
+  switch (activeTab) {
+    case 'security':
+      return html`<${SecurityContent} />`
+    case 'syncing':
+      return html`<${SyncingContent} />`
+    case 'vault':
+      return html`<${VaultContent} />`
+    case 'appearance':
+      return html`<${AppearanceContent} />`
+    case 'about':
+      return html`<${AboutContent} />`
+    default:
+      return null
+  }
+}
 
 export const SettingsView = () => {
   const { t } = useTranslation()
@@ -30,86 +62,40 @@ export const SettingsView = () => {
     navigate('vault', { recordType: 'all' })
   }
 
-  const [activeTab, setActiveTab] = useState('general')
-
-  const handleActiveTabChange = (tab) => {
-    setActiveTab(tab)
-  }
+  const [activeTab, setActiveTab] = useState('security')
 
   return html`
     <${Wrapper}>
-      <${NavBar}>
-        <${ButtonRoundIcon} onClick=${handleGoBack} startIcon=${BackIcon} />
+      <${SettingsSidebar}>
+        <${NavBar}>
+          <${ButtonRoundIcon} onClick=${handleGoBack} startIcon=${BackIcon} />
+          ${t('Settings')}
+        <//>
 
-        ${t('Settings')}
+        <${NavItems}>
+          ${NAV_ITEMS.map(
+            (item) => html`
+              <${SettingsNavItem}
+                key=${item.key}
+                isActive=${activeTab === item.key}
+                onClick=${() => setActiveTab(item.key)}
+              >
+                <${item.icon}
+                  size="20"
+                  color=${activeTab === item.key
+                    ? colors.primary400.mode1
+                    : undefined}
+                />
+                ${t(item.label)}
+              <//>
+            `
+          )}
+        <//>
       <//>
 
-      <${ContentContainer}>
-        <${Tabs}>
-          <${TabTitle}
-            onClick=${() => handleActiveTabChange('general')}
-            isActive=${activeTab === 'general'}
-          >
-            ${t('General')}
-          <//>
-
-          <${TabTitle}
-            onClick=${() => handleActiveTabChange('vaults')}
-            isActive=${activeTab === 'vaults'}
-          >
-            ${t('Vaults')}
-          <//>
-
-          <${TabTitle}
-            onClick=${() => handleActiveTabChange('import')}
-            isActive=${activeTab === 'import'}
-          >
-            ${t('Import')}
-          <//>
-
-          <${TabTitle}
-            onClick=${() => handleActiveTabChange('export')}
-            isActive=${activeTab === 'export'}
-          >
-            ${t('Export')}
-          <//>
-
-          <${TabTitle}
-            onClick=${() => handleActiveTabChange('privacy')}
-            isActive=${activeTab === 'privacy'}
-          >
-            ${t('Advanced')}
-          <//>
-        <//>
-
-        <${TabContainer}>
-          ${renderActiveTab(activeTab)}
-          <${TabFooter}>
-            <${Link} href=${TERMS_OF_USE}> ${t('Terms of Use')} <//>
-            <${Link} href=${PRIVACY_POLICY}> ${t('Privacy Statement')} <//>
-          <//>
-        <//>
+      <${SettingsContentArea}>
+        <${SettingsContentInner}> ${renderActiveContent(activeTab)} <//>
       <//>
     <//>
   `
-}
-
-/**
- * @param {string} activeTab
- */
-const renderActiveTab = (activeTab) => {
-  switch (activeTab) {
-    case 'general':
-      return html`<${SettingsTab} />`
-    case 'vaults':
-      return html`<${SettingsVaultsTab} />`
-    case 'import':
-      return html`<${ImportTab} />`
-    case 'export':
-      return html`<${ExportTab} />`
-    case 'privacy':
-      return html`<${SettingsAdvancedTab} />`
-    default:
-      return null
-  }
 }

@@ -6,16 +6,15 @@ import { useForm } from 'pear-apps-lib-ui-react-hooks'
 import { isBefore, subtractDateUnits } from 'pear-apps-utils-date'
 
 import { AlertBox } from '../../../components/AlertBox'
+import { CopyButton } from '../../../components/CopyButton'
 import { FormGroup } from '../../../components/FormGroup'
 import { FormWrapper } from '../../../components/FormWrapper'
 import { InputFieldNote } from '../../../components/InputFieldNote'
+import { WebsiteButton } from '../../../components/WebsiteButton'
 import { ATTACHMENTS_FIELD_KEY } from '../../../constants/formFields'
-import { useToast } from '../../../context/ToastContext'
-import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard'
 import { useGetMultipleFiles } from '../../../hooks/useGetMultipleFiles'
 import {
   CompoundField,
-  CopyIcon,
   InputField,
   KeyIcon,
   PasswordField,
@@ -49,17 +48,6 @@ import { CustomFields } from '../../CustomFields'
 export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
   const { i18n } = useLingui()
 
-  const { setToast } = useToast()
-
-  const { copyToClipboard } = useCopyToClipboard({
-    onCopy: () => {
-      setToast({
-        message: i18n._('Copied to clipboard'),
-        icon: CopyIcon
-      })
-    }
-  })
-
   const initialValues = React.useMemo(
     () => ({
       username: initialRecord?.data?.username ?? '',
@@ -91,21 +79,7 @@ export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
     updateValues: setValue,
     initialRecord
   })
-  const handleWebsiteClick = (url) => {
-    if (!url?.length) {
-      return
-    }
 
-    window.open(url, '_blank')
-  }
-
-  const handleCopy = (value) => {
-    if (!value?.length) {
-      return
-    }
-
-    copyToClipboard(value)
-  }
   const isPasswordSixMonthsOld = () => {
     const { passwordUpdatedAt } = initialRecord?.data || {}
     return (
@@ -139,9 +113,11 @@ export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
             placeholder=${i18n._('Email or username')}
             variant="outline"
             icon=${UserIcon}
-            onClick=${handleCopy}
             isDisabled
             ...${register('username')}
+            additionalItems=${html`
+              <${CopyButton} value=${values.username} />
+            `}
           />
         `}
         ${!!values?.password?.length &&
@@ -151,9 +127,11 @@ export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
             placeholder=${i18n._('Password')}
             variant="outline"
             icon=${KeyIcon}
-            onClick=${handleCopy}
             isDisabled
             ...${register('password')}
+            additionalItems=${html`
+              <${CopyButton} value=${values.password} />
+            `}
           />
         `}
       <//>
@@ -183,8 +161,14 @@ export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
                   icon=${WorldIcon}
                   ...${registerItem('website', index)}
                   isDisabled
-                  onClick=${() =>
-                    handleWebsiteClick(registerItem('website', index).value)}
+                  additionalItems=${html`
+                    <${WebsiteButton}
+                      url=${registerItem('website', index).value}
+                    />
+                    <${CopyButton}
+                      value=${registerItem('website', index).value}
+                    />
+                  `}
                 />
               <//>
             `
@@ -210,15 +194,14 @@ export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
         html`
           <${InputFieldNote}
             ...${register('note')}
-            onClick=${handleCopy}
             isDisabled
+            additionalItems=${html` <${CopyButton} value=${values.note} /> `}
           />
         `}
       <//>
 
       <${CustomFields}
         customFields=${customFieldsList}
-        onClick=${handleCopy}
         register=${registerCustomFieldItem}
         areInputsDisabled=${true}
       />

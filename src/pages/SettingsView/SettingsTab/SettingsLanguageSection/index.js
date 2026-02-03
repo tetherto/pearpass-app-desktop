@@ -17,14 +17,17 @@ export const SettingsLanguageSection = ({
   onItemSelect,
   placeholder,
   title,
+  description,
   languageOptions = []
 }) => html`
-  <${CardSingleSetting} title=${title}>
-    <${Select}
-      items=${languageOptions}
-      selectedItem=${selectedItem}
-      onItemSelect=${onItemSelect}
-      placeholder=${placeholder}
-    />
+  <${CardSingleSetting} title=${title} description=${description}>
+    <div style=${{ marginTop: '10px' }}>
+      <${Select}
+        items=${languageOptions}
+        selectedItem=${selectedItem}
+        onItemSelect=${onItemSelect}
+        placeholder=${placeholder}
+      />
+    </div>
   <//>
 `

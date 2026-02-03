@@ -1,15 +1,11 @@
 import React, { useEffect } from 'react'
 
-import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import { useForm } from 'pear-apps-lib-ui-react-hooks'
 
 import { FormGroup } from '../../../components/FormGroup'
 import { FormWrapper } from '../../../components/FormWrapper'
 import { InputFieldNote } from '../../../components/InputFieldNote'
-import { useToast } from '../../../context/ToastContext'
-import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard'
-import { CopyIcon } from '../../../lib-react-components'
 import { CustomFields } from '../../CustomFields'
 import { PassPhrase } from '../../PassPhrase'
 
@@ -30,19 +26,6 @@ import { PassPhrase } from '../../PassPhrase'
  * }} props
  */
 export const PassPhraseDetailsForm = ({ initialRecord, selectedFolder }) => {
-  const { i18n } = useLingui()
-
-  const { setToast } = useToast()
-
-  const { copyToClipboard } = useCopyToClipboard({
-    onCopy: () => {
-      setToast({
-        message: i18n._('Copied to clipboard'),
-        icon: CopyIcon
-      })
-    }
-  })
-
   const initialValues = React.useMemo(
     () => ({
       title: initialRecord?.data?.title ?? '',
@@ -60,14 +43,6 @@ export const PassPhraseDetailsForm = ({ initialRecord, selectedFolder }) => {
 
   const { value: list, registerItem } = registerArray('customFields')
 
-  const handleCopy = (value) => {
-    if (!value?.length) {
-      return
-    }
-
-    copyToClipboard(value)
-  }
-
   useEffect(() => {
     setValues(initialValues)
   }, [initialValues, setValues])
@@ -81,19 +56,12 @@ export const PassPhraseDetailsForm = ({ initialRecord, selectedFolder }) => {
 
       <${FormGroup}>
         ${!!values?.note?.length &&
-        html`
-          <${InputFieldNote}
-            ...${register('note')}
-            onClick=${handleCopy}
-            isDisabled
-          />
-        `}
+        html` <${InputFieldNote} ...${register('note')} isDisabled /> `}
       <//>
 
       <${CustomFields}
         areInputsDisabled=${true}
         customFields=${list}
-        onClick=${handleCopy}
         register=${registerItem}
       />
     <//>

@@ -65,6 +65,10 @@ export class NativeMessagingIPCServer {
       securityHandlers.nmGetAppIdentity.bind(securityHandlers)
     )
     this.methodRegistry.register(
+      'nmConfirmPairing',
+      securityHandlers.nmConfirmPairing.bind(securityHandlers)
+    )
+    this.methodRegistry.register(
       'nmBeginHandshake',
       securityHandlers.nmBeginHandshake.bind(securityHandlers)
     )

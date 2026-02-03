@@ -7,7 +7,7 @@ import { ToastContainer, ToastStack } from './styles'
  * @param {{
  *  toasts: Array.<{
  *    message: string
- *    icon: import('react').ReactNode
+ *    icon: import('react').ElementType
  *  }>
  * }} props
  */

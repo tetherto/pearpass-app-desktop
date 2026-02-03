@@ -56,6 +56,7 @@ jest.mock('./handlers/SecurityHandlers', () => ({
       x25519PublicKey: 'mock-x25519-key',
       fingerprint: 'mock-fingerprint'
     })
+    this.nmConfirmPairing = jest.fn().mockResolvedValue({ confirmed: true })
     this.nmBeginHandshake = jest.fn().mockResolvedValue({
       sessionId: 'mock-session-id',
       appEphemeralPubB64: 'mock-ephemeral-key',

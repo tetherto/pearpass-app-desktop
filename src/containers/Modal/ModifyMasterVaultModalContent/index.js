@@ -111,7 +111,7 @@ export const ModifyMasterVaultModalContent = () => {
     <${ModalContent}
       onClose=${closeModal}
       headerChildren=${html` <${ModalTitle}>
-        ${t('Modify master password')}
+        ${t('Update master password')}
       <//>`}
     >
       <${Content}>
@@ -128,9 +128,7 @@ export const ModifyMasterVaultModalContent = () => {
           <${PearPassPasswordField} ...${register('repeatPassword')} />
         <//>
         <${ModalActions}>
-          <${ButtonPrimary} onClick=${handleSubmit(onSubmit)}>
-            ${t('Continue')}
-          <//>
+          <${ButtonPrimary} onClick=${handleSubmit(onSubmit)}> ${t('Save')} <//>
           <${ButtonSecondary} onClick=${closeModal}> ${t('Cancel')} <//>
         <//>
       <//>

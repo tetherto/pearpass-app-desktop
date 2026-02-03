@@ -5,7 +5,7 @@ import { Button } from './styles'
 
 /**
  * @param {{
- *  children: import('react').ReactNode
+ *  children?: import('react').ReactNode
  *  startIcon: import('react').ElementType
  *  onClick: () => void
  *  iconSize?: string,

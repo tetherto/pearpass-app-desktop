@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`VaultsTab renders Manage Vaults section 1`] = `
+exports[`VaultsTab renders Your Vault section 1`] = `
 <div>
   <div>
     <h1>
-      Manage Vaults
+      Your Vault
     </h1>
     <div
       class="sc-bRKDuR hMjkPC"

@@ -70,10 +70,10 @@ describe('VaultsTab', () => {
     jest.clearAllMocks()
   })
 
-  it('renders Manage Vaults section', () => {
+  it('renders Your Vault section', () => {
     const { container } = renderWithProviders(<SettingsVaultsTab />)
 
-    expect(screen.getByText('Manage Vaults')).toBeInTheDocument()
+    expect(screen.getByText('Your Vault')).toBeInTheDocument()
     expect(container).toMatchSnapshot()
   })
 

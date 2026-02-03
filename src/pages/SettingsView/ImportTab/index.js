@@ -158,11 +158,11 @@ export const ImportTab = () => {
     }
   }
 
-  return html` <${CardSingleSetting} title=${t('Import')}>
+  return html` <${CardSingleSetting} title=${t('Import Vault')}>
     <${ContentContainer}>
       <${Description}>
         ${t(
-          'Here you can import different file, export your data and then upload it here'
+          "Move your saved items here from another password manager. They'll be added to this vault."
         )}
       <//>
 

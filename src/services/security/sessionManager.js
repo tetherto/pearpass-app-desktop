@@ -142,7 +142,7 @@ export const beginHandshake = async (
   const edBuffer = Buffer.from(edBlobB64, 'base64')
 
   const ed25519PrivateKeyBytes = new Uint8Array(
-    edBuffer.slice(
+    edBuffer.subarray(
       sodium.crypto_sign_PUBLICKEYBYTES,
       sodium.crypto_sign_PUBLICKEYBYTES + sodium.crypto_sign_SECRETKEYBYTES
     )

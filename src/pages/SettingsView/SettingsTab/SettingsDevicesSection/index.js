@@ -6,6 +6,9 @@ import { useVault } from 'pearpass-lib-vault'
 import { Description, content } from './styles'
 import { CardSingleSetting } from '../../../../components/CardSingleSetting'
 import { ListItem } from '../../../../components/ListItem'
+import { AddDeviceModalContent } from '../../../../containers/Modal/AddDeviceModalContent'
+import { useModal } from '../../../../context/ModalContext'
+import { ButtonPrimary } from '../../../../lib-react-components'
 
 /**
  * @param {{}} props
@@ -13,16 +16,17 @@ import { ListItem } from '../../../../components/ListItem'
 export const SettingsDevicesSection = () => {
   const { i18n } = useLingui()
   const { data } = useVault()
+  const { setModal } = useModal()
 
-  if (!data?.devices?.length) {
-    return null
+  const handleAddDevice = () => {
+    setModal(html`<${AddDeviceModalContent} />`)
   }
 
   return html`
     <${CardSingleSetting} title=${i18n._('Linked devices')}>
       <${content}>
         <${Description}
-          >${i18n._('Here you can find a list of the connected devices.')}
+          >${i18n._('These are the devices with access to this Vault.')}
         <//>
         ${data?.devices?.map(
           (device) =>
@@ -34,6 +38,11 @@ export const SettingsDevicesSection = () => {
               formatDate(device.createdAt, 'dd-mm-yyyy', '/')}
             />`
         )}
+        <div style=${{ display: 'flex', justifyContent: 'center' }}>
+          <${ButtonPrimary} onClick=${handleAddDevice} width="fit-content">
+            ${i18n._('Connect a new device')}
+          <//>
+        </div>
       <//>
     <//>
   `
