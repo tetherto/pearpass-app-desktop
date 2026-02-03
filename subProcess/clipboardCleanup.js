@@ -201,29 +201,32 @@ export function getClipboardContent() {
   })
 }
 
-;(async () => {
-  logger.log('Clipboard cleanup worker started')
+// Only run worker code when executed as a Pear subprocess, not when imported for testing
+// Check for Pear.exit to ensure we're in the actual Pear runtime (not Jest)
+if (typeof Pear !== 'undefined' && typeof Pear.exit === 'function') {
+  ;(async () => {
+    logger.log('Clipboard cleanup worker started')
 
-  // Get the text to monitor from command line args (passed by useCopyToClipboard)
-  const copiedValue = await getClipboardContent()
+    // Get the text to monitor from command line args (passed by useCopyToClipboard)
+    const copiedValue = await getClipboardContent()
 
-  // Only run worker code if we have args (running as a worker, not imported for testing)
-  // Convert timeout from ms to seconds
-  const timeoutSeconds = Math.ceil(CLIPBOARD_CLEAR_TIMEOUT / 1000)
+    // Only run worker code if we have args (running as a worker, not imported for testing)
+    // Convert timeout from ms to seconds
+    const timeoutSeconds = Math.ceil(CLIPBOARD_CLEAR_TIMEOUT / 1000)
 
-  // Use a subprocess to keep the worker alive - setTimeout doesn't keep Bare's event loop running
-  const platform = os.platform()
+    // Use a subprocess to keep the worker alive - setTimeout doesn't keep Bare's event loop running
+    const platform = os.platform()
 
-  if (platform === 'win32') {
-    // Windows: write a PowerShell script to temp and run it via cmd start.
-    // The script file approach avoids command line escaping issues.
-    const base64Value = Buffer.from(copiedValue).toString('base64')
-    const scriptId = Date.now()
-    const tempDir = os.tmpdir()
-    const scriptPath = path.join(tempDir, `pearpass_clip_${scriptId}.ps1`)
+    if (platform === 'win32') {
+      // Windows: write a PowerShell script to temp and run it via cmd start.
+      // The script file approach avoids command line escaping issues.
+      const base64Value = Buffer.from(copiedValue).toString('base64')
+      const scriptId = Date.now()
+      const tempDir = os.tmpdir()
+      const scriptPath = path.join(tempDir, `pearpass_clip_${scriptId}.ps1`)
 
-    // PowerShell script content - sleeps, checks clipboard, clears if unchanged, deletes itself
-    const scriptContent = `
+      // PowerShell script content - sleeps, checks clipboard, clears if unchanged, deletes itself
+      const scriptContent = `
 Start-Sleep -Seconds ${timeoutSeconds}
 $v = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64Value}'))
 $c = Get-Clipboard -Raw
@@ -233,57 +236,60 @@ if ($c.Trim() -eq $v.Trim()) {
 Remove-Item -Path '${scriptPath.replace(/\\/g, '\\\\')}' -Force -ErrorAction SilentlyContinue
 `
 
-    // Write the script file synchronously
-    fs.writeFileSync(scriptPath, scriptContent)
-    logger.log(`Windows clipboard cleanup script written`)
+      // Write the script file synchronously
+      fs.writeFileSync(scriptPath, scriptContent)
+      logger.log(`Windows clipboard cleanup script written`)
 
-    // Run the script via cmd start (creates independent process)
-    // Using start without /b to create truly detached process (may briefly flash)
-    const result = spawnSync('cmd', [
-      '/c',
-      'start',
-      '""',
-      '/min',
-      'powershell',
-      '-WindowStyle',
-      'Hidden',
-      '-ExecutionPolicy',
-      'Bypass',
-      '-File',
-      scriptPath
-    ])
+      // Run the script via cmd start (creates independent process)
+      // Using start without /b to create truly detached process (may briefly flash)
+      const result = spawnSync('cmd', [
+        '/c',
+        'start',
+        '""',
+        '/min',
+        'powershell',
+        '-WindowStyle',
+        'Hidden',
+        '-ExecutionPolicy',
+        'Bypass',
+        '-File',
+        scriptPath
+      ])
 
-    logger.log(`Windows clipboard cleanup started, exit code: ${result.status}`)
-    Pear.exit(0)
-  } else {
-    // macOS/Linux: use sleep command - these platforms handle process groups differently
-    // and the worker survives long enough after app close for cleanup to complete
-    const sleeper = spawn('/bin/sleep', [String(timeoutSeconds)], {
-      stdio: ['pipe', 'pipe', 'pipe']
-    })
-
-    sleeper.on('exit', async () => {
-      logger.log('Clipboard cleanup timeout reached, checking...')
-
-      try {
-        const currentClipboard = await getClipboardContent()
-
-        if (currentClipboard === copiedValue) {
-          await clearClipboard()
-          logger.log('Clipboard cleared successfully')
-        } else {
-          logger.log('Clipboard changed, skipping clear')
-        }
-      } catch (err) {
-        logger.error('Clipboard cleanup error:', err.message)
-      }
-
+      logger.log(
+        `Windows clipboard cleanup started, exit code: ${result.status}`
+      )
       Pear.exit(0)
-    })
+    } else {
+      // macOS/Linux: use sleep command - these platforms handle process groups differently
+      // and the worker survives long enough after app close for cleanup to complete
+      const sleeper = spawn('/bin/sleep', [String(timeoutSeconds)], {
+        stdio: ['pipe', 'pipe', 'pipe']
+      })
 
-    sleeper.on('error', (err) => {
-      logger.error('Clipboard cleanup sleeper error:', err.message)
-      Pear.exit(1)
-    })
-  }
-})()
+      sleeper.on('exit', async () => {
+        logger.log('Clipboard cleanup timeout reached, checking...')
+
+        try {
+          const currentClipboard = await getClipboardContent()
+
+          if (currentClipboard === copiedValue) {
+            await clearClipboard()
+            logger.log('Clipboard cleared successfully')
+          } else {
+            logger.log('Clipboard changed, skipping clear')
+          }
+        } catch (err) {
+          logger.error('Clipboard cleanup error:', err.message)
+        }
+
+        Pear.exit(0)
+      })
+
+      sleeper.on('error', (err) => {
+        logger.error('Clipboard cleanup sleeper error:', err.message)
+        Pear.exit(1)
+      })
+    }
+  })()
+}
