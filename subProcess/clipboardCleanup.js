@@ -6,8 +6,6 @@ import path from 'bare-path'
 import { spawn, spawnSync } from 'bare-subprocess'
 import { CLIPBOARD_CLEAR_TIMEOUT } from 'pearpass-lib-constants'
 
-import { logger } from '../src/utils/logger'
-
 function collectOutput(child, resolve, onError, opts = {}) {
   const {
     timeoutMs = 2000,
@@ -205,8 +203,6 @@ export function getClipboardContent() {
 // Check for Pear.exit to ensure we're in the actual Pear runtime (not Jest)
 if (typeof Pear !== 'undefined' && typeof Pear.exit === 'function') {
   ;(async () => {
-    logger.log('Clipboard cleanup worker started')
-
     // Get the text to monitor from command line args (passed by useCopyToClipboard)
     const copiedValue = await getClipboardContent()
 
@@ -238,11 +234,10 @@ Remove-Item -Path '${scriptPath.replace(/\\/g, '\\\\')}' -Force -ErrorAction Sil
 
       // Write the script file synchronously
       fs.writeFileSync(scriptPath, scriptContent)
-      logger.log(`Windows clipboard cleanup script written`)
 
       // Run the script via cmd start (creates independent process)
       // Using start without /b to create truly detached process (may briefly flash)
-      const result = spawnSync('cmd', [
+      spawnSync('cmd', [
         '/c',
         'start',
         '""',
@@ -256,9 +251,6 @@ Remove-Item -Path '${scriptPath.replace(/\\/g, '\\\\')}' -Force -ErrorAction Sil
         scriptPath
       ])
 
-      logger.log(
-        `Windows clipboard cleanup started, exit code: ${result.status}`
-      )
       Pear.exit(0)
     } else {
       // macOS/Linux: use sleep command - these platforms handle process groups differently
@@ -268,26 +260,16 @@ Remove-Item -Path '${scriptPath.replace(/\\/g, '\\\\')}' -Force -ErrorAction Sil
       })
 
       sleeper.on('exit', async () => {
-        logger.log('Clipboard cleanup timeout reached, checking...')
+        const currentClipboard = await getClipboardContent()
 
-        try {
-          const currentClipboard = await getClipboardContent()
-
-          if (currentClipboard === copiedValue) {
-            await clearClipboard()
-            logger.log('Clipboard cleared successfully')
-          } else {
-            logger.log('Clipboard changed, skipping clear')
-          }
-        } catch (err) {
-          logger.error('Clipboard cleanup error:', err.message)
+        if (currentClipboard === copiedValue) {
+          await clearClipboard()
         }
 
         Pear.exit(0)
       })
 
-      sleeper.on('error', (err) => {
-        logger.error('Clipboard cleanup sleeper error:', err.message)
+      sleeper.on('error', () => {
         Pear.exit(1)
       })
     }
