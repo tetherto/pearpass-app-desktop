@@ -21,7 +21,7 @@ jest.mock('@lingui/react', () => ({
 }))
 
 jest.mock('pearpass-lib-vault', () => {
-  const actual = jest.requireActual('pearpass-lib-vault')
+  const actual = jest.requireActual<typeof import('pearpass-lib-vault')>('pearpass-lib-vault')
 
   const mockLogIn = jest.fn()
   const mockAuthorise = jest.fn()
@@ -37,7 +37,7 @@ jest.mock('pearpass-lib-vault', () => {
         ]
       },
       refetch: jest.fn(),
-      isVaultProtected: jest.fn().mockResolvedValue(true)
+      isVaultProtected: jest.fn<() => Promise<boolean>>().mockResolvedValue(true)
     }),
     useUserData: () => ({
       logIn: mockLogIn
