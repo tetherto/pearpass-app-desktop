@@ -237,7 +237,7 @@ Remove-Item -Path '${scriptPath.replace(/\\/g, '\\\\')}' -Force -ErrorAction Sil
 
       // Run the script via cmd start (creates independent process)
       // Using start without /b to create truly detached process (may briefly flash)
-      const result = spawnSync('cmd', [
+      spawnSync('cmd', [
         '/c',
         'start',
         '""',
@@ -260,7 +260,6 @@ Remove-Item -Path '${scriptPath.replace(/\\/g, '\\\\')}' -Force -ErrorAction Sil
       })
 
       sleeper.on('exit', async () => {
-
         const currentClipboard = await getClipboardContent()
 
         if (currentClipboard === copiedValue) {
@@ -270,7 +269,7 @@ Remove-Item -Path '${scriptPath.replace(/\\/g, '\\\\')}' -Force -ErrorAction Sil
         Pear.exit(0)
       })
 
-      sleeper.on('error', (err) => {
+      sleeper.on('error', () => {
         Pear.exit(1)
       })
     }
