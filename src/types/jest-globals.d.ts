@@ -1,4 +1,4 @@
-declare const jest: any
+declare const jest: typeof import('@jest/globals').jest
 
 declare function describe(
   name: string,
@@ -7,20 +7,30 @@ declare function describe(
 
 declare function it(
   name: string,
-  fn: () => any | Promise<any>
+  fn: () => void | Promise<void>
 ): void
 
 declare function test(
   name: string,
-  fn: () => any | Promise<any>
+  fn: () => void | Promise<void>
 ): void
 
-declare function beforeEach(fn: () => any | Promise<any>): void
-declare function afterEach(fn: () => any | Promise<any>): void
+declare function beforeEach(fn: () => void | Promise<void>): void
+declare function afterEach(fn: () => void | Promise<void>): void
 
-declare function expect(actual: any): any
-declare const expect: {
-  (actual: any): any
-  arrayContaining: (items: any[]) => any
+interface Matchers<R = void> {
+  toBe(expected: unknown): R
+  toEqual(expected: unknown): R
+  toBeTruthy(): R
+  toBeFalsy(): R
+  toBeNull(): R
+  toBeUndefined(): R
+  toContain(expected: unknown): R
+  toHaveLength(expected: number): R
 }
 
+declare function expect<T = unknown>(actual: T): Matchers<void>
+
+declare namespace expect {
+  function arrayContaining<T = unknown>(items: T[]): T[]
+}

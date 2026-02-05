@@ -47,7 +47,7 @@ jest.mock('pearpass-lib-vault', () => {
   }
 })
 
-const { __testMocks } = require('pearpass-lib-vault') as any
+const { __testMocks } = require('pearpass-lib-vault')
 const { mockLogIn, mockAuthorise } = __testMocks
 
 jest.mock('../../../../utils/getDeviceName', () => ({
