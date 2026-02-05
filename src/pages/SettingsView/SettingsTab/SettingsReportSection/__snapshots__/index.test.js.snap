@@ -26,7 +26,7 @@ exports[`SettingsReportSection matches snapshot 1`] = `
             class="sc-eknHtZ gUwSmg"
           >
             <textarea
-              class="sc-cdmAjP lgmZBG"
+              class="sc-cdmAjP kJVkCe"
               placeholder="Describe the issue"
             />
           </div>

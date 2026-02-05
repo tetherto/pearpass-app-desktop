@@ -9,7 +9,7 @@ exports[`TextArea Component matches snapshot for default variant 1`] = `
     class="sc-ggWZvA evJOyk"
   >
     <textarea
-      class="sc-bRKDuR jTUtiG"
+      class="sc-bRKDuR cVKynm"
       placeholder="Enter text here"
     >
       snapshot default
@@ -27,7 +27,7 @@ exports[`TextArea Component matches snapshot for report variant 1`] = `
     class="sc-ggWZvA evJOyk"
   >
     <textarea
-      class="sc-hvigdm hGcxTq"
+      class="sc-hvigdm juBlam"
       placeholder="Report here"
     >
       snapshot report

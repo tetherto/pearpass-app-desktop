@@ -13,19 +13,18 @@ import {
   Container,
   PassPhraseHeader,
   HeaderText,
-  CopyPasteButton,
+  PasteButton,
   CopyPasteText,
   PassPhraseContainer,
   ErrorContainer,
   ErrorText
 } from './styles'
 import { BadgeTextItem } from '../../components/BadgeTextItem'
+import { CopyButton } from '../../components/CopyButton'
 import { useToast } from '../../context/ToastContext'
-import { useCopyToClipboard } from '../../hooks/useCopyToClipboard'
 import { usePasteFromClipboard } from '../../hooks/usePasteFromClipboard'
 import { useTranslation } from '../../hooks/useTranslation'
 import {
-  CopyIcon,
   PassPhraseIcon,
   ErrorIcon,
   PasteIcon
@@ -52,14 +51,7 @@ export const PassPhrase = ({
   const [selectedType, setSelectedType] = useState(DEFAULT_SELECTED_TYPE)
   const [withRandomWord, setWithRandomWord] = useState(false)
   const [passphraseWords, setPassphraseWords] = useState([])
-  const { copyToClipboard } = useCopyToClipboard({
-    onCopy: () => {
-      setToast({
-        message: t('Copied to clipboard!'),
-        icon: CopyIcon
-      })
-    }
-  })
+
   const { pasteFromClipboard } = usePasteFromClipboard()
 
   const parsePassphraseText = (text) =>
@@ -123,7 +115,7 @@ export const PassPhrase = ({
     <${Container} data-testid=${testId}>
       <${PassPhraseHeader}>
         <${PassPhraseIcon} />
-        <${HeaderText}>${t('Recovery phrase')}<//>
+        <${HeaderText}>${t('Recovery phrase 2')}<//>
       <//>
       <${PassPhraseContainer}>
         ${passphraseWords.map(
@@ -137,27 +129,29 @@ export const PassPhrase = ({
         )}
       <//>
 
-      <${CopyPasteButton}
-        type="button"
-        data-testid=${isCreateOrEdit
-          ? 'passphrase-button-paste'
-          : 'passphrase-button-copy'}
-        isPaste=${isCreateOrEdit}
-        withExtraBottomSpace=${!isCreateOrEditWithValidRange}
-        onClick=${isCreateOrEdit
-          ? handlePasteFromClipboard
-          : () => copyToClipboard(value)}
-      >
-        ${isCreateOrEdit
-          ? html`
+      ${isCreateOrEdit
+        ? html`
+            <${PasteButton}
+              type="button"
+              data-testid="passphrase-button-paste"
+              withExtraBottomSpace=${!isCreateOrEditWithValidRange}
+              onClick=${handlePasteFromClipboard}
+            >
               <${PasteIcon} color=${colors.primary400?.mode1} />
               <${CopyPasteText}>${t('Paste from clipboard')}<//>
-            `
-          : html`
-              <${CopyIcon} color=${colors.primary400?.mode1} />
-              <${CopyPasteText}>${t('Copy')}<//>
-            `}
-      <//>
+            <//>
+          `
+        : html`
+            <div style=${{ display: 'flex', justifyContent: 'center' }}>
+              <${CopyButton}
+                value=${value}
+                testId="passphrase-button-copy"
+                text=${t('Copy')}
+                color=${colors.primary400?.mode1}
+                withExtraBottomSpace=${!isCreateOrEditWithValidRange}
+              />
+            </div>
+          `}
       ${isCreateOrEditWithValidRange &&
       html`<${PassPhraseSettings}
         testId="passphrase-settings"

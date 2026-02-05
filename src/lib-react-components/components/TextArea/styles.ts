@@ -1,4 +1,3 @@
-// styles.ts
 import styled, { css } from 'styled-components'
 
 interface TextAreaStyledProps {
@@ -19,7 +18,8 @@ const textareaBaseStyles = css<TextAreaStyledProps>`
   color: ${({ theme }) => theme.colors.white.mode1};
   border: 1px solid ${({ theme }) => theme.colors.grey100.mode1};
   border-radius: 10px;
-  padding-right: ${({ hasAdditionalItems }) => (hasAdditionalItems ? '45px' : '10px')};
+  padding: 8px 10px;
+  padding-right: ${({ hasAdditionalItems }) => (hasAdditionalItems ? '40px' : '10px')};
 
   &::placeholder {
     color: ${({ theme }) => theme.colors.grey100.mode1};
@@ -41,7 +41,6 @@ export const TextAreaComponent = styled.textarea.withConfig({
 }) <TextAreaStyledProps>`
   ${textareaBaseStyles}
   height: 233px;
-  padding: 8px 10px;
   font-size: 16px;
 `
 
@@ -51,6 +50,7 @@ export const ReportTextAreaComponent = styled.textarea.withConfig({
   ${textareaBaseStyles}
   height: 70px;
   padding: 11px 12px;
+  padding-right: ${({ hasAdditionalItems }) => (hasAdditionalItems ? '50px' : '12px')};
   font-size: 12px;
   font-weight: 600;
 
@@ -78,7 +78,7 @@ export const AdditionalItemsWrapper = styled.div`
   right: 10px;
   display: flex;
   justify-content: flex-end;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   flex-shrink: 0;
   z-index: 2;
