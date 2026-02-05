@@ -27,6 +27,12 @@ interface Matchers<R = void> {
   toBeUndefined(): R
   toContain(expected: unknown): R
   toHaveLength(expected: number): R
+  toBeInTheDocument(): R
+  toHaveBeenCalledTimes(expected: number): R
+  toHaveBeenCalledWith(...args: unknown[]): R
+  toHaveBeenCalled(): R
+  toHaveAttribute(attr: string, value?: unknown): R
+  not: Matchers<R>
 }
 
 declare function expect<T = unknown>(actual: T): Matchers<void>
