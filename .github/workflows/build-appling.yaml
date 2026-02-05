@@ -74,7 +74,7 @@ jobs:
       TEST_GOOGLE_FORM_MAPPING_DEVICE_MODEL: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_DEVICE_MODEL }}
       TEST_GOOGLE_FORM_MAPPING_MESSAGE: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_MESSAGE }}
       TEST_GOOGLE_FORM_MAPPING_APP_VERSION: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_APP_VERSION }}
-      APP_FILE: ${{ github.ref == 'refs/heads/main' && 'app' || github.ref == 'refs/heads/staging' && 'app.staging' || 'app.dev') }}.cjs
+      APP_FILE: ${{ github.ref == 'refs/heads/main' && 'app' || github.ref == 'refs/heads/staging' && 'app.staging' || 'app.dev' }}.cjs
     steps:
       - uses: actions/checkout@v4
 
@@ -155,7 +155,7 @@ jobs:
       TEST_GOOGLE_FORM_MAPPING_DEVICE_MODEL: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_DEVICE_MODEL }}
       TEST_GOOGLE_FORM_MAPPING_MESSAGE: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_MESSAGE }}
       TEST_GOOGLE_FORM_MAPPING_APP_VERSION: ${{ secrets.TEST_GOOGLE_FORM_MAPPING_APP_VERSION }}
-      APP_FILE: ${{ github.ref == 'refs/heads/main' && 'app' || github.ref == 'refs/heads/staging' && 'app.staging' || 'app.dev') }}.cjs
+      APP_FILE: ${{ github.ref == 'refs/heads/main' && 'app' || github.ref == 'refs/heads/staging' && 'app.staging' || 'app.dev' }}.cjs
     steps:
       - uses: actions/checkout@v4
 
