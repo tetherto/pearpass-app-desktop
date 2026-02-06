@@ -400,7 +400,7 @@ export const CreateOrEditLoginModalContent = ({
 
         <${FormGroup}>
           <${CreateCustomField}
-            testId="createoredit-createcustomfield"
+            testId="createoredit-button-createcustom"
             onCreateCustom=${(type) =>
               addCustomField({ type: type, name: type })}
           />

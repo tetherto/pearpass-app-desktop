@@ -49,7 +49,7 @@ export const PassPhraseDetailsForm = ({ initialRecord, selectedFolder }) => {
   }, [initialValues, setValues])
 
   return html`
-    <${FormWrapper}>
+    <${FormWrapper} data-testid="recoveryphrase-details">
       <${FormGroup}>
         ${!!values?.passPhrase?.length &&
         html`<${PassPhrase} ...${register('passPhrase')} /> `}

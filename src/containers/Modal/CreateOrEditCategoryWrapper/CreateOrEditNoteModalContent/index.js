@@ -177,11 +177,13 @@ export const CreateOrEditNoteModalContent = ({
     <${ModalContent}
       onSubmit=${handleSubmit(onSubmit)}
       onClose=${closeModal}
+      closeButtonDataId="note-close-button"
       headerChildren=${html`
         <${FormModalHeaderWrapper}
           buttons=${html`
             <${ButtonLittle}
               testId="createoredit-button-loadfile"
+              dataId="note-load-file-button"
               startIcon=${ImageIcon}
               onClick=${handleFileLoad}
             >
@@ -189,6 +191,7 @@ export const CreateOrEditNoteModalContent = ({
             <//>
             <${ButtonLittle}
               testId="createoredit-button-save"
+              dataId="note-save-button"
               startIcon=${SaveIcon}
               type="submit"
             >
@@ -217,6 +220,7 @@ export const CreateOrEditNoteModalContent = ({
         <${FormGroup}>
           <${InputField}
             testId="createoredit-input-title"
+            dataId="note-title-input"
             label=${i18n._('Title')}
             placeholder=${i18n._('Insert title')}
             variant="outline"
@@ -227,6 +231,7 @@ export const CreateOrEditNoteModalContent = ({
         <${FormGroup}>
           <${TextArea}
             testId="createoredit-textarea-note"
+            dataId="note-content-textarea"
             ...${register('note')}
             placeholder=${i18n._('Write a note...')}
           />
@@ -270,7 +275,7 @@ export const CreateOrEditNoteModalContent = ({
 
         <${FormGroup}>
           <${CreateCustomField}
-            testId="createoredit-createcustomfield"
+            testId="createoredit-button-createcustom"
             onCreateCustom=${(type) => addItem({ type: type, name: type })}
           />
         <//>

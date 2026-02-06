@@ -22,7 +22,7 @@ class CreateOrEditPage {
   }
 
   get createOrEditCustomInputField() {
-    return this.root.getByTestId(`createoredit-createcustomfield`)
+    return this.root.getByTestId(`createoredit-button-createcustom`)
   }
 
   get createCustomNote() {

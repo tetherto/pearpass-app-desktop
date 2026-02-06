@@ -8,12 +8,14 @@ import { ButtonRoundIcon, XIcon } from '../../../lib-react-components'
  *  onClose: () => void
  *  children: import('react').ReactNode
  *  showCloseButton?: boolean
+ *  closeButtonDataId?: string
  * }} props
  */
 export const ModalHeader = ({
   onClose,
   children,
-  showCloseButton = true
+  showCloseButton = true,
+  closeButtonDataId
 }) => html`
   <${Header}>
     <${HeaderChildrenWrapper}> ${children} <//>
@@ -22,7 +24,8 @@ export const ModalHeader = ({
     html`<${ButtonRoundIcon}
       onClick=${onClose}
       startIcon=${XIcon}
-      data-testid="modalheader-button-close"
+      testId="modalheader-button-close"
+      dataId=${closeButtonDataId}
     />`}
   <//>
 `

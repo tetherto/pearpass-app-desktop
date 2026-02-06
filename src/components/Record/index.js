@@ -35,7 +35,8 @@ import {
  *  isSelected: boolean,
  *  onClick: () => void
  *  onSelect: () => void,
- *  testId?: string
+ *  testId?: string,
+ *  dataId?: string
  * }} props
  */
 export const Record = ({
@@ -43,7 +44,8 @@ export const Record = ({
   isSelected = false,
   onClick,
   onSelect,
-  testId
+  testId,
+  dataId
 }) => {
   const [isOpen, setIsOpen] = useState()
 
@@ -71,6 +73,7 @@ export const Record = ({
       isSelected=${isSelected}
       onClick=${onClick}
       data-testid=${testId}
+      data-id=${dataId}
     >
       <${RecordInformation}>
         <${RecordAvatar}

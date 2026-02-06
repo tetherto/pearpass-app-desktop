@@ -12,6 +12,7 @@ import { ModalHeader } from '../ModalHeader'
  *  showCloseButton?: boolean
  *  borderColor?: string
  *  borderRadius?: string
+ *  closeButtonDataId?: string
  * }} props
  */
 export const ModalContent = ({
@@ -21,7 +22,8 @@ export const ModalContent = ({
   children,
   showCloseButton = true,
   borderColor,
-  borderRadius
+  borderRadius,
+  closeButtonDataId
 }) => html`
   <${Wrapper} $borderColor=${borderColor} $borderRadius=${borderRadius}>
     <${onSubmit ? 'form' : 'div'}
@@ -30,7 +32,11 @@ export const ModalContent = ({
         onSubmit?.()
       }}
     >
-      <${ModalHeader} onClose=${onClose} showCloseButton=${showCloseButton}>
+      <${ModalHeader}
+        onClose=${onClose}
+        showCloseButton=${showCloseButton}
+        closeButtonDataId=${closeButtonDataId}
+      >
         ${headerChildren}
       <//>
 

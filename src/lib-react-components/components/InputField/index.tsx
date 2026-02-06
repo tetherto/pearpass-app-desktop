@@ -34,6 +34,7 @@ interface Props {
   overlay?: React.ReactNode
   autoFocus?: boolean
   testId?: string
+  dataId?: string
   onPaste?: (e: React.ClipboardEvent<HTMLInputElement>) => void
 }
 
@@ -54,6 +55,7 @@ const InputField = (props: Props): React.ReactElement => {
     overlay,
     autoFocus,
     testId = 'input-field',
+    dataId,
     onPaste
   } = props
 
@@ -100,6 +102,7 @@ const InputField = (props: Props): React.ReactElement => {
           <InputAreaWrapper>
             <Input
               data-testid={testId}
+              data-id={dataId}
               ref={inputRef}
               value={value}
               onChange={handleChange}

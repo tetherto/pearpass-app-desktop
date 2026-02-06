@@ -9,7 +9,8 @@ import { Button } from './styles'
  *  startIcon: import('react').ElementType
  *  onClick: () => void
  *  iconSize?: string,
- *  testId?: string
+ *  testId?: string,
+ *  dataId?: string
  * }} props
  */
 export const ButtonRoundIcon = ({
@@ -17,9 +18,15 @@ export const ButtonRoundIcon = ({
   startIcon,
   onClick,
   iconSize,
-  testId = 'button-round-icon'
+  testId = 'button-round-icon',
+  dataId
 }) => html`
-  <${Button} type="button" onClick=${onClick} data-testid=${testId}>
+  <${Button}
+    type="button"
+    onClick=${onClick}
+    data-testid=${testId}
+    data-id=${dataId}
+  >
     ${startIcon &&
     html`<${startIcon}
       color=${colors.primary400.mode1}

@@ -19,6 +19,7 @@ interface Props {
   onClick?: (value: string) => void
   variant?: Variant
   testId?: string
+  dataId?: string
   additionalItems?: React.ReactNode
 }
 
@@ -30,6 +31,7 @@ export const TextArea = ({
   onClick,
   variant = 'default',
   testId = 'text-area',
+  dataId,
   additionalItems
 }: Props) => {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -49,9 +51,10 @@ export const TextArea = ({
   const TextAreaEl = variant === 'report' ? ReportTextAreaComponent : TextAreaComponent
 
   return html`
-    <${Wrapper} data-testid=${testId} onClick=${handleClick}>
+    <${Wrapper} data-id=${dataId} onClick=${handleClick}>
       <${TextAreaWrapper}>
         <${TextAreaEl}
+          data-testid=${testId}
           value=${value}
           onChange=${handleChange}
           placeholder=${placeholder}
