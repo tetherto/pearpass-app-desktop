@@ -138,6 +138,15 @@ declare module 'pear-apps-utils-qr' {
   export const generateQRCodeSVG: any
 }
 
+declare module 'pear-apps-utils-validator' {
+  export const Validator: any
+}
+
+declare module 'pearpass-lib-vault/src/utils/buffer' {
+  export const clearBuffer: (buffer: any) => void
+  export const stringToBuffer: (value: string) => any
+}
+
 declare module 'pearpass-lib-constants' {
   export const PROTECTED_VAULT_ENABLED: boolean
   export const BE_AUTO_LOCK_ENABLED: boolean
