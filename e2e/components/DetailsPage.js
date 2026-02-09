@@ -113,6 +113,10 @@ class DetailsPage {
         return this.recordListContainer.getByTestId(`avatar-favorite-${initials}`).last()
     }
 
+    getRecoveryPhraseWordsDetails(word) {
+        return this.root.getByTestId(`passphrase-${word}`)
+    }
+
     // ==== ACTIONS ====
 
     async clickRemoveFromFavoritesButton() {

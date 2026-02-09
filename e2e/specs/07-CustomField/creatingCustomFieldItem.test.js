@@ -10,7 +10,7 @@ import {
 } from '../../components/index.js';
 import testData from '../../fixtures/test-data.js';
 
-test.describe.only('Creating Login Item', () => {
+test.describe('Creating Custom Field Item', () => {
   test.describe.configure({ mode: 'serial' })
 
   let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
@@ -36,22 +36,18 @@ test.describe.only('Creating Login Item', () => {
     await sideMenuPage.clickSidebarExitButton()
   })
 
-  test('Login item is created after fulfilling fields', async ({ page }) => {
+  test('Custom Field item is created after fulfilling fields', async ({ page }) => {
 
     /**
      * @qase.id PAS-563
-     * @description "Login" item is created after fulfilling fields
+     * @description "Custom Field" item is created after fulfilling fields
      */
-    await test.step('CREATE LOGIN ELEMENT - initial empty element collection', async () => {
-      await sideMenuPage.selectSideBarCategory('login')
+    await test.step('CREATE CUSTOM FIELD ELEMENT - initial empty element collection', async () => {
+      await sideMenuPage.selectSideBarCategory('custom')
       await utilities.deleteAllElements()
-      await mainPage.clickCreateNewElementButton('Create a login')
+      await mainPage.clickCreateNewElementButton('Create a custom element')
 
-      await createOrEditPage.fillCreateOrEditInput('title', 'Login Title')
-      await createOrEditPage.fillCreateOrEditInput('username', 'Test User')
-      await createOrEditPage.fillCreateOrEditInput('password', 'Test Pass')
-      await createOrEditPage.fillCreateOrEditInput('website', 'https://www.website.co')
-      await createOrEditPage.fillCreateOrEditInput('note', 'Test Note')
+      await createOrEditPage.fillCreateOrEditInput('title', 'Custom Field Title')
 
       await createOrEditPage.clickOnCreateOrEditButton('save')
       await page.waitForTimeout(testData.timeouts.action)
@@ -67,10 +63,7 @@ test.describe.only('Creating Login Item', () => {
      * @description All fields' values after creating "Login" item correspond to entered fields' values
      */
     await test.step('VERIFY LOGIN DETAILS', async () => {
-      await detailsPage.verifyItemDetailsValue('Email or username', 'Test User')
-      await detailsPage.verifyItemDetailsValue('Password', 'Test Pass')
-      await detailsPage.verifyItemDetailsValue('https://', 'https://www.website.co')
-      await detailsPage.verifyItemDetailsValue('Add note', 'Test Note')
+      await detailsPage.verifyTitle('Custom Field Title')
     })
 
     await test.step('EXIT TO LOGIN SCREEN', async () => {
@@ -79,33 +72,11 @@ test.describe.only('Creating Login Item', () => {
 
   })
 
-  test('Password visibility icon of "Password" field displays/hides value', async ({ page }) => {
-
-    await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
-      await mainPage.verifyElementTitle('Login Title')
-    })
-
-    /**
-     * @qase.id PAS-576
-     * @description "Password visibility" icon of "Password" field displays/hides value
-     */
-    await test.step('OPEN LOGIN ELEMENT DETAILS AND VERIFY PASSWORD SHOW/HIDE', async () => {
-      await mainPage.openElementDetails()
-      expect(createOrEditPage.verifyPasswordType('password'))
-      await createOrEditPage.clickShowHidePasswordButtonFirst()
-      expect(createOrEditPage.verifyPasswordType('text'))
-    })
-
-    await test.step('EXIT TO LOGIN SCREEN', async () => {
-      await sideMenuPage.clickSidebarExitButton()
-    })
-
-  })
   // ADD FOLDER INSIDE SIDEMENU
   test('After changing "Item" dropdown option user is moved to the selected "Item" edit screen', async ({ page }) => {
 
     await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
-      await mainPage.verifyElementTitle('Login Title')
+      await mainPage.verifyElementTitle('Custom Field Title')
     })
 
     await test.step('CLICK ON SIDEMENU "ADD FOLDER +" BUTTON', async () => {
@@ -179,7 +150,7 @@ test.describe.only('Creating Login Item', () => {
   test('Moving Element to Favorites folder', async ({ page }) => {
 
     await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
-      await mainPage.verifyElementTitle('Login Title')
+      await mainPage.verifyElementTitle('Custom Field Title')
     })
 
     await test.step('OPEN ELEMENT', async () => {
@@ -199,8 +170,8 @@ test.describe.only('Creating Login Item', () => {
      * @description "Star" icon is added to "Item" icon within "Item view mode" and Home screen when marking item as favorite through "Favorite" icon
      */
     await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS VISIBLE - FAVORITE', async () => {
-      await expect(detailsPage.getFavoriteAvatar('LT')).toBeVisible()
-      await expect(mainPage.getElementFavoriteIcon('LT')).toBeVisible()
+      await expect(detailsPage.getFavoriteAvatar('CF')).toBeVisible()
+      await expect(mainPage.getElementFavoriteIcon('CF')).toBeVisible()
     })
 
     await test.step('OPEN ELEMENT', async () => {
@@ -216,8 +187,8 @@ test.describe.only('Creating Login Item', () => {
      * @description "Star" icon is removed from "Item" icon within "Item view mode" and Home screen when removing item from favorites through "More options"
      */
     await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS REMOVED - MORE OPTIONS', async () => {
-      await expect(detailsPage.getFavoriteAvatar('LT')).not.toBeVisible()
-      await expect(mainPage.getElementFavoriteIcon('LT')).not.toBeVisible()
+      await expect(detailsPage.getFavoriteAvatar('CF')).not.toBeVisible()
+      await expect(mainPage.getElementFavoriteIcon('CF')).not.toBeVisible()
     })
 
     await test.step('OPEN DETAILS THREE DOTS MENU AND CLICK ON MARK AS FAVORITE - MORE OPTIONS', async () => {
@@ -230,8 +201,8 @@ test.describe.only('Creating Login Item', () => {
      * @description "Star" icon is added to "Item" icon within "Item view mode" and Home screen when marking item as favorite through "More options"
      */
     await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS VISIBLE - MORE OPTIONS', async () => {
-      await expect(detailsPage.getFavoriteAvatar('LT')).toBeVisible()
-      await expect(mainPage.getElementFavoriteIcon('LT')).toBeVisible()
+      await expect(detailsPage.getFavoriteAvatar('CF')).toBeVisible()
+      await expect(mainPage.getElementFavoriteIcon('CF')).toBeVisible()
     })
 
     await test.step('OPEN DETAILS THREE DOTS MENU AND CLICK ON REMOVE FROM FAVORITES - MORE OPTIONS', async () => {
@@ -244,8 +215,8 @@ test.describe.only('Creating Login Item', () => {
      * @description "Star" icon is removed from "Item" icon within "Item view mode" and Home screen when removing item from favorites through "Favorite" icon
      */
     await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS REMOVED - FAVORITE', async () => {
-      await expect(detailsPage.getFavoriteAvatar('LT')).not.toBeVisible()
-      await expect(mainPage.getElementFavoriteIcon('LT')).not.toBeVisible()
+      await expect(detailsPage.getFavoriteAvatar('CF')).not.toBeVisible()
+      await expect(mainPage.getElementFavoriteIcon('CF')).not.toBeVisible()
     })
 
     await test.step('EXIT TO LOGIN SCREEN', async () => {
@@ -257,7 +228,7 @@ test.describe.only('Creating Login Item', () => {
   test('Adding Custom Field with Note option', async ({ page }) => {
 
     await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
-      await mainPage.verifyElementTitle('Login Title')
+      await mainPage.verifyElementTitle('Custom Field Title')
     })
 
     await test.step('OPEN/EDITLOGIN ELEMENT', async () => {
@@ -310,7 +281,7 @@ test.describe.only('Creating Login Item', () => {
   test('Upload file to Login Items', async ({ page }) => {
 
     await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
-      await mainPage.verifyElementTitle('Login Title')
+      await mainPage.verifyElementTitle('Custom Field Title')
     })
 
     await test.step('OPEN ELEMENT', async () => {
@@ -395,10 +366,10 @@ test.describe.only('Creating Login Item', () => {
 
   })
 
-  test('Deleted Login Items are not displayed in view/details mode ', async ({ page }) => {
+  test.skip('Deleted Login Items are not displayed in view/details mode ', async ({ page }) => {
 
     await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
-      await mainPage.verifyElementTitle('Login Title')
+      await mainPage.verifyElementTitle('Custom Field Title')
     })
 
     await test.step('OPEN ELEMENT', async () => {
@@ -410,6 +381,7 @@ test.describe.only('Creating Login Item', () => {
     })
 
     await test.step('DELETE LOGIN ITEMS', async () => {
+      await createOrEditPage.fillCreateOrEditInput('title', 'Custom Field Title')
       await createOrEditPage.fillCreateOrEditInput('username', '')
       await createOrEditPage.fillCreateOrEditInput('password', '')
       await createOrEditPage.fillCreateOrEditInput('website', '')

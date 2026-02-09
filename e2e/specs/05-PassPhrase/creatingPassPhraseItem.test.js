@@ -51,9 +51,10 @@ test.describe('Creating PassPhrase Item', () => {
 
       await createOrEditPage.fillCreateOrEditInput('title', 'PassPhrase Title')
 
-      await clipboard.write(testData.passphrase.text12)
+      await clipboard.write('word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12')
       await createOrEditPage.clickOnPasteFromClipboard()
 
+      // TODO: Un comment when Id is added
       // await createOrEditPage.fillCreateOrEditInput('note', 'Test Note')
 
       await createOrEditPage.clickOnCreateOrEditButton('save')
@@ -62,6 +63,7 @@ test.describe('Creating PassPhrase Item', () => {
 
     await test.step('OPEN ELEMENT DETAILS', async () => {
       await mainPage.openElementDetails()
+      await page.waitForTimeout(testData.timeouts.action)
     })
 
     /**
@@ -69,9 +71,19 @@ test.describe('Creating PassPhrase Item', () => {
      * @description All fields' values after creating "PassPhrase" item correspond to entered fields' values
      */
     await test.step('VERIFY PASSPHRASE DETAILS', async () => {
-      await detailsPage.verifyTitle('PassPhrase Title');
-      // await detailsPage.verifyItemDetailsValue('Password', 'WiFi Pass')
-      // await detailsPage.verifyItemDetailsValue('Add note', 'WiFi Note')
+      await detailsPage.verifyTitle('PassPhrase Title')
+      await page.waitForTimeout(testData.timeouts.action)
+
+      await detailsPage.verifyTitle('PassPhrase Title')
+
+      // await expect(page.getByTestId('passphrase-word-1')).toBeVisible()
+      // await expect(page.getByTestId('passphrase-word-1')).toHaveText('word1')
+
+      // const passphraseWord = page.getByTestId('passphrase-word-1')
+      // await expect(passphraseWord).toBeVisible({ timeout: 10000 }) // FAIL HERE!!!
+
+      // Optional: check that the first word is correct
+      // await expect(passphraseWord.locator('span').nth(1)).toHaveText('word1')
     })
 
     await test.step('EXIT TO LOGIN SCREEN', async () => {
@@ -234,57 +246,59 @@ test.describe('Creating PassPhrase Item', () => {
 
   })
 
-  // test('Adding Custom Field with Note option', async ({ page }) => {
+  // TODO: Un comment when Id is added
 
-  //   await test.step('VERIFY PASSPHRASE ELEMENT CREATED', async () => {
-  //     await mainPage.verifyElementTitle('PassPhrase Title')
-  //   })
+  test('Adding Custom Field with Note option', async ({ page }) => {
 
-  //   await test.step('OPEN/EDITLOGIN ELEMENT', async () => {
-  //     await mainPage.openElementDetails()
-  //     await detailsPage.editElement()
-  //   })
+    await test.step('VERIFY PASSPHRASE ELEMENT CREATED', async () => {
+      await mainPage.verifyElementTitle('PassPhrase Title')
+    })
 
-  //   /**
-  //    * @qase.id PAS-998
-  //    * @description It is possible to add fields
-  //    */
-  //   await test.step('OPEN CREATE CUSTOM MENU', async () => {
-  //     await createOrEditPage.clickCreateCustomItem()
-  //   })
+    await test.step('OPEN/EDITLOGIN ELEMENT', async () => {
+      await mainPage.openElementDetails()
+      await detailsPage.editElement()
+    })
 
-  //   await test.step('CLICK ON NOTE OPTION FROM CREATE CUSTOM MENU', async () => {
-  //     await createOrEditPage.clickCustomItemOptionNote();
-  //   })
+    /**
+     * @qase.id PAS-998
+     * @description It is possible to add fields
+     */
+    await test.step('OPEN CREATE CUSTOM MENU', async () => {
+      await createOrEditPage.clickCreateCustomItem()
+    })
 
-  //   await test.step('VERIFY THERE IS ONE NEW CUSTOM NOTES ITEMS INSIDE PASSPHRASE ELEMENT', async () => {
-  //     await expect(createOrEditPage.customNoteInput).toHaveCount(1);
-  //   })
+    await test.step('CLICK ON NOTE OPTION FROM CREATE CUSTOM MENU', async () => {
+      await createOrEditPage.clickCustomItemOptionNote();
+    })
 
-  //   /**
-  //    * @qase.id PAS-999
-  //    * @description It is possible to delete additional fields
-  //    */
-  //   await test.step('DELETE NEW CUSTOM NOTE ITEM', async () => {
-  //     await createOrEditPage.deleteCustomNote();
-  //   })
+    await test.step('VERIFY THERE IS ONE NEW CUSTOM NOTES ITEMS INSIDE PASSPHRASE ELEMENT', async () => {
+      await expect(createOrEditPage.customNoteInput).toHaveCount(1);
+    })
 
-  //   await test.step('VERIFY THERE IS NO CUSTOM NOTES ITEMS INSIDE PASSPHRASE ELEMENT', async () => {
-  //     await expect(createOrEditPage.customNoteInput).toHaveCount(0);
-  //   })
+    /**
+     * @qase.id PAS-999
+     * @description It is possible to delete additional fields
+     */
+    await test.step('DELETE NEW CUSTOM NOTE ITEM', async () => {
+      await createOrEditPage.deleteCustomNote();
+    })
 
-  //   /**
-  //    * @qase.id PAS-1001
-  //    * @description It is possible to close the screen by clicking on the "Cross" icon
-  //    */
-  //   await test.step('CLICK CLOSE (X) BUTTON', async () => {
-  //     await createOrEditPage.clickElementItemCloseButton()
-  //   })
+    await test.step('VERIFY THERE IS NO CUSTOM NOTES ITEMS INSIDE PASSPHRASE ELEMENT', async () => {
+      await expect(createOrEditPage.customNoteInput).toHaveCount(0);
+    })
 
-  //   await test.step('EXIT TO LOGIN SCREEN', async () => {
-  //     await sideMenuPage.clickSidebarExitButton()
-  //   })
+    /**
+     * @qase.id PAS-1001
+     * @description It is possible to close the screen by clicking on the "Cross" icon
+     */
+    await test.step('CLICK CLOSE (X) BUTTON', async () => {
+      await createOrEditPage.clickElementItemCloseButton()
+    })
 
-  // })
+    await test.step('EXIT TO LOGIN SCREEN', async () => {
+      await sideMenuPage.clickSidebarExitButton()
+    })
+
+  })
 
 })

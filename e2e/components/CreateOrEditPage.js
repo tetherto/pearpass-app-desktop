@@ -11,11 +11,15 @@ class CreateOrEditPage {
 
   // ==== LOCATORS ====
 
-  // createoredit-textarea-note
+  // createoredit-button-createcustomfield  => createoredit-createcustomfield
 
-  getNoteTextArea(field) {
-    return this.root.getByTestId(`createoredit-textarea-${field}`)
+  get noteTextArea() {
+    return this.root.getByTestId('createoredit-textarea-note')
   }
+
+  // getNoteTextArea(field) {
+  //   return this.root.getByTestId(`createoredit-textarea-${field}`)
+  // }
 
   get insertPasswordButton() {
     return this.root.getByTestId('passwordGenerator-button-insertpassword').first()
@@ -38,7 +42,7 @@ class CreateOrEditPage {
   }
 
   get customNoteInput() {
-    return this.root.getByTestId('customfields-input-note')
+    return this.root.getByTestId('customfields-input-note-0')
   }
 
   get deleteCustomNoteItem() {
@@ -198,10 +202,10 @@ class CreateOrEditPage {
     await input.fill(value)
   }
 
-  async fillCreateOrEditTextArea(field, value) {
-    const text_area = this.getNoteTextArea(field)
+  async fillCreateOrEditTextArea(value) {
+    const text_area = this.noteTextArea
     await text_area.waitFor({ state: 'visible' }) // wait before interaction
-    await text_area.fill(value)
+    await text_area.type(value)
   }
 
   async countItems(labelOrPlaceholder, expectedCount) {
