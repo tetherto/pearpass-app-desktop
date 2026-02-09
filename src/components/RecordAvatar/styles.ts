@@ -1,26 +1,49 @@
 import styled from 'styled-components'
 
+export type AvatarSize = 'md' | 'sm'
+
 const AVATAR_CONTAINER_SIZE = '30px'
 
-export const AvatarContainer = styled.div`
+interface AvatarContainerProps {
+  size?: AvatarSize
+}
+
+interface AvatarAltProps {
+  color: string
+  size?: AvatarSize
+}
+
+const getAvatarHeight = (size?: AvatarSize): string => {
+  return size === 'sm' ? '21px' : AVATAR_CONTAINER_SIZE
+}
+
+const getAvatarBorderRadius = (size?: AvatarSize): string => {
+  return size === 'sm' ? '7px' : '10px'
+}
+
+const getAvatarFontSize = (size?: AvatarSize): string => {
+  return size === 'sm' ? '12px' : '16px'
+}
+
+export const AvatarContainer = styled.div<AvatarContainerProps>`
   position: relative;
   display: flex;
-  height: ${({ size }) => (size === 'sm' ? '21px' : AVATAR_CONTAINER_SIZE)};
+  height: ${({ size }) => getAvatarHeight(size)};
   aspect-ratio: 1/1;
   padding: 2px;
   justify-content: center;
   align-items: center;
-  border-radius: ${({ size }) => (size === 'sm' ? '7px' : '10px')};
+  border-radius: ${({ size }) => getAvatarBorderRadius(size)};
   background: ${({ theme }) => theme.colors.secondary400.mode1};
   min-width: 0;
   flex-shrink: 0;
 `
 
-export const AvatarAlt = styled.div`
+export const AvatarAlt = styled.div<AvatarAltProps>`
   color: ${({ color }) => color};
   text-align: center;
   font-family: 'Inter';
-  font-size: ${({ size }) => (size === 'sm' ? '12px' : '16px')};
+  font-size: ${({ size }) => getAvatarFontSize(size)};
   font-style: normal;
   font-weight: 700;
   line-height: normal;
