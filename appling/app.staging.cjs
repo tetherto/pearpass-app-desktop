@@ -2,4 +2,4 @@ const { install } = require('./lib/install')
 
 // NOTE: Change the key when dev key changes
 
-install('8ue4k8ooakpmwukzutkno5ca9wy3yono6mp4q69bph8tt11pfthy')
+install('8k5z91c8u7nycsjow5m9ppmw75jznm66oe13mwt94cbohuyksdeo')
