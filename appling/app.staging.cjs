@@ -2,4 +2,4 @@ const { install } = require('./lib/install')
 
 // NOTE: Change the key when staging key changes
 
-install('r8i31n6aqspee931yoqk5ux1qte8pb5cfsgu91rs3foyrj61g8uo')
+install('8k5z91c8u7nycsjow5m9ppmw75jznm66oe13mwt94cbohuyksdeo')
