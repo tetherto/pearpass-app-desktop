@@ -8,20 +8,30 @@ import { useModal } from '../../../context/ModalContext'
 import { useRouter } from '../../../context/RouterContext'
 import { getAutoLockTimeoutMs } from '../../../hooks/useAutoLockPreferences'
 import { logger } from '../../../utils/logger'
+const DEDUPE_WINDOW_MS = 50
 
 /**
  * @returns {void}
  */
 export function useInactivity() {
+  const lastResetAtRef = useRef(0)
+
   const { setIsLoading } = useLoadingContext()
   const { navigate } = useRouter()
   const { refetch: refetchUser } = useUserData()
   const { closeModal } = useModal()
-
+  const resetTimerRef = useRef(() => {})
   const { resetState } = useVaults()
   const timerRef = useRef(null)
 
-  const resetTimer = () => {
+  resetTimerRef.current = () => {
+    const now = Date.now()
+
+    if (now - lastResetAtRef.current < DEDUPE_WINDOW_MS) {
+      return
+    }
+    lastResetAtRef.current = now
+
     if (timerRef.current) {
       clearTimeout(timerRef.current)
     }
@@ -53,6 +63,7 @@ export function useInactivity() {
       logger.info('INACTIVITY-TIMER', 'Inactivity timer reset')
     }, timeoutMs)
   }
+  const resetTimer = () => resetTimerRef.current()
 
   const activityEvents = [
     'mousemove',
@@ -61,6 +72,13 @@ export function useInactivity() {
     'touchstart',
     'scroll'
   ]
+
+  useEffect(() => {
+    window.addEventListener('reset-timer', resetTimer)
+    return () => {
+      window.removeEventListener('reset-timer', resetTimer)
+    }
+  }, [])
 
   useEffect(() => {
     // Handler for IPC activity

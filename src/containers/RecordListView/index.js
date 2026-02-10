@@ -243,6 +243,11 @@ export const RecordListView = ({
 
               <${Record}
                 testId="recordList-record-container"
+                dataId=${record.type === 'note'
+                  ? 'note-list-item'
+                  : record.type === 'custom'
+                    ? 'custom-list-item'
+                    : undefined}
                 record=${record}
                 isSelected=${isSelected}
                 onSelect=${() => handleSelect(record, isSelected)}

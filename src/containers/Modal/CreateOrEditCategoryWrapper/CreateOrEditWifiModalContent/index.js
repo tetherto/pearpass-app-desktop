@@ -302,7 +302,7 @@ export const CreateOrEditWifiModalContent = ({
 
         <${FormGroup}>
           <${CreateCustomField}
-            testId="createoredit-createcustomfield"
+            testId="createoredit-button-createcustom"
             onCreateCustom=${(type) => addItem({ type: type, name: type })}
           />
         <//>

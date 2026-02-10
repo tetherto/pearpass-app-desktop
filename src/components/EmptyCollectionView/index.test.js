@@ -67,4 +67,43 @@ describe('EmptyCollectionView component', () => {
       getByText('Create a new element or pass to another collection')
     ).toBeInTheDocument()
   })
+
+  describe('when isSearchActive is true', () => {
+    const renderSearchComponent = () =>
+      render(
+        <ThemeProvider>
+          <EmptyCollectionView
+            selectedFolder="test-folder"
+            isFavoritesView
+            isSearchActive
+          />
+        </ThemeProvider>
+      )
+
+    test('renders "No result found." message', () => {
+      const { getByText } = renderSearchComponent()
+      expect(getByText('No result found.')).toBeInTheDocument()
+    })
+
+    test('does not render empty collection message', () => {
+      const { queryByText } = renderSearchComponent()
+      expect(queryByText('This collection is empty.')).not.toBeInTheDocument()
+    })
+
+    test('does not render help text', () => {
+      const { queryByText } = renderSearchComponent()
+      expect(
+        queryByText('Create a new element or pass to another collection')
+      ).not.toBeInTheDocument()
+    })
+
+    test('does not render create buttons', () => {
+      const { queryByText } = renderSearchComponent()
+      expect(queryByText('Create a login')).not.toBeInTheDocument()
+      expect(queryByText('Create an identity')).not.toBeInTheDocument()
+      expect(queryByText('Create a credit card')).not.toBeInTheDocument()
+      expect(queryByText('Create a note')).not.toBeInTheDocument()
+      expect(queryByText('Create a custom element')).not.toBeInTheDocument()
+    })
+  })
 })

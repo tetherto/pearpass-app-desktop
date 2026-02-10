@@ -69,7 +69,7 @@ describe('usePearUpdate', () => {
 
     expect(setModalMock).not.toHaveBeenCalled()
     expect(Pear.restart).not.toHaveBeenCalled()
-    expect(Pear.reload).not.toHaveBeenCalled()
+    expect(Pear.reload).toHaveBeenCalled()
   })
 
   it('triggers restart when update handler is called', async () => {

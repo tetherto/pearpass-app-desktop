@@ -17,14 +17,6 @@ exports[`VaultsTab renders Your Vault section 1`] = `
           Edit
         </button>
       </div>
-      <div>
-        <p>
-          Vault 2
-        </p>
-        <button>
-          Edit
-        </button>
-      </div>
     </div>
   </div>
 </div>

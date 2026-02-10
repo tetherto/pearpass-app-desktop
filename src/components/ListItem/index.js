@@ -56,7 +56,7 @@ export const ListItem = ({
       ${onEditClick &&
       html`<span onClick=${onEditClick}> <${BrushIcon} /></span>`}
       ${onDeleteClick &&
-      html`<span onClick=${onShareClick}><${DeleteIcon} /></span>`}
+      html`<span onClick=${onDeleteClick}><${DeleteIcon} /></span>`}
     <//>
   <//>
 `

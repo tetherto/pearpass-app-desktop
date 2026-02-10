@@ -150,96 +150,163 @@ cd /d "${bridgePath}"
 }
 
 /**
- * Returns platform-specific manifest file paths and (on Windows) registry keys
- * @returns {{ platform: string, manifestPaths: string[], registryKeys: string[] }}
+ * Returns platform-specific browser entries for native messaging manifest installation.
+ * Each entry includes a browserDir for detecting whether the browser is installed.
+ * @returns {{ browsers: Array<{name: string, browserDir: string|null, manifestPath: string, registryKey?: string}> }}
  */
 export const getNativeMessagingLocations = () => {
   const platform = os.platform()
   const home = os.homedir()
   const manifestFile = `${MANIFEST_NAME}.json`
-  let manifestPaths = []
-  let registryKeys = []
+  const browsers = []
 
   switch (platform) {
     case 'darwin':
-      manifestPaths = [
-        path.join(
-          home,
-          'Library',
-          'Application Support',
-          'Google',
-          'Chrome',
-          'NativeMessagingHosts',
-          manifestFile
-        ),
-        path.join(
-          home,
-          'Library',
-          'Application Support',
-          'Microsoft Edge',
-          'NativeMessagingHosts',
-          manifestFile
-        ),
-        path.join(
-          home,
-          'Library',
-          'Application Support',
-          'Chromium',
-          'NativeMessagingHosts',
-          manifestFile
-        )
-      ]
+      browsers.push(
+        {
+          name: 'Google Chrome',
+          browserDir: path.join(
+            home,
+            'Library',
+            'Application Support',
+            'Google',
+            'Chrome'
+          ),
+          manifestPath: path.join(
+            home,
+            'Library',
+            'Application Support',
+            'Google',
+            'Chrome',
+            'NativeMessagingHosts',
+            manifestFile
+          )
+        },
+        {
+          name: 'Microsoft Edge',
+          browserDir: path.join(
+            home,
+            'Library',
+            'Application Support',
+            'Microsoft Edge'
+          ),
+          manifestPath: path.join(
+            home,
+            'Library',
+            'Application Support',
+            'Microsoft Edge',
+            'NativeMessagingHosts',
+            manifestFile
+          )
+        },
+        {
+          name: 'Chromium',
+          browserDir: path.join(
+            home,
+            'Library',
+            'Application Support',
+            'Chromium'
+          ),
+          manifestPath: path.join(
+            home,
+            'Library',
+            'Application Support',
+            'Chromium',
+            'NativeMessagingHosts',
+            manifestFile
+          )
+        }
+      )
       break
 
-    case 'win32':
-      manifestPaths = [
-        path.join(
-          home,
-          'AppData',
-          'Local',
-          'PearPass',
-          'NativeMessaging',
-          manifestFile
-        )
-      ]
-      registryKeys = [
-        `HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\${MANIFEST_NAME}`,
-        `HKCU\\Software\\Microsoft\\Edge\\NativeMessagingHosts\\${MANIFEST_NAME}`,
-        `HKCU\\Software\\Chromium\\NativeMessagingHosts\\${MANIFEST_NAME}`
-      ]
+    case 'win32': {
+      const manifestPath = path.join(
+        home,
+        'AppData',
+        'Local',
+        'PearPass',
+        'NativeMessaging',
+        manifestFile
+      )
+      browsers.push(
+        {
+          name: 'Google Chrome',
+          browserDir: null,
+          manifestPath,
+          registryKey: `HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\${MANIFEST_NAME}`
+        },
+        {
+          name: 'Microsoft Edge',
+          browserDir: null,
+          manifestPath,
+          registryKey: `HKCU\\Software\\Microsoft\\Edge\\NativeMessagingHosts\\${MANIFEST_NAME}`
+        },
+        {
+          name: 'Chromium',
+          browserDir: null,
+          manifestPath,
+          registryKey: `HKCU\\Software\\Chromium\\NativeMessagingHosts\\${MANIFEST_NAME}`
+        }
+      )
       break
+    }
 
     case 'linux':
-      manifestPaths = [
-        path.join(
-          home,
-          '.config',
-          'google-chrome',
-          'NativeMessagingHosts',
-          manifestFile
-        ),
-        path.join(
-          home,
-          '.config',
-          'chromium',
-          'NativeMessagingHosts',
-          manifestFile
-        ),
-        path.join(
-          home,
-          '.config',
-          'microsoft-edge',
-          'NativeMessagingHosts',
-          manifestFile
-        )
-      ]
+      browsers.push(
+        {
+          name: 'Google Chrome',
+          browserDir: path.join(home, '.config', 'google-chrome'),
+          manifestPath: path.join(
+            home,
+            '.config',
+            'google-chrome',
+            'NativeMessagingHosts',
+            manifestFile
+          )
+        },
+        {
+          name: 'Chromium',
+          browserDir: path.join(home, '.config', 'chromium'),
+          manifestPath: path.join(
+            home,
+            '.config',
+            'chromium',
+            'NativeMessagingHosts',
+            manifestFile
+          )
+        },
+        {
+          name: 'Microsoft Edge',
+          browserDir: path.join(home, '.config', 'microsoft-edge'),
+          manifestPath: path.join(
+            home,
+            '.config',
+            'microsoft-edge',
+            'NativeMessagingHosts',
+            manifestFile
+          )
+        },
+        {
+          name: 'Chromium (Snap)',
+          browserDir: path.join(home, 'snap', 'chromium', 'common', 'chromium'),
+          manifestPath: path.join(
+            home,
+            'snap',
+            'chromium',
+            'common',
+            'chromium',
+            'NativeMessagingHosts',
+            manifestFile
+          )
+        }
+      )
       break
 
     default:
       throw new Error(`Unsupported platform: ${platform}`)
   }
 
-  return { platform, manifestPaths, registryKeys }
+  return { browsers }
 }
 
 /**
@@ -249,46 +316,44 @@ export const getNativeMessagingLocations = () => {
  */
 export const cleanupNativeMessaging = async () => {
   try {
-    const { platform, manifestPaths, registryKeys } =
-      getNativeMessagingLocations()
+    const { browsers } = getNativeMessagingLocations()
 
     let removedCount = 0
+    const removedPaths = new Set()
 
-    // Remove manifest files
-    for (const manifestPath of manifestPaths) {
-      try {
-        await fs.unlink(manifestPath)
-        removedCount++
-        logger.info(
-          'NATIVE-MESSAGING-CLEANUP',
-          `Removed manifest file: ${manifestPath}`
-        )
-      } catch (err) {
-        // File might not exist, which is fine
-        if (err.code !== 'ENOENT') {
-          logger.error(
+    for (const browser of browsers) {
+      // Windows shares one manifest path across different browsers
+      if (!removedPaths.has(browser.manifestPath)) {
+        removedPaths.add(browser.manifestPath)
+        try {
+          await fs.unlink(browser.manifestPath)
+          removedCount++
+          logger.info(
             'NATIVE-MESSAGING-CLEANUP',
-            `Failed to remove manifest at ${manifestPath}: ${err.message}`
+            `Removed manifest file: ${browser.manifestPath}`
           )
+        } catch (err) {
+          if (err.code !== 'ENOENT') {
+            logger.error(
+              'NATIVE-MESSAGING-CLEANUP',
+              `Failed to remove manifest at ${browser.manifestPath}: ${err.message}`
+            )
+          }
         }
       }
-    }
 
-    // Windows Registry Cleanup
-    if (platform === 'win32') {
-      for (const key of registryKeys) {
-        const cmd = `reg delete "${key}" /f`
+      if (browser.registryKey) {
+        const cmd = `reg delete "${browser.registryKey}" /f`
         try {
           await execAsync(cmd)
           logger.info(
             'NATIVE-MESSAGING-CLEANUP',
-            `Removed registry key: ${key}`
+            `Removed registry key: ${browser.registryKey}`
           )
         } catch (err) {
-          // Registry key might not exist, which is fine
           logger.error(
             'NATIVE-MESSAGING-CLEANUP',
-            `Failed to remove registry key '${key}': ${err.message}`
+            `Failed to remove registry key '${browser.registryKey}': ${err.message}`
           )
         }
       }
@@ -391,37 +456,54 @@ export const setupNativeMessaging = async () => {
       allowed_origins: [`chrome-extension://${extensionId}/`]
     }
 
-    // Get manifest paths (and registry keys on Windows)
-    const { manifestPaths, registryKeys } = getNativeMessagingLocations()
+    const { browsers } = getNativeMessagingLocations()
+    const installedPaths = []
 
-    // Write manifest to all relevant paths
-    for (const manifestPath of manifestPaths) {
+    for (const browser of browsers) {
+      // Skip browsers not installed on this system
+      if (browser.browserDir) {
+        try {
+          await fs.access(browser.browserDir)
+        } catch {
+          logger.info(
+            'NATIVE-MESSAGING-SETUP',
+            `Skipping ${browser.name}: browser directory not found at ${browser.browserDir}`
+          )
+          continue
+        }
+      }
+
       try {
-        await fs.mkdir(path.dirname(manifestPath), { recursive: true })
-        await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2))
+        await fs.mkdir(path.dirname(browser.manifestPath), { recursive: true })
+        await fs.writeFile(
+          browser.manifestPath,
+          JSON.stringify(manifest, null, 2)
+        )
 
         if (platform !== 'win32') {
-          await fs.chmod(manifestPath, 0o644)
+          await fs.chmod(browser.manifestPath, 0o644)
         }
+
+        installedPaths.push(browser.manifestPath)
+        logger.info(
+          'NATIVE-MESSAGING-SETUP',
+          `Installed manifest for ${browser.name} at ${browser.manifestPath}`
+        )
       } catch (err) {
         logger.error(
           'NATIVE-MESSAGING-SETUP',
-          `Failed to write manifest at ${manifestPath}: ${err.message}`
+          `Failed to write manifest for ${browser.name} at ${browser.manifestPath}: ${err.message}`
         )
       }
-    }
 
-    // Windows Registry Setup
-    if (platform === 'win32') {
-      const manifestPath = manifestPaths[0]
-      for (const key of registryKeys) {
-        const cmd = `reg add "${key}" /ve /d "${manifestPath}" /f`
+      if (browser.registryKey) {
+        const cmd = `reg add "${browser.registryKey}" /ve /d "${browser.manifestPath}" /f`
         try {
           await execAsync(cmd)
         } catch (err) {
           logger.error(
             'NATIVE-MESSAGING-SETUP',
-            `Failed to write registry key '${key}': ${err.message}`
+            `Failed to write registry key '${browser.registryKey}': ${err.message}`
           )
         }
       }
@@ -430,7 +512,7 @@ export const setupNativeMessaging = async () => {
     return {
       success: true,
       message: 'Native messaging host installed successfully',
-      manifestPath: manifestPaths.join(', ')
+      manifestPath: installedPaths.join(', ')
     }
   } catch (error) {
     return {

@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import { html } from 'htm/react'
 import { useForm } from 'pear-apps-lib-ui-react-hooks'
 
+import { CopyButton } from '../../../components/CopyButton'
 import { FormGroup } from '../../../components/FormGroup'
 import { FormWrapper } from '../../../components/FormWrapper'
 import { InputFieldNote } from '../../../components/InputFieldNote'
@@ -48,7 +49,7 @@ export const PassPhraseDetailsForm = ({ initialRecord, selectedFolder }) => {
   }, [initialValues, setValues])
 
   return html`
-    <${FormWrapper}>
+    <${FormWrapper} data-testid="recoveryphrase-details">
       <${FormGroup}>
         ${!!values?.passPhrase?.length &&
         html`<${PassPhrase} ...${register('passPhrase')} /> `}
@@ -56,7 +57,13 @@ export const PassPhraseDetailsForm = ({ initialRecord, selectedFolder }) => {
 
       <${FormGroup}>
         ${!!values?.note?.length &&
-        html` <${InputFieldNote} ...${register('note')} isDisabled /> `}
+        html`
+          <${InputFieldNote}
+            ...${register('note')}
+            additionalItems=${html` <${CopyButton} value=${values.note} /> `}
+            isDisabled
+          />
+        `}
       <//>
 
       <${CustomFields}

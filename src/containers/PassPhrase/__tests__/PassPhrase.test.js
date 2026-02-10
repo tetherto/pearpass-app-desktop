@@ -18,8 +18,8 @@ jest.mock('../styles', () => ({
     <div data-testid="header">{children}</div>
   ),
   HeaderText: ({ children }) => <h1 data-testid="title">{children}</h1>,
-  CopyPasteButton: ({ children, onClick, type }) => (
-    <button data-testid="copy-paste" onClick={onClick} type={type}>
+  PasteButton: ({ children, onClick, type, ...props }) => (
+    <button data-testid={props['data-testid']} onClick={onClick} type={type}>
       {children}
     </button>
   ),
@@ -122,7 +122,7 @@ describe('PassPhrase (container)', () => {
 
   test('copy button copies when not create/edit', () => {
     renderComponent({ value: 'one two' })
-    fireEvent.click(screen.getByTestId('copy-paste'))
+    fireEvent.click(screen.getByTestId('passphrase-button-copy'))
     expect(mockCopy).toHaveBeenCalledWith('one two')
   })
 
@@ -133,7 +133,7 @@ describe('PassPhrase (container)', () => {
     mockPaste.mockResolvedValueOnce(value) // 12 words
     renderComponent({ isCreateOrEdit: true, onChange, value: '' })
 
-    fireEvent.click(screen.getByTestId('copy-paste'))
+    fireEvent.click(screen.getByTestId('passphrase-button-paste'))
 
     await waitFor(() => expect(onChange).toHaveBeenCalledWith(value))
     expect(mockPaste).toHaveBeenCalledTimes(1)
@@ -154,7 +154,7 @@ describe('PassPhrase (container)', () => {
     expect(screen.getByTestId('settings')).toBeInTheDocument()
     expect(mockSettingsCalls[0].isDisabled).toBe(false)
 
-    fireEvent.click(screen.getByTestId('copy-paste'))
+    fireEvent.click(screen.getByTestId('passphrase-button-paste'))
     await waitFor(() => expect(mockBadgeCalls.length).toBe(12))
 
     const lastSettings = mockSettingsCalls[mockSettingsCalls.length - 1]
@@ -192,7 +192,7 @@ describe('PassPhrase (container)', () => {
       'one two three four five six seven eight nine ten eleven twelve'
     )
     renderComponent({ isCreateOrEdit: true })
-    fireEvent.click(screen.getByTestId('copy-paste'))
+    fireEvent.click(screen.getByTestId('passphrase-button-paste'))
     await waitFor(() => expect(mockBadgeCalls.length).toBe(12))
     const last = mockSettingsCalls[mockSettingsCalls.length - 1]
     expect(last.isDisabled).toBe(true)
@@ -203,7 +203,7 @@ describe('PassPhrase (container)', () => {
     mockPaste.mockResolvedValueOnce('one-two-three-four-five')
     renderComponent({ isCreateOrEdit: true, onChange, value: '' })
 
-    fireEvent.click(screen.getByTestId('copy-paste'))
+    fireEvent.click(screen.getByTestId('passphrase-button-paste'))
 
     await waitFor(() => {
       expect(mockSetToast).toHaveBeenCalledWith({

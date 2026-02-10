@@ -18,7 +18,6 @@ export const CardUnlockPearPass = () => {
     navigate(currentPage, { state: 'vaults' })
   }
 
-   
   const handleError = async (error: string | Error, setErrors: (errors: { password: string }) => void) => {
     const status = await refreshMasterPasswordStatus()
 

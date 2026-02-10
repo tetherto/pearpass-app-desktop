@@ -57,7 +57,7 @@ export const CustomDetailsForm = ({ initialRecord, selectedFolder }) => {
   }, [initialValues, setValues])
 
   return html`
-    <${FormWrapper}>
+    <${FormWrapper} data-id="custom-details">
       <${CustomFields}
         areInputsDisabled=${true}
         customFields=${list}

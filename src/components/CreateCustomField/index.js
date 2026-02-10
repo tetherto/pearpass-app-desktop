@@ -54,10 +54,11 @@ const OPTIONS = [
 /**
  * @param {{
  *  onCreateCustom: (type: string) => void,
- *  testId?: string
+ *  testId?: string,
+ *  dataId?: string
  * }} props
  */
-export const CreateCustomField = ({ onCreateCustom, testId }) => {
+export const CreateCustomField = ({ onCreateCustom, testId, dataId }) => {
   const { i18n } = useLingui()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -75,11 +76,8 @@ export const CreateCustomField = ({ onCreateCustom, testId }) => {
   }
 
   return html`
-    <${Wrapper} ref=${wrapperRef} data-testid=${testId}>
-      <${Label}
-        data-testid=${`createcustomfield-label-${isOpen ? 'open' : 'closed'}`}
-        onClick=${() => setIsOpen(!isOpen)}
-      >
+    <${Wrapper} ref=${wrapperRef} data-id=${dataId}>
+      <${Label} data-testid=${testId} onClick=${() => setIsOpen(!isOpen)}>
         <${PlusIcon} size="21" />
 
         <div>${i18n._('Create Custom')}</div>

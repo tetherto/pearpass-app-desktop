@@ -1,35 +1,36 @@
 import { EventEmitter } from 'events'
 
-import os from 'bare-os'
-import { spawn } from 'bare-subprocess'
-
-// Mock Pear global
-global.Pear = {
-  worker: {
-    pipe: () => ({
-      on: jest.fn()
-    })
-  },
-  exit: jest.fn()
-}
-
-const clipboardCleanup = require('./clipboardCleanup')
-
-// Mock dependencies
+// Mock all bare-* modules and dependencies BEFORE importing the module under test
+// Jest hoists these mocks automatically
 jest.mock('bare-os', () => ({
-  platform: jest.fn()
+  platform: jest.fn(),
+  tmpdir: jest.fn(() => '/tmp')
+}))
+jest.mock('bare-fs', () => ({
+  writeFileSync: jest.fn()
+}))
+jest.mock('bare-path', () => ({
+  join: jest.fn((...args) => args.join('/'))
 }))
 jest.mock('bare-subprocess', () => ({
-  spawn: jest.fn()
+  spawn: jest.fn(),
+  spawnSync: jest.fn()
 }))
 jest.mock('pearpass-lib-constants', () => ({
   CLIPBOARD_CLEAR_TIMEOUT: 1000
 }))
-jest.mock('../utils/logger', () => ({
+jest.mock('../src/utils/logger', () => ({
   logger: {
-    log: jest.fn()
+    log: jest.fn(),
+    error: jest.fn()
   }
 }))
+
+// Now import after mocks are set up
+import os from 'bare-os'
+import { spawn } from 'bare-subprocess'
+
+import * as clipboardCleanup from './clipboardCleanup'
 
 // Since getClipboardContent is not exported, we need to import the module to trigger execution
 // However, the module executes side effects immediately (setTimeout).
@@ -83,7 +84,7 @@ describe('getClipboardContent', () => {
     expect(spawn).toHaveBeenCalledWith(
       'powershell',
       ['-command', 'Get-Clipboard -Raw'],
-      { shell: true }
+      { stdio: ['pipe', 'pipe', 'pipe'] }
     )
     expect(result).toBe('windows content')
   })
@@ -99,7 +100,9 @@ describe('getClipboardContent', () => {
 
     const result = await promise
 
-    expect(spawn).toHaveBeenCalledWith('/usr/bin/pbpaste', { shell: true })
+    expect(spawn).toHaveBeenCalledWith('/usr/bin/pbpaste', [], {
+      stdio: ['pipe', 'pipe', 'pipe']
+    })
     expect(result).toBe('mac content')
   })
 
@@ -115,7 +118,7 @@ describe('getClipboardContent', () => {
     const result = await promise
 
     expect(spawn).toHaveBeenCalledWith('xsel', ['--clipboard', '--output'], {
-      shell: true
+      stdio: ['pipe', 'pipe', 'pipe']
     })
     expect(result).toBe('linux content')
   })
@@ -145,12 +148,12 @@ describe('getClipboardContent', () => {
     const result = await promise
 
     expect(spawn).toHaveBeenCalledWith('xsel', ['--clipboard', '--output'], {
-      shell: true
+      stdio: ['pipe', 'pipe', 'pipe']
     })
     expect(spawn).toHaveBeenCalledWith(
       'xclip',
       ['-selection', 'clipboard', '-o'],
-      { shell: true }
+      { stdio: ['pipe', 'pipe', 'pipe'] }
     )
     expect(result).toBe('xclip content')
   })

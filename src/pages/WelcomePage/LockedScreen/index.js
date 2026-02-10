@@ -56,7 +56,7 @@ export const LockedScreen = () => {
 
       <${Description}>
         <span>${t('Too many failed attempts.')}</span>
-        <span>${t('For your security, access is locked for 5 minutes.')}</span>
+        <span>${t('For your security, access is locked.')}</span>
       </>
 
       <${TimerContainer}>

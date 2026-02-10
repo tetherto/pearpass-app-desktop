@@ -3,7 +3,7 @@
 exports[`Select Component opens dropdown when label is clicked 1`] = `
 <div>
   <div
-    class="sc-gsJsQu kRzqpM"
+    class="sc-hdBJTi cLobuI"
   >
     <div
       class="sc-hvigdm hOKcMe"
@@ -27,7 +27,7 @@ exports[`Select Component opens dropdown when label is clicked 1`] = `
       </svg>
     </div>
     <div
-      class="sc-ibashp iFoIbw"
+      class="sc-iIvHqT JEfjS"
     >
       <div
         class="sc-bRKDuR dqdJa"
@@ -65,7 +65,7 @@ exports[`Select Component opens dropdown when label is clicked 1`] = `
 exports[`Select Component renders correctly with a selected item 1`] = `
 <div>
   <div
-    class="sc-gsJsQu kRzqpM"
+    class="sc-hdBJTi cLobuI"
   >
     <div
       class="sc-hvigdm hOKcMe"
@@ -95,7 +95,7 @@ exports[`Select Component renders correctly with a selected item 1`] = `
 exports[`Select Component renders correctly with placeholder when no selected item 1`] = `
 <div>
   <div
-    class="sc-gsJsQu kRzqpM"
+    class="sc-hdBJTi cLobuI"
   >
     <div
       class="sc-hvigdm hOKcMe"

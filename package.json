@@ -6,7 +6,8 @@
     "pre": "pear-electron/pre",
     "routes": ".",
     "unrouted": [
-      "/node_modules/pearpass-lib-vault-core/src/worklet/app.js"
+      "/node_modules/pearpass-lib-vault-core/src/worklet/app.js",
+      "/subProcess/clipboardCleanup.js"
     ],
     "gui": {
       "backgroundColor": "#1F2430",
@@ -19,7 +20,8 @@
     ],
     "stage": {
       "entrypoints": [
-        "node_modules/pearpass-lib-vault-core/src/worklet/app.js"
+        "node_modules/pearpass-lib-vault-core/src/worklet/app.js",
+        "subProcess/clipboardCleanup.js"
       ],
       "ignore": [
         ".github",

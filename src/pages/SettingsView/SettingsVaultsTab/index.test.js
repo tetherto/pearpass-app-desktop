@@ -2,7 +2,7 @@ import React from 'react'
 
 import { render, screen, fireEvent } from '@testing-library/react'
 import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
-import { useVaults } from 'pearpass-lib-vault'
+import { useVault } from 'pearpass-lib-vault'
 
 import { SettingsVaultsTab } from './index'
 import { useModal } from '../../../context/ModalContext'
@@ -18,7 +18,7 @@ jest.mock('@lingui/react', () => ({
 }))
 
 jest.mock('pearpass-lib-vault', () => ({
-  useVaults: jest.fn()
+  useVault: jest.fn()
 }))
 
 jest.mock('../../../context/ModalContext', () => ({
@@ -54,11 +54,12 @@ describe('VaultsTab', () => {
     render(<ThemeProvider>{component}</ThemeProvider>)
 
   beforeEach(() => {
-    useVaults.mockReturnValue({
-      data: [
-        { id: '1', name: 'Vault 1' },
-        { id: '2', name: 'Vault 2' }
-      ]
+    useVault.mockReturnValue({
+      data: {
+        id: '1',
+        name: 'Vault 1',
+        createdAt: '2024-01-01T00:00:00.000Z'
+      }
     })
 
     useModal.mockReturnValue({
@@ -77,27 +78,17 @@ describe('VaultsTab', () => {
     expect(container).toMatchSnapshot()
   })
 
-  it('renders vaults in the list', () => {
+  it('renders vault in the list', () => {
     renderWithProviders(<SettingsVaultsTab />)
 
     expect(screen.getByText('Vault 1')).toBeInTheDocument()
-    expect(screen.getByText('Vault 2')).toBeInTheDocument()
   })
 
-  it('opens ModifyVaultModalContent when editing the first vault', () => {
+  it('opens ModifyVaultModalContent when editing the vault', () => {
     renderWithProviders(<SettingsVaultsTab />)
 
-    const editButtons = screen.getAllByText('Edit')
-    fireEvent.click(editButtons[0])
-
-    expect(setModalMock).toHaveBeenCalledWith(expect.anything())
-  })
-
-  it('opens ModifyVaultModalContent when editing a specific vault', () => {
-    renderWithProviders(<SettingsVaultsTab />)
-
-    const editButtons = screen.getAllByText('Edit')
-    fireEvent.click(editButtons[1])
+    const editButton = screen.getByText('Edit')
+    fireEvent.click(editButton)
 
     expect(setModalMock).toHaveBeenCalledWith(expect.anything())
   })

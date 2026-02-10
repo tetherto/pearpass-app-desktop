@@ -100,7 +100,7 @@ export const AutoLockConfiguration = () => {
                   </li>
                   ${BE_AUTO_LOCK_ENABLED && html`<li>
                     ${t(
-    "On desktop and browser, Pearpass keeps your session aligned—activity in one helps keep the other unlocked while you're working. Mobile auto-lock is managed separately."
+    "The browser activity will also keep your session aligned in Desktop while you're working, and the setting will be shared by both. Mobile auto-lock is managed separately."
   )}
                   </li>`}
                 <//>

@@ -210,6 +210,21 @@ exports[`Icon Components CommonFileIcon renders correctly 1`] = `
 </svg>
 `;
 
+exports[`Icon Components ComputerIcon renders correctly 1`] = `
+<svg
+  fill="none"
+  height="24px"
+  viewBox="0 0 24 24"
+  width="24px"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    d="M1 18.8845V17.8845H4.6155V17.1152H3V5.11523H21V17.1152H19.3845V17.8845H23V18.8845H1ZM4 16.1152H20V6.11523H4V16.1152Z"
+    fill="#000"
+  />
+</svg>
+`;
+
 exports[`Icon Components CopyIcon renders correctly 1`] = `
 <svg
   fill="none"

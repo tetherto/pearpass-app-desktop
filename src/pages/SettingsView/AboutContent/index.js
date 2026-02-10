@@ -95,9 +95,6 @@ export const AboutContent = () => {
       onSubmitReport=${handleReportProblem}
       message=${message}
       title=${i18n._('Report a problem')}
-      description=${i18n._(
-        "Tell us what's going wrong and leave your email so we can follow up with you."
-      )}
       buttonText=${i18n._('send')}
       textAreaPlaceholder=${i18n._('Write your issue...')}
       textAreaOnChange=${setMessage}

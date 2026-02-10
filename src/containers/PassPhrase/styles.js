@@ -59,12 +59,12 @@ export const HeaderText = styled.span`
   font-weight: 400;
 `
 
-export const CopyPasteButton = styled.button`
+export const PasteButton = styled.button`
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: ${({ isPaste }) => (isPaste ? '10px' : '5px')};
+  gap: 10px;
   color: ${({ theme }) => theme.colors.primary400?.mode1};
   background: transparent;
   border: none;

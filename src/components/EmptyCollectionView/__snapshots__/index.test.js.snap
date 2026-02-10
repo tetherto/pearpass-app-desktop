@@ -3,7 +3,7 @@
 exports[`EmptyCollectionView component renders empty collection message 1`] = `
 <div>
   <div
-    class="sc-bRKDuR iNCOfY"
+    class="sc-bRKDuR jDXzka"
     data-testid="empty-collection-view"
   >
     <div
@@ -13,7 +13,6 @@ exports[`EmptyCollectionView component renders empty collection message 1`] = `
         class="sc-fhHczv ioIxCL"
       >
         <span>
-           
           This collection is empty.
         </span>
         <p>

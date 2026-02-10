@@ -118,6 +118,19 @@ describe('useAutoLockPreferences', () => {
       ).toBe(String(newTimeout))
     })
 
+    it('supports null timeout and stores "null"', () => {
+      const { result } = renderHook(() => useAutoLockPreferences())
+
+      act(() => {
+        result.current.setTimeoutMs(null)
+      })
+
+      expect(result.current.timeoutMs).toBeNull()
+      expect(
+        localStorage.getItem(LOCAL_STORAGE_KEYS.AUTO_LOCK_TIMEOUT_MS)
+      ).toBe('null')
+    })
+
     it('should dispatch auto-lock-settings-changed event', () => {
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent')
       const { result } = renderHook(() => useAutoLockPreferences())
@@ -150,6 +163,11 @@ describe('getAutoLockTimeoutMs', () => {
     )
     expect(getAutoLockTimeoutMs()).toBe(customTimeout)
   })
+
+  it('returns null when localStorage value is "null"', () => {
+    localStorage.setItem(LOCAL_STORAGE_KEYS.AUTO_LOCK_TIMEOUT_MS, 'null')
+    expect(getAutoLockTimeoutMs()).toBeNull()
+  })
 })
 
 describe('isAutoLockEnabled', () => {
@@ -172,5 +190,39 @@ describe('isAutoLockEnabled', () => {
 
     localStorage.setItem(LOCAL_STORAGE_KEYS.AUTO_LOCK_ENABLED, 'random')
     expect(isAutoLockEnabled()).toBe(true)
+  })
+})
+
+describe('storage sync events', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    jest.clearAllMocks()
+  })
+
+  it('updates enabled state on apply-auto-lock-enabled event', () => {
+    const { result } = renderHook(() => useAutoLockPreferences())
+    expect(result.current.isAutoLockEnabled).toBe(true)
+
+    act(() => {
+      localStorage.setItem(LOCAL_STORAGE_KEYS.AUTO_LOCK_ENABLED, 'false')
+      window.dispatchEvent(new Event('apply-auto-lock-enabled'))
+    })
+
+    expect(result.current.isAutoLockEnabled).toBe(false)
+  })
+
+  it('updates timeout state on apply-auto-lock-timeout event', () => {
+    const { result } = renderHook(() => useAutoLockPreferences())
+    const newTimeout = 1234
+
+    act(() => {
+      localStorage.setItem(
+        LOCAL_STORAGE_KEYS.AUTO_LOCK_TIMEOUT_MS,
+        String(newTimeout)
+      )
+      window.dispatchEvent(new Event('apply-auto-lock-timeout'))
+    })
+
+    expect(result.current.timeoutMs).toBe(newTimeout)
   })
 })

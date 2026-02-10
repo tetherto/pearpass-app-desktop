@@ -16,7 +16,6 @@ import { CardSingleSetting } from '../../../components/CardSingleSetting'
 import { ImportDataOption } from '../../../components/ImportDataOption'
 import { useToast } from '../../../context/ToastContext'
 import { useTranslation } from '../../../hooks/useTranslation'
-import { LockIcon } from '../../../lib-react-components'
 import { logger } from '../../../utils/logger'
 
 const importOptions = [
@@ -61,7 +60,7 @@ const importOptions = [
     title: 'Unencrypted file',
     type: 'unencrypted',
     accepts: ['.json', '.csv'],
-    icon: LockIcon
+    imgSrc: '/assets/images/pearpass_logo.png'
   }
 ]
 
