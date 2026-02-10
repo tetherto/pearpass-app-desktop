@@ -35,12 +35,10 @@ export const useFavicon = (params: { url: string }): UseFaviconReturn => {
         }
 
         const res = await client.fetchFavicon(url) as unknown as {
-          received: boolean, url: string, favicon: string | null
+          url: string, favicon: string | null
         }
 
-        console.log('UI received IPC response:', res)
-
-        if (res && res.received && res.favicon) {
+        if (res && res.favicon) {
           setFaviconSrc(res.favicon)
           setHasError(false)
         } else {
