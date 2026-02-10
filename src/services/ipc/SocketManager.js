@@ -1,10 +1,13 @@
 import fs from 'fs'
-import { platform, tmpdir } from 'os'
+import { platform } from 'os'
 import { join } from 'path'
 
 import { logger } from '../../utils/logger'
 
 const { unlink } = fs.promises
+
+const SOCKET_DIR_NAME = 'pearpass'
+const getSocketDir = () => join(Pear.config.pearDir, SOCKET_DIR_NAME)
 
 /**
  * Manages IPC socket creation and cleanup
@@ -22,7 +25,8 @@ export class SocketManager {
     if (platform() === 'win32') {
       return `\\\\?\\pipe\\${socketName}`
     }
-    return join(tmpdir(), `${socketName}.sock`)
+
+    return join(getSocketDir(), `${socketName}.sock`)
   }
 
   /**
@@ -42,6 +46,14 @@ export class SocketManager {
         )
       }
     }
+  }
+
+  /**
+   * Ensure the socket directory exists
+   */
+  async ensureSocketDir() {
+    if (platform() === 'win32') return
+    await fs.promises.mkdir(getSocketDir(), { recursive: true })
   }
 
   /**
