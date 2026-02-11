@@ -142,5 +142,8 @@ declare module 'pearpass-lib-constants' {
   export const DEFAULT_AUTO_LOCK_TIMEOUT: number
   export const AUTO_LOCK_TIMEOUT_OPTIONS: Record<string, { label: string, value: number }>
   export const AUTO_LOCK_ENABLED: boolean
+  export const DELETE_VAULT_ENABLED: boolean
+  export const NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION: string
+  export const NATIVE_MESSAGING_BRIDGE_PEAR_LINK_STAGING: string
 }
 

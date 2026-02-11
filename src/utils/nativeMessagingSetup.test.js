@@ -3,7 +3,7 @@ import fs from 'fs/promises'
 import os from 'os'
 import path from 'path'
 
-import { NATIVE_MESSAGING_BRIDGE_PEAR_LINK } from 'pearpass-lib-constants'
+import { NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION } from 'pearpass-lib-constants'
 
 import {
   setupNativeMessaging,
@@ -264,7 +264,7 @@ describe('killNativeMessagingHostProcesses', () => {
     expect(execMock).toHaveBeenCalledTimes(1)
     const cmd = execMock.mock.calls[0][0]
     expect(cmd).toContain('pkill -f')
-    expect(cmd).toContain(NATIVE_MESSAGING_BRIDGE_PEAR_LINK)
+    expect(cmd).toContain(NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION)
   })
 
   it('should kill processes on macOS', async () => {
