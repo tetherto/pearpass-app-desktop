@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  pull_request_target:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+  pull-requests: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Check required lock files exist
+        run: |
+          if [ ! -f "package-lock.json" ]; then
+            echo "::error::package-lock.json is missing"
+            exit 1
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: "@tetherto"
+          cache: npm
+
+      - name: Validate semantic versioning
+        id: semver
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" =~ '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$' ]]; then
+            echo "::error::Version $VERSION does not follow semantic versioning"
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check version not already published (if publish label present)
+        if: contains(github.event.pull_request.labels.*.name, 'publish')
+        run: |
+          VERSION="${{ steps.semver.outputs.VERSION }}"
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+
+          # Check if version exists in public npm registry
+          if npm view "$PACKAGE_NAME@$VERSION" version 2>/dev/null; then
+            echo "::error::Version $VERSION of $PACKAGE_NAME has already been published to npm"
+            exit 1
+          else
+            echo "Version $VERSION is available for publishing"
+          fi
+
+      - name: Install dependencies
+        run: npm ci --install-links
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NOXTTON_BOT_PAT }}
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+      - name: Compile i18n catalogs
+        run: npm run lingui:compile
+
+      - name: Build application
+        run: npm run build:pear
