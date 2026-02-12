@@ -1,8 +1,11 @@
+import { useState } from 'react'
+
 import { html } from 'htm/react'
 import { MAX_IMPORT_RECORDS } from 'pearpass-lib-constants'
 import {
   parse1PasswordData,
   parseBitwardenData,
+  parseKeePassData,
   parseLastPassData,
   parseNordPassData,
   parsePearPassData,
@@ -14,8 +17,11 @@ import { ContentContainer, Description, ImportOptionsContainer } from './styles'
 import { readFileContent } from './utils/readFileContent'
 import { CardSingleSetting } from '../../../components/CardSingleSetting'
 import { ImportDataOption } from '../../../components/ImportDataOption'
+import { ModalContent } from '../../../containers/Modal/ModalContent'
+import { useModal } from '../../../context/ModalContext'
 import { useToast } from '../../../context/ToastContext'
 import { useTranslation } from '../../../hooks/useTranslation'
+import { ButtonPrimary } from '../../../lib-react-components'
 import { logger } from '../../../utils/logger'
 
 const importOptions = [
@@ -30,6 +36,18 @@ const importOptions = [
     type: 'bitwarden',
     accepts: ['.json', '.csv'],
     imgSrc: '/assets/images/BitWarden.png'
+  },
+  {
+    title: 'KeePass',
+    type: 'keepass',
+    accepts: ['.kdbx', '.csv', '.xml'],
+    imgSrc: '/assets/images/KeePass.png'
+  },
+  {
+    title: 'KeePassXC',
+    type: 'keepass',
+    accepts: ['.kdbx', '.csv', '.xml'],
+    imgSrc: '/assets/images/KeePassXC.png'
   },
   {
     title: 'LastPass',
@@ -72,9 +90,54 @@ const isAllowedType = (fileType, accepts) =>
     return fileType === accept
   })
 
+const KdbxPasswordPrompt = ({ onSubmit, onClose, error }) => {
+  const [password, setPassword] = useState('')
+  const { t } = useTranslation()
+
+  return html`<${ModalContent}
+    onClose=${onClose}
+    onSubmit=${() => onSubmit(password)}
+    headerChildren=${html`<span>${t('Enter KeePass Password')}</span>`}
+  >
+    <div
+      style=${{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px',
+        padding: '16px'
+      }}
+    >
+      <input
+        type="password"
+        placeholder=${t('Database password')}
+        value=${password}
+        autofocus
+        onChange=${(e) => setPassword(e.target.value)}
+        style=${{
+          padding: '10px 12px',
+          borderRadius: '8px',
+          border: '1px solid #555',
+          backgroundColor: 'transparent',
+          color: '#fff',
+          fontSize: '14px',
+          outline: 'none'
+        }}
+      />
+      ${error &&
+      html`<span style=${{ color: '#ff4d4f', fontSize: '12px' }}
+        >${error}</span
+      >`}
+      <${ButtonPrimary} type="submit" size="md" disabled=${!password}>
+        ${t('Unlock & Import')}
+      <//>
+    </div>
+  <//>`
+}
+
 export const ImportTab = () => {
   const { t } = useTranslation()
   const { setToast } = useToast()
+  const { setModal, closeModal } = useModal()
 
   const { createRecord } = useCreateRecord()
 
@@ -84,6 +147,62 @@ export const ImportTab = () => {
     })
   }
 
+  const importRecords = async (result) => {
+    if (result.length === 0) {
+      setToast({
+        message: t('No records found to import!')
+      })
+      return
+    }
+
+    if (result.length > MAX_IMPORT_RECORDS) {
+      setToast({
+        message: t(`Too many records. Maximum is ${MAX_IMPORT_RECORDS}.`)
+      })
+      return
+    }
+
+    const BATCH_SIZE = 100
+    const totalRecords = result.length
+
+    for (let i = 0; i < totalRecords; i += BATCH_SIZE) {
+      const batch = result.slice(i, i + BATCH_SIZE)
+      await Promise.all(batch.map((record) => createRecord(record, onError)))
+    }
+
+    setToast({
+      message: t('Data imported successfully')
+    })
+  }
+
+  const showKdbxPasswordPrompt = (fileBuffer) => {
+    const attemptDecrypt = async (password, errorMsg) => {
+      setModal(
+        html`<${KdbxPasswordPrompt}
+          onClose=${closeModal}
+          error=${errorMsg || ''}
+          onSubmit=${async (pwd) => {
+            try {
+              const result = await parseKeePassData(fileBuffer, 'kdbx', pwd)
+              closeModal()
+              await importRecords(result)
+            } catch (err) {
+              if (err.message === 'Incorrect password') {
+                attemptDecrypt(pwd, t('Incorrect password. Please try again.'))
+              } else {
+                closeModal()
+                setToast({ message: t(err.message) })
+                logger.error('KeePass KDBX import', err.message)
+              }
+            }
+          }}
+        />`,
+        { replace: true }
+      )
+    }
+    attemptDecrypt()
+  }
+
   const handleFileChange = async ({ files, type, accepts }) => {
     const file = files[0]
     if (!file) return
@@ -91,11 +210,17 @@ export const ImportTab = () => {
     const fileType = file.name.split('.').pop()
     let result = []
 
-    const fileContent = await readFileContent(file)
-
     if (!isAllowedType(fileType, accepts)) {
       throw new Error('Invalid file type')
     }
+
+    if (type === 'keepass' && fileType === 'kdbx') {
+      const fileContent = await readFileContent(file, { as: 'buffer' })
+      showKdbxPasswordPrompt(fileContent)
+      return
+    }
+
+    const fileContent = await readFileContent(file)
 
     try {
       switch (type) {
@@ -104,6 +229,9 @@ export const ImportTab = () => {
           break
         case 'bitwarden':
           result = await parseBitwardenData(fileContent, fileType)
+          break
+        case 'keepass':
+          result = await parseKeePassData(fileContent, fileType)
           break
         case 'lastpass':
           result = await parseLastPassData(fileContent, fileType)
@@ -123,31 +251,7 @@ export const ImportTab = () => {
           )
       }
 
-      if (result.length === 0) {
-        setToast({
-          message: t('No records found to import!')
-        })
-        return
-      }
-
-      if (result.length > MAX_IMPORT_RECORDS) {
-        setToast({
-          message: t(`Too many records. Maximum is ${MAX_IMPORT_RECORDS}.`)
-        })
-        return
-      }
-
-      const BATCH_SIZE = 100
-      const totalRecords = result.length
-
-      for (let i = 0; i < totalRecords; i += BATCH_SIZE) {
-        const batch = result.slice(i, i + BATCH_SIZE)
-        await Promise.all(batch.map((record) => createRecord(record, onError)))
-      }
-
-      setToast({
-        message: t('Data imported successfully')
-      })
+      await importRecords(result)
     } catch (error) {
       logger.error(
         'useGetMultipleFiles',
