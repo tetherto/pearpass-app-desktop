@@ -54,7 +54,7 @@ test.describe('Creating PassPhrase Item', () => {
       await clipboard.write('word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12')
       await createOrEditPage.clickOnPasteFromClipboard()
 
-      // TODO: Un comment when Id is added
+      //TODO: Uncomment when Id is added
       // await createOrEditPage.fillCreateOrEditInput('note', 'Test Note')
 
       await createOrEditPage.clickOnCreateOrEditButton('save')
@@ -70,20 +70,29 @@ test.describe('Creating PassPhrase Item', () => {
      * @qase.id PAS-628
      * @description All fields' values after creating "PassPhrase" item correspond to entered fields' values
      */
+    /**
+     * @qase.id PAS-629
+     * @description ["PassPhrase" field] The number of words displayed in the "PassPhrase" field depends on the selected "Type" field's option and the "+1 random word" switcher
+     */
     await test.step('VERIFY PASSPHRASE DETAILS', async () => {
-      await detailsPage.verifyTitle('PassPhrase Title')
-      await page.waitForTimeout(testData.timeouts.action)
 
       await detailsPage.verifyTitle('PassPhrase Title')
 
-      // await expect(page.getByTestId('passphrase-word-1')).toBeVisible()
-      // await expect(page.getByTestId('passphrase-word-1')).toHaveText('word1')
+      await detailsPage.verifyAllRecoveryPhraseWords([
+        '#1word1',
+        '#2word2',
+        '#3word3',
+        '#4word4',
+        '#5word5',
+        '#6word6',
+        '#7word7',
+        '#8word8',
+        '#9word9',
+        '#10word10',
+        '#11word11',
+        '#12word12'
+      ]);
 
-      // const passphraseWord = page.getByTestId('passphrase-word-1')
-      // await expect(passphraseWord).toBeVisible({ timeout: 10000 }) // FAIL HERE!!!
-
-      // Optional: check that the first word is correct
-      // await expect(passphraseWord.locator('span').nth(1)).toHaveText('word1')
     })
 
     await test.step('EXIT TO LOGIN SCREEN', async () => {
@@ -125,7 +134,7 @@ test.describe('Creating PassPhrase Item', () => {
     })
 
     /**
-     * @qase.id PAS-618
+     * @qase.id PAS-632
      * @description After changing "Item" dropdown option user is moved to the selected "Item" edit screen
      */
     await test.step('VERIFY THAT USER IS MOVED TO SELECTED ITEM EDIT SCREEN', async () => {
@@ -137,7 +146,7 @@ test.describe('Creating PassPhrase Item', () => {
     })
 
     /**
-     * @qase.id PAS-619
+     * @qase.id PAS-633
      * @description Item is moved to the folder selected in "Folder" dropdown
      */
     await test.step('VERIFY ELEMENT IS MOVED TO THE FOLDER SELECTED FROM DROPDOWN', async () => {
@@ -187,7 +196,7 @@ test.describe('Creating PassPhrase Item', () => {
     })
 
     /**
-     * @qase.id PAS-621
+     * @qase.id PAS-635
      * @description "Star" icon is added to "Item" icon within "Item view mode" and Home screen when marking item as favorite through "Favorite" icon
      */
     await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS VISIBLE - FAVORITE', async () => {
@@ -204,7 +213,7 @@ test.describe('Creating PassPhrase Item', () => {
     })
 
     /**
-     * @qase.id PAS-622
+     * @qase.id PAS-636
      * @description "Star" icon is removed from "Item" icon within "Item view mode" and Home screen when removing item from favorites through "More options"
      */
     await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS REMOVED - MORE OPTIONS', async () => {
@@ -218,7 +227,7 @@ test.describe('Creating PassPhrase Item', () => {
     })
 
     /**
-     * @qase.id PAS-620
+     * @qase.id PAS-634
      * @description "Star" icon is added to "Item" icon within "Item view mode" and Home screen when marking item as favorite through "More options"
      */
     await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS VISIBLE - MORE OPTIONS', async () => {
@@ -232,7 +241,7 @@ test.describe('Creating PassPhrase Item', () => {
     })
 
     /**
-     * @qase.id PAS-623
+     * @qase.id PAS-636
      * @description "Star" icon is removed from "Item" icon within "Item view mode" and Home screen when removing item from favorites through "Favorite" icon
      */
     await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS REMOVED - FAVORITE', async () => {
@@ -246,59 +255,60 @@ test.describe('Creating PassPhrase Item', () => {
 
   })
 
-  // TODO: Un comment when Id is added
+  //TODO: Un comment when Id is added
 
-  test('Adding Custom Field with Note option', async ({ page }) => {
+  // test('Adding Custom Field with Note option', async ({ page }) => {
 
-    await test.step('VERIFY PASSPHRASE ELEMENT CREATED', async () => {
-      await mainPage.verifyElementTitle('PassPhrase Title')
-    })
+  //   await test.step('VERIFY PASSPHRASE ELEMENT CREATED', async () => {
+  //     await mainPage.verifyElementTitle('PassPhrase Title')
+  //   })
 
-    await test.step('OPEN/EDITLOGIN ELEMENT', async () => {
-      await mainPage.openElementDetails()
-      await detailsPage.editElement()
-    })
+  //   await test.step('OPEN/EDITLOGIN ELEMENT', async () => {
+  //     await mainPage.openElementDetails()
+  //     await detailsPage.editElement()
+  //   })
 
-    /**
-     * @qase.id PAS-998
-     * @description It is possible to add fields
-     */
-    await test.step('OPEN CREATE CUSTOM MENU', async () => {
-      await createOrEditPage.clickCreateCustomItem()
-    })
+  //   /**
+  //    * @qase.id PAS-1002
+  //    * @description It is possible to add fields
+  //    */
+  //   await test.step('OPEN CREATE CUSTOM MENU', async () => {
+  //     await createOrEditPage.clickCreateCustomItem()
+  //   })
 
-    await test.step('CLICK ON NOTE OPTION FROM CREATE CUSTOM MENU', async () => {
-      await createOrEditPage.clickCustomItemOptionNote();
-    })
+  //   await test.step('CLICK ON NOTE OPTION FROM CREATE CUSTOM MENU', async () => {
+  //     await createOrEditPage.clickCustomItemOptionNote();
+  //   })
 
-    await test.step('VERIFY THERE IS ONE NEW CUSTOM NOTES ITEMS INSIDE PASSPHRASE ELEMENT', async () => {
-      await expect(createOrEditPage.customNoteInput).toHaveCount(1);
-    })
+  //   await test.step('VERIFY THERE IS ONE NEW CUSTOM NOTES ITEMS INSIDE PASSPHRASE ELEMENT', async () => {
+  //     await expect(createOrEditPage.customNoteInput).toHaveCount(1);
+  //   })
 
-    /**
-     * @qase.id PAS-999
-     * @description It is possible to delete additional fields
-     */
-    await test.step('DELETE NEW CUSTOM NOTE ITEM', async () => {
-      await createOrEditPage.deleteCustomNote();
-    })
+  //   /**
+  //    * @qase.id PAS-1003
+  //    * @description It is possible to delete additional fields
+  //    */
+  //   await test.step('DELETE NEW CUSTOM NOTE ITEM', async () => {
+  //     await createOrEditPage.deleteCustomNote();
+  //   })
 
-    await test.step('VERIFY THERE IS NO CUSTOM NOTES ITEMS INSIDE PASSPHRASE ELEMENT', async () => {
-      await expect(createOrEditPage.customNoteInput).toHaveCount(0);
-    })
+  //   await test.step('VERIFY THERE IS NO CUSTOM NOTES ITEMS INSIDE PASSPHRASE ELEMENT', async () => {
+  //     await expect(createOrEditPage.customNoteInput).toHaveCount(0);
+  //   })
 
-    /**
-     * @qase.id PAS-1001
-     * @description It is possible to close the screen by clicking on the "Cross" icon
-     */
-    await test.step('CLICK CLOSE (X) BUTTON', async () => {
-      await createOrEditPage.clickElementItemCloseButton()
-    })
+  //   /**
+  //    * @qase.id PAS-1001
+  //    * @description It is possible to close the screen by clicking on the "Cross" icon
+  //    */
+  //   await test.step('CLICK CLOSE (X) BUTTON', async () => {
+  //     await createOrEditPage.clickElementItemCloseButton()
+  //   })
 
-    await test.step('EXIT TO LOGIN SCREEN', async () => {
-      await sideMenuPage.clickSidebarExitButton()
-    })
+  //   await test.step('EXIT TO LOGIN SCREEN', async () => {
+  //     await sideMenuPage.clickSidebarExitButton()
+  //   })
 
-  })
+  // })
+  
 
 })

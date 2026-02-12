@@ -12,7 +12,7 @@ import testData from '../../fixtures/test-data.js';
 import clipboard from 'clipboardy';
 
 
-test.describe.skip('Editing/Deleting PassPhrase Item', () => {
+test.describe('Editing/Deleting PassPhrase Item', () => {
   test.describe.configure({ mode: 'serial' })
 
   let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
@@ -61,89 +61,119 @@ test.describe.skip('Editing/Deleting PassPhrase Item', () => {
       await mainPage.openElementDetails()
     })
 
+    await test.step('VERIFY PASSPHRASE DETAILS', async () => {
+
+      await detailsPage.verifyTitle('PassPhrase Title')
+
+      await detailsPage.verifyAllRecoveryPhraseWords([
+        '#1word1',
+        '#2word2',
+        '#3word3',
+        '#4word4',
+        '#5word5',
+        '#6word6',
+        '#7word7',
+        '#8word8',
+        '#9word9',
+        '#10word10',
+        '#11word11',
+        '#12word12'
+      ]);
+
+    })
+
     await test.step('EDIT ELEMENT DETAILS', async () => {
       await detailsPage.editElement()
     })
 
-    await test.step('EDIT IDENTITY ELEMENT', async () => {
+    await test.step('EDIT PASSPHRASE ELEMENT', async () => {
       await createOrEditPage.fillCreateOrEditInput('title', 'PassPhrase Title Edited')
 
-      await createOrEditPage.fillCreateOrEditInput('fullname', 'Identity Fullname Edited')
-      await createOrEditPage.fillCreateOrEditInput('email', 'identitytestedited@mail.co')
-      await createOrEditPage.fillCreateOrEditInput('phonenumber', 'Phone Number Edited')
+      await clipboard.write(testData.passphrase.text24)
+      await createOrEditPage.clickOnPasteFromClipboard()
 
       await createOrEditPage.clickOnCreateOrEditButton('save')
       await page.waitForTimeout(testData.timeouts.action)
     })
 
-    await test.step('VERIFY EDITED IDENTITY TITLE IS EDITED', async () => {
-      await mainPage.verifyElementTitle('Identity Title Edited')
-    })
+    // await test.step('VERIFY EDITED PASSPHRASE TITLE IS EDITED', async () => {
+    //   await mainPage.verifyElementTitle('PassPhrase Title Edited')
+    // })
 
     await test.step('OPEN ELEMENT', async () => {
       await mainPage.openElementDetails()
     })
 
     /**
-     * @qase.id PAS-596
-     * @description Changes after editing all "Identity" item fields including folder destination correspond to entered fields' values
+     * @qase.id PAS-638
+     * @description Changes after editing all "PassPhrase" item fields including folder destination correspond to entered fields' values
      */
-    await test.step('VERIFY EDITED IDENTITY DETAILS', async () => {
+    await test.step('VERIFY EDITED PASSPHRASE DETAILS', async () => {
 
-      await detailsPage.verifyTitle('Identity Title Edited')
-      await detailsPage.verifyIdentityDetailsValue('fullname', 'Identity Fullname Edited')
-      await detailsPage.verifyIdentityDetailsValue('email', 'identitytestedited@mail.co')
-      await detailsPage.verifyIdentityDetailsValue('address', 'Identity Address Edited')
-      await detailsPage.verifyIdentityDetailsValue('zip', 'Identity Zip Edited')
-      await detailsPage.verifyIdentityDetailsValue('city', 'Identity City Edited')
-      await detailsPage.verifyIdentityDetailsValue('region', 'Identity Region Edited')
-      await detailsPage.verifyIdentityDetailsValue('country', 'Identity Country Edited')
-      await detailsPage.verifyIdentityDetailsValue('passportfullname', 'Identity Passport Fullname Edited')
-      await detailsPage.verifyIdentityDetailsValue('passportnumber', 'Identity Passport Number Edited')
-      await detailsPage.verifyIdentityDetailsValue('passportissuingcountry', 'Identity Issuing Country Edited')
-      await detailsPage.verifyIdentityDetailsValue('passportdateofissue', 'Identity Date of Issue Edited')
-      await detailsPage.verifyIdentityDetailsValue('passportexpirydate', '01/01/2022')
-      await detailsPage.verifyIdentityDetailsValue('passportnationality', '01/01/2027')
-      await detailsPage.verifyIdentityDetailsValue('passportdob', '01/01/1991')
-      await detailsPage.verifyIdentityDetailsValue('passportgender', 'Identity Gender Edited')
-      await detailsPage.verifyIdentityDetailsValue('idcardnumber', 'Identity ID Card Number Edited')
-      await detailsPage.verifyIdentityDetailsValue('idcarddateofissue', '01/01/2026')
-      await detailsPage.verifyIdentityDetailsValue('idcardexpirydate', '01/01/2031')
-      await detailsPage.verifyIdentityDetailsValue('idcardissuingcountry', 'USA Edited')
-      await detailsPage.verifyIdentityDetailsValue('note', 'Identity Driving License Note Edited')
+      await detailsPage.verifyTitle('PassPhrase Title Edited')
+
+      await detailsPage.verifyAllRecoveryPhraseWords([
+        '#1word1',
+        '#2word2',
+        '#3word3',
+        '#4word4',
+        '#5word5',
+        '#6word6',
+        '#7word7',
+        '#8word8',
+        '#9word9',
+        '#10word10',
+        '#11word11',
+        '#12word12',
+        '#13word13',
+        '#14word14',
+        '#15word15',
+        '#16word16',
+        '#17word17',
+        '#18word18',
+        '#19word19',
+        '#20word20',
+        '#21word21',
+        '#22word22',
+        '#23word23',
+        '#24word24'
+      ]);
+
     })
 
-    await test.step('EDIT ELEMENT DETAILS', async () => {
-      await detailsPage.editElement()
-    })
+    // await test.step('EDIT ELEMENT DETAILS', async () => {
+    //   await detailsPage.editElement()
+    // })
+
+    //TODO: Missing id
+
+    // /**
+    //  * @qase.id PAS-639
+    //  * @description Custom "Note" field is deleted after deleting it during editing "PassPhrase" item
+    //  */
+    // await test.step('EDIT PASSPHRASE ELEMENT - Add/Delete Custom "Note" field during editing "Identity" item', async () => {
+    //   await createOrEditPage.clickCreateCustomItem()
+    //   await createOrEditPage.clickCustomItemOptionNote()
+    //   await expect(createOrEditPage.customNoteInput).toHaveCount(1);
+    //   await createOrEditPage.deleteCustomNote();
+    //   await expect(createOrEditPage.customNoteInput).toHaveCount(0);
+    // })
+
+    // await test.step('CLICK CLOSE (X) BUTTON', async () => {
+    //   await createOrEditPage.clickElementItemCloseButton()
+    // })
 
     /**
-     * @qase.id PAS-597
-     * @description Custom "Note" field is deleted after deleting it during editing "Identity" item
+     * @qase.id PAS-640
+     * @description "PassPhrase" item is deleted after deleting it
      */
-    await test.step('EDIT IDENTITY ELEMENT - Add/Delete Custom "Note" field during editing "Identity" item', async () => {
-      await createOrEditPage.clickCreateCustomItem()
-      await createOrEditPage.clickCustomItemOptionNote()
-      await expect(createOrEditPage.customNoteInput).toHaveCount(1);
-      await createOrEditPage.deleteCustomNote();
-      await expect(createOrEditPage.customNoteInput).toHaveCount(0);
-    })
-
-    await test.step('CLICK CLOSE (X) BUTTON', async () => {
-      await createOrEditPage.clickElementItemCloseButton()
-    })
-
-    /**
-     * @qase.id PAS-598
-     * @description "Identity" item is deleted after deleting it
-     */
-    await test.step('DELETE IDENTITY ITEM', async () => {
+    await test.step('DELETE PASSPHRASE ITEM', async () => {
       await detailsPage.openItemBarThreeDotsDropdownMenu()
       await detailsPage.clickDeleteElement()
       await detailsPage.clickConfirmYes()
     })
 
-    await test.step('VERIFY IDENTITY ELEMENT IS NOT VISIBLE', async () => {
+    await test.step('VERIFY PASSPHRASE ELEMENT IS NOT VISIBLE', async () => {
       await mainPage.verifyElementIsNotVisible()
     })
 

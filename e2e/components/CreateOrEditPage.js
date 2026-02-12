@@ -1,7 +1,3 @@
-// 'use strict'
-
-// const { expect } = require('../fixtures/app.runner')
-
 import { test, expect } from '../fixtures/app.runner.js';
 
 class CreateOrEditPage {
@@ -27,6 +23,10 @@ class CreateOrEditPage {
 
   getCreateOrEditInputField(field) {
     return this.root.getByTestId(`createoredit-input-${field}`)
+  }
+
+  getCreateOrEditTextareaField(field) {
+    return this.root.getByTestId(`createoredit-textarea-${field}`)
   }
 
   get passwordMenu() {
@@ -97,8 +97,12 @@ class CreateOrEditPage {
     return this.root.locator('input[type="file"]').first()
   }
 
+  // get elementItemCloseButton() {
+  //   return this.root.getByTestId('button-round-icon').last() // button-round-icon
+  // }
+
   get elementItemCloseButton() {
-    return this.root.getByTestId('button-round-icon').last()
+    return this.root.getByTestId('modalheader-button-close').last()
   }
 
   get passwordInput() {
@@ -198,12 +202,13 @@ class CreateOrEditPage {
 
   async fillCreateOrEditInput(field, value) {
     const input = this.getCreateOrEditInputField(field)
-    await input.waitFor({ state: 'visible' }) // wait before interaction
+    await input.waitFor({ state: 'visible' })
+    await input.fill('')
     await input.fill(value)
   }
 
-  async fillCreateOrEditTextArea(value) {
-    const text_area = this.noteTextArea
+  async fillCreateOrEditTextArea(field, value) {
+    const text_area = this.getCreateOrEditTextareaField(field)
     await text_area.waitFor({ state: 'visible' }) // wait before interaction
     await text_area.type(value)
   }

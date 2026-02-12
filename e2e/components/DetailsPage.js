@@ -1,6 +1,3 @@
-// 'use strict'
-
-// const { expect } = require('../fixtures/app.runner')
 import { test, expect } from '../fixtures/app.runner.js';
 
 class DetailsPage {
@@ -22,6 +19,16 @@ class DetailsPage {
         return this.root.locator('input', {
             has: this.root.locator('[data-testid="details-header"]', { hasText: labelOrPlaceholder })
         }).or(this.root.locator(`input[placeholder="${labelOrPlaceholder}"]`));
+    }
+
+    getElementItemDetailsNew() {
+        return this.root.getByTestId('text-area')
+    }
+
+    async verifyNoteText(note_text) {
+        const noteTextDetail = this.getElementItemDetailsNew()
+        await expect(noteTextDetail).toBeVisible();
+        await expect(noteTextDetail).toHaveText(note_text);
     }
 
     getIdentityDetails(name) {
@@ -75,7 +82,7 @@ class DetailsPage {
     }
 
     get elementItemCloseButton() {
-        return this.root.getByTestId('button-round-icon').last()
+        return this.root.getByTestId('modalheader-button-close').last()
     }
 
     get createNewFolderButton() {
@@ -255,6 +262,17 @@ class DetailsPage {
     async verifyUploadedImageIsVisible() {
         await expect(this.uploadedImage).toBeVisible()
     }
+
+    get recoveryPhraseDetails() {
+        return this.root.getByTestId(/passphrase-word-\d+/)
+    }
+
+    async verifyAllRecoveryPhraseWords(expectedWords) {
+        const words = this.recoveryPhraseDetails
+        // await expect(words).toHaveCount(12);
+        await expect(words).toHaveText(expectedWords);
+    }
+
 
 }
 

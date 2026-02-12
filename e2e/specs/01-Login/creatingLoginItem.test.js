@@ -10,7 +10,7 @@ import {
 } from '../../components/index.js';
 import testData from '../../fixtures/test-data.js';
 
-test.describe.only('Creating Login Item', () => {
+test.describe('Creating Login Item', () => {
   test.describe.configure({ mode: 'serial' })
 
   let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page

@@ -39,8 +39,8 @@ test.describe('Creating Custom Field Item', () => {
   test('Custom Field item is created after fulfilling fields', async ({ page }) => {
 
     /**
-     * @qase.id PAS-563
-     * @description "Custom Field" item is created after fulfilling fields
+     * @qase.id PAS-655
+     * @description "Custom" item is created after fulfilling fields
      */
     await test.step('CREATE CUSTOM FIELD ELEMENT - initial empty element collection', async () => {
       await sideMenuPage.selectSideBarCategory('custom')
@@ -59,10 +59,10 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     /**
-     * @qase.id PAS-564
-     * @description All fields' values after creating "Login" item correspond to entered fields' values
+     * @qase.id PAS-656
+     * @description All fields' values after creating "Custom" item correspond to entered fields' values
      */
-    await test.step('VERIFY LOGIN DETAILS', async () => {
+    await test.step('VERIFY CUSTOM FIELD DETAILS', async () => {
       await detailsPage.verifyTitle('Custom Field Title')
     })
 
@@ -72,7 +72,6 @@ test.describe('Creating Custom Field Item', () => {
 
   })
 
-  // ADD FOLDER INSIDE SIDEMENU
   test('After changing "Item" dropdown option user is moved to the selected "Item" edit screen', async ({ page }) => {
 
     await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
@@ -108,7 +107,7 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     /**
-     * @qase.id PAS-577
+     * @qase.id PAS-559
      * @description After changing "Item" dropdown option user is moved to the selected "Item" edit screen
      */
     await test.step('VERIFY THAT USER IS MOVED TO SELECTED ITEM EDIT SCREEN', async () => {
@@ -120,7 +119,7 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     /**
-     * @qase.id PAS-578
+     * @qase.id PAS-660
      * @description Item is moved to the folder selected in "Folder" dropdown
      */
     await test.step('VERIFY ELEMENT IS MOVED TO THE FOLDER SELECTED FROM DROPDOWN', async () => {
@@ -166,7 +165,7 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     /**
-     * @qase.id PAS-580
+     * @qase.id PAS-662
      * @description "Star" icon is added to "Item" icon within "Item view mode" and Home screen when marking item as favorite through "Favorite" icon
      */
     await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS VISIBLE - FAVORITE', async () => {
@@ -183,7 +182,7 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     /**
-     * @qase.id PAS-581
+     * @qase.id PAS-663
      * @description "Star" icon is removed from "Item" icon within "Item view mode" and Home screen when removing item from favorites through "More options"
      */
     await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS REMOVED - MORE OPTIONS', async () => {
@@ -197,7 +196,7 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     /**
-     * @qase.id PAS-579
+     * @qase.id PAS-661
      * @description "Star" icon is added to "Item" icon within "Item view mode" and Home screen when marking item as favorite through "More options"
      */
     await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS VISIBLE - MORE OPTIONS', async () => {
@@ -211,7 +210,7 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     /**
-     * @qase.id PAS-582
+     * @qase.id PAS-664
      * @description "Star" icon is removed from "Item" icon within "Item view mode" and Home screen when removing item from favorites through "Favorite" icon
      */
     await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS REMOVED - FAVORITE', async () => {
@@ -237,7 +236,7 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     /**
-     * @qase.id PAS-942
+     * @qase.id PAS-91013
      * @description It is possible to add fields
      */
     await test.step('OPEN CREATE CUSTOM MENU', async () => {
@@ -253,7 +252,7 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     /**
-     * @qase.id PAS-943
+     * @qase.id PAS-1014
      * @description It is possible to delete additional fields
      */
     await test.step('DELETE NEW CUSTOM NOTE ITEM', async () => {
@@ -265,7 +264,7 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     /**
-     * @qase.id PAS-945
+     * @qase.id PAS-1016
      * @description It is possible to close the screen by clicking on the "Cross" icon
      */
     await test.step('CLICK CLOSE (X) BUTTON', async () => {
@@ -301,7 +300,7 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     /**
-   * @qase.id PAS-901
+   * @qase.id PAS-1012
    * @description It is possible to view uploaded files in "Edit" mode
    */
     await test.step('VERIFY UPLOADED FILE IS VISIBLE INSIDE LOGIN ITEMS', async () => {
@@ -325,7 +324,7 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     /**
-   * @qase.id PAS-960
+   * @qase.id PAS-1017
    * @description It is possible to view uploaded files in "View" mode
    */
     await test.step('VERIFY UPLOADED FILE IS VISIBLE INSIDE LOGIN ITEMS', async () => {
@@ -349,62 +348,64 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     await test.step('CLICK DELETE FILE/ATTACHMENT BUTTON', async () => {
-      await createOrEditPage.clickOnCreateOrEditButton('deleteattachment')
+      await createOrEditPage.clickElementItemCloseButton()
     })
 
     await test.step('VERIFY UPLOADED FILE NOT VISIBLE', async () => {
       await createOrEditPage.verifyUploadedImageIsNotVisible()
     })
 
-    await test.step('CLICK CLOSE (X) BUTTON', async () => {
-      await createOrEditPage.clickElementItemCloseButton()
-    })
+    // await test.step('CLICK CLOSE (X) BUTTON', async () => {
+    //   await createOrEditPage.clickElementItemCloseButton()
+    // })
 
-    await test.step('EXIT TO LOGIN SCREEN', async () => {
-      await sideMenuPage.clickSidebarExitButton()
-    })
-
-  })
-
-  test.skip('Deleted Login Items are not displayed in view/details mode ', async ({ page }) => {
-
-    await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
-      await mainPage.verifyElementTitle('Custom Field Title')
-    })
-
-    await test.step('OPEN ELEMENT', async () => {
-      await mainPage.openElementDetails()
-    })
-
-    await test.step('EDIT ELEMENT DETAILS', async () => {
-      await detailsPage.editElement()
-    })
-
-    await test.step('DELETE LOGIN ITEMS', async () => {
-      await createOrEditPage.fillCreateOrEditInput('title', 'Custom Field Title')
-      await createOrEditPage.fillCreateOrEditInput('username', '')
-      await createOrEditPage.fillCreateOrEditInput('password', '')
-      await createOrEditPage.fillCreateOrEditInput('website', '')
-      await createOrEditPage.fillCreateOrEditInput('note', '')
-
-      await createOrEditPage.clickOnCreateOrEditButton('save')
-    })
-
-    await test.step('OPEN ELEMENT DETAILS', async () => {
-      await mainPage.openElementDetails()
-    })
-
-    /**
-     * @qase.id PAS-575
-     * @description "Empty "Login" item fields are not displayed in view mode
-     */
-    await test.step('VERIFY ELEMENT DETAILS', async () => {
-      await detailsPage.verifyItemDetailsValue('https://', '')
-      await detailsPage.verifyItemDetailsValueIsNotVisible('Email or username')
-      await detailsPage.verifyItemDetailsValueIsNotVisible('Password')
-      await detailsPage.verifyItemDetailsValueIsNotVisible('Add note')
-    })
+    // await test.step('EXIT TO LOGIN SCREEN', async () => {
+    //   await sideMenuPage.clickSidebarExitButton()
+    // })
 
   })
+
+  // TODO: Missing ID's. Waiting
+
+  // test('Deleted Custom Field Items are not displayed in view/details mode ', async ({ page }) => {
+
+  //   await test.step('VERIFY CUSTOM FIELD ELEMENT CREATED', async () => {
+  //     await mainPage.verifyElementTitle('Custom Field Title')
+  //   })
+
+  //   await test.step('OPEN ELEMENT', async () => {
+  //     await mainPage.openElementDetails()
+  //   })
+
+  //   await test.step('EDIT ELEMENT DETAILS', async () => {
+  //     await detailsPage.editElement()
+  //   })
+
+  //   await test.step('DELETE CUSTOM FIELD ITEMS', async () => {
+  //     // await createOrEditPage.fillCreateOrEditInput('title', 'Custom Field Title')
+  //     // await createOrEditPage.fillCreateOrEditInput('username', '')
+  //     // await createOrEditPage.fillCreateOrEditInput('password', '')
+  //     // await createOrEditPage.fillCreateOrEditInput('website', '')
+  //     // await createOrEditPage.fillCreateOrEditInput('note', '')
+
+  //     await createOrEditPage.clickOnCreateOrEditButton('save')
+  //   })
+
+  //   await test.step('OPEN ELEMENT DETAILS', async () => {
+  //     await mainPage.openElementDetails()
+  //   })
+
+  //   /**
+  //    * @qase.id PAS-658
+  //    * @description "Empty "Custom" item fields are not displayed in view mode
+  //    */
+  //   await test.step('VERIFY ELEMENT DETAILS', async () => {
+  //     // await detailsPage.verifyItemDetailsValue('https://', '')
+  //     // await detailsPage.verifyItemDetailsValueIsNotVisible('Email or username')
+  //     // await detailsPage.verifyItemDetailsValueIsNotVisible('Password')
+  //     // await detailsPage.verifyItemDetailsValueIsNotVisible('Add note')
+  //   })
+
+  // })
 
 })

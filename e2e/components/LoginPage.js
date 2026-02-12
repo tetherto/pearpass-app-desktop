@@ -1,6 +1,3 @@
-// 'use strict'
-
-// const { expect } = require('../fixtures/app.runner')
 import { test, expect } from '../fixtures/app.runner.js';
 
 

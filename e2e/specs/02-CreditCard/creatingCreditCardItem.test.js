@@ -108,10 +108,6 @@ test.describe('Creating Credit Card Item', () => {
       expect(createOrEditPage.verifyItemType('1234', 'text'))
     })
 
-    await test.step('CLICK CLOSE (X) BUTTON', async () => {
-      await createOrEditPage.clickElementItemCloseButton()
-    })
-
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
@@ -287,11 +283,11 @@ test.describe('Creating Credit Card Item', () => {
     })
 
     await test.step('CLICK ON NOTE OPTION FROM CREATE CUSTOM MENU', async () => {
-      await createOrEditPage.clickCustomItemOptionNote();
+      await createOrEditPage.clickCustomItemOptionNote()
     })
 
     await test.step('VERIFY THERE IS ONE NEW CUSTOM NOTES ITEMS INSIDE LOGIN ELEMENT', async () => {
-      await expect(createOrEditPage.customNoteInput).toHaveCount(1);
+      await expect(createOrEditPage.customNoteInput).toHaveCount(1)
     })
 
     /**

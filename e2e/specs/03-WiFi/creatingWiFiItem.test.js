@@ -338,10 +338,6 @@ test.describe('Creating WiFi Item', () => {
       await detailsPage.verifyItemDetailsValueIsNotVisible('Add note')
     })
 
-    await test.step('CLICK CLOSE (X) BUTTON', async () => {
-      await createOrEditPage.clickElementItemCloseButton()
-    })
-
   })
 
 })
