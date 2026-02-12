@@ -46,7 +46,6 @@
   "scripts": {
     "test": "jest",
     "build:pear": "lingui extract && lingui compile && tsc",
-    "build-bridge-package": "node scripts/build-bridge-package.js",
     "lint:fix": "eslint --fix ./src",
     "lint": "eslint ./src",
     "build": "tsc",
