@@ -12,7 +12,8 @@ jest.mock('../../lib-react-components', () => ({
 }))
 
 const mockUseFavicon = jest.fn()
-jest.mock('../../hooks/useFavicon', () => ({
+jest.mock('pearpass-lib-vault', () => ({
+  ...jest.requireActual('pearpass-lib-vault'),
   useFavicon: (params) => mockUseFavicon(params)
 }))
 

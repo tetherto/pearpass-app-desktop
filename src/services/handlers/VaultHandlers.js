@@ -210,4 +210,8 @@ export class VaultHandlers {
     await this.client.activeVaultRemoveFile(params.key)
     return { success: true }
   }
+
+  async fetchFavicon(params) {
+    return await this.client.fetchFavicon(params.url)
+  }
 }

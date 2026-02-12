@@ -10,7 +10,7 @@ import {
   SelectedAvatarContainer
 } from './styles'
 import { CheckIcon, StarIcon } from '../../lib-react-components'
-import { useFavicon } from '../../hooks/useFavicon'
+import { useFavicon } from 'pearpass-lib-vault'
 
 interface Props {
   websiteDomain: string
