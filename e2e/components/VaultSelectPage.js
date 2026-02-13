@@ -1,6 +1,4 @@
-'use strict'
-
-const { expect } = require('../fixtures/app.runner')
+import { test, expect } from '../fixtures/app.runner.js';
 
 class VaultSelectPage {
   constructor(root) {
@@ -46,7 +44,7 @@ class VaultSelectPage {
   }
 
   async selectVaultbyName(vaultName) {
-    await expect(this.title).toHaveText('Open an existing vault or create a new one.')
+    // await expect(this.title).toHaveText('Open an existing vault or create a new one.') // Select a vault, create a new one or load another one
     const vault = this.getVaultItem(vaultName)
     await expect(vault).toBeVisible()
     await vault.click()

@@ -1,8 +1,14 @@
-'use strict'
-
-const { test, expect } = require('../../fixtures/app.runner')
-const { LoginPage, VaultSelectPage, CreateOrEditPage, SideMenuPage, MainPage, Utilities, DetailsPage } = require('../../components')
-const testData = require('../../fixtures/test-data')
+import { test, expect } from '../../fixtures/app.runner.js';
+import {
+  LoginPage,
+  VaultSelectPage,
+  MainPage,
+  SideMenuPage,
+  CreateOrEditPage,
+  Utilities,
+  DetailsPage
+} from '../../components/index.js';
+import testData from '../../fixtures/test-data.js';
 
 test.describe('Creating WiFi Item', () => {
   test.describe.configure({ mode: 'serial' })
@@ -330,10 +336,6 @@ test.describe('Creating WiFi Item', () => {
     await test.step('VERIFY ELEMENT DETAILS', async () => {
       await detailsPage.verifyTitle('WiFi Title');
       await detailsPage.verifyItemDetailsValueIsNotVisible('Add note')
-    })
-
-    await test.step('CLICK CLOSE (X) BUTTON', async () => {
-      await createOrEditPage.clickElementItemCloseButton()
     })
 
   })

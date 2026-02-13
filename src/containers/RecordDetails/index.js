@@ -48,13 +48,28 @@ export const RecordDetails = () => {
   const { handleCreateOrEditRecord } = useCreateOrEditRecord()
   const { updateFavoriteState } = useRecords()
 
-  const { actions } = useRecordActionItems({
+  const DATA_ID_PREFIX_BY_TYPE = {
+    note: 'note',
+    custom: 'custom'
+  }
+
+  const dataIdPrefix = DATA_ID_PREFIX_BY_TYPE[record?.type]
+
+  const { actions: rawActions } = useRecordActionItems({
     excludeTypes: ['select', 'pin'],
     record: record,
     onClose: () => {
       setIsOpen(false)
     }
   })
+
+  const actions = dataIdPrefix
+    ? rawActions.map((action) =>
+        action.type === 'delete'
+          ? { ...action, dataId: `${dataIdPrefix}-delete-button` }
+          : action
+      )
+    : rawActions
 
   const handleEdit = () => {
     handleCreateOrEditRecord({
@@ -122,7 +137,8 @@ export const RecordDetails = () => {
           <//>
 
           <${ButtonLittle}
-            data-testid="details-button-edit"
+            testId="details-button-edit"
+            dataId=${dataIdPrefix ? `${dataIdPrefix}-edit-button` : undefined}
             startIcon=${BrushIcon}
             onClick=${handleEdit}
           >

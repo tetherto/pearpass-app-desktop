@@ -9,7 +9,14 @@ import {
 } from 'pearpass-lib-constants'
 import { useBlindMirrors } from 'pearpass-lib-vault'
 
+import {
+  ActionsContainer,
+  ContentWrapper,
+  FormWrapper,
+  HeaderWrapper
+} from './styles'
 import { RadioSelect } from '../../../components/RadioSelect'
+import { useTranslation } from '../../../hooks/useTranslation'
 import {
   ButtonPrimary,
   ButtonSecondary,
@@ -20,13 +27,6 @@ import {
   PlusIcon
 } from '../../../lib-react-components'
 import { ModalContent } from '../ModalContent'
-import {
-  ActionsContainer,
-  ContentWrapper,
-  FormWrapper,
-  HeaderWrapper
-} from './styles'
-import { useTranslation } from '../../../hooks/useTranslation'
 
 const { DEFAULT, PERSONAL } = BLIND_PEER_TYPE
 /**
@@ -53,7 +53,12 @@ export const BlindPeersModalContent = ({ onConfirm, onClose }) => {
       }
     }
     return {
-      blindPeers: [{ name: BLIND_PEER_FORM_NAME }]
+      blindPeers: [
+        {
+          name: BLIND_PEER_FORM_NAME,
+          blindPeer: ''
+        }
+      ]
     }
   }
 
@@ -86,10 +91,15 @@ export const BlindPeersModalContent = ({ onConfirm, onClose }) => {
   const handleBlindPeersConfirm = async () => {
     if (selectedOption === DEFAULT) {
       onConfirm({ blindPeerType: DEFAULT, isEditMode })
-    } else if (selectedOption === PERSONAL && blindPeersList.length > 0) {
+    } else if (selectedOption === PERSONAL) {
       const blindPeers = blindPeersList
         .map((peer) => peer.blindPeer?.trim())
         .filter((peer) => peer && peer.length > 0)
+
+      if (blindPeers.length === 0) {
+        return
+      }
+
       onConfirm({ blindPeerType: PERSONAL, blindPeers, isEditMode })
     }
   }

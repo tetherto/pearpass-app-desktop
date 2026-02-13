@@ -3,13 +3,13 @@
 exports[`TextArea Component matches snapshot for default variant 1`] = `
 <div
   class="sc-fhHczv eLkUHf"
-  data-testid="text-area"
 >
   <div
     class="sc-ggWZvA evJOyk"
   >
     <textarea
       class="sc-bRKDuR cVKynm"
+      data-testid="text-area"
       placeholder="Enter text here"
     >
       snapshot default
@@ -21,13 +21,13 @@ exports[`TextArea Component matches snapshot for default variant 1`] = `
 exports[`TextArea Component matches snapshot for report variant 1`] = `
 <div
   class="sc-fhHczv eLkUHf"
-  data-testid="text-area"
 >
   <div
     class="sc-ggWZvA evJOyk"
   >
     <textarea
       class="sc-hvigdm juBlam"
+      data-testid="text-area"
       placeholder="Report here"
     >
       snapshot report

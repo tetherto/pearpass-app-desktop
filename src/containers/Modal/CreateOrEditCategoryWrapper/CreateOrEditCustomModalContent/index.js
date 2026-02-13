@@ -176,6 +176,7 @@ export const CreateOrEditCustomModalContent = ({
     <${ModalContent}
       onSubmit=${handleSubmit(onSubmit)}
       onClose=${closeModal}
+      closeButtonDataId="custom-close-button"
       headerChildren=${html`
         <${FormModalHeaderWrapper}
           buttons=${html`
@@ -188,6 +189,7 @@ export const CreateOrEditCustomModalContent = ({
             <//>
             <${ButtonLittle}
               testId="createoredit-button-save"
+              dataId="custom-save-button"
               startIcon=${SaveIcon}
               type="submit"
             >
@@ -215,6 +217,7 @@ export const CreateOrEditCustomModalContent = ({
         <${FormGroup}>
           <${InputField}
             testId="createoredit-input-title"
+            dataId="custom-title-input"
             label=${i18n._('Title')}
             placeholder=${i18n._('Insert title')}
             variant="outline"
@@ -252,15 +255,18 @@ export const CreateOrEditCustomModalContent = ({
           <//>
         `}
 
-        <${CustomFields}
-          customFields=${list}
-          register=${registerItem}
-          removeItem=${removeItem}
-        />
+        <div data-id="custom-field">
+          <${CustomFields}
+            customFields=${list}
+            register=${registerItem}
+            removeItem=${removeItem}
+          />
+        </div>
 
         <${FormGroup}>
           <${CreateCustomField}
-            testId="createoredit-button-createcustomfield"
+            testId="createoredit-button-createcustom"
+            dataId="custom-add-field-button"
             onCreateCustom=${(type) => addItem({ type: type, name: type })}
           />
         <//>

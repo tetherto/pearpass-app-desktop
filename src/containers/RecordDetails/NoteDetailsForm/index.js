@@ -59,7 +59,7 @@ export const NoteDetailsForm = ({ initialRecord, selectedFolder }) => {
   }, [initialValues, setValues])
 
   return html`
-    <${FormWrapper}>
+    <${FormWrapper} data-id="note-details">
       <${FormGroup}>
         ${!!values?.note?.length &&
         html`

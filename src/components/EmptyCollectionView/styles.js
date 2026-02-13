@@ -5,7 +5,9 @@ export const CollectionsWrapper = styled.div`
   width: 100%;
   height: 100%;
   justify-content: center;
-  align-items: center;
+  align-items: ${({ $isSearchActive }) =>
+    $isSearchActive ? 'flex-start' : 'center'};
+  padding-top: ${({ $isSearchActive }) => ($isSearchActive ? '20%' : '0')};
 `
 
 export const CollectionsContainer = styled.div`

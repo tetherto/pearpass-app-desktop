@@ -34,14 +34,25 @@ export const PopupMenu = ({
   testId
 }) => {
   const boxRef = useRef(null)
+  const closeTimeoutRef = useRef(null)
 
   const [shouldRender, setShouldRender] = useState(false)
 
   const handleClose = useCallback(() => {
-    setIsOpen(false)
-  }, [setIsOpen])
+    if (displayOnHover) {
+      closeTimeoutRef.current = setTimeout(() => {
+        setIsOpen(false)
+      }, 100)
+    } else {
+      setIsOpen(false)
+    }
+  }, [setIsOpen, displayOnHover])
 
   const handleOpen = useCallback(() => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current)
+      closeTimeoutRef.current = null
+    }
     setIsOpen(true)
   }, [setIsOpen])
 
@@ -229,13 +240,24 @@ export const PopupMenu = ({
     }
   }, [isOpen])
 
+  useEffect(
+    () => () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current)
+      }
+    },
+    []
+  )
+
   return html`
-    <${MenuWrapper} ref=${wrapperRef}>
+    <${MenuWrapper}
+      ref=${wrapperRef}
+      onMouseEnter=${displayOnHover ? handleOpen : undefined}
+      onMouseLeave=${displayOnHover ? handleClose : undefined}
+    >
       <${MenuTrigger}
         data-testid=${testId}
         onClick=${!displayOnHover && handleToggle}
-        onMouseEnter=${displayOnHover ? handleOpen : undefined}
-        onMouseLeave=${displayOnHover ? handleClose : undefined}
       >
         ${children}
       <//>

@@ -1,6 +1,5 @@
-'use strict'
+import { test, expect } from '../fixtures/app.runner.js';
 
-const { expect } = require('../fixtures/app.runner')
 
 class LoginPage {
   constructor(root) {

@@ -46,6 +46,7 @@ const resetMocks = () => {
   fs.writeFile.mockResolvedValue()
   fs.chmod.mockResolvedValue()
   fs.unlink.mockResolvedValue()
+  fs.access.mockResolvedValue()
 }
 
 describe('getNativeHostExecutableInfo', () => {
@@ -149,38 +150,44 @@ describe('generateNativeHostExecutable', () => {
 describe('getNativeMessagingLocations', () => {
   beforeEach(resetMocks)
 
-  it('should return correct paths for macOS', () => {
+  it('should return correct browser entries for macOS', () => {
     os.platform.mockReturnValue('darwin')
-    const locations = getNativeMessagingLocations()
-    expect(locations.platform).toBe('darwin')
-    expect(locations.manifestPaths).toHaveLength(3)
-    expect(locations.manifestPaths[0]).toContain('Google/Chrome')
-    expect(locations.manifestPaths[1]).toContain('Microsoft Edge')
-    expect(locations.manifestPaths[2]).toContain('Chromium')
-    expect(locations.registryKeys).toHaveLength(0)
+    const { browsers } = getNativeMessagingLocations()
+    expect(browsers).toHaveLength(3)
+    expect(browsers[0].name).toBe('Google Chrome')
+    expect(browsers[0].manifestPath).toContain('Google/Chrome')
+    expect(browsers[0].browserDir).toContain('Google/Chrome')
+    expect(browsers[1].name).toBe('Microsoft Edge')
+    expect(browsers[1].manifestPath).toContain('Microsoft Edge')
+    expect(browsers[2].name).toBe('Chromium')
+    expect(browsers[2].manifestPath).toContain('Chromium')
   })
 
-  it('should return correct paths for Linux', () => {
+  it('should return correct browser entries for Linux including snap', () => {
     os.platform.mockReturnValue('linux')
-    const locations = getNativeMessagingLocations()
-    expect(locations.platform).toBe('linux')
-    expect(locations.manifestPaths).toHaveLength(3)
-    expect(locations.manifestPaths[0]).toContain('google-chrome')
-    expect(locations.manifestPaths[1]).toContain('chromium')
-    expect(locations.manifestPaths[2]).toContain('microsoft-edge')
-    expect(locations.registryKeys).toHaveLength(0)
+    const { browsers } = getNativeMessagingLocations()
+    expect(browsers).toHaveLength(4)
+    expect(browsers[0].name).toBe('Google Chrome')
+    expect(browsers[0].manifestPath).toContain('google-chrome')
+    expect(browsers[0].browserDir).toContain('google-chrome')
+    expect(browsers[1].name).toBe('Chromium')
+    expect(browsers[1].manifestPath).toContain('.config/chromium')
+    expect(browsers[2].name).toBe('Microsoft Edge')
+    expect(browsers[2].manifestPath).toContain('microsoft-edge')
+    expect(browsers[3].name).toBe('Chromium (Snap)')
+    expect(browsers[3].manifestPath).toContain('snap/chromium')
+    expect(browsers[3].browserDir).toContain('snap/chromium')
   })
 
-  it('should return correct paths and registry keys for Windows', () => {
+  it('should return correct browser entries with registry keys for Windows', () => {
     os.platform.mockReturnValue('win32')
-    const locations = getNativeMessagingLocations()
-    expect(locations.platform).toBe('win32')
-    expect(locations.manifestPaths).toHaveLength(1)
-    expect(locations.manifestPaths[0]).toContain('PearPass/NativeMessaging')
-    expect(locations.registryKeys).toHaveLength(3)
-    expect(locations.registryKeys[0]).toContain('Google\\Chrome')
-    expect(locations.registryKeys[1]).toContain('Microsoft\\Edge')
-    expect(locations.registryKeys[2]).toContain('Chromium')
+    const { browsers } = getNativeMessagingLocations()
+    expect(browsers).toHaveLength(3)
+    expect(browsers[0].browserDir).toBeNull()
+    expect(browsers[0].manifestPath).toContain('PearPass/NativeMessaging')
+    expect(browsers[0].registryKey).toContain('Google\\Chrome')
+    expect(browsers[1].registryKey).toContain('Microsoft\\Edge')
+    expect(browsers[2].registryKey).toContain('Chromium')
   })
 
   it('should throw error for unsupported platform', () => {
@@ -198,8 +205,8 @@ describe('cleanupNativeMessaging', () => {
     os.platform.mockReturnValue('linux')
     const result = await cleanupNativeMessaging()
     expect(result.success).toBe(true)
-    expect(result.message).toContain('Removed 3 manifest file')
-    expect(fs.unlink).toHaveBeenCalledTimes(3)
+    expect(result.message).toContain('Removed 4 manifest file')
+    expect(fs.unlink).toHaveBeenCalledTimes(4)
   })
 
   it('should remove manifest files on macOS', async () => {
@@ -379,12 +386,29 @@ describe('setupNativeMessaging', () => {
   })
 
   it('should continue on partial manifest write failures', async () => {
+    // First writeFile call is for the executable wrapper, then one per browser
     fs.writeFile
-      .mockResolvedValueOnce()
-      .mockRejectedValueOnce(new Error('write failed'))
-      .mockResolvedValueOnce()
+      .mockResolvedValueOnce() // executable
+      .mockResolvedValueOnce() // first browser
+      .mockRejectedValueOnce(new Error('write failed')) // second browser fails
+      .mockResolvedValueOnce() // third browser
 
     const result = await setupNativeMessaging()
     expect(result.success).toBe(true)
+  })
+
+  it('should skip browsers whose directory does not exist', async () => {
+    os.platform.mockReturnValue('linux')
+    // Make fs.access reject for all browsers except the first (google-chrome)
+    fs.access
+      .mockResolvedValueOnce() // google-chrome exists
+      .mockRejectedValueOnce(new Error('ENOENT')) // chromium not found
+      .mockRejectedValueOnce(new Error('ENOENT')) // microsoft-edge not found
+      .mockRejectedValueOnce(new Error('ENOENT')) // chromium snap not found
+
+    const result = await setupNativeMessaging()
+    expect(result.success).toBe(true)
+    // 1 executable write + 1 manifest write (only google-chrome)
+    expect(fs.writeFile).toHaveBeenCalledTimes(2)
   })
 })

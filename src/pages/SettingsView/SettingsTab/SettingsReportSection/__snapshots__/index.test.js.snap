@@ -20,13 +20,13 @@ exports[`SettingsReportSection matches snapshot 1`] = `
       >
         <div
           class="sc-jytpVa dLDlNu"
-          data-testid="text-area"
         >
           <div
             class="sc-eknHtZ gUwSmg"
           >
             <textarea
               class="sc-cdmAjP kJVkCe"
+              data-testid="text-area"
               placeholder="Describe the issue"
             />
           </div>

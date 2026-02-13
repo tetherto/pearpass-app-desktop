@@ -12,10 +12,17 @@ import { useOutsideClick } from '../../hooks/useOutsideClick'
  *    selectedItem?: {name: string, icon?: import('react').ReactNode},
  *    onItemSelect: (item: {name: string, icon?: import('react').ReactNode}) => void,
  *    items: Array<{name: string, icon?: import('react').ReactNode}>,
- *  testId?: string
+ *    bottomComponent?: import('react').ReactNode,
+ *    testId?: string
  *  }} props
  */
-export const MenuDropdown = ({ selectedItem, onItemSelect, items, testId }) => {
+export const MenuDropdown = ({
+  selectedItem,
+  onItemSelect,
+  items,
+  bottomComponent,
+  testId
+}) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const currentItems = React.useMemo(
@@ -64,6 +71,7 @@ export const MenuDropdown = ({ selectedItem, onItemSelect, items, testId }) => {
               />
             `
           )}
+          ${bottomComponent && bottomComponent}
         <//>`}
       <//>
     <//>

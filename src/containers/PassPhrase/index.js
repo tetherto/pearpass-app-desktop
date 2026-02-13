@@ -117,7 +117,7 @@ export const PassPhrase = ({
         <${PassPhraseIcon} />
         <${HeaderText}>${t('Recovery phrase 2')}<//>
       <//>
-      <${PassPhraseContainer}>
+      <${PassPhraseContainer} data-testid="passphrase-words-container">
         ${passphraseWords.map(
           (word, i) =>
             html`<${BadgeTextItem}

@@ -131,13 +131,24 @@ declare module 'pearpass-lib-vault' {
 
 declare module 'pear-apps-lib-ui-react-hooks' {
   export const useCountDown: any
+  export const useForm: any
 }
 
 declare module 'pear-apps-utils-qr' {
   export const generateQRCodeSVG: any
 }
 
+declare module 'pear-apps-utils-validator' {
+  export const Validator: any
+}
+
+declare module 'pearpass-lib-vault/src/utils/buffer' {
+  export const clearBuffer: (buffer: any) => void
+  export const stringToBuffer: (value: string) => any
+}
+
 declare module 'pearpass-lib-constants' {
+  export const PROTECTED_VAULT_ENABLED: boolean
   export const BE_AUTO_LOCK_ENABLED: boolean
   export const DEFAULT_AUTO_LOCK_TIMEOUT: number
   export const AUTO_LOCK_TIMEOUT_OPTIONS: Record<string, { label: string, value: number }>

@@ -1,8 +1,14 @@
-'use strict'
-
-const { test, expect } = require('../../fixtures/app.runner')
-const { LoginPage, VaultSelectPage, CreateOrEditPage, SideMenuPage, MainPage, Utilities, DetailsPage } = require('../../components')
-const testData = require('../../fixtures/test-data')
+import { test, expect } from '../../fixtures/app.runner.js';
+import {
+  LoginPage,
+  VaultSelectPage,
+  MainPage,
+  SideMenuPage,
+  CreateOrEditPage,
+  Utilities,
+  DetailsPage
+} from '../../components/index.js';
+import testData from '../../fixtures/test-data.js';
 
 test.describe('Creating Credit Card Item', () => {
   test.describe.configure({ mode: 'serial' })
@@ -100,10 +106,6 @@ test.describe('Creating Credit Card Item', () => {
       await createOrEditPage.clickShowHidePasswordButtonLast()
       // await page.waitForTimeout(testData.timeouts.action)
       expect(createOrEditPage.verifyItemType('1234', 'text'))
-    })
-
-    await test.step('CLICK CLOSE (X) BUTTON', async () => {
-      await createOrEditPage.clickElementItemCloseButton()
     })
 
     await test.step('EXIT TO LOGIN SCREEN', async () => {
@@ -281,11 +283,11 @@ test.describe('Creating Credit Card Item', () => {
     })
 
     await test.step('CLICK ON NOTE OPTION FROM CREATE CUSTOM MENU', async () => {
-      await createOrEditPage.clickCustomItemOptionNote();
+      await createOrEditPage.clickCustomItemOptionNote()
     })
 
     await test.step('VERIFY THERE IS ONE NEW CUSTOM NOTES ITEMS INSIDE LOGIN ELEMENT', async () => {
-      await expect(createOrEditPage.customNoteInput).toHaveCount(1);
+      await expect(createOrEditPage.customNoteInput).toHaveCount(1)
     })
 
     /**

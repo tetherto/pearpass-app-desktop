@@ -1,8 +1,15 @@
-'use strict'
+import { test, expect } from '../../fixtures/app.runner.js';
+import {
+  LoginPage,
+  VaultSelectPage,
+  MainPage,
+  SideMenuPage,
+  CreateOrEditPage,
+  Utilities,
+  DetailsPage
+} from '../../components/index.js';
+import testData from '../../fixtures/test-data.js';
 
-const { test, expect } = require('../../fixtures/app.runner')
-const { LoginPage, VaultSelectPage, CreateOrEditPage, SideMenuPage, MainPage, Utilities, DetailsPage } = require('../../components')
-const testData = require('../../fixtures/test-data')
 
 test.describe('Editing/Deleting Identity Item', () => {
   test.describe.configure({ mode: 'serial' })
