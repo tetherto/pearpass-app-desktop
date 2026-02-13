@@ -215,6 +215,25 @@ export const getNativeMessagingLocations = () => {
             'NativeMessagingHosts',
             manifestFile
           )
+        },
+        {
+          name: 'Brave',
+          browserDir: path.join(
+            home,
+            'Library',
+            'Application Support',
+            'BraveSoftware',
+            'Brave-Browser'
+          ),
+          manifestPath: path.join(
+            home,
+            'Library',
+            'Application Support',
+            'BraveSoftware',
+            'Brave-Browser',
+            'NativeMessagingHosts',
+            manifestFile
+          )
         }
       )
       break
@@ -246,6 +265,12 @@ export const getNativeMessagingLocations = () => {
           browserDir: null,
           manifestPath,
           registryKey: `HKCU\\Software\\Chromium\\NativeMessagingHosts\\${MANIFEST_NAME}`
+        },
+        {
+          name: 'Brave',
+          browserDir: null,
+          manifestPath,
+          registryKey: `HKCU\\Software\\BraveSoftware\\Brave-Browser\\NativeMessagingHosts\\${MANIFEST_NAME}`
         }
       )
       break
@@ -295,6 +320,23 @@ export const getNativeMessagingLocations = () => {
             'chromium',
             'common',
             'chromium',
+            'NativeMessagingHosts',
+            manifestFile
+          )
+        },
+        {
+          name: 'Brave',
+          browserDir: path.join(
+            home,
+            '.config',
+            'BraveSoftware',
+            'Brave-Browser'
+          ),
+          manifestPath: path.join(
+            home,
+            '.config',
+            'BraveSoftware',
+            'Brave-Browser',
             'NativeMessagingHosts',
             manifestFile
           )
