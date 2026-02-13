@@ -38,6 +38,7 @@ export const MenuCard = styled.div.withConfig({
   top: ${({ top }) => top}px;
   opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
   visibility: ${({ shouldRender }) => (shouldRender ? 'visible' : 'hidden')};
+  pointer-events: ${({ isOpen }) => (isOpen ? 'auto' : 'none')};
   transition:
     opacity ${TRANSITION_DURATION}ms ease-in-out,
     visibility ${TRANSITION_DURATION}ms ease-in-out;

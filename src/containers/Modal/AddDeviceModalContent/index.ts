@@ -232,7 +232,7 @@ export const AddDeviceModalContent = () => {
               <${BackgroundSection}>
                 <${ExpireText}>
                   ${t('Expires in')}
-                  <${ScanQRExpireTimer} />
+                  <${ScanQRExpireTimer} onFinish=${closeModal} />
                 <//>
 
                 <${TimeIcon} color=${colors.primary400.mode1} />

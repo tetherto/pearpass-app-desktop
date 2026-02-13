@@ -7,6 +7,8 @@ import { useFolders } from 'pearpass-lib-vault'
 import { FolderDropdown } from './index'
 import '@testing-library/jest-dom'
 
+const mockSetModal = jest.fn()
+
 jest.mock('pearpass-lib-vault', () => ({
   useFolders: jest.fn()
 }))
@@ -15,8 +17,15 @@ jest.mock('@lingui/react', () => ({
   useLingui: jest.fn()
 }))
 
+jest.mock('../../context/ModalContext', () => ({
+  useModal: jest.fn(() => ({
+    setModal: mockSetModal,
+    closeModal: jest.fn()
+  }))
+}))
+
 jest.mock('../MenuDropdown', () => ({
-  MenuDropdown: ({ selectedItem, onItemSelect, items }) => (
+  MenuDropdown: ({ selectedItem, onItemSelect, items, bottomComponent }) => (
     <div data-testid="menu-dropdown">
       <div data-testid="selected-item">{selectedItem.name}</div>
       <div data-testid="items">
@@ -30,6 +39,15 @@ jest.mock('../MenuDropdown', () => ({
           </button>
         ))}
       </div>
+      <div data-testid="bottom-component">{bottomComponent}</div>
+    </div>
+  )
+}))
+
+jest.mock('../MenuDropdown/styles', () => ({
+  DropDownItem: ({ children, ...rest }) => (
+    <div data-testid="mock-dropdown-item" {...rest}>
+      {children}
     </div>
   )
 }))
@@ -48,10 +66,11 @@ describe('FolderDropdown', () => {
     useFolders.mockReturnValue({ data: mockFolders })
     useLingui.mockReturnValue({ i18n: { _: (text) => text } })
     mockOnFolderSelect.mockClear()
+    mockSetModal.mockClear()
   })
 
   test('renders with correct custom folders', () => {
-    const { container } = render(
+    render(
       <FolderDropdown
         selectedFolder="Personal"
         onFolderSelect={mockOnFolderSelect}
@@ -62,7 +81,8 @@ describe('FolderDropdown', () => {
     expect(screen.getByTestId('item-Personal')).toBeInTheDocument()
     expect(screen.getByTestId('item-Work')).toBeInTheDocument()
     expect(screen.getByTestId('item-Finance')).toBeInTheDocument()
-    expect(container).toMatchSnapshot()
+    // Bottom "Create new" component is rendered
+    expect(screen.getByTestId('bottom-component')).toBeInTheDocument()
   })
 
   test('handles favorites folder correctly', () => {
@@ -107,5 +127,48 @@ describe('FolderDropdown', () => {
 
     expect(screen.getByTestId('selected-item')).toBeInTheDocument()
     expect(screen.getByTestId('selected-item').textContent).toBe('')
+  })
+
+  test('clears selectedFolder when it no longer exists', () => {
+    useFolders.mockReturnValue({
+      data: {
+        customFolders: {
+          folder1: { name: 'Other' }
+        }
+      }
+    })
+
+    render(
+      <FolderDropdown
+        selectedFolder="NonExisting"
+        onFolderSelect={mockOnFolderSelect}
+      />
+    )
+
+    expect(mockOnFolderSelect).toHaveBeenCalledWith(undefined)
+  })
+
+  test('opens create-folder modal and selects newly created folder', () => {
+    render(
+      <FolderDropdown
+        selectedFolder="Personal"
+        onFolderSelect={mockOnFolderSelect}
+      />
+    )
+
+    const createButton = screen.getByTestId('menudropdown-create-new')
+    fireEvent.click(createButton)
+
+    expect(mockSetModal).toHaveBeenCalledTimes(1)
+
+    const modalElement = mockSetModal.mock.calls[0][0]
+    expect(typeof modalElement.props.onCreate).toBe('function')
+
+    mockOnFolderSelect.mockClear()
+
+    // Simulate onCreate being called with an object that contains folder field
+    modalElement.props.onCreate({ folder: 'NewFolder' })
+    expect(mockOnFolderSelect).toHaveBeenCalledTimes(1)
+    expect(mockOnFolderSelect).toHaveBeenCalledWith({ name: 'NewFolder' })
   })
 })
