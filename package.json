@@ -21,7 +21,11 @@
     "stage": {
       "entrypoints": [
         "node_modules/pearpass-lib-vault-core/src/worklet/app.js",
-        "subProcess/clipboardCleanup.js"
+        "subProcess/clipboardCleanup.js",
+        "/index.js"
+      ],
+      "prefetch": [
+        "assets"
       ],
       "ignore": [
         ".github",
