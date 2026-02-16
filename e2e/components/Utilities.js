@@ -1,6 +1,4 @@
-'use strict'
-
-const { expect } = require('../fixtures/app.runner')
+import { test, expect } from '../fixtures/app.runner.js';
 
 class Utilities {
   constructor(root) {
@@ -41,6 +39,18 @@ class Utilities {
       await expect(this.collectionEmptyText).toBeVisible({ timeout: 5000 }).catch(() => { });
     }
   }
+
+  async pasteFromClipboard(locator, text) {
+  // Write text to clipboard
+  await this.root.page().evaluate(async (t) => {
+    await navigator.clipboard.writeText(t)
+  }, text)
+  
+  // Click and paste
+  await locator.click()
+  const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
+  await this.root.page().keyboard.press(`${modifier}+v`)
+}
 
 }
 

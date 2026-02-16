@@ -10,7 +10,7 @@ import {
 } from '../../components/index.js';
 import testData from '../../fixtures/test-data.js';
 
-test.describe('Editing/Deleting WiFi Item', () => {
+test.describe('Editing/Deleting Custom Field Item', () => {
   test.describe.configure({ mode: 'serial' })
 
   let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
@@ -36,22 +36,24 @@ test.describe('Editing/Deleting WiFi Item', () => {
     await sideMenuPage.clickSidebarExitButton()
   })
 
-  test('Create/Edit/Delete WiFi item', async ({ page }) => {
+  test('Create/Edit/Delete Custom Field item', async ({ page }) => {
 
-    await test.step('CREATE WIFI ELEMENT - initial empty element collection', async () => {
-      await sideMenuPage.selectSideBarCategory('wifiPassword')
+    await test.step('CREATE CUSTOM FIELD ELEMENT - initial empty element collection', async () => {
+      await sideMenuPage.selectSideBarCategory('custom')
       await utilities.deleteAllElements()
-      await mainPage.clickCreateNewElementButton('Save a Wi-fi')
+      await mainPage.clickCreateNewElementButton('Create a custom element')
 
-      await createOrEditPage.fillCreateOrEditInput('wifiname', 'WiFi Title')
-      await createOrEditPage.fillCreateOrEditInput('wifipassword', 'WiFi Pass')
-      await createOrEditPage.fillCreateOrEditInput('note', 'WiFi Note')
+      await createOrEditPage.fillCreateOrEditInput('title', 'Custom Field Title')
+
+      // await createOrEditPage.fillCreateOrEditTextArea('note', 'Test Note Text')
 
       await createOrEditPage.clickOnCreateOrEditButton('save')
+      await page.waitForTimeout(testData.timeouts.action)
+
     })
 
-    await test.step('VERIFY WIFI ELEMENT IS CREATED', async () => {
-      await mainPage.verifyElementTitle('WiFi Title')
+    await test.step('VERIFY CUSTOM FIELD ELEMENT IS CREATED', async () => {
+      await mainPage.verifyElementTitle('Custom Field Title')
     })
 
     await test.step('OPEN ELEMENT', async () => {
@@ -62,16 +64,16 @@ test.describe('Editing/Deleting WiFi Item', () => {
       await detailsPage.editElement()
     })
 
-    await test.step('EDIT WIFI ELEMENT', async () => {
-      await createOrEditPage.fillCreateOrEditInput('wifiname', 'WiFi Title Edited')
-      await createOrEditPage.fillCreateOrEditInput('wifipassword', 'WiFi Pass Edited')
-      await createOrEditPage.fillCreateOrEditInput('note', 'WiFi Note Edited')
+    await test.step('EDIT NOTE ELEMENT', async () => {
+      await createOrEditPage.fillCreateOrEditInput('title', 'EDITED Custom Field Title')
+
+      // await createOrEditPage.fillCreateOrEditTextArea('note', 'EDITED ')
 
       await createOrEditPage.clickOnCreateOrEditButton('save')
     })
 
-    await test.step('VERIFY EDITED WIFI TITLE IS EDITED', async () => {
-      await mainPage.verifyElementTitle('WiFi Title Edited')
+    await test.step('VERIFY EDITED NOTE TITLE IS EDITED', async () => {
+      await mainPage.verifyElementTitle('EDITED Custom Field Title')
     })
 
     await test.step('OPEN ELEMENT', async () => {
@@ -79,13 +81,12 @@ test.describe('Editing/Deleting WiFi Item', () => {
     })
 
     /**
-     * @qase.id PAS-624
-     * @description Changes after editing all "Wi-Fi" item fields including folder destination correspond to entered fields' values
+     * @qase.id PAS-665
+     * @description Changes after editing all "Custom" item fields including folder destination correspond to entered fields' values
      */
-    await test.step('VERIFY EDITED WIFI DETAILS', async () => {
-      await detailsPage.verifyTitle('WiFi Title Edited');
-      await detailsPage.verifyItemDetailsValue('Password', 'WiFi Pass Edited')
-      await detailsPage.verifyItemDetailsValue('Add note', 'WiFi Note Edited')
+    await test.step('VERIFY EDITED NOTE DETAILS', async () => {
+      await detailsPage.verifyTitle('EDITED Custom Field Title');
+      // await detailsPage.verifyNoteText('EDITED Test Custom Field Text')
     })
 
     await test.step('EDIT ELEMENT DETAILS', async () => {
@@ -93,10 +94,10 @@ test.describe('Editing/Deleting WiFi Item', () => {
     })
 
     /**
-     * @qase.id PAS-625
-     * @description Custom "Note" field is deleted after deleting it during editing "Wi-Fi" item
+     * @qase.id PAS-666
+     * @description Custom "Note" field is deleted after deleting it during editing "Credit Card" item
      */
-    await test.step('EDIT WIFI ELEMENT - Add/Delete Custom "Note" field during editing "Credit Card" item', async () => {
+    await test.step('EDIT NOTE ELEMENT - Add/Delete Custom "Note" field during editing "Credit Card" item', async () => {
       await createOrEditPage.clickCreateCustomItem()
       await createOrEditPage.clickCustomItemOptionNote()
       await expect(createOrEditPage.customNoteInput).toHaveCount(1);
@@ -109,16 +110,16 @@ test.describe('Editing/Deleting WiFi Item', () => {
     })
 
     /**
-     * @qase.id PAS-626
-     * @description "Wi-Fi" item is deleted after deleting it
+     * @qase.id PAS-667
+     * @description "Custom" item is deleted after deleting it
      */
-    await test.step('DELETE WIFI ITEM', async () => {
+    await test.step('DELETE NOTE ITEM', async () => {
       await detailsPage.openItemBarThreeDotsDropdownMenu()
       await detailsPage.clickDeleteElement()
       await detailsPage.clickConfirmYes()
     })
 
-    await test.step('VERIFY WIFI ELEMENT IS NOT VISIBLE', async () => {
+    await test.step('VERIFY NOTE ELEMENT IS NOT VISIBLE', async () => {
       await mainPage.verifyElementIsNotVisible()
     })
 

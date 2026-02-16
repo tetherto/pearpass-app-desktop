@@ -11,6 +11,7 @@
     "@playwright/test": "^1.52.0"
   },
   "devDependencies": {
+    "clipboardy": "^5.1.0",
     "playwright-qase-reporter": "^2.1.6"
   }
 }

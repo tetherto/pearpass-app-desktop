@@ -1,6 +1,4 @@
-'use strict'
-
-const { expect } = require('../fixtures/app.runner')
+import { test, expect } from '../fixtures/app.runner.js';
 
 class MainPage {
   constructor(root) {
@@ -40,7 +38,7 @@ class MainPage {
   // ==== ACTIONS ====
 
   async clickCreateNewElementButton(name) {
-    const button = this.root.getByText(name)
+    const button = this.root.getByText(name) // Change 
     await expect(button).toBeVisible()
     await button.click()
   }

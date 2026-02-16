@@ -70,7 +70,11 @@ flatpak/*.tar.gz
 flatpak/build-dir/
 flatpak/repo/
 flatpak/.flatpak-builder/
+.flatpak-builder/
 
 # Appling (AppImage builds)
 appling/*.AppImage
 appling/node_modules/
+
+# test files
+test-results
