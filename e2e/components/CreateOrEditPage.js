@@ -1,6 +1,4 @@
-'use strict'
-
-const { expect } = require('../fixtures/app.runner')
+import { test, expect } from '../fixtures/app.runner.js';
 
 class CreateOrEditPage {
   constructor(root) {
@@ -9,12 +7,26 @@ class CreateOrEditPage {
 
   // ==== LOCATORS ====
 
+  // createoredit-button-createcustomfield  => createoredit-createcustomfield
+
+  get noteTextArea() {
+    return this.root.getByTestId('createoredit-textarea-note')
+  }
+
+  // getNoteTextArea(field) {
+  //   return this.root.getByTestId(`createoredit-textarea-${field}`)
+  // }
+
   get insertPasswordButton() {
     return this.root.getByTestId('passwordGenerator-button-insertpassword').first()
   }
 
   getCreateOrEditInputField(field) {
     return this.root.getByTestId(`createoredit-input-${field}`)
+  }
+
+  getCreateOrEditTextareaField(field) {
+    return this.root.getByTestId(`createoredit-textarea-${field}`)
   }
 
   get passwordMenu() {
@@ -30,7 +42,7 @@ class CreateOrEditPage {
   }
 
   get customNoteInput() {
-    return this.root.getByTestId('customfields-input-note')
+    return this.root.getByTestId('customfields-input-note-0')
   }
 
   get deleteCustomNoteItem() {
@@ -85,8 +97,12 @@ class CreateOrEditPage {
     return this.root.locator('input[type="file"]').first()
   }
 
+  // get elementItemCloseButton() {
+  //   return this.root.getByTestId('button-round-icon').last() // button-round-icon
+  // }
+
   get elementItemCloseButton() {
-    return this.root.getByTestId('button-round-icon').last()
+    return this.root.getByTestId('modalheader-button-close').last()
   }
 
   get passwordInput() {
@@ -101,7 +117,17 @@ class CreateOrEditPage {
     return this.root.getByTestId(`createoredit-section-personalinfo`)
   }
 
+  get passPhrasePasteButton() {
+    return this.root.getByTestId(`passphrase-button-paste`)
+  }
+
   // ==== ACTIONS ==== 
+
+  async clickOnPasteFromClipboard() {
+    const pasteButton = this.passPhrasePasteButton
+    await expect(pasteButton).toBeVisible()
+    await pasteButton.click()
+  }
 
   async clickOnIdentitySection(sectionname) {
     const section = this.getSection(sectionname)
@@ -176,8 +202,15 @@ class CreateOrEditPage {
 
   async fillCreateOrEditInput(field, value) {
     const input = this.getCreateOrEditInputField(field)
-    await input.waitFor({ state: 'visible' }) // wait before interaction
+    await input.waitFor({ state: 'visible' })
+    await input.fill('')
     await input.fill(value)
+  }
+
+  async fillCreateOrEditTextArea(field, value) {
+    const text_area = this.getCreateOrEditTextareaField(field)
+    await text_area.waitFor({ state: 'visible' }) // wait before interaction
+    await text_area.type(value)
   }
 
   async countItems(labelOrPlaceholder, expectedCount) {
