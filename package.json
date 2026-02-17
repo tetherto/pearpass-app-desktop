@@ -25,7 +25,8 @@
         "/index.js"
       ],
       "prefetch": [
-        "assets"
+        "assets",
+        "resources"
       ],
       "ignore": [
         ".github",
