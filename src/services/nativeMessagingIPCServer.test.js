@@ -20,10 +20,11 @@ jest.mock('os', () => ({
   tmpdir: jest.fn(() => '/tmp')
 }))
 
-// Mock Pear.config.storage
+// Mock Pear.config.storage and pearDir (used by SocketManager for socket paths)
 global.Pear = {
   config: {
-    storage: '/mock/pear/storage'
+    storage: '/mock/pear/storage',
+    pearDir: '/tmp'
   }
 }
 
@@ -210,7 +211,9 @@ describe('nativeMessagingIPCServer', () => {
     it('should return a unix domain socket path on non-win32 platforms', () => {
       platform.mockReturnValue('linux')
       const socketName = 'test-socket'
-      expect(getIpcPath(socketName)).toBe(join('/tmp', `${socketName}.sock`))
+      expect(getIpcPath(socketName)).toBe(
+        join('/tmp', 'pearpass', `${socketName}.sock`)
+      )
     })
   })
 
@@ -227,7 +230,7 @@ describe('nativeMessagingIPCServer', () => {
       expect(serverInstance.server).toBeNull()
       expect(serverInstance.isRunning).toBe(false)
       expect(serverInstance.socketPath).toBe(
-        join('/tmp', 'pearpass-native-messaging.sock')
+        join('/tmp', 'pearpass', 'pearpass-native-messaging.sock')
       )
     })
 
@@ -450,7 +453,7 @@ describe('nativeMessagingIPCServer', () => {
     it('getIPCSocketPath should return a default path when not running', () => {
       platform.mockReturnValue('linux')
       expect(getIPCSocketPath()).toBe(
-        join('/tmp', 'pearpass-native-messaging.sock')
+        join('/tmp', 'pearpass', 'pearpass-native-messaging.sock')
       )
     })
   })

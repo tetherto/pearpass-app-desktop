@@ -5,11 +5,14 @@ import path from 'path'
 
 import {
   MANIFEST_NAME,
-  NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION,
+  // NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION,
   EXTENSION_ID
 } from 'pearpass-lib-constants'
 
 import { logger } from './logger'
+
+export const NATIVE_MESSAGING_BRIDGE_PEAR_LINK_TEMPORARY =
+  'pear://fmsw9ndr1imn9m6zpq1rq5nwhxfi6dp6oz5k45o1dm3zrp3hwgzy'
 
 const promisify =
   (fn) =>
@@ -80,7 +83,7 @@ export const generateNativeHostExecutable = async (executablePath) => {
 # Launches the native host using pear run
 
 cd "${bridgePath}"
-exec "${pearPath}" run --trusted ${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION}
+exec "${pearPath}" run --trusted ${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_TEMPORARY}
 `
     } else if (platform === 'linux') {
       const pearPath = path.join(
@@ -98,7 +101,7 @@ exec "${pearPath}" run --trusted ${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION}
 # Launches the native host using pear run
 
 cd "${bridgePath}"
-exec "${pearPath}" run --trusted ${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION}
+exec "${pearPath}" run --trusted ${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_TEMPORARY}
 `
     } else if (platform === 'win32') {
       const pearPath = path.join(
@@ -117,7 +120,7 @@ REM PearPass Native Messaging Host for Windows
 REM Launches the native host using pear run
 
 cd /d "${bridgePath}"
-"${pearPath}" run --trusted ${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION}
+"${pearPath}" run --trusted ${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_TEMPORARY}
 `
     } else {
       throw new Error(`Unsupported platform: ${platform}`)
@@ -433,7 +436,7 @@ export const killNativeMessagingHostProcesses = async () => {
       // The parent cmd.exe (spawned by Chrome) will automatically terminate when its child is killed
       try {
         // Use PowerShell to find processes with the unique bridge seed in their command line
-        const psCmd = `powershell -NoProfile -Command "Get-WmiObject Win32_Process | Where-Object {\$_.CommandLine -like '*${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION}*'} | ForEach-Object { taskkill /PID \$_.ProcessId /F }"`
+        const psCmd = `powershell -NoProfile -Command "Get-WmiObject Win32_Process | Where-Object {\$_.CommandLine -like '*${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_TEMPORARY}*'} | ForEach-Object { taskkill /PID \$_.ProcessId /F }"`
         await execAsync(psCmd)
         logger.info(
           'NATIVE-MESSAGING-KILL',
@@ -450,7 +453,7 @@ export const killNativeMessagingHostProcesses = async () => {
       // The wrapper script uses 'exec' so the process name becomes 'pear run <seed>'
       try {
         await execAsync(
-          `pkill -f "${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION}"`
+          `pkill -f "${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_TEMPORARY}"`
         )
         logger.info(
           'NATIVE-MESSAGING-KILL',
