@@ -39,7 +39,7 @@ exports[`Record Component renders Record component correctly when not selected 1
           </div>
         </div>
         <div
-          class="sc-hvigdm bHLWQJ"
+          class="sc-hvigdm dUVuDl"
         >
           <div
             data-testid="record-actions-popup-content"
@@ -118,7 +118,7 @@ exports[`Record Component toggles action menu when kebab icon is clicked (snapsh
           </div>
         </div>
         <div
-          class="sc-hvigdm kIjgdY"
+          class="sc-hvigdm bhuWuF"
         >
           <div
             data-testid="record-actions-popup-content"
@@ -171,7 +171,7 @@ exports[`Record Component toggles action menu when kebab icon is clicked (snapsh
           </div>
         </div>
         <div
-          class="sc-hvigdm bHLWQJ"
+          class="sc-hvigdm dUVuDl"
         >
           <div
             data-testid="record-actions-popup-content"

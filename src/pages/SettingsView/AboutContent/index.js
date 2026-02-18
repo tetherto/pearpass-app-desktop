@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 
-import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import {
   sendGoogleFormFeedback,
@@ -17,18 +16,24 @@ import {
 } from '../../../constants/feedback'
 import { useGlobalLoading } from '../../../context/LoadingContext'
 import { useToast } from '../../../context/ToastContext'
+import { useTranslation } from '../../../hooks/useTranslation'
 import { OutsideLinkIcon } from '../../../lib-react-components/icons/OutsideLinkIcon'
+import { isOnline } from '../../../utils/isOnline'
 import { logger } from '../../../utils/logger'
 import { SettingsReportSection } from '../SettingsTab/SettingsReportSection'
 
+const OFFLINE_TIMEOUT = 'OFFLINE_TIMEOUT'
+const OFFLINE_TIMEOUT_MS = 10000
+const OFFLINE_TIMEOUT_MESSAGE =
+  'You are offline, please check your internet connection'
+
 export const AboutContent = () => {
-  const { i18n } = useLingui()
+  const { t } = useTranslation()
   const { setToast } = useToast()
 
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [currentVersion, setCurrentVersion] = useState('')
-
   useGlobalLoading({ isLoading })
 
   const handleReportProblem = async () => {
@@ -39,6 +44,13 @@ export const AboutContent = () => {
     try {
       setIsLoading(true)
 
+      if (!isOnline()) {
+        setToast({
+          message: t(OFFLINE_TIMEOUT_MESSAGE)
+        })
+        return
+      }
+
       const payload = {
         message,
         topic: 'BUG_REPORT',
@@ -48,32 +60,53 @@ export const AboutContent = () => {
         appVersion: currentVersion
       }
 
-      await sendSlackFeedback({
-        webhookUrPath: SLACK_WEBHOOK_URL_PATH,
-        ...payload
-      })
+      const sendFeedbackWithTimeout = async () => {
+        await sendSlackFeedback({
+          webhookUrPath: SLACK_WEBHOOK_URL_PATH,
+          ...payload
+        })
 
-      await sendGoogleFormFeedback({
-        formKey: GOOGLE_FORM_KEY,
-        mapping: GOOGLE_FORM_MAPPING,
-        ...payload
-      })
+        await sendGoogleFormFeedback({
+          formKey: GOOGLE_FORM_KEY,
+          mapping: GOOGLE_FORM_MAPPING,
+          ...payload
+        })
+      }
+
+      await Promise.race([
+        sendFeedbackWithTimeout(),
+        new Promise((_, reject) => {
+          setTimeout(() => {
+            if (!isOnline()) {
+              reject(new Error(OFFLINE_TIMEOUT))
+            }
+          }, OFFLINE_TIMEOUT_MS)
+        })
+      ])
 
       setMessage('')
 
       setIsLoading(false)
 
       setToast({
-        message: i18n._('Feedback sent')
+        message: t('Feedback sent')
       })
     } catch (error) {
       setIsLoading(false)
 
-      setToast({
-        message: i18n._('Something went wrong, please try again')
-      })
+      if (error?.message === OFFLINE_TIMEOUT) {
+        setToast({
+          message: t(OFFLINE_TIMEOUT_MESSAGE)
+        })
+      } else {
+        setToast({
+          message: t('Something went wrong, please try again')
+        })
+      }
 
-      logger.error('useGetMultipleFiles', 'Error sending feedback:', error)
+      logger.error('handleReportProblem', 'Error sending feedback:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -94,15 +127,15 @@ export const AboutContent = () => {
     <${SettingsReportSection}
       onSubmitReport=${handleReportProblem}
       message=${message}
-      title=${i18n._('Report a problem')}
-      buttonText=${i18n._('send')}
-      textAreaPlaceholder=${i18n._('Write your issue...')}
+      title=${t('Report a problem')}
+      buttonText=${t('send')}
+      textAreaPlaceholder=${t('Write your issue...')}
       textAreaOnChange=${setMessage}
     />
 
     <${CardSingleSetting}
-      title=${i18n._('PearPass version')}
-      description=${i18n._('Here you can find all the info about your app.')}
+      title=${t('PearPass version')}
+      description=${t('Here you can find all the info about your app.')}
     >
       <div
         style=${{
@@ -120,7 +153,7 @@ export const AboutContent = () => {
             color: colors.white.mode1
           }}
         >
-          <span>${i18n._('App version')}</span>
+          <span>${t('App version')}</span>
           <span style=${{ color: colors.primary400.mode1 }}>
             ${currentVersion}
           </span>
@@ -135,7 +168,7 @@ export const AboutContent = () => {
             fontWeight: 600
           }}
         >
-          ${i18n._('Terms of use')}
+          ${t('Terms of use')}
         </a>
         <a
           href=${PRIVACY_POLICY}
@@ -147,7 +180,7 @@ export const AboutContent = () => {
             fontWeight: 600
           }}
         >
-          ${i18n._('Privacy statement')}
+          ${t('Privacy statement')}
         </a>
         <a
           href="https://pass.pears.com"
@@ -161,7 +194,7 @@ export const AboutContent = () => {
             textDecoration: 'none'
           }}
         >
-          <span>${i18n._('Visit our website')}</span>
+          <span>${t('Visit our website')}</span>
           <span
             style=${{
               display: 'flex',

@@ -1,6 +1,6 @@
 {
   "name": "pearpass-app-desktop",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "pear": {
     "name": "pearpass-app-desktop",
     "pre": "pear-electron/pre",
@@ -21,7 +21,11 @@
     "stage": {
       "entrypoints": [
         "node_modules/pearpass-lib-vault-core/src/worklet/app.js",
-        "subProcess/clipboardCleanup.js"
+        "subProcess/clipboardCleanup.js",
+        "/index.js"
+      ],
+      "prefetch": [
+        "assets"
       ],
       "ignore": [
         ".github",
@@ -46,7 +50,6 @@
   "scripts": {
     "test": "jest",
     "build:pear": "lingui extract && lingui compile && tsc",
-    "build-bridge-package": "node scripts/build-bridge-package.js",
     "lint:fix": "eslint --fix ./src",
     "lint": "eslint ./src",
     "build": "tsc",
