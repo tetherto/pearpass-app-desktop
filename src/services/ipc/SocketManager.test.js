@@ -14,6 +14,12 @@ jest.mock('../../utils/logger', () => ({
   }
 }))
 
+global.Pear = {
+  config: {
+    pearDir: '/tmp'
+  }
+}
+
 import fs from 'fs'
 
 import { SocketManager, getIpcPath } from './SocketManager'
@@ -22,7 +28,7 @@ const { logger } = require('../../utils/logger')
 
 describe('SocketManager', () => {
   const socketName = 'testSocket'
-  const unixPath = '/tmp/testSocket.sock'
+  const unixPath = '/tmp/pearpass/testSocket.sock'
   const winPath = '\\\\?\\pipe\\testSocket'
 
   beforeEach(() => {
@@ -105,6 +111,6 @@ describe('getIpcPath', () => {
   it('returns socket path for given name', () => {
     require('os').platform.mockReturnValue('linux')
     require('os').tmpdir.mockReturnValue('/tmp')
-    expect(getIpcPath('foo')).toBe('/tmp/foo.sock')
+    expect(getIpcPath('foo')).toBe('/tmp/pearpass/foo.sock')
   })
 })
