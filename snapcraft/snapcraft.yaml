@@ -1,13 +1,13 @@
 name: pearpass
 base: core24
-version: "1.0.1"
+version: "1.4.0"
 title: PearPass
 summary: A secure, decentralized and fully local password manager
 description: A secure, decentralized and fully local password manager
 grade: stable
 license: Apache-2.0
 website: https://pass.pears.com
-confinement: strict
+confinement: classic
 plugs:
   dot-config-pear:
     interface: personal-files
@@ -18,19 +18,27 @@ plugs:
     private: true
 apps:
   pearpass:
-    extensions: [gnome]
     command: assets/usr/bin/pearpass
     common-id: com.pears.pass
     plugs:
       - home
+      - desktop
+      - desktop-legacy
+      - wayland
+      - x11
+      - opengl
       - network
       - network-observe
       - system-files
       - dot-config-pear
+      - shmem
 platforms:
   amd64:
     build-on: amd64
     build-for: amd64
+  arm64:
+    build-on: arm64
+    build-for: arm64
 parts:
   local_files:
     plugin: dump
@@ -41,14 +49,20 @@ parts:
     plugin: dump
     source:
       - to amd64: "https://static.tether.dev/pearpass/PearPass.linux.x64.bin.tar.gz"
+      - to arm64: "https://static.tether.dev/pearpass/PearPass.linux.arm64.bin.tar.gz"
     source-type: tar
     organize:
       pearpass: assets/usr/bin/pearpass
+      pear-pass/app.bundle: assets/usr/share/pearpass/app.bundle
+      lib/*: assets/usr/lib/
   execstack:
     after: [remote_files]
-    build-packages: [execstack]
+    build-packages:
+      - to amd64: [execstack]
+      - to arm64: []
     plugin: nil
     override-prime: |
+      craftctl default
       if [[ $CRAFT_ARCH_BUILD_FOR = amd64 ]]
       then
         execstack -c assets/usr/bin/pearpass

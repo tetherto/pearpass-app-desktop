@@ -106,4 +106,16 @@ describe('MenuDropdown', () => {
 
     expect(screen.queryAllByTestId('menu-dropdown-item')).toHaveLength(0)
   })
+
+  test('renders bottomComponent when provided', () => {
+    const bottom = <div data-testid="bottom-component">Bottom</div>
+
+    renderComponent({ bottomComponent: bottom })
+
+    const visibleLabel = screen.getAllByTestId('menu-dropdown-label')[1]
+    fireEvent.click(visibleLabel)
+
+    expect(screen.getByTestId('bottom-component')).toBeInTheDocument()
+    expect(screen.getByTestId('bottom-component')).toHaveTextContent('Bottom')
+  })
 })

@@ -1,12 +1,11 @@
-'use strict'
+import { spawn } from 'node:child_process';
+import os from 'node:os';
+import path from 'node:path';
 
-const { spawn } = require('child_process')
-const os = require('node:os')
-const path = require('node:path')
+import { test as base, expect, chromium } from '@playwright/test';
 
-const { test: base, expect, chromium } = require('@playwright/test')
+const isWindows = os.platform() === 'win32';
 
-const isWindows = os.platform() === 'win32'
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -145,16 +144,17 @@ async function launchApp(appDir) {
   return { proc, browser, page, isWindows }
 }
 
-const { spawnSync } = require('child_process');
+import { spawnSync } from 'node:child_process';
 
-async function teardown({ proc, browser, isWindows }) {
+export async function teardown({ proc, browser, isWindows }) {
   try {
     if (proc?.pid) {
+      console.log(`[Teardown] Killing Electron process PID=${proc.pid} ...`);
       if (isWindows) {
-        console.log(`[Teardown] Killing Electron process PID=${proc.pid} ...`);
+        // Windows: koristi taskkill
         spawnSync('taskkill', ['/PID', String(proc.pid), '/T', '/F'], { stdio: 'inherit' });
       } else {
-        console.log(`[Teardown] Killing Electron process PID=${proc.pid} ...`);
+        // Mac/Linux: ubij proces grupu (-pid)
         process.kill(-proc.pid, 'SIGKILL');
       }
     }
@@ -175,18 +175,6 @@ async function teardown({ proc, browser, isWindows }) {
     console.warn('Browser already closed', e.message);
   }
 }
-
-
-// async function teardown({ proc, browser, isWindows }) {
-//   await browser.close()
-//   if (isWindows) {
-//     spawn('taskkill', ['/PID', String(proc.pid), '/T', '/F'], {
-//       stdio: 'inherit'
-//     })
-//   } else {
-//     process.kill(-proc.pid, 'SIGKILL')
-//   }
-// }
 
 exports.test = base.extend({
   app: [

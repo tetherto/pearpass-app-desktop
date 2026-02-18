@@ -1,8 +1,11 @@
+import { useState } from 'react'
+
 import { html } from 'htm/react'
 import { MAX_IMPORT_RECORDS } from 'pearpass-lib-constants'
 import {
   parse1PasswordData,
   parseBitwardenData,
+  parseKeePassData,
   parseLastPassData,
   parseNordPassData,
   parsePearPassData,
@@ -10,12 +13,23 @@ import {
 } from 'pearpass-lib-data-import'
 import { useCreateRecord } from 'pearpass-lib-vault'
 
-import { ContentContainer, Description, ImportOptionsContainer } from './styles'
+import {
+  ContentContainer,
+  Description,
+  ErrorText,
+  ImportOptionsContainer,
+  ModalTitle,
+  PasswordInput
+} from './styles'
 import { readFileContent } from './utils/readFileContent'
 import { CardSingleSetting } from '../../../components/CardSingleSetting'
 import { ImportDataOption } from '../../../components/ImportDataOption'
+import { Overlay } from '../../../components/Overlay'
+import { ModalWrapper } from '../../../containers/Modal'
+import { ModalContent } from '../../../containers/Modal/ModalContent'
 import { useToast } from '../../../context/ToastContext'
 import { useTranslation } from '../../../hooks/useTranslation'
+import { ButtonPrimary } from '../../../lib-react-components'
 import { logger } from '../../../utils/logger'
 
 const importOptions = [
@@ -30,6 +44,18 @@ const importOptions = [
     type: 'bitwarden',
     accepts: ['.json', '.csv'],
     imgSrc: '/assets/images/BitWarden.png'
+  },
+  {
+    title: 'KeePass',
+    type: 'keepass',
+    accepts: ['.kdbx', '.csv', '.xml'],
+    imgSrc: '/assets/images/KeePass.png'
+  },
+  {
+    title: 'KeePassXC',
+    type: 'keepass',
+    accepts: ['.csv', '.xml'],
+    imgSrc: '/assets/images/KeePassXC.png'
   },
   {
     title: 'LastPass',
@@ -75,6 +101,12 @@ const isAllowedType = (fileType, accepts) =>
 export const ImportTab = () => {
   const { t } = useTranslation()
   const { setToast } = useToast()
+  const [kdbxModal, setKdbxModal] = useState({
+    visible: false,
+    fileBuffer: null,
+    error: ''
+  })
+  const [kdbxPassword, setKdbxPassword] = useState('')
 
   const { createRecord } = useCreateRecord()
 
@@ -84,6 +116,63 @@ export const ImportTab = () => {
     })
   }
 
+  const importRecords = async (result) => {
+    if (result.length === 0) {
+      setToast({
+        message: t('No records found to import!')
+      })
+      return
+    }
+
+    if (result.length > MAX_IMPORT_RECORDS) {
+      setToast({
+        message: t(`Too many records. Maximum is ${MAX_IMPORT_RECORDS}.`)
+      })
+      return
+    }
+
+    const BATCH_SIZE = 100
+    const totalRecords = result.length
+
+    for (let i = 0; i < totalRecords; i += BATCH_SIZE) {
+      const batch = result.slice(i, i + BATCH_SIZE)
+      await Promise.all(batch.map((record) => createRecord(record, onError)))
+    }
+
+    setToast({
+      message: t('Data imported successfully')
+    })
+  }
+
+  const closeKdbxModal = () => {
+    setKdbxModal({ visible: false, fileBuffer: null, error: '' })
+    setKdbxPassword('')
+  }
+
+  const handleKdbxSubmit = async () => {
+    try {
+      const result = await parseKeePassData(
+        kdbxModal.fileBuffer,
+        'kdbx',
+        kdbxPassword
+      )
+      closeKdbxModal()
+      await importRecords(result)
+    } catch (err) {
+      if (err.message === 'Incorrect password') {
+        setKdbxModal((prev) => ({
+          ...prev,
+          error: t('Incorrect password. Please try again.')
+        }))
+        setKdbxPassword('')
+      } else {
+        closeKdbxModal()
+        setToast({ message: t(err.message) })
+        logger.error('KeePass KDBX import', err.message)
+      }
+    }
+  }
+
   const handleFileChange = async ({ files, type, accepts }) => {
     const file = files[0]
     if (!file) return
@@ -91,11 +180,27 @@ export const ImportTab = () => {
     const fileType = file.name.split('.').pop()
     let result = []
 
-    const fileContent = await readFileContent(file)
-
     if (!isAllowedType(fileType, accepts)) {
       throw new Error('Invalid file type')
     }
+
+    if (type === 'keepass' && fileType === 'kdbx') {
+      try {
+        const fileContent = await readFileContent(file, { as: 'buffer' })
+        setKdbxModal({ visible: true, fileBuffer: fileContent, error: '' })
+        setKdbxPassword('')
+      } catch (error) {
+        setToast({ message: t('Failed to read file') })
+        logger.error(
+          'KeePass KDBX import',
+          'Error reading file:',
+          error.message || error
+        )
+      }
+      return
+    }
+
+    const fileContent = await readFileContent(file)
 
     try {
       switch (type) {
@@ -104,6 +209,9 @@ export const ImportTab = () => {
           break
         case 'bitwarden':
           result = await parseBitwardenData(fileContent, fileType)
+          break
+        case 'keepass':
+          result = await parseKeePassData(fileContent, fileType)
           break
         case 'lastpass':
           result = await parseLastPassData(fileContent, fileType)
@@ -123,32 +231,11 @@ export const ImportTab = () => {
           )
       }
 
-      if (result.length === 0) {
-        setToast({
-          message: t('No records found to import!')
-        })
-        return
-      }
-
-      if (result.length > MAX_IMPORT_RECORDS) {
-        setToast({
-          message: t(`Too many records. Maximum is ${MAX_IMPORT_RECORDS}.`)
-        })
-        return
-      }
-
-      const BATCH_SIZE = 100
-      const totalRecords = result.length
-
-      for (let i = 0; i < totalRecords; i += BATCH_SIZE) {
-        const batch = result.slice(i, i + BATCH_SIZE)
-        await Promise.all(batch.map((record) => createRecord(record, onError)))
-      }
-
-      setToast({
-        message: t('Data imported successfully')
-      })
+      await importRecords(result)
     } catch (error) {
+      setToast({
+        message: t('Import failed. Please check your file and try again.')
+      })
       logger.error(
         'useGetMultipleFiles',
         'Error reading file:',
@@ -157,29 +244,64 @@ export const ImportTab = () => {
     }
   }
 
-  return html` <${CardSingleSetting} title=${t('Import Vault')}>
-    <${ContentContainer}>
-      <${Description}>
-        ${t(
-          "Move your saved items here from another password manager. They'll be added to this vault."
-        )}
-      <//>
+  return html`<div>
+    <${CardSingleSetting} title=${t('Import Vault')}>
+      <${ContentContainer}>
+        <${Description}>
+          ${t(
+            "Move your saved items here from another password manager. They'll be added to this vault."
+          )}
+        <//>
 
-      <${ImportOptionsContainer}>
-        ${importOptions.map(
-          ({ title, accepts, type, imgSrc, icon }) =>
-            html`<${ImportDataOption}
-              key=${title}
-              title=${title}
-              accepts=${accepts}
-              imgSrc=${imgSrc}
-              icon=${icon}
-              onFilesSelected=${(files) => {
-                handleFileChange({ files, type, accepts })
-              }}
-            />`
-        )}
+        <${ImportOptionsContainer}>
+          ${importOptions.map(
+            ({ title, accepts, type, imgSrc, icon }) =>
+              html`<${ImportDataOption}
+                key=${title}
+                title=${title}
+                accepts=${accepts}
+                imgSrc=${imgSrc}
+                icon=${icon}
+                onFilesSelected=${(files) => {
+                  handleFileChange({ files, type, accepts })
+                }}
+              />`
+          )}
+        <//>
       <//>
     <//>
-  <//>`
+
+    ${kdbxModal.visible &&
+    html`<${ModalWrapper}>
+      <${Overlay} isOpen=${true} onClick=${closeKdbxModal} />
+      <${ModalContent}
+        onClose=${closeKdbxModal}
+        onSubmit=${handleKdbxSubmit}
+        headerChildren=${html`<${ModalTitle}>
+          ${t('Enter KeePass Password')}
+        <//>`}
+      >
+        <div
+          style=${{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            padding: '16px'
+          }}
+        >
+          <${PasswordInput}
+            type="password"
+            placeholder=${t('Database password')}
+            value=${kdbxPassword}
+            autofocus
+            onChange=${(e) => setKdbxPassword(e.target.value)}
+          />
+          ${kdbxModal.error && html`<${ErrorText}>${kdbxModal.error}<//>`}
+          <${ButtonPrimary} type="submit" size="md" disabled=${!kdbxPassword}>
+            ${t('Unlock & Import')}
+          <//>
+        </div>
+      <//>
+    <//>`}
+  </div>`
 }

@@ -49,6 +49,7 @@ async function install(id, opts = {}) {
         const appInstance = new appling.App(id);
         appInstance.open();
         window.close();
+        Bare.exit();
         break;
       }
     }
