@@ -19,7 +19,6 @@ function checkCommand(command) {
 
 function getBundledXselPath() {
   // Convert file:// URL to filesystem path
-  // Pear.config.applink is a file URL like "file:///home/harri/noxtton_forked/pearpass-app-desktop"
   let appPath = Pear.config.applink
 
   // Strip the file:// protocol if present
