@@ -4,6 +4,7 @@ exports[`SettingsReportSection matches snapshot 1`] = `
 <div>
   <div
     class="sc-fhHczv dTOQkU"
+    data-testid="settings-card-report"
   >
     <div
       class="sc-ggWZvA jBJqqs"
@@ -26,7 +27,7 @@ exports[`SettingsReportSection matches snapshot 1`] = `
           >
             <textarea
               class="sc-cdmAjP kJVkCe"
-              data-testid="text-area"
+              data-testid="settings-report-textarea"
               placeholder="Describe the issue"
             />
           </div>
@@ -36,11 +37,10 @@ exports[`SettingsReportSection matches snapshot 1`] = `
         >
           <button
             class="sc-kNOymR dsPMGu"
+            data-testid="settings-report-send-button"
             type="submit"
           >
-             
             Submit
-             
           </button>
         </div>
       </form>

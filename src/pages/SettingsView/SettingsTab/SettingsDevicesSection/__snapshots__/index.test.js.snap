@@ -4,6 +4,7 @@ exports[`SettingsDevicesSection matches snapshot 1`] = `
 <div>
   <div
     class="sc-fhHczv dTOQkU"
+    data-testid="settings-card-linked-devices"
   >
     <div
       class="sc-ggWZvA jBJqqs"
@@ -25,6 +26,7 @@ exports[`SettingsDevicesSection matches snapshot 1`] = `
         </span>
         <div
           class="sc-hjsuWn fqhona"
+          data-testid="settings-linked-device-item"
         >
           <div
             class="sc-jJLAfE hibHSh"
@@ -75,6 +77,7 @@ exports[`SettingsDevicesSection matches snapshot 1`] = `
         </div>
         <div
           class="sc-hjsuWn fqhona"
+          data-testid="settings-linked-device-item"
         >
           <div
             class="sc-jJLAfE hibHSh"
@@ -128,7 +131,7 @@ exports[`SettingsDevicesSection matches snapshot 1`] = `
         >
           <button
             class="sc-dntSTA TsezX"
-            data-testid="button-primary"
+            data-testid="settings-connect-new-device-button"
             type="button"
             width="fit-content"
           >

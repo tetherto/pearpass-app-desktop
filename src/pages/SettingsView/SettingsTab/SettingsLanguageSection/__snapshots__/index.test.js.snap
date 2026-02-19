@@ -4,6 +4,7 @@ exports[`SettingsLanguageSection matches snapshot 1`] = `
 <div>
   <div
     class="sc-bRKDuR biDtcp"
+    data-testid="settings-card-language"
   >
     <div
       class="sc-hvigdm gjmbZL"
@@ -21,6 +22,7 @@ exports[`SettingsLanguageSection matches snapshot 1`] = `
         >
           <div
             class="sc-jwTyAe eJfDtf"
+            data-testid="settings-language-dropdown"
           >
             <span>
                
