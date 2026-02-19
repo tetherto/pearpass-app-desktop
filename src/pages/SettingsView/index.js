@@ -77,6 +77,7 @@ export const SettingsView = () => {
             (item) => html`
               <${SettingsNavItem}
                 key=${item.key}
+                data-testid=${`settings-nav-${item.key}`}
                 isActive=${activeTab === item.key}
                 onClick=${() => setActiveTab(item.key)}
               >

@@ -15,7 +15,13 @@ import { useOutsideClick } from '../../hooks/useOutsideClick'
  *    placeholder: string
  *  }} props
  */
-export const Select = ({ selectedItem, onItemSelect, items, placeholder }) => {
+export const Select = ({
+  selectedItem,
+  onItemSelect,
+  items,
+  placeholder,
+  testId
+}) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const wrapperRef = useOutsideClick({
@@ -36,6 +42,7 @@ export const Select = ({ selectedItem, onItemSelect, items, placeholder }) => {
         isOpen=${isOpen}
         setIsOpen=${setIsOpen}
         placeholder=${placeholder}
+        testId=${testId}
       />
 
       ${isOpen &&
@@ -45,6 +52,7 @@ export const Select = ({ selectedItem, onItemSelect, items, placeholder }) => {
             <${SelectItem}
               key=${item.label}
               item=${item}
+              testId=${item.testId}
               onClick=${() => handleSelect(item)}
             />
           `

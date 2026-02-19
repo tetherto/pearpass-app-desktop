@@ -13,12 +13,14 @@ export const SettingsPasswordsSection = () => {
 
   return html`
     <${CardSingleSetting}
+      testId="settings-card-master-password"
       title=${i18n._('Master Password')}
       description=${i18n._('Manage the password that protects your app.')}
     >
       <${Content}>
         <${ListItem}
           itemName=${i18n._('Master Vault')}
+          editTestId="settings-master-vault-edit-button"
           onEditClick=${() =>
             setModal(html`<${ModifyMasterVaultModalContent} />`)}
         />

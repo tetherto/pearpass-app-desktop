@@ -36,42 +36,49 @@ const importOptions = [
   {
     title: '1Password',
     type: '1password',
+    testId: 'settings-import-1password',
     accepts: ['.csv'],
     imgSrc: '/assets/images/1password.png'
   },
   {
     title: 'Bitwarden',
     type: 'bitwarden',
+    testId: 'settings-import-bitwarden',
     accepts: ['.json', '.csv'],
     imgSrc: '/assets/images/BitWarden.png'
   },
   {
     title: 'KeePass',
     type: 'keepass',
+    testId: 'settings-import-keepass',
     accepts: ['.kdbx', '.csv', '.xml'],
     imgSrc: '/assets/images/KeePass.png'
   },
   {
     title: 'KeePassXC',
     type: 'keepass',
+    testId: 'settings-import-keepassxc',
     accepts: ['.csv', '.xml'],
     imgSrc: '/assets/images/KeePassXC.png'
   },
   {
     title: 'LastPass',
     type: 'lastpass',
+    testId: 'settings-import-lastpass',
     accepts: ['.csv'],
     imgSrc: '/assets/images/LastPass.png'
   },
   {
     title: 'NordPass',
     type: 'nordpass',
+    testId: 'settings-import-nordpass',
     accepts: ['.csv'],
     imgSrc: '/assets/images/NordPass.png'
   },
   {
     title: 'Proton Pass',
     type: 'protonpass',
+    testId: 'settings-import-protonpass',
     accepts: ['.csv', '.json'],
     imgSrc: '/assets/images/ProtonPass.png'
   },
@@ -85,6 +92,7 @@ const importOptions = [
   {
     title: 'Unencrypted file',
     type: 'unencrypted',
+    testId: 'settings-import-unencrypted',
     accepts: ['.json', '.csv'],
     imgSrc: '/assets/images/pearpass_logo.png'
   }
@@ -245,7 +253,10 @@ export const ImportTab = () => {
   }
 
   return html`<div>
-    <${CardSingleSetting} title=${t('Import Vault')}>
+    <${CardSingleSetting}
+      testId="settings-card-import-vault"
+      title=${t('Import Vault')}
+    >
       <${ContentContainer}>
         <${Description}>
           ${t(
@@ -255,13 +266,14 @@ export const ImportTab = () => {
 
         <${ImportOptionsContainer}>
           ${importOptions.map(
-            ({ title, accepts, type, imgSrc, icon }) =>
+            ({ title, accepts, type, imgSrc, icon, testId }) =>
               html`<${ImportDataOption}
                 key=${title}
                 title=${title}
                 accepts=${accepts}
                 imgSrc=${imgSrc}
                 icon=${icon}
+                testId=${testId}
                 onFilesSelected=${(files) => {
                   handleFileChange({ files, type, accepts })
                 }}
