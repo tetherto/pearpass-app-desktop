@@ -1,5 +1,8 @@
 name: Build on Push
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:

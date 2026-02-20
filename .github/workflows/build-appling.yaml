@@ -1,5 +1,10 @@
 name: Build Appling
 
+permissions:
+  contents: read
+  packages: read
+  actions: write
+
 on:
   push:
     branches:
@@ -252,6 +257,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: read
     needs: [version, linux, macos]
     if: github.ref == 'refs/heads/main'
     steps:
