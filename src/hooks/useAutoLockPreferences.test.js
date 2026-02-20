@@ -13,7 +13,6 @@ import {
   isAutoLockEnabled,
   AutoLockProvider
 } from './useAutoLockPreferences'
-
 import { LOCAL_STORAGE_KEYS } from '../constants/localStorage'
 
 describe('useAutoLockPreferences', () => {
@@ -24,18 +23,24 @@ describe('useAutoLockPreferences', () => {
 
   describe('initial state', () => {
     it('should default isAutoLockEnabled to true when localStorage is empty', () => {
-      const { result } = renderHook(() => useAutoLockPreferences(), { wrapper: AutoLockProvider })
+      const { result } = renderHook(() => useAutoLockPreferences(), {
+        wrapper: AutoLockProvider
+      })
       expect(result.current.isAutoLockEnabled).toBe(true)
     })
 
     it('should default timeoutMs to DEFAULT_AUTO_LOCK_TIMEOUT when localStorage is empty', () => {
-      const { result } = renderHook(() => useAutoLockPreferences(), { wrapper: AutoLockProvider })
+      const { result } = renderHook(() => useAutoLockPreferences(), {
+        wrapper: AutoLockProvider
+      })
       expect(result.current.timeoutMs).toBe(DEFAULT_AUTO_LOCK_TIMEOUT)
     })
 
     it('should return false for isAutoLockEnabled when localStorage is set to "false"', () => {
       localStorage.setItem(LOCAL_STORAGE_KEYS.AUTO_LOCK_ENABLED, 'false')
-      const { result } = renderHook(() => useAutoLockPreferences(), { wrapper: AutoLockProvider })
+      const { result } = renderHook(() => useAutoLockPreferences(), {
+        wrapper: AutoLockProvider
+      })
       expect(result.current.isAutoLockEnabled).toBe(false)
     })
 
@@ -45,14 +50,18 @@ describe('useAutoLockPreferences', () => {
         LOCAL_STORAGE_KEYS.AUTO_LOCK_TIMEOUT_MS,
         String(customTimeout)
       )
-      const { result } = renderHook(() => useAutoLockPreferences(), { wrapper: AutoLockProvider })
+      const { result } = renderHook(() => useAutoLockPreferences(), {
+        wrapper: AutoLockProvider
+      })
       expect(result.current.timeoutMs).toBe(customTimeout)
     })
   })
 
   describe('setAutoLockEnabled', () => {
     it('should set isAutoLockEnabled to false and update localStorage', () => {
-      const { result } = renderHook(() => useAutoLockPreferences(), { wrapper: AutoLockProvider })
+      const { result } = renderHook(() => useAutoLockPreferences(), {
+        wrapper: AutoLockProvider
+      })
 
       act(() => {
         result.current.setAutoLockEnabled(false)
@@ -66,7 +75,9 @@ describe('useAutoLockPreferences', () => {
 
     it('should set isAutoLockEnabled to true and remove localStorage key', () => {
       localStorage.setItem(LOCAL_STORAGE_KEYS.AUTO_LOCK_ENABLED, 'false')
-      const { result } = renderHook(() => useAutoLockPreferences(), { wrapper: AutoLockProvider })
+      const { result } = renderHook(() => useAutoLockPreferences(), {
+        wrapper: AutoLockProvider
+      })
 
       act(() => {
         result.current.setAutoLockEnabled(true)
@@ -80,7 +91,9 @@ describe('useAutoLockPreferences', () => {
 
     it('should dispatch auto-lock-settings-changed event when enabling', () => {
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent')
-      const { result } = renderHook(() => useAutoLockPreferences(), { wrapper: AutoLockProvider })
+      const { result } = renderHook(() => useAutoLockPreferences(), {
+        wrapper: AutoLockProvider
+      })
 
       act(() => {
         result.current.setAutoLockEnabled(true)
@@ -93,7 +106,9 @@ describe('useAutoLockPreferences', () => {
 
     it('should dispatch auto-lock-settings-changed event when disabling', () => {
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent')
-      const { result } = renderHook(() => useAutoLockPreferences(), { wrapper: AutoLockProvider })
+      const { result } = renderHook(() => useAutoLockPreferences(), {
+        wrapper: AutoLockProvider
+      })
 
       act(() => {
         result.current.setAutoLockEnabled(false)
@@ -107,7 +122,9 @@ describe('useAutoLockPreferences', () => {
 
   describe('setTimeoutMs', () => {
     it('should update timeoutMs state and localStorage', () => {
-      const { result } = renderHook(() => useAutoLockPreferences(), { wrapper: AutoLockProvider })
+      const { result } = renderHook(() => useAutoLockPreferences(), {
+        wrapper: AutoLockProvider
+      })
       const newTimeout = 120000
 
       act(() => {
@@ -121,7 +138,9 @@ describe('useAutoLockPreferences', () => {
     })
 
     it('supports null timeout and stores "null"', () => {
-      const { result } = renderHook(() => useAutoLockPreferences(), { wrapper: AutoLockProvider })
+      const { result } = renderHook(() => useAutoLockPreferences(), {
+        wrapper: AutoLockProvider
+      })
 
       act(() => {
         result.current.setTimeoutMs(null)
@@ -135,7 +154,9 @@ describe('useAutoLockPreferences', () => {
 
     it('should dispatch auto-lock-settings-changed event', () => {
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent')
-      const { result } = renderHook(() => useAutoLockPreferences(), { wrapper: AutoLockProvider })
+      const { result } = renderHook(() => useAutoLockPreferences(), {
+        wrapper: AutoLockProvider
+      })
 
       act(() => {
         result.current.setTimeoutMs(60000)
@@ -202,7 +223,9 @@ describe('storage sync events', () => {
   })
 
   it('updates enabled state on apply-auto-lock-enabled event', () => {
-    const { result } = renderHook(() => useAutoLockPreferences(), { wrapper: AutoLockProvider })
+    const { result } = renderHook(() => useAutoLockPreferences(), {
+      wrapper: AutoLockProvider
+    })
     expect(result.current.isAutoLockEnabled).toBe(true)
 
     act(() => {
@@ -214,7 +237,9 @@ describe('storage sync events', () => {
   })
 
   it('updates timeout state on apply-auto-lock-timeout event', () => {
-    const { result } = renderHook(() => useAutoLockPreferences(), { wrapper: AutoLockProvider })
+    const { result } = renderHook(() => useAutoLockPreferences(), {
+      wrapper: AutoLockProvider
+    })
     const newTimeout = 1234
 
     act(() => {

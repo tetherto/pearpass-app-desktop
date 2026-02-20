@@ -6,7 +6,10 @@ import { NAVIGATION_ROUTES } from '../../../constants/navigation'
 import { useLoadingContext } from '../../../context/LoadingContext'
 import { useModal } from '../../../context/ModalContext'
 import { useRouter } from '../../../context/RouterContext'
-import { getAutoLockTimeoutMs, useAutoLockPreferences } from '../../../hooks/useAutoLockPreferences'
+import {
+  getAutoLockTimeoutMs,
+  useAutoLockPreferences
+} from '../../../hooks/useAutoLockPreferences'
 import { logger } from '../../../utils/logger'
 const DEDUPE_WINDOW_MS = 50
 
@@ -20,7 +23,7 @@ export function useInactivity() {
   const { navigate } = useRouter()
   const { refetch: refetchUser } = useUserData()
   const { closeModal } = useModal()
-  const resetTimerRef = useRef(() => { })
+  const resetTimerRef = useRef(() => {})
   const { resetState } = useVaults()
   const timerRef = useRef(null)
   const { shouldBypassAutoLock } = useAutoLockPreferences()

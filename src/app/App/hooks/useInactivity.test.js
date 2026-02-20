@@ -52,10 +52,10 @@ describe('useInactivity', () => {
     originalClearTimeout = global.clearTimeout
     originalSetTimeout = global.setTimeout
     if (typeof global.clearTimeout !== 'function') {
-      global.clearTimeout = () => { }
+      global.clearTimeout = () => {}
     }
     if (typeof global.setTimeout !== 'function') {
-      global.setTimeout = () => { }
+      global.setTimeout = () => {}
     }
     addEventListenerSpy = jest.spyOn(window, 'addEventListener')
     removeEventListenerSpy = jest.spyOn(window, 'removeEventListener')

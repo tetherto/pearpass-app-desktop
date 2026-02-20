@@ -19,9 +19,9 @@ import {
   ImportVaultButtonWrapper
 } from './styles'
 import { NAVIGATION_ROUTES } from '../../../constants/navigation'
-import { useAutoLockPreferences } from '../../../hooks/useAutoLockPreferences'
 import { useRouter } from '../../../context/RouterContext'
 import { useToast } from '../../../context/ToastContext'
+import { useAutoLockPreferences } from '../../../hooks/useAutoLockPreferences'
 import { usePasteFromClipboard } from '../../../hooks/usePasteFromClipboard'
 import { useTranslation } from '../../../hooks/useTranslation'
 import { ButtonPrimary } from '../../../lib-react-components'
