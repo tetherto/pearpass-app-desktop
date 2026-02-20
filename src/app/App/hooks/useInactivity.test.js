@@ -15,7 +15,8 @@ jest.mock('pearpass-lib-vault', () => ({
 }))
 
 jest.mock('../../../hooks/useAutoLockPreferences', () => ({
-  getAutoLockTimeoutMs: jest.fn(() => 500)
+  getAutoLockTimeoutMs: jest.fn(() => 500),
+  useAutoLockPreferences: jest.fn(() => ({ shouldBypassAutoLock: false }))
 }))
 
 jest.mock('../../../context/LoadingContext', () => ({
@@ -51,10 +52,10 @@ describe('useInactivity', () => {
     originalClearTimeout = global.clearTimeout
     originalSetTimeout = global.setTimeout
     if (typeof global.clearTimeout !== 'function') {
-      global.clearTimeout = () => {}
+      global.clearTimeout = () => { }
     }
     if (typeof global.setTimeout !== 'function') {
-      global.setTimeout = () => {}
+      global.setTimeout = () => { }
     }
     addEventListenerSpy = jest.spyOn(window, 'addEventListener')
     removeEventListenerSpy = jest.spyOn(window, 'removeEventListener')

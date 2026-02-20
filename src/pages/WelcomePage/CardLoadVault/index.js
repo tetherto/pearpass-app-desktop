@@ -19,6 +19,7 @@ import {
   ImportVaultButtonWrapper
 } from './styles'
 import { NAVIGATION_ROUTES } from '../../../constants/navigation'
+import { useAutoLockPreferences } from '../../../hooks/useAutoLockPreferences'
 import { useRouter } from '../../../context/RouterContext'
 import { useToast } from '../../../context/ToastContext'
 import { usePasteFromClipboard } from '../../../hooks/usePasteFromClipboard'
@@ -45,6 +46,13 @@ export const CardLoadVault = () => {
     cancelPairActiveVault,
     isLoading: isPairing
   } = usePair()
+
+  const { setShouldBypassAutoLock } = useAutoLockPreferences()
+
+  useEffect(() => {
+    setShouldBypassAutoLock(isPairing)
+    return () => setShouldBypassAutoLock(false)
+  }, [isPairing, setShouldBypassAutoLock])
 
   const handleChange = (e) => {
     if (isPairing) {

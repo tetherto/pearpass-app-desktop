@@ -10,6 +10,7 @@ import { setPearpassVaultClient, VaultProvider } from 'pearpass-lib-vault'
 import { createRoot } from 'react-dom/client'
 
 import { App } from './src/app/App'
+import { AutoLockProvider } from './src/hooks/useAutoLockPreferences'
 import { LoadingProvider } from './src/context/LoadingContext'
 import { ModalProvider } from './src/context/ModalContext'
 import { RouterProvider } from './src/context/RouterContext'
@@ -67,9 +68,11 @@ root.render(
         <I18nProvider i18n={i18n}>
           <ToastProvider>
             <RouterProvider>
-              <ModalProvider>
-                <App />
-              </ModalProvider>
+              <AutoLockProvider>
+                <ModalProvider>
+                  <App />
+                </ModalProvider>
+              </AutoLockProvider>
             </RouterProvider>
           </ToastProvider>
         </I18nProvider>
