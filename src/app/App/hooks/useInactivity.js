@@ -6,7 +6,10 @@ import { NAVIGATION_ROUTES } from '../../../constants/navigation'
 import { useLoadingContext } from '../../../context/LoadingContext'
 import { useModal } from '../../../context/ModalContext'
 import { useRouter } from '../../../context/RouterContext'
-import { getAutoLockTimeoutMs } from '../../../hooks/useAutoLockPreferences'
+import {
+  getAutoLockTimeoutMs,
+  useAutoLockPreferences
+} from '../../../hooks/useAutoLockPreferences'
 import { logger } from '../../../utils/logger'
 const DEDUPE_WINDOW_MS = 50
 
@@ -23,8 +26,13 @@ export function useInactivity() {
   const resetTimerRef = useRef(() => {})
   const { resetState } = useVaults()
   const timerRef = useRef(null)
+  const { shouldBypassAutoLock } = useAutoLockPreferences()
 
   resetTimerRef.current = () => {
+    if (shouldBypassAutoLock) {
+      return
+    }
+
     const now = Date.now()
 
     if (now - lastResetAtRef.current < DEDUPE_WINDOW_MS) {
@@ -72,6 +80,13 @@ export function useInactivity() {
     'touchstart',
     'scroll'
   ]
+
+  useEffect(() => {
+    if (shouldBypassAutoLock && timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+  }, [shouldBypassAutoLock])
 
   useEffect(() => {
     window.addEventListener('reset-timer', resetTimer)
