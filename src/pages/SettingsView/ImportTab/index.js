@@ -107,6 +107,7 @@ export const ImportTab = () => {
     error: ''
   })
   const [kdbxPassword, setKdbxPassword] = useState('')
+  const [isUnlocking, setIsUnlocking] = useState(false)
 
   const { createRecord } = useCreateRecord()
 
@@ -147,9 +148,12 @@ export const ImportTab = () => {
   const closeKdbxModal = () => {
     setKdbxModal({ visible: false, fileBuffer: null, error: '' })
     setKdbxPassword('')
+    setIsUnlocking(false)
   }
 
   const handleKdbxSubmit = async () => {
+    setIsUnlocking(true)
+    await new Promise((r) => setTimeout(r, 0))
     try {
       const result = await parseKeePassData(
         kdbxModal.fileBuffer,
@@ -170,6 +174,8 @@ export const ImportTab = () => {
         setToast({ message: t(err.message) })
         logger.error('KeePass KDBX import', err.message)
       }
+    } finally {
+      setIsUnlocking(false)
     }
   }
 
@@ -294,11 +300,16 @@ export const ImportTab = () => {
             placeholder=${t('Database password')}
             value=${kdbxPassword}
             autofocus
+            disabled=${isUnlocking}
             onChange=${(e) => setKdbxPassword(e.target.value)}
           />
           ${kdbxModal.error && html`<${ErrorText}>${kdbxModal.error}<//>`}
-          <${ButtonPrimary} type="submit" size="md" disabled=${!kdbxPassword}>
-            ${t('Unlock & Import')}
+          <${ButtonPrimary}
+            type="submit"
+            size="md"
+            disabled=${!kdbxPassword || isUnlocking}
+          >
+            ${isUnlocking ? t('Decrypting...') : t('Unlock & Import')}
           <//>
         </div>
       <//>
