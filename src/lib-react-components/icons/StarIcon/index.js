@@ -8,6 +8,7 @@ import { getIconProps } from '../../utils/getIconProps'
  *  width?: string;
  *  height?: string;
  *  color?: string;
+ *  fill?: boolean;
  * }} props
  */
 export const StarIcon = (props) => {

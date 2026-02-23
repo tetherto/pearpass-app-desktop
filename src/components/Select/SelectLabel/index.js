@@ -15,9 +15,10 @@ export const SelectLabel = ({
   selectedItem,
   isOpen,
   setIsOpen,
-  placeholder
+  placeholder,
+  testId
 }) => html`
-  <${Label} onClick=${() => setIsOpen?.(!isOpen)}>
+  <${Label} data-testid=${testId} onClick=${() => setIsOpen?.(!isOpen)}>
     <span> ${selectedItem?.label || placeholder} </span>
     <${isOpen ? ArrowUpIcon : ArrowDownIcon} size="24" />
   <//>

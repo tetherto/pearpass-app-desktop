@@ -36,6 +36,7 @@ import { useModal } from '../../../context/ModalContext'
 import { useRouter } from '../../../context/RouterContext'
 import { useToast } from '../../../context/ToastContext'
 import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard'
+import { useAutoLockPreferences } from '../../../hooks/useAutoLockPreferences'
 import { useGlobalLoading } from '../../../context/LoadingContext'
 import { useTranslation } from '../../../hooks/useTranslation'
 import {
@@ -70,8 +71,14 @@ export const AddDeviceModalContent = () => {
     cancelPairActiveVault
   } = usePair()
   const { navigate } = useRouter()
+  const { setShouldBypassAutoLock } = useAutoLockPreferences()
 
   const { copyToClipboard, isCopied } = useCopyToClipboard()
+
+  useEffect(() => {
+    setShouldBypassAutoLock(true)
+    return () => setShouldBypassAutoLock(false)
+  }, [setShouldBypassAutoLock])
 
   useGlobalLoading({ isLoading: isPairing })
 

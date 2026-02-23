@@ -23,7 +23,10 @@ export const SettingsDevicesSection = () => {
   }
 
   return html`
-    <${CardSingleSetting} title=${i18n._('Linked devices')}>
+    <${CardSingleSetting}
+      testId="settings-card-linked-devices"
+      title=${i18n._('Linked devices')}
+    >
       <${content}>
         <${Description}
           >${i18n._('These are the devices with access to this Vault.')}
@@ -32,6 +35,7 @@ export const SettingsDevicesSection = () => {
           (device) =>
             html`<${ListItem}
               key=${device.name}
+              testId="settings-linked-device-item"
               itemName=${device.name}
               itemDateText=${i18n._('Added on') +
               ' ' +
@@ -39,7 +43,11 @@ export const SettingsDevicesSection = () => {
             />`
         )}
         <div style=${{ display: 'flex', justifyContent: 'center' }}>
-          <${ButtonPrimary} onClick=${handleAddDevice} width="fit-content">
+          <${ButtonPrimary}
+            testId="settings-connect-new-device-button"
+            onClick=${handleAddDevice}
+            width="fit-content"
+          >
             ${i18n._('Connect a new device')}
           <//>
         </div>

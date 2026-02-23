@@ -141,6 +141,7 @@ jest.mock('./handlers/VaultHandlers', () => ({
     this.closeAllInstances = jest.fn().mockResolvedValue({ success: true })
     this.cancelPairActiveVault = jest.fn().mockResolvedValue({ success: true })
     this.activeVaultRemoveFile = jest.fn().mockResolvedValue({ success: true })
+    this.fetchFavicon = jest.fn().mockResolvedValue({ favicon: 'mock-favicon' })
   })
 }))
 

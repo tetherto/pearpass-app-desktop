@@ -29,6 +29,7 @@ export const RecordSortActionsPopupContent = ({
         (item) => html`
           <${MenuItem}
             key=${item.name}
+            data-testid=${`sort-option-${item.type}`}
             onClick=${(e) => handleMenuItemClick(e, item.type)}
           >
             <div>

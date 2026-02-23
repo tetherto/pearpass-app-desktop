@@ -1,10 +1,40 @@
-import { useCallback, useState, useEffect } from 'react'
+import {
+  createContext,
+  createElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 
 import { DEFAULT_AUTO_LOCK_TIMEOUT, AUTO_LOCK_ENABLED } from 'pearpass-lib-constants'
+
 import { LOCAL_STORAGE_KEYS } from '../constants/localStorage'
 import { applyAutoLockEnabled, applyAutoLockTimeout } from '../utils/autoLock'
 
-export const useAutoLockPreferences = () => {
+
+type AutoLockContextValue = {
+  shouldBypassAutoLock: boolean
+  setShouldBypassAutoLock: (value: boolean) => void
+  isAutoLockEnabled: boolean
+  timeoutMs: number | null
+  setAutoLockEnabled: (enabled: boolean) => void
+  setTimeoutMs: (ms: number | null) => void
+}
+
+const AutoLockContext = createContext<AutoLockContextValue>({
+  shouldBypassAutoLock: false,
+  setShouldBypassAutoLock: () => { },
+  isAutoLockEnabled: true,
+  timeoutMs: DEFAULT_AUTO_LOCK_TIMEOUT,
+  setAutoLockEnabled: () => { },
+  setTimeoutMs: () => { }
+})
+
+export const AutoLockProvider = ({ children }: { children: React.ReactNode }) => {
+  const [shouldBypassAutoLock, setShouldBypassAutoLock] = useState(false)
+
   const [autoLockEnabled, setAutoLockEnabledState] = useState<boolean>(() => {
     if (!AUTO_LOCK_ENABLED) {
       return false
@@ -30,7 +60,7 @@ export const useAutoLockPreferences = () => {
     }
 
     window.addEventListener('apply-auto-lock-enabled', syncFromStorage)
-  
+
     return () => {
       window.removeEventListener(
         'apply-auto-lock-enabled',
@@ -39,14 +69,14 @@ export const useAutoLockPreferences = () => {
     }
   }, [])
 
-  
+
   useEffect(() => {
     const syncFromStorage = () => {
       setTimeoutMsState(getAutoLockTimeoutMs())
     }
-  
+
     window.addEventListener('apply-auto-lock-timeout', syncFromStorage)
-  
+
     return () => {
       window.removeEventListener(
         'apply-auto-lock-timeout',
@@ -54,8 +84,8 @@ export const useAutoLockPreferences = () => {
       )
     }
   }, [])
-  
-  
+
+
 
   const setAutoLockEnabled = useCallback((enabled: boolean) => {
     applyAutoLockEnabled(enabled)
@@ -68,14 +98,22 @@ export const useAutoLockPreferences = () => {
     setTimeoutMsState(ms)
   }, [])
 
+  const value = useMemo<AutoLockContextValue>(
+    () => ({
+      shouldBypassAutoLock,
+      setShouldBypassAutoLock,
+      isAutoLockEnabled: autoLockEnabled,
+      timeoutMs,
+      setAutoLockEnabled,
+      setTimeoutMs
+    }),
+    [shouldBypassAutoLock, autoLockEnabled, timeoutMs, setAutoLockEnabled, setTimeoutMs]
+  )
 
-  return {
-    isAutoLockEnabled: autoLockEnabled,
-    timeoutMs,
-    setAutoLockEnabled,
-    setTimeoutMs
-  }
+  return createElement(AutoLockContext.Provider, { value }, children)
 }
+
+export const useAutoLockPreferences = () => useContext(AutoLockContext)
 
 export function getAutoLockTimeoutMs(): number | null {
   if (!AUTO_LOCK_ENABLED) {

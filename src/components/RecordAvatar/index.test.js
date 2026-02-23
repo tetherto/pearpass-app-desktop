@@ -11,13 +11,10 @@ jest.mock('../../lib-react-components', () => ({
   StarIcon: (props) => <svg data-testid="star-icon" {...props} />
 }))
 
-const mockGetDefaultFavicon = jest.fn()
+const mockUseFavicon = jest.fn()
 jest.mock('pearpass-lib-vault', () => ({
-  getDefaultFavicon: (...args) => mockGetDefaultFavicon(...args)
-}))
-
-jest.mock('../../utils/extractDomainName', () => ({
-  extractDomainName: jest.fn()
+  ...jest.requireActual('pearpass-lib-vault'),
+  useFavicon: (params) => mockUseFavicon(params)
 }))
 
 describe('RecordAvatar Component', () => {
@@ -27,33 +24,41 @@ describe('RecordAvatar Component', () => {
   }
 
   beforeEach(() => {
-    mockGetDefaultFavicon.mockReset()
+    mockUseFavicon.mockReset()
+    mockUseFavicon.mockReturnValue({
+      faviconSrc: null,
+      isLoading: false,
+      hasError: false
+    })
     global.URL.createObjectURL = jest.fn(() => 'blob:test-url')
   })
 
-  test('calls getDefaultFavicon with domain (protocol stripped)', () => {
+  test('calls useFavicon with domain', () => {
     render(
       <ThemeProvider>
         <RecordAvatar {...defaultProps} websiteDomain="https://example.com" />
       </ThemeProvider>
     )
 
-    expect(mockGetDefaultFavicon).toHaveBeenCalled()
+    expect(mockUseFavicon).toHaveBeenCalledWith({ url: 'https://example.com' })
   })
 
-  test('calls getDefaultFavicon with null when no websiteDomain', () => {
+  test('calls useFavicon with undefined when no websiteDomain', () => {
     render(
       <ThemeProvider>
         <RecordAvatar {...defaultProps} />
       </ThemeProvider>
     )
 
-    expect(mockGetDefaultFavicon).not.toHaveBeenCalled()
+    expect(mockUseFavicon).toHaveBeenCalledWith({ url: undefined })
   })
 
-  test('renders image when getDefaultFavicon returns buffer', () => {
-    const fakeBuffer = new Uint8Array([1, 2, 3])
-    mockGetDefaultFavicon.mockReturnValue(fakeBuffer)
+  test('renders image when useFavicon returns faviconSrc', () => {
+    mockUseFavicon.mockReturnValue({
+      faviconSrc: 'blob:test-url',
+      isLoading: false,
+      hasError: false
+    })
 
     const { container } = render(
       <ThemeProvider>
@@ -64,12 +69,9 @@ describe('RecordAvatar Component', () => {
     const img = container.querySelector('img')
     expect(img).toBeInTheDocument()
     expect(img).toHaveAttribute('src', 'blob:test-url')
-    expect(URL.createObjectURL).toHaveBeenCalledWith(new Blob([fakeBuffer]))
   })
 
   test('renders initials fallback if favicon returns null', () => {
-    mockGetDefaultFavicon.mockReturnValue(null)
-
     const { getByText } = render(
       <ThemeProvider>
         <RecordAvatar {...defaultProps} websiteDomain="https://test.com" />

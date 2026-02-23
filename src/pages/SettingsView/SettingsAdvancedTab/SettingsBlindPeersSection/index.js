@@ -161,6 +161,7 @@ export const SettingsBlindPeersSection = () => {
 
   return html`
     <${CardSingleSetting}
+      testId="settings-card-blind-peering"
       title=${t('Blind Peering')}
       additionalHeaderContent=${html`
         <${PopupMenu}

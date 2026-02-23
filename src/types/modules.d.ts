@@ -127,6 +127,12 @@ declare module 'pearpass-lib-vault' {
       remainingAttempts: number
     }>
   }
+
+  export function useFavicon(params: { url: string }): {
+    faviconSrc: string | null
+    isLoading: boolean
+    hasError: boolean
+  }
 }
 
 declare module 'pear-apps-lib-ui-react-hooks' {
