@@ -129,7 +129,7 @@ function clearClipboard() {
         })
         child.stdin.end('')
       } catch (err) {
-        console.warn('No clipboard tool available:', err.message)
+        console.warn('Error clearing clipboard:', err.message)
         resolve()
       }
     } else {
@@ -169,7 +169,7 @@ export async function getClipboardContent() {
             { timeoutMs: 2000, maxBytes: 1024 * 1024 }
           )
         } catch (err) {
-          console.warn('No clipboard tool available:', err.message)
+          console.warn('Error getting clipboard content:', err.message)
           resolve('')
         }
         break
