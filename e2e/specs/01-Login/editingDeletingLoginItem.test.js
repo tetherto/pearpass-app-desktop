@@ -15,18 +15,17 @@ test.describe('Editing/Deleting Login Item', () => {
 
   let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
 
-  test.beforeAll(async ({ app }) => {
-    page = app.page
-    loginPage = new LoginPage(page.locator('body'))
-    vaultSelectPage = new VaultSelectPage(page.locator('body'))
-    mainPage = new MainPage(page.locator('body'))
-    sideMenuPage = new SideMenuPage(page.locator('body'))
-    createOrEditPage = new CreateOrEditPage(page.locator('body'))
-    utilities = new Utilities(page.locator('body'))
-    detailsPage = new DetailsPage(page.locator('body'))
-  })
-
   test.beforeEach(async ({ app }) => {
+    page = await app.getPage()
+    const root = page.locator('body')
+    loginPage = new LoginPage(root)
+    vaultSelectPage = new VaultSelectPage(root)
+    mainPage = new MainPage(root)
+    sideMenuPage = new SideMenuPage(root)
+    createOrEditPage = new CreateOrEditPage(root)
+    utilities = new Utilities(root)
+    detailsPage = new DetailsPage(root)
+
     await loginPage.loginToApplication(testData.credentials.validPassword)
     await vaultSelectPage.selectVaultbyName(testData.vault.name)
   })
@@ -135,14 +134,19 @@ test.describe('Editing/Deleting Login Item', () => {
       await detailsPage.verifyItemDetailsValueIsNotVisible('Add note')
     })
 
+    await test.step('CLOSE DETAILS', async () => {
+      await mainPage.clickDetailsCloseButton()
+    })
+
     /**
      * @qase.id PAS-585
      * @description "Login" item is deleted after deleting it
      */
     await test.step('DELETE LOGIN ITEM', async () => {
-      await detailsPage.openItemBarThreeDotsDropdownMenu()
-      await detailsPage.clickDeleteElement()
-      await detailsPage.clickConfirmYes()
+      await utilities.deleteAllElements()
+      // await detailsPage.openItemBarThreeDotsDropdownMenu()
+      // await detailsPage.clickDeleteElement()
+      // await detailsPage.clickConfirmYes()
     })
 
     await test.step('VERIFY LOGIN ELEMENT IS NOT VISIBLE', async () => {
@@ -155,7 +159,7 @@ test.describe('Editing/Deleting Login Item', () => {
      */
     await test.step('VERIFY COLLECTION IS EMPTY', async () => {
       await sideMenuPage.selectSideBarCategory('all')
-      await expect(mainPage.collectionEmptySubText).toBeVisible()
+      await expect(mainPage.emptyCollectionView).toBeVisible()
     })
 
   })

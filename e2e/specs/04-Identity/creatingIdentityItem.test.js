@@ -16,18 +16,17 @@ test.describe('Creating Identity Item', () => {
 
   let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
 
-  test.beforeAll(async ({ app }) => {
-    page = app.page
-    loginPage = new LoginPage(page.locator('body'))
-    vaultSelectPage = new VaultSelectPage(page.locator('body'))
-    mainPage = new MainPage(page.locator('body'))
-    sideMenuPage = new SideMenuPage(page.locator('body'))
-    createOrEditPage = new CreateOrEditPage(page.locator('body'))
-    utilities = new Utilities(page.locator('body'))
-    detailsPage = new DetailsPage(page.locator('body'))
-  })
-
   test.beforeEach(async ({ app }) => {
+    page = await app.getPage()
+    const root = page.locator('body')
+    loginPage = new LoginPage(root)
+    vaultSelectPage = new VaultSelectPage(root)
+    mainPage = new MainPage(root)
+    sideMenuPage = new SideMenuPage(root)
+    createOrEditPage = new CreateOrEditPage(root)
+    utilities = new Utilities(root)
+    detailsPage = new DetailsPage(root)
+
     await page.waitForLoadState('domcontentloaded')
     await loginPage.loginToApplication(testData.credentials.validPassword)
     await vaultSelectPage.selectVaultbyName(testData.vault.name)
@@ -502,6 +501,9 @@ test.describe('Creating Identity Item', () => {
       await detailsPage.verifyItemDetailsValueIsNotVisible('note', '')
     })
 
+    await test.step('CLOSE DETAILS', async () => {
+      await mainPage.clickDetailsCloseButton()
+    })
 
   })
 

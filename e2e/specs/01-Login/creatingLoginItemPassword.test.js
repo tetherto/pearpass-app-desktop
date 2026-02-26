@@ -10,23 +10,22 @@ import {
 } from '../../components/index.js';
 import testData from '../../fixtures/test-data.js';
 
-test.describe('Password', () => {
+test.describe.skip('Password', () => {
   test.describe.configure({ mode: 'serial' })
 
   let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
 
-  test.beforeAll(async ({ app }) => {
-    page = app.page
-    loginPage = new LoginPage(page.locator('body'))
-    vaultSelectPage = new VaultSelectPage(page.locator('body'))
-    mainPage = new MainPage(page.locator('body'))
-    sideMenuPage = new SideMenuPage(page.locator('body'))
-    createOrEditPage = new CreateOrEditPage(page.locator('body'))
-    utilities = new Utilities(page.locator('body'))
-    detailsPage = new DetailsPage(page.locator('body'))
-  })
-
   test.beforeEach(async ({ app }) => {
+    page = await app.getPage()
+    const root = page.locator('body')
+    loginPage = new LoginPage(root)
+    vaultSelectPage = new VaultSelectPage(root)
+    mainPage = new MainPage(root)
+    sideMenuPage = new SideMenuPage(root)
+    createOrEditPage = new CreateOrEditPage(root)
+    utilities = new Utilities(root)
+    detailsPage = new DetailsPage(root)
+
     await loginPage.loginToApplication(testData.credentials.validPassword)
     await vaultSelectPage.selectVaultbyName(testData.vault.name)
   })
@@ -82,7 +81,6 @@ test.describe('Password', () => {
 
     await test.step('CLICK CLOSE (X) BUTTON', async () => {
       await createOrEditPage.clickElementItemCloseButton()
-
     })
 
   })

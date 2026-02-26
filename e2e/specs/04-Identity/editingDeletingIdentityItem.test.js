@@ -16,18 +16,17 @@ test.describe('Editing/Deleting Identity Item', () => {
 
   let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
 
-  test.beforeAll(async ({ app }) => {
-    page = app.page
-    loginPage = new LoginPage(page.locator('body'))
-    vaultSelectPage = new VaultSelectPage(page.locator('body'))
-    mainPage = new MainPage(page.locator('body'))
-    sideMenuPage = new SideMenuPage(page.locator('body'))
-    createOrEditPage = new CreateOrEditPage(page.locator('body'))
-    utilities = new Utilities(page.locator('body'))
-    detailsPage = new DetailsPage(page.locator('body'))
-  })
-
   test.beforeEach(async ({ app }) => {
+    page = await app.getPage()
+    const root = page.locator('body')
+    loginPage = new LoginPage(root)
+    vaultSelectPage = new VaultSelectPage(root)
+    mainPage = new MainPage(root)
+    sideMenuPage = new SideMenuPage(root)
+    createOrEditPage = new CreateOrEditPage(root)
+    utilities = new Utilities(root)
+    detailsPage = new DetailsPage(root)
+
     await loginPage.loginToApplication(testData.credentials.validPassword)
     await vaultSelectPage.selectVaultbyName(testData.vault.name)
   })
@@ -190,14 +189,19 @@ test.describe('Editing/Deleting Identity Item', () => {
       await createOrEditPage.clickElementItemCloseButton()
     })
 
+    await test.step('CLOSE DETAILS', async () => {
+      await mainPage.clickDetailsCloseButton()
+    })
+
     /**
      * @qase.id PAS-598
      * @description "Identity" item is deleted after deleting it
      */
     await test.step('DELETE IDENTITY ITEM', async () => {
-      await detailsPage.openItemBarThreeDotsDropdownMenu()
-      await detailsPage.clickDeleteElement()
-      await detailsPage.clickConfirmYes()
+      await utilities.deleteAllElements()
+      // await detailsPage.openItemBarThreeDotsDropdownMenu()
+      // await detailsPage.clickDeleteElement()
+      // await detailsPage.clickConfirmYes()
     })
 
     await test.step('VERIFY IDENTITY ELEMENT IS NOT VISIBLE', async () => {

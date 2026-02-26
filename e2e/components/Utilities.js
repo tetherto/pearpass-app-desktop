@@ -27,18 +27,47 @@ class Utilities {
     return this.root.getByText('Create a new element or pass to another collection')
   }
 
+  get listItemThreeDots() {
+    return this.root.getByTestId('list-item-threedots').first()
+  }
+
+  get listItemThreeDotsMenuDeleteItem() {
+    return this.root.getByTestId('recordaction-item-delete').first()
+  }
+
   // ==== ACTIONS ====
 
   async deleteAllElements() {
-    while (!(await this.collectionEmptyText.isVisible())) {
-      await this.element.first().click();
-      await this.itemBarThreeDots.click();
-      await this.deleteElementButton.click();
+    while (await this.listItemThreeDots.isVisible()) {
+      await this.listItemThreeDots.click();
+      await this.listItemThreeDotsMenuDeleteItem.click();
       await this.root.getByText('Yes').click();
 
       await expect(this.collectionEmptyText).toBeVisible({ timeout: 5000 }).catch(() => { });
     }
   }
+
+  // async deleteAllElements() {
+  //   while (!(await this.collectionEmptyText.isVisible())) {
+  //     // await expect(this.listItemThreeDots).toBeVisible()
+  //     await this.listItemThreeDots.click();
+  //     await this.listItemThreeDotsMenuDeleteItem.click();
+  //     await this.root.getByText('Yes').click();
+
+  //     await expect(this.collectionEmptyText).toBeVisible({ timeout: 5000 }).catch(() => { });
+  //   }
+  // }
+
+  // async deleteAllElements() {
+  //   while (!(await this.collectionEmptyText.isVisible())) {
+  //     await this.element.first().click();
+  //     await this.itemBarThreeDots.click();
+  //     await this.deleteElementButton.click();
+  //     await this.root.getByText('Yes').click();
+
+  //     await expect(this.collectionEmptyText).toBeVisible({ timeout: 5000 }).catch(() => { });
+  //   }
+  // }
 
   async pasteFromClipboard(locator, text) {
   // Write text to clipboard

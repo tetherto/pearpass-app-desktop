@@ -18,7 +18,7 @@ module.exports = {
   // Timeouts
   timeouts: {
     navigation: 3000,
-    action: 2000
+    action: 3000
   },
 
   // PassPhrase

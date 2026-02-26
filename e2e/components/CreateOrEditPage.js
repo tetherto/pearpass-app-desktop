@@ -7,15 +7,9 @@ class CreateOrEditPage {
 
   // ==== LOCATORS ====
 
-  // createoredit-button-createcustomfield  => createoredit-createcustomfield
-
   get noteTextArea() {
     return this.root.getByTestId('createoredit-textarea-note')
   }
-
-  // getNoteTextArea(field) {
-  //   return this.root.getByTestId(`createoredit-textarea-${field}`)
-  // }
 
   get insertPasswordButton() {
     return this.root.getByTestId('passwordGenerator-button-insertpassword').first()
@@ -96,10 +90,6 @@ class CreateOrEditPage {
   get fileInput() {
     return this.root.locator('input[type="file"]').first()
   }
-
-  // get elementItemCloseButton() {
-  //   return this.root.getByTestId('button-round-icon').last() // button-round-icon
-  // }
 
   get elementItemCloseButton() {
     return this.root.getByTestId('modalheader-button-close').last()
@@ -209,7 +199,7 @@ class CreateOrEditPage {
 
   async fillCreateOrEditTextArea(field, value) {
     const text_area = this.getCreateOrEditTextareaField(field)
-    await text_area.waitFor({ state: 'visible' }) // wait before interaction
+    await text_area.waitFor({ state: 'visible' })
     await text_area.type(value)
   }
 

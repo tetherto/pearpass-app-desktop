@@ -91,6 +91,7 @@ export const CreateFolderModalContent = ({ onCreate, initialValues }) => {
         `}
       >
         <${InputField}
+          data-testid="input-folder-name"
           label=${i18n._('Title')}
           placeholder=${i18n._('Insert folder name')}
           variant="outline"
