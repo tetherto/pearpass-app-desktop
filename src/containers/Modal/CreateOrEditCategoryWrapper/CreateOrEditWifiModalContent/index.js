@@ -102,7 +102,7 @@ export const CreateOrEditWifiModalContent = ({
     note: Validator.string(),
     customFields: Validator.array().items(
       Validator.object({
-        note: Validator.string().required(i18n._('Note is required'))
+        note: Validator.string().required(i18n._('Comment is required'))
       })
     ),
     folder: Validator.string(),
