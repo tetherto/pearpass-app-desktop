@@ -6,6 +6,8 @@ import path from 'bare-path'
 import { spawn, spawnSync } from 'bare-subprocess'
 import { CLIPBOARD_CLEAR_TIMEOUT } from 'pearpass-lib-constants'
 
+import { readLinuxClipboard, writeLinuxClipboard } from './linuxClipboard.js'
+
 function collectOutput(child, resolve, onError, opts = {}) {
   const {
     timeoutMs = 2000,
@@ -98,7 +100,7 @@ function collectOutput(child, resolve, onError, opts = {}) {
 }
 
 function clearClipboard() {
-  return new Promise((resolve) => {
+  return new Promise(async (resolve) => {
     const platform = os.platform()
 
     if (platform === 'win32') {
@@ -119,37 +121,24 @@ function clearClipboard() {
       child.on('error', resolve)
       child.stdin.end('')
     } else if (platform === 'linux') {
-      const child = spawn('xsel', ['--clipboard', '--input'], {
-        stdio: ['pipe', 'pipe', 'pipe']
-      })
-      let handled = false
-
-      const done = () => {
-        if (!handled) {
-          handled = true
+      try {
+        const child = await writeLinuxClipboard()
+        child.on('exit', resolve)
+        child.on('error', () => {
           resolve()
-        }
-      }
-
-      child.on('error', () => {
-        const xclip = spawn('xclip', ['-selection', 'clipboard'], {
-          stdio: ['pipe', 'pipe', 'pipe']
         })
-        xclip.on('exit', done)
-        xclip.on('error', done)
-        xclip.stdin.end('')
-      })
-
-      child.on('exit', done)
-      child.stdin.end('')
+        child.stdin.end('')
+      } catch {
+        resolve()
+      }
     } else {
       resolve()
     }
   })
 }
 
-export function getClipboardContent() {
-  return new Promise((resolve) => {
+export async function getClipboardContent() {
+  return new Promise(async (resolve) => {
     const platform = os.platform()
     let child
 
@@ -167,30 +156,19 @@ export function getClipboardContent() {
         collectOutput(child, resolve)
         break
       case 'linux':
-        const xsel = spawn('xsel', ['--clipboard', '--output'], {
-          stdio: ['pipe', 'pipe', 'pipe']
-        })
-
-        collectOutput(
-          xsel,
-          resolve,
-          () => {
-            // Kill xsel if it's still around before fallback (prevents lingering procs)
-            try {
-              xsel.kill?.()
-            } catch {}
-
-            const xclip = spawn('xclip', ['-selection', 'clipboard', '-o'], {
-              stdio: ['pipe', 'pipe', 'pipe']
-            })
-
-            collectOutput(xclip, resolve, () => resolve(''), {
-              timeoutMs: 2000,
-              maxBytes: 1024 * 1024
-            })
-          },
-          { timeoutMs: 2000, maxBytes: 1024 * 1024 }
-        )
+        try {
+          child = await readLinuxClipboard()
+          collectOutput(
+            child,
+            resolve,
+            () => {
+              resolve('')
+            },
+            { timeoutMs: 2000, maxBytes: 1024 * 1024 }
+          )
+        } catch {
+          resolve('')
+        }
         break
       default:
         resolve('')

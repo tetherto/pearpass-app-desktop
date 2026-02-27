@@ -1,6 +1,6 @@
 {
   "name": "pearpass-app-desktop",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "pear": {
     "name": "pearpass-app-desktop",
     "pre": "pear-electron/pre",
@@ -25,7 +25,8 @@
         "/index.js"
       ],
       "prefetch": [
-        "assets"
+        "assets",
+        "resources"
       ],
       "ignore": [
         ".github",
