@@ -65,7 +65,7 @@ export const NoteDetailsForm = ({ initialRecord, selectedFolder }) => {
         html`
           <${TextArea}
             ...${register('note')}
-            placeholder=${i18n._('Write a note...')}
+            placeholder=${i18n._('Write a comment...')}
             isDisabled
             additionalItems=${html`<${CopyButton} value=${values.note} />`}
           />

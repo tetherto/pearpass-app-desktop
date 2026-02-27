@@ -36,7 +36,8 @@ export const SecurityContent = () => {
       {
         name: 'copyToClipboard',
         label: t('Copy to clipboard'),
-        description: t('Copy any password instantly with one tap.')
+        description: t('Copy any password instantly with one tap.'),
+        testId: 'settings-copy-to-clipboard-switch'
       }
     ]
 
@@ -76,13 +77,17 @@ export const SecurityContent = () => {
   return html`
     <${SettingsPasswordsSection} />
 
-    <${CardSingleSetting} title=${t('PearPass functions')}>
+    <${CardSingleSetting}
+      testId="settings-card-pearpass-functions"
+      title=${t('PearPass functions')}
+    >
       <${Description}>
         ${t('Control how PearPass works and keep your vault secure.')}
       <//>
 
       <${SwitchList}>
         <${SwitchWithLabel}
+          testId="settings-reminders-switch"
           isOn=${!isPasswordReminderDisabled}
           onChange=${(isOn) => handlePasswordChangeReminder(isOn)}
           label=${t('Reminders')}

@@ -26,7 +26,9 @@ export const ListItem = ({
   onEditClick,
   onDeleteClick,
   isSelected,
-  testId
+  testId,
+  editTestId,
+  deleteTestId
 }) => html`
   <${ListItemContainer}
     isSelected=${isSelected}
@@ -54,9 +56,13 @@ export const ListItem = ({
         </span>
       `}
       ${onEditClick &&
-      html`<span onClick=${onEditClick}> <${BrushIcon} /></span>`}
+      html`<span data-testid=${editTestId} onClick=${onEditClick}>
+        <${BrushIcon}
+      /></span>`}
       ${onDeleteClick &&
-      html`<span onClick=${onDeleteClick}><${DeleteIcon} /></span>`}
+      html`<span data-testid=${deleteTestId} onClick=${onDeleteClick}
+        ><${DeleteIcon}
+      /></span>`}
     <//>
   <//>
 `

@@ -40,7 +40,12 @@ const ContentWrapper = styled.div`
   gap: 2px;
 `
 
-export const TIMEOUT_OPTIONS = Object.values(AUTO_LOCK_TIMEOUT_OPTIONS)
+export const TIMEOUT_OPTIONS = Object.entries(AUTO_LOCK_TIMEOUT_OPTIONS).map(
+  ([key, option]) => ({
+    ...option,
+    testId: `settings-auto-logout-${key.toLowerCase()}`
+  })
+)
 
 export const AutoLockConfiguration = () => {
   const { t } = useTranslation()
@@ -60,7 +65,7 @@ export const AutoLockConfiguration = () => {
     translatedOptions[0]
 
   return html`
-    <${Container}>
+    <${Container} data-testid="settings-auto-logout">
       <${Wrapper}>
         <${ContentWrapper}>
           <${Label}>${t('Auto Log-out')}<//>
@@ -71,6 +76,7 @@ export const AutoLockConfiguration = () => {
           <//>
         <//>
         <${Select}
+          testId="settings-auto-logout-dropdown"
           items=${translatedOptions}
           selectedItem=${selectedOption}
           onItemSelect=${(item: { label: string; value: number | null }) => setTimeoutMs(item.value)}

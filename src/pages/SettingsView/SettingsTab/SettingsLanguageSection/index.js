@@ -20,9 +20,14 @@ export const SettingsLanguageSection = ({
   description,
   languageOptions = []
 }) => html`
-  <${CardSingleSetting} title=${title} description=${description}>
+  <${CardSingleSetting}
+    testId="settings-card-language"
+    title=${title}
+    description=${description}
+  >
     <div style=${{ marginTop: '10px' }}>
       <${Select}
+        testId="settings-language-dropdown"
         items=${languageOptions}
         selectedItem=${selectedItem}
         onItemSelect=${onItemSelect}

@@ -16,7 +16,8 @@ export const ImportDataOption = ({
   accepts,
   icon,
   imgSrc,
-  onFilesSelected
+  onFilesSelected,
+  testId
 }) => {
   const { setModal } = useModal()
 
@@ -30,7 +31,7 @@ export const ImportDataOption = ({
     )
   }
 
-  return html` <${Container} onClick=${handleClick}>
+  return html` <${Container} data-testid=${testId} onClick=${handleClick}>
     ${icon
       ? html`<${icon} size="25" />`
       : html`<img src=${imgSrc} width="25" height="25" />`}

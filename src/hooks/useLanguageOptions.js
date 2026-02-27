@@ -16,7 +16,8 @@ export const useLanguageOptions = () => {
 
     return LANGUAGES.map((lang) => ({
       label: languageLabelByValue[lang.value],
-      value: lang.value
+      value: lang.value,
+      testId: `settings-language-${lang.value}`
     }))
   }, [LANGUAGES, i18n])
 

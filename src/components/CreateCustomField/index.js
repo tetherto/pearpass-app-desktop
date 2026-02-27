@@ -25,7 +25,7 @@ const OPTIONS = [
   //   icon: ImageIcon
   // },
   {
-    name: 'Note',
+    name: 'Comment',
     type: 'note',
     icon: CommonFileIcon
   }

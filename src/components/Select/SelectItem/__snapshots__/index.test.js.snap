@@ -5,9 +5,7 @@ exports[`SelectItem Component renders correctly with a different item name 1`] =
   <div
     class="sc-bRKDuR dqdJa"
   >
-     
     Spanish
-     
   </div>
 </div>
 `;
@@ -17,9 +15,7 @@ exports[`SelectItem Component renders correctly with item name 1`] = `
   <div
     class="sc-bRKDuR dqdJa"
   >
-     
     English
-     
   </div>
 </div>
 `;

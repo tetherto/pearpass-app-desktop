@@ -134,6 +134,7 @@ export const AboutContent = () => {
     />
 
     <${CardSingleSetting}
+      testId="settings-card-pearpass-version"
       title=${t('PearPass version')}
       description=${t('Here you can find all the info about your app.')}
     >
@@ -147,6 +148,7 @@ export const AboutContent = () => {
         }}
       >
         <div
+          data-testid="settings-about-app-version"
           style=${{
             display: 'flex',
             justifyContent: 'space-between',
@@ -159,6 +161,7 @@ export const AboutContent = () => {
           </span>
         </div>
         <a
+          data-testid="settings-about-terms-of-use"
           href=${TERMS_OF_USE}
           target="_blank"
           rel="noopener noreferrer"
@@ -171,6 +174,7 @@ export const AboutContent = () => {
           ${t('Terms of use')}
         </a>
         <a
+          data-testid="settings-about-privacy-statement"
           href=${PRIVACY_POLICY}
           target="_blank"
           rel="noopener noreferrer"
@@ -183,6 +187,7 @@ export const AboutContent = () => {
           ${t('Privacy statement')}
         </a>
         <a
+          data-testid="settings-about-visit-website"
           href="https://pass.pears.com"
           target="_blank"
           rel="noopener noreferrer"

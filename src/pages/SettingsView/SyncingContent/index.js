@@ -17,6 +17,7 @@ export const SyncingContent = () => {
     <${SettingsBlindPeersSection} />
 
     <${CardSingleSetting}
+      testId="settings-card-browser-extension"
       title=${t('Browser Extension')}
       description=${t('Manage the browsers paired with your account.')}
     >
