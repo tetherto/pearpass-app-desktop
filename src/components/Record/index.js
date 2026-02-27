@@ -102,7 +102,10 @@ export const Record = ({
             <${RecordActionsPopupContent} menuItems=${actions} />
           `}
         >
-          <div onClick=${handleActionMenuToggle} data-testid="list-item-threedots">
+          <div
+            onClick=${handleActionMenuToggle}
+            data-testid="list-item-threedots"
+          >
             <${KebabMenuIcon} />
           </div>
         <//>
