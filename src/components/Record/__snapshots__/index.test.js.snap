@@ -32,7 +32,9 @@ exports[`Record Component renders Record component correctly when not selected 1
         <div
           class="sc-fhHczv MurJc"
         >
-          <div>
+          <div
+            data-testid="list-item-threedots"
+          >
             <svg
               data-testid="kebab-icon"
             />
@@ -111,7 +113,9 @@ exports[`Record Component toggles action menu when kebab icon is clicked (snapsh
         <div
           class="sc-fhHczv MurJc"
         >
-          <div>
+          <div
+            data-testid="list-item-threedots"
+          >
             <svg
               data-testid="kebab-icon"
             />
@@ -164,7 +168,9 @@ exports[`Record Component toggles action menu when kebab icon is clicked (snapsh
         <div
           class="sc-fhHczv MurJc"
         >
-          <div>
+          <div
+            data-testid="list-item-threedots"
+          >
             <svg
               data-testid="kebab-icon"
             />
