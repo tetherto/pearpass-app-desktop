@@ -28,3 +28,22 @@
   * None for Task 1; implementation tasks remain.
 * **Next recommended step:**
   * Implement a dedicated `fdroid` Android build channel (via Expo config plugin + Gradle flavors) and verify `assembleFdroidRelease`.
+
+* **Iteration date/time:** 2026-03-04 01:05
+* **Branch:** feat/fdroid-setup
+* **Task(s) advanced:** Task 2 (F-Droid flavor/channel)
+* **Changes made:**
+  * Added an Android build channel `fdroidRelease` in the mobile app via Expo config plugin (`plugins/withAppConfig`).
+  * Added channel flags: `BuildConfig.DISTRIBUTION_CHANNEL` + `resValue("distribution_channel")` defaulting to `play`, overridden to `fdroid` for `fdroidRelease`.
+  * Documented build commands and expected output path in `mobile/docs/fdroid/build.md`.
+* **Verification run:**
+  * `npm run build-plugins` (mobile) — OK.
+  * `npm install` (mobile) — OK.
+  * `npx expo prebuild --clean --platform android --no-install` — OK; confirmed `fdroidRelease` and channel fields present in `android/app/build.gradle`.
+  * `./gradlew :app:assembleFdroidRelease -m` — FAIL (Android SDK not configured in this environment).
+* **Results:**
+  * F-Droid build channel is generated successfully during prebuild.
+* **Open issues / blockers:**
+  * Local Gradle verification requires Android SDK (`ANDROID_HOME` or `android/local.properties`).
+* **Next recommended step:**
+  * Make version-check behavior channel-aware so F-Droid builds do not scrape/redirect to Play Store.
