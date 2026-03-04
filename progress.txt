@@ -65,3 +65,19 @@
   * Full Gradle build still requires Android SDK setup in this environment.
 * **Next recommended step:**
   * Gate/exclude `androidx.credentials:credentials-play-services-auth` from the F-Droid build channel.
+
+* **Iteration date/time:** 2026-03-04 02:30
+* **Branch:** feat/fdroid-setup
+* **Task(s) advanced:** Task 4 (GMS credentials gating — MVP)
+* **Changes made:**
+  * Updated the autofill Expo plugin so `androidx.credentials:credentials-play-services-auth` is only added for `debug` and `release` builds.
+  * Confirmed generated `android/app/build.gradle` contains `debugImplementation`/`releaseImplementation` but not `fdroidReleaseImplementation` for the Play Services-backed artifact.
+* **Verification run:**
+  * `npx expo prebuild --clean --platform android --no-install` — OK.
+  * Searched generated Gradle file for `credentials-play-services-auth` — present only as build-type scoped dependencies.
+* **Results:**
+  * F-Droid build channel no longer includes the Play Services-backed credentials auth dependency (MVP).
+* **Open issues / blockers:**
+  * Full Gradle build still requires Android SDK setup in this environment.
+* **Next recommended step:**
+  * Prepare F-Droid listing metadata/assets and draft `fdroiddata` recipe.
