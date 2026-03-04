@@ -114,3 +114,20 @@
   * Upstream release automation (EAS remote app versioning) must be reconciled with this deterministic `versionCode` approach.
 * **Next recommended step:**
   * Add fdroidserver validation instructions and a smoke-test checklist.
+
+* **Iteration date/time:** 2026-03-04 03:50
+* **Branch:** feat/fdroid-setup
+* **Task(s) advanced:** Task 9 (fdroidserver validation), Task 10 (non-GMS smoke test), Task 11 (MR prep), Task 12 (internal docs)
+* **Changes made:**
+  * Added fdroidserver validation instructions: `docs/fdroid/fdroidserver-validation.md`.
+  * Added non-GMS smoke-test checklist: `docs/fdroid/non-gms-smoke-test.md`.
+  * Added F-Droid release checklist: `docs/fdroid/release-checklist.md`.
+  * Added fdroiddata MR description template: `docs/fdroid/fdroiddata-mr-template.md`.
+* **Verification run:**
+  * Documentation-only iteration.
+* **Results:**
+  * Reproducible validation and submission guidance is now captured in-repo.
+* **Open issues / blockers:**
+  * fdroidserver build and non-GMS smoke test still require an external runner/device.
+* **Next recommended step:**
+  * Run the validation + smoke test on a real environment and capture results.
