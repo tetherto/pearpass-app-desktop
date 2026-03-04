@@ -47,3 +47,21 @@
   * Local Gradle verification requires Android SDK (`ANDROID_HOME` or `android/local.properties`).
 * **Next recommended step:**
   * Make version-check behavior channel-aware so F-Droid builds do not scrape/redirect to Play Store.
+
+* **Iteration date/time:** 2026-03-04 02:05
+* **Branch:** feat/fdroid-setup
+* **Task(s) advanced:** Task 3 (Version-check compatibility)
+* **Changes made:**
+  * Implemented Android distribution channel detection via a native module (`DistributionChannel`) generated during `expo prebuild`.
+  * Updated `useVersionCheck()` to disable update checks for `fdroid` channel and avoid Google Play scraping/redirect.
+  * Added unit test coverage for the F-Droid disable behavior.
+  * Added `mobile/docs/fdroid/version-check.md` to document channel behavior.
+* **Verification run:**
+  * `npm test -- useVersionCheck.test.js` (mobile) — OK.
+  * `npx expo prebuild --clean --platform android --no-install` — OK; confirmed `DistributionChannelModule.kt` + `DistributionChannelPackage` are generated and registered in `MainApplication.kt`.
+* **Results:**
+  * F-Droid builds no longer scrape Google Play or redirect to Play Store for update checks.
+* **Open issues / blockers:**
+  * Full Gradle build still requires Android SDK setup in this environment.
+* **Next recommended step:**
+  * Gate/exclude `androidx.credentials:credentials-play-services-auth` from the F-Droid build channel.
