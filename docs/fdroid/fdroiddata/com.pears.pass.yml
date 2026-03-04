@@ -22,7 +22,7 @@ MaintainerNotes: |
 
 Builds:
   - versionName: '1.5.0'
-    versionCode: 1
+    versionCode: 10500
     commit: v1.5.0
     subdir: android
     submodules: true
@@ -40,4 +40,4 @@ Builds:
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
 CurrentVersion: '1.5.0'
-CurrentVersionCode: 1
+CurrentVersionCode: 10500

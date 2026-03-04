@@ -97,3 +97,20 @@
   * Recipe draft assumes an upstream tag that includes the F-Droid-specific patches.
 * **Next recommended step:**
   * Prepare fdroidserver validation instructions and a non-GMS smoke-test checklist.
+
+* **Iteration date/time:** 2026-03-04 03:30
+* **Branch:** feat/fdroid-setup
+* **Task(s) advanced:** Task 6 (Tags/versioning standardization)
+* **Changes made:**
+  * Added deterministic Android `versionCode` to the mobile app (`expo.android.versionCode`) using a `major*10000 + minor*100 + patch` scheme.
+  * Updated fastlane changelog filename to match the computed `versionCode` (`10500.txt`).
+  * Updated the draft `fdroiddata` recipe versionCode to `10500`.
+  * Added `mobile/docs/release/fdroid-versioning.md` documenting tag/version conventions.
+* **Verification run:**
+  * `npx expo prebuild --clean --platform android --no-install` — OK; confirmed generated `android/app/build.gradle` has `versionCode 10500`.
+* **Results:**
+  * Versioning is now deterministic for F-Droid update checks.
+* **Open issues / blockers:**
+  * Upstream release automation (EAS remote app versioning) must be reconciled with this deterministic `versionCode` approach.
+* **Next recommended step:**
+  * Add fdroidserver validation instructions and a smoke-test checklist.
