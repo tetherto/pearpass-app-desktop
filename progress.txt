@@ -14,3 +14,17 @@
 * **Next recommended step:**
   * Clone `tetherto/pearpass-app-mobile` locally and implement Tasks 1–12 there, starting with the compatibility audit ADR.
 
+* **Iteration date/time:** 2026-03-04 00:25
+* **Branch:** feat/fdroid-setup
+* **Task(s) advanced:** Task 1 (Compatibility audit)
+* **Changes made:**
+  * Added `tetherto/pearpass-app-mobile` as a git submodule at `mobile/` to allow Android-focused work within this workspace.
+  * Added the compatibility audit ADR in `mobile/docs/adr/ADR-0001-android-fdroid-compatibility-audit.md`.
+* **Verification run:**
+  * Confirmed audit findings by code search for `credentials-play-services-auth` and update redirect/version-check flows.
+* **Results:**
+  * Audit identifies the Play Services-backed credentials dependency injection and the Play Store-based version check/redirect as primary F-Droid blockers.
+* **Open issues / blockers:**
+  * None for Task 1; implementation tasks remain.
+* **Next recommended step:**
+  * Implement a dedicated `fdroid` Android build channel (via Expo config plugin + Gradle flavors) and verify `assembleFdroidRelease`.

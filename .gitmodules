@@ -66,3 +66,6 @@
 	path = packages/tether-dev-docs
 	url = git@github.com:tetherto/tether-dev-docs.git
 	branch = dev
+[submodule "mobile"]
+	path = mobile
+	url = https://github.com/tetherto/pearpass-app-mobile.git
