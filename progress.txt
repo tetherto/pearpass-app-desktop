@@ -81,3 +81,19 @@
   * Full Gradle build still requires Android SDK setup in this environment.
 * **Next recommended step:**
   * Prepare F-Droid listing metadata/assets and draft `fdroiddata` recipe.
+
+* **Iteration date/time:** 2026-03-04 03:00
+* **Branch:** feat/fdroid-setup
+* **Task(s) advanced:** Task 7 (Listing metadata/assets), Task 8 (fdroiddata recipe draft)
+* **Changes made:**
+  * Added `fastlane/metadata/android/en-US` in the mobile app with title/description and placeholder icon/screenshots.
+  * Drafted a `fdroiddata` metadata file at `docs/fdroid/fdroiddata/com.pears.pass.yml`.
+* **Verification run:**
+  * Confirmed fastlane metadata files exist under `mobile/fastlane/metadata/android/en-US/`.
+* **Results:**
+  * Repository now includes an initial metadata baseline and an initial recipe draft.
+* **Open issues / blockers:**
+  * Screenshots are placeholders and should be replaced with real in-app screenshots before submission.
+  * Recipe draft assumes an upstream tag that includes the F-Droid-specific patches.
+* **Next recommended step:**
+  * Prepare fdroidserver validation instructions and a non-GMS smoke-test checklist.

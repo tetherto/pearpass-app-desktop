@@ -1,0 +1,43 @@
+Categories:
+  - Password & 2FA
+License: Apache-2.0
+
+AuthorName: Pears
+
+WebSite: https://github.com/tetherto/pearpass-app-mobile
+SourceCode: https://github.com/tetherto/pearpass-app-mobile
+IssueTracker: https://github.com/tetherto/pearpass-app-mobile/issues
+Changelog: https://github.com/tetherto/pearpass-app-mobile/releases
+
+RepoType: git
+Repo: https://github.com/tetherto/pearpass-app-mobile.git
+
+MaintainerNotes: |
+  Upstream is an Expo project and does not track the native Android directory.
+  The F-Droid build must run `expo prebuild` to generate `android/`, then build
+  the dedicated `fdroidRelease` build type.
+
+  This recipe is a draft and must be updated once the upstream tag that
+  includes the F-Droid-specific patches is published.
+
+Builds:
+  - versionName: '1.5.0'
+    versionCode: 1
+    commit: v1.5.0
+    subdir: android
+    submodules: true
+    prebuild:
+      - npm ci
+      - npm run build-plugins
+      - npm run bundle-bare
+      - npm run lingui:extract
+      - npm run lingui:compile
+      - npx expo prebuild --clean --platform android --no-install
+    gradle:
+      - fdroidRelease
+    output: app/build/outputs/apk/fdroidRelease/app-fdroidRelease.apk
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: '1.5.0'
+CurrentVersionCode: 1
