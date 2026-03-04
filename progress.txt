@@ -1,0 +1,16 @@
+* **Iteration date/time:** 2026-03-04 00:00
+* **Branch:** feat/fdroid-setup
+* **Task(s) advanced:** Task 1 (Compatibility audit) — discovery
+* **Changes made:**
+  * Identified that this repository (`pearpass-app-desktop`) does not contain Android source/Gradle projects.
+  * Identified that the Android app lives in `tetherto/pearpass-app-mobile` (Expo prebuild; `android/` dir generated).
+  * Decided to execute the F-Droid readiness workstream against `pearpass-app-mobile`, while keeping this repo as the Ralph Loop log/driver.
+* **Verification run:**
+  * Searched repo for `AndroidManifest.xml`, `build.gradle`, and `androidx.credentials` usages (none found outside `node_modules`).
+* **Results:**
+  * Blocker to performing Android-specific tasks directly in this repo confirmed.
+* **Open issues / blockers:**
+  * Android project not present in `pearpass-app-desktop`; cannot add `fdroid` flavor, adjust version-check, or gate GMS here.
+* **Next recommended step:**
+  * Clone `tetherto/pearpass-app-mobile` locally and implement Tasks 1–12 there, starting with the compatibility audit ADR.
+
