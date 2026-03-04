@@ -23,15 +23,15 @@ Inside the container:
 ```bash
 . /etc/profile
 cd /build
-fdroid readmeta
-fdroid rewritemeta com.pears.pass
-fdroid lint com.pears.pass
-fdroid checkupdates --allow-dirty com.pears.pass
-fdroid build com.pears.pass
+/home/vagrant/fdroidserver/fdroid readmeta
+/home/vagrant/fdroidserver/fdroid rewritemeta com.pears.pass
+/home/vagrant/fdroidserver/fdroid lint com.pears.pass
+/home/vagrant/fdroidserver/fdroid checkupdates --allow-dirty com.pears.pass
+/home/vagrant/fdroidserver/fdroid build com.pears.pass
 ```
 
 ## Notes
 
 * Upstream is an Expo project, so the recipe runs `expo prebuild` in `prebuild:` before Gradle executes.
 * The dedicated Android build type is `fdroidRelease`.
-
+* `checkupdates` will fail until the upstream tag referenced by `commit:` includes the deterministic `versionCode` strategy used by the recipe.

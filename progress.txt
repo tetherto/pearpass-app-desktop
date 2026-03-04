@@ -131,3 +131,20 @@
   * fdroidserver build and non-GMS smoke test still require an external runner/device.
 * **Next recommended step:**
   * Run the validation + smoke test on a real environment and capture results.
+
+* **Iteration date/time:** 2026-03-04 04:10
+* **Branch:** feat/fdroid-setup
+* **Task(s) advanced:** Task 9 (fdroidserver validation)
+* **Changes made:**
+  * Ran initial `fdroidserver` validation inside `registry.gitlab.com/fdroid/fdroidserver:buildserver` container.
+  * Updated validation doc to use `/home/vagrant/fdroidserver/fdroid` entrypoint.
+* **Verification run:**
+  * `/home/vagrant/fdroidserver/fdroid readmeta` — OK (warns about unsafe `config.yml` permissions).
+  * `/home/vagrant/fdroidserver/fdroid lint com.pears.pass` — OK.
+  * `/home/vagrant/fdroidserver/fdroid checkupdates --allow-dirty com.pears.pass` — FAIL.
+* **Results:**
+  * `checkupdates` fails because the recipe expects `versionCode 10500` but upstream tag `v1.5.0` still builds with `versionCode 1`.
+* **Open issues / blockers:**
+  * Need an upstream release/tag that includes deterministic `android.versionCode` changes before `checkupdates` can pass.
+* **Next recommended step:**
+  * Merge/tag the mobile F-Droid changes upstream, then rerun `checkupdates` + `fdroid build`.
