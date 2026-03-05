@@ -1,12 +1,13 @@
 {
   "name": "pearpass-app-desktop",
-  "version": "1.0.1",
+  "version": "1.6.0",
   "pear": {
     "name": "pearpass-app-desktop",
     "pre": "pear-electron/pre",
     "routes": ".",
     "unrouted": [
-      "/node_modules/pearpass-lib-vault-core/src/worklet/app.js"
+      "/node_modules/pearpass-lib-vault-core/src/worklet/app.js",
+      "/subProcess/clipboardCleanup.js"
     ],
     "gui": {
       "backgroundColor": "#1F2430",
@@ -19,44 +20,69 @@
     ],
     "stage": {
       "entrypoints": [
-        "node_modules/pearpass-lib-vault-core/src/worklet/app.js"
+        "node_modules/pearpass-lib-vault-core/src/worklet/app.js",
+        "subProcess/clipboardCleanup.js",
+        "/index.js"
       ],
-     "ignore": [
+      "prefetch": [
+        "assets",
+        "resources"
+      ],
+      "ignore": [
         ".github",
         "appling",
         ".git",
         ".gitignore",
-        "packages"
+        ".husky",
+        "e2e",
+        "packages",
+        "scripts",
+        "src",
+        "tsconfig.json",
+        "eslint.config.js",
+        "jest.config.js",
+        "flatpak",
+        "snapcraft"
       ]
     }
   },
   "type": "module",
   "license": "Apache-2.0",
   "scripts": {
-    "dev": "pear run -d .",
     "test": "jest",
-    "build:pear": "lingui extract && lingui compile",
-    "build-bridge-package": "node scripts/build-bridge-package.js",
-    "lint": "eslint --fix .",
+    "build:pear": "lingui extract && lingui compile && tsc",
+    "lint:fix": "eslint --fix ./src",
+    "lint": "eslint ./src",
+    "build": "tsc",
     "lingui:extract": "lingui extract",
     "lingui:compile": "lingui compile",
-    "update-submodules": "bash scripts/update-submodules.sh"
+    "prepare": "husky",
+    "dev": "concurrently -n \"TypeScript,Pear\" -c \"blue,green\" \"tsc --watch\" \"pear run -d .\""
   },
   "devDependencies": {
     "@babel/core": "7.26.10",
     "@babel/preset-env": "7.26.9",
     "@babel/preset-react": "7.26.3",
+    "@babel/preset-typescript": "^7.28.5",
     "@lingui/cli": "5.1.2",
+    "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.2.0",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
     "@vercel/ncc": "0.38.3",
     "babel-jest": "29.7.0",
     "bare-pack": "1.4.8",
     "cmake-pear": "2.0.0",
+    "concurrently": "9.2.1",
+    "eslint": "^9.39.3",
+    "husky": "9.1.7",
     "jest": "29.7.0",
     "jest-environment-jsdom": "29.7.0",
+    "nodemon": "^3.0.0",
     "pear-interface": "1.0.0",
-    "tether-dev-docs": "file:packages/tether-dev-docs"
+    "tether-dev-docs": "git+https://github.com/tetherto/tether-dev-docs.git",
+    "typescript": "5.9.3"
   },
   "dependencies": {
     "@lingui/core": "5.1.2",
@@ -71,28 +97,33 @@
     "dotenv": "17.2.1",
     "htm": "3.1.1",
     "jszip": "3.10.1",
-    "pear-apps-lib-feedback": "file:packages/pear-apps-lib-feedback",
-    "pear-apps-lib-ui-react-hooks": "file:packages/pear-apps-lib-ui-react-hooks",
-    "pear-apps-utils-avatar-initials": "file:packages/pear-apps-utils-avatar-initials",
-    "pear-apps-utils-date": "file:packages/pear-apps-utils-date",
-    "pear-apps-utils-generate-unique-id": "file:packages/pear-apps-utils-generate-unique-id",
-    "pear-apps-utils-pattern-search": "file:packages/pear-apps-utils-pattern-search",
-    "pear-apps-utils-qr": "file:packages/pear-apps-utils-qr",
-    "pear-apps-utils-validator": "file:packages/pear-apps-utils-validator",
+    "pear-apps-lib-feedback": "git+https://github.com/tetherto/pear-apps-lib-feedback.git",
+    "pear-apps-lib-ui-react-hooks": "git+https://github.com/tetherto/pear-apps-lib-ui-react-hooks.git",
+    "pear-apps-utils-avatar-initials": "git+https://github.com/tetherto/pear-apps-utils-avatar-initials.git",
+    "pear-apps-utils-date": "git+https://github.com/tetherto/pear-apps-utils-date.git",
+    "pear-apps-utils-generate-unique-id": "git+https://github.com/tetherto/pear-apps-utils-generate-unique-id.git",
+    "pear-apps-utils-pattern-search": "git+https://github.com/tetherto/pear-apps-utils-pattern-search.git",
+    "pear-apps-utils-qr": "git+https://github.com/tetherto/pear-apps-utils-qr.git",
+    "pear-apps-utils-validator": "git+https://github.com/tetherto/pear-apps-utils-validator.git",
     "pear-bridge": "1.2.4",
     "pear-electron": "1.7.25-rc.0",
     "pear-ipc": "6.4.0",
     "pear-run": "1.0.5",
-    "pearpass-lib-constants": "file:packages/pearpass-lib-constants",
-    "pearpass-lib-data-export": "file:packages/pearpass-lib-data-export",
-    "pearpass-lib-data-import": "file:packages/pearpass-lib-data-import",
-    "pearpass-lib-ui-theme-provider": "file:packages/pearpass-lib-ui-theme-provider",
-    "pearpass-lib-vault": "file:packages/pearpass-lib-vault",
-    "pearpass-lib-vault-core": "file:packages/pearpass-lib-vault-core",
-    "pearpass-utils-password-check": "file:packages/pearpass-utils-password-check",
-    "pearpass-utils-password-generator": "file:packages/pearpass-utils-password-generator",
+    "pearpass-lib-constants": "git+https://github.com/tetherto/pearpass-lib-constants.git",
+    "pearpass-lib-data-export": "git+https://github.com/tetherto/pearpass-lib-data-export.git",
+    "pearpass-lib-data-import": "git+https://github.com/tetherto/pearpass-lib-data-import.git",
+    "pearpass-lib-ui-theme-provider": "git+https://github.com/tetherto/pearpass-lib-ui-theme-provider.git",
+    "pearpass-lib-vault": "git+https://github.com/tetherto/pearpass-lib-vault.git",
+    "pearpass-lib-vault-core": "git+https://github.com/tetherto/pearpass-lib-vault-core.git",
+    "pearpass-utils-password-check": "git+https://github.com/tetherto/pearpass-utils-password-check.git",
+    "pearpass-utils-password-generator": "git+https://github.com/tetherto/pearpass-utils-password-generator.git",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "styled-components": "6.1.19"
+  },
+  "overrides": {
+    "@xmldom/xmldom": "^0.8.10",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   }
 }
