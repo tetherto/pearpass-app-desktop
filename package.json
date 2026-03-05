@@ -86,7 +86,6 @@
     "husky": "9.1.7",
     "jest": "29.7.0",
     "jest-environment-jsdom": "29.7.0",
-    "nodemon": "^3.0.0",
     "pear-interface": "1.0.0",
     "prettier": "3.4.2",
     "tether-dev-docs": "git+https://github.com/tetherto/tether-dev-docs.git",
