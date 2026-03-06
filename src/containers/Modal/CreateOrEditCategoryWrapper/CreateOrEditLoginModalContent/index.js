@@ -28,6 +28,7 @@ import {
   ImageIcon,
   InputField,
   KeyIcon,
+  LockIcon,
   PasswordField,
   PasswordIcon,
   PlusIcon,
@@ -106,10 +107,13 @@ export const CreateOrEditLoginModalContent = ({
 
   useGlobalLoading({ isLoading })
 
+  const hasExistingOtp = !!initialRecord?.otpPublic
+
   const schema = Validator.object({
     title: Validator.string().required(i18n._('Title is required')),
     username: Validator.string(),
     password: Validator.string(),
+    otpSecret: Validator.string(),
     note: Validator.string(),
     websites: Validator.array().items(
       Validator.object({
@@ -136,6 +140,7 @@ export const CreateOrEditLoginModalContent = ({
       title: initialRecord?.data?.title ?? '',
       username: initialRecord?.data?.username ?? '',
       password: initialRecord?.data?.password ?? '',
+      otpSecret: '',
       note: initialRecord?.data?.note ?? '',
       websites: initialRecord?.data?.websites?.length
         ? initialRecord?.data?.websites.map((website) => ({ website }))
@@ -170,6 +175,8 @@ export const CreateOrEditLoginModalContent = ({
   })
 
   const onSubmit = (values) => {
+    const otpInput = values.otpSecret?.trim() || undefined
+
     const data = {
       type: RECORD_TYPES.LOGIN,
       folder: values.folder,
@@ -185,7 +192,8 @@ export const CreateOrEditLoginModalContent = ({
           .map((website) => addHttps(website.website)),
         customFields: values.customFields,
         attachments: values.attachments,
-        passwordUpdatedAt: initialRecord?.data?.passwordUpdatedAt
+        passwordUpdatedAt: initialRecord?.data?.passwordUpdatedAt,
+        otpInput
       }
     }
 
@@ -318,6 +326,21 @@ export const CreateOrEditLoginModalContent = ({
             />
           <//>
         `}
+
+        <${FormGroup}>
+          <${PasswordField}
+            testId="createoredit-input-otpsecret"
+            label=${i18n._(
+              hasExistingOtp
+                ? 'Authenticator Secret Key (configured)'
+                : 'Authenticator Secret Key'
+            )}
+            placeholder=${i18n._('Enter Secret Key or otpauth:// URI')}
+            variant="outline"
+            icon=${LockIcon}
+            ...${register('otpSecret')}
+          />
+        <//>
 
         <${CompoundField}>
           ${websitesList.map(
