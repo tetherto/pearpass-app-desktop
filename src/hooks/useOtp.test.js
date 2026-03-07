@@ -32,7 +32,7 @@ describe('useOtp', () => {
     expect(result.current.isLoading).toBe(false)
   })
 
-  test('initializes TOTP with code and timeRemaining from otpPublic', () => {
+  test('TOTP fetches fresh code on mount', async () => {
     const otpPublic = {
       type: 'TOTP',
       digits: 6,
@@ -41,69 +41,85 @@ describe('useOtp', () => {
       timeRemaining: 20
     }
 
+    generateOtpCodesByIds.mockResolvedValue([
+      { recordId: 'rec-1', code: '999888', timeRemaining: 25 }
+    ])
+
     const { result } = renderHook(() =>
       useOtp({ recordId: 'rec-1', otpPublic })
     )
 
-    expect(result.current.code).toBe('123456')
+    await waitFor(() => {
+      expect(result.current.code).toBe('999888')
+      expect(result.current.timeRemaining).toBe(25)
+    })
+
     expect(result.current.type).toBe('TOTP')
     expect(result.current.period).toBe(30)
     expect(result.current.generateNext).toBeNull()
   })
 
-  test('TOTP countdown decrements timeRemaining', async () => {
+  test('TOTP refreshes every second via interval', async () => {
     const otpPublic = {
       type: 'TOTP',
       digits: 6,
       period: 30,
       currentCode: '123456',
-      timeRemaining: 5
+      timeRemaining: 20
     }
 
-    generateOtpCodesByIds.mockResolvedValue([
-      { recordId: 'rec-1', code: '654321', timeRemaining: 30 }
-    ])
+    generateOtpCodesByIds
+      .mockResolvedValueOnce([
+        { recordId: 'rec-1', code: '111111', timeRemaining: 15 }
+      ])
+      .mockResolvedValueOnce([
+        { recordId: 'rec-1', code: '111111', timeRemaining: 14 }
+      ])
+      .mockResolvedValueOnce([
+        { recordId: 'rec-1', code: '111111', timeRemaining: 13 }
+      ])
 
     const { result } = renderHook(() =>
       useOtp({ recordId: 'rec-1', otpPublic })
     )
 
-    // Advance time to trigger countdown
+    // Wait for initial fetch
+    await waitFor(() => {
+      expect(result.current.timeRemaining).toBe(15)
+    })
+
+    // Advance 2 intervals
     await act(async () => {
       jest.advanceTimersByTime(2000)
     })
 
-    expect(result.current.timeRemaining).toBeLessThan(5)
+    // Should have called worklet 3 times (initial + 2 ticks)
+    await waitFor(() => {
+      expect(generateOtpCodesByIds).toHaveBeenCalledTimes(3)
+    })
   })
 
-  test('TOTP refreshes code when timeRemaining reaches 0', async () => {
+  test('TOTP updates code when worklet returns new code', async () => {
     const otpPublic = {
       type: 'TOTP',
       digits: 6,
       period: 30,
       currentCode: '123456',
-      timeRemaining: 1
+      timeRemaining: 2
     }
 
+    // Worklet returns a new code on each call
     generateOtpCodesByIds.mockResolvedValue([
-      { recordId: 'rec-1', code: '654321', timeRemaining: 30 }
+      { recordId: 'rec-1', code: '222222', timeRemaining: 30 }
     ])
 
     const { result } = renderHook(() =>
       useOtp({ recordId: 'rec-1', otpPublic })
     )
 
-    // Advance past the expiry
-    await act(async () => {
-      jest.advanceTimersByTime(2000)
-    })
-
     await waitFor(() => {
-      expect(generateOtpCodesByIds).toHaveBeenCalledWith(['rec-1'])
-    })
-
-    await waitFor(() => {
-      expect(result.current.code).toBe('654321')
+      expect(result.current.code).toBe('222222')
+      expect(result.current.timeRemaining).toBe(30)
     })
   })
 

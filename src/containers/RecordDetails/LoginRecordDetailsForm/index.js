@@ -10,6 +10,7 @@ import { CopyButton } from '../../../components/CopyButton'
 import { FormGroup } from '../../../components/FormGroup'
 import { FormWrapper } from '../../../components/FormWrapper'
 import { InputFieldNote } from '../../../components/InputFieldNote'
+import { OtpCodeField } from '../../../components/OtpCodeField'
 import { WebsiteButton } from '../../../components/WebsiteButton'
 import { ATTACHMENTS_FIELD_KEY } from '../../../constants/formFields'
 import { useGetMultipleFiles } from '../../../hooks/useGetMultipleFiles'
@@ -146,6 +147,15 @@ export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
             variant="outline"
             icon=${KeyIcon}
             isDisabled
+          />
+        <//>
+      `}
+      ${!!initialRecord?.otpPublic &&
+      html`
+        <${FormGroup}>
+          <${OtpCodeField}
+            recordId=${initialRecord.id}
+            otpPublic=${initialRecord.otpPublic}
           />
         <//>
       `}
