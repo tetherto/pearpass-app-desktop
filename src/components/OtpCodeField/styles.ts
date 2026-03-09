@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { DefaultTheme } from 'styled-components'
 
 import { TIMER_URGENCY } from './constants'
 
@@ -6,7 +6,7 @@ interface TimerProps {
   $urgency: string
 }
 
-const getUrgencyColor = (theme: any, $urgency: string) => {
+const getUrgencyColor = (theme: DefaultTheme, $urgency: string) => {
   if ($urgency === TIMER_URGENCY.CRITICAL) return theme.colors.errorRed.mode1
   if ($urgency === TIMER_URGENCY.WARNING) return theme.colors.errorYellow.mode1
   return theme.colors.primary400.mode1
