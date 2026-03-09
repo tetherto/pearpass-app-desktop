@@ -60,6 +60,13 @@ export const FoldersWrapper = styled.div`
   min-height: 0;
 `
 
+export const SidebarAuthenticatorSection = styled.div`
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid ${({ theme }) => theme.colors.grey300.mode1};
+  flex-shrink: 0;
+`
+
 export const SidebarSettings = styled.div`
   width: 100%;
   flex-grow: 0;
