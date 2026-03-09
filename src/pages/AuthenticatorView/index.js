@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
-import { generateOtpCodesByIds, useRecords } from 'pearpass-lib-vault'
+import { useRecords } from 'pearpass-lib-vault'
 
 import {
   EmptyState,
@@ -24,7 +24,7 @@ import { InputSearch } from '../../components/InputSearch'
 import { getTimerUrgency } from '../../components/OtpCodeField/constants'
 import { Record } from '../../components/Record'
 import { useRouter } from '../../context/RouterContext'
-import { createAlignedInterval } from '../../utils/alignedInterval'
+import { useOtpCodes } from '../../hooks/useOtpCodes'
 
 const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * 5.5 // radius=5.5, ~34.558
 
@@ -32,7 +32,6 @@ export const AuthenticatorView = () => {
   const { i18n } = useLingui()
   const { navigate } = useRouter()
   const [searchValue, setSearchValue] = useState('')
-  const [otpCodes, setOtpCodes] = useState({})
   const prevTimesRef = useRef({})
   const noTransitionPeriodsRef = useRef({})
   const rafRef = useRef(null)
@@ -49,50 +48,13 @@ export const AuthenticatorView = () => {
     }
   })
 
-  const recordsRef = useRef(records)
-  recordsRef.current = records
-
   // Client-side filter as safety net
   const otpRecords = useMemo(
     () => (records || []).filter((r) => r.otpPublic),
     [records]
   )
 
-  useEffect(() => {
-    if (!otpRecords.length) return
-
-    const refresh = async () => {
-      const currentRecords = recordsRef.current
-      if (!currentRecords?.length) return
-
-      const ids = currentRecords.filter((r) => r.otpPublic).map((r) => r.id)
-      if (!ids.length) return
-
-      try {
-        const results = await generateOtpCodesByIds(ids)
-        const codesMap = {}
-
-        for (const result of results) {
-          codesMap[result.recordId] = result
-        }
-
-        setOtpCodes(codesMap)
-      } catch {
-        // Will retry on next tick
-      }
-    }
-
-    refresh()
-    const cleanup = createAlignedInterval(refresh)
-
-    const handleHotpUpdate = () => refresh()
-    window.addEventListener('otp-code-updated', handleHotpUpdate)
-
-    return () => {
-      cleanup()
-      window.removeEventListener('otp-code-updated', handleHotpUpdate)
-    }
-  }, [otpRecords.length])
+  const otpCodes = useOtpCodes(otpRecords)
 
   // Two-phase render: after painting at exact position, enable transitions
   useEffect(() => {

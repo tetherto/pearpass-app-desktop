@@ -19,6 +19,7 @@ import { Record } from '../../components/Record'
 import { RecordSortActionsPopupContent } from '../../components/RecordSortActionsPopupContent'
 import { useModal } from '../../context/ModalContext'
 import { useRouter } from '../../context/RouterContext'
+import { useOtpCodes } from '../../hooks/useOtpCodes'
 import {
   ArrowUpAndDown,
   ButtonFilter,
@@ -67,6 +68,7 @@ export const RecordListView = ({
 
   const [isSortPopupOpen, setIsSortPopupOpen] = useState(false)
   const [isMultiSelect, setIsMultiSelect] = useState(false)
+  const otpCodes = useOtpCodes(records)
 
   const sortActions = [
     { name: i18n._('Recent'), icon: TimeIcon, type: 'recent' },
@@ -253,6 +255,9 @@ export const RecordListView = ({
                 dataId=${`${record.type}-list-item`}
                 record=${record}
                 isSelected=${isSelected}
+                otpCode=${otpCodes[record?.id]?.code ??
+                record?.otpPublic?.currentCode ??
+                null}
                 onSelect=${() => handleSelect(record, isSelected)}
                 onClick=${() => handleRecordClick(record, isSelected)}
               />
