@@ -1,15 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { generateHotpNext, generateOtpCodesByIds } from 'pearpass-lib-vault'
 
+import { createAlignedInterval } from '../utils/alignedInterval'
+
 export const useOtp = ({ recordId, otpPublic }) => {
   const [code, setCode] = useState(otpPublic?.currentCode ?? null)
-  const [timeRemaining, setTimeRemaining] = useState(
-    otpPublic?.timeRemaining ?? null
-  )
+  const [timeRemaining, setTimeRemaining] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
-
-  const intervalRef = useRef(null)
 
   // TOTP: call worklet every second to get fresh code + timeRemaining
   useEffect(() => {
@@ -31,14 +29,11 @@ export const useOtp = ({ recordId, otpPublic }) => {
 
     refresh()
 
-    intervalRef.current = setInterval(() => {
+    const cleanup = createAlignedInterval(() => {
       void refresh()
-    }, 1000)
+    })
 
-    return () => {
-      clearInterval(intervalRef.current)
-      intervalRef.current = null
-    }
+    return cleanup
   }, [recordId, otpPublic?.type])
 
   // HOTP: generateNext callback
@@ -47,7 +42,10 @@ export const useOtp = ({ recordId, otpPublic }) => {
     setIsLoading(true)
     try {
       const result = await generateHotpNext(recordId)
-      if (result) setCode(result.code)
+      if (result) {
+        setCode(result.code)
+        window.dispatchEvent(new CustomEvent('otp-code-updated'))
+      }
     } finally {
       setIsLoading(false)
     }

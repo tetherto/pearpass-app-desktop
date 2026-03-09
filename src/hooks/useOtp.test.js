@@ -7,6 +7,13 @@ jest.mock('pearpass-lib-vault', () => ({
   generateHotpNext: jest.fn()
 }))
 
+jest.mock('../utils/alignedInterval', () => ({
+  createAlignedInterval: (callback) => {
+    const id = setInterval(callback, 1000)
+    return () => clearInterval(id)
+  }
+}))
+
 const {
   generateOtpCodesByIds,
   generateHotpNext
