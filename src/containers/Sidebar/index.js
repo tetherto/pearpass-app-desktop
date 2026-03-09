@@ -16,6 +16,7 @@ import {
   PearPass,
   SettingsContainer,
   SettingsSeparator,
+  SidebarAuthenticatorSection,
   sideBarContent,
   SidebarNestedFoldersContainer,
   SidebarSettings,
@@ -32,6 +33,7 @@ import { useTranslation } from '../../hooks/useTranslation.js'
 import {
   ButtonThin,
   ExitIcon,
+  LockIcon,
   SettingsIcon,
   StarIcon,
   UserSecurityIcon
@@ -55,7 +57,7 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
 
   const { setIsLoading } = useLoadingContext()
 
-  const { data, isLoading } = useFolders()
+  const { data } = useFolders()
 
   const {
     data: vaultsData,
@@ -136,6 +138,11 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
       return
     }
 
+    if (id === 'authenticator') {
+      navigate('vault', { recordType: 'authenticator' })
+      return
+    }
+
     navigate('vault', { recordType: 'all', folder: id })
   }
 
@@ -155,7 +162,7 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
 
         <${SideBarCategories} sidebarSize=${sidebarSize} />
 
-        ${!isLoading &&
+        ${data &&
         html`
           <${SidebarNestedFoldersContainer}>
             <${SidebarSearch}
@@ -180,6 +187,18 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
                   hasMenu=${hasMenu}
                 />`
               })}
+            <//>
+
+            <${SidebarAuthenticatorSection}>
+              <${SidebarFolder}
+                key="authenticator"
+                isOpen=${false}
+                onClick=${() => handleFolderClick('authenticator')}
+                name=${t('Authenticator')}
+                icon=${LockIcon}
+                isActive=${routerData?.recordType === 'authenticator'}
+                hasMenu=${false}
+              />
             <//>
           <//>
         `}
