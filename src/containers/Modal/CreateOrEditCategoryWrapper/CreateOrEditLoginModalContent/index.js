@@ -107,8 +107,6 @@ export const CreateOrEditLoginModalContent = ({
 
   useGlobalLoading({ isLoading })
 
-  const hasExistingOtp = !!initialRecord?.otpPublic
-
   const schema = Validator.object({
     title: Validator.string().required(i18n._('Title is required')),
     username: Validator.string(),
@@ -140,7 +138,8 @@ export const CreateOrEditLoginModalContent = ({
       title: initialRecord?.data?.title ?? '',
       username: initialRecord?.data?.username ?? '',
       password: initialRecord?.data?.password ?? '',
-      otpSecret: '',
+      otpSecret:
+        initialRecord?.data?.otpInput ?? initialRecord?.data?.otp?.secret ?? '',
       note: initialRecord?.data?.note ?? '',
       websites: initialRecord?.data?.websites?.length
         ? initialRecord?.data?.websites.map((website) => ({ website }))
@@ -330,11 +329,7 @@ export const CreateOrEditLoginModalContent = ({
         <${FormGroup}>
           <${PasswordField}
             testId="createoredit-input-otpsecret"
-            label=${i18n._(
-              hasExistingOtp
-                ? 'Authenticator Secret Key (configured)'
-                : 'Authenticator Secret Key'
-            )}
+            label=${i18n._('Authenticator Secret Key')}
             placeholder=${i18n._('Enter Secret Key or otpauth:// URI')}
             variant="outline"
             icon=${LockIcon}
