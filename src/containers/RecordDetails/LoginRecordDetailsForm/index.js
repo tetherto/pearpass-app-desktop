@@ -154,6 +154,7 @@ export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
       html`
         <${FormGroup}>
           <${OtpCodeField}
+            key=${initialRecord.id}
             recordId=${initialRecord.id}
             otpPublic=${initialRecord.otpPublic}
           />

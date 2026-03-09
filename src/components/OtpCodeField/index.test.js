@@ -50,6 +50,23 @@ jest.mock('./styles', () => ({
     >
       {children}
     </button>
+  ),
+  OtpFieldContainer: ({ children }) => <div>{children}</div>,
+  ProgressBarWrapper: ({ children }) => (
+    <div data-testid="otp-progress-bar">{children}</div>
+  ),
+  ProgressBarTrack: ({ children }) => <div>{children}</div>,
+  ProgressBarFill: ({ $progress, $urgency }) => (
+    <div
+      data-testid="otp-progress-fill"
+      data-progress={$progress}
+      data-urgency={$urgency}
+    />
+  ),
+  ProgressBarTimer: ({ children, $urgency }) => (
+    <span data-testid="otp-timer" data-urgency={$urgency}>
+      {children}
+    </span>
   )
 }))
 
