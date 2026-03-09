@@ -3,6 +3,7 @@ import { html } from 'htm/react'
 import { LayoutWithSidebar } from '../../containers/LayoutWithSidebar'
 import { RecordDetails } from '../../containers/RecordDetails'
 import { useRouter } from '../../context/RouterContext'
+import { AuthenticatorView } from '../../pages/AuthenticatorView'
 import { InitialPage } from '../../pages/InitialPage'
 import { Intro } from '../../pages/Intro'
 import { LoadingPage } from '../../pages/LoadingPage'
@@ -47,9 +48,13 @@ export const Routes = ({
   }
 
   if (currentPage === 'vault') {
+    const isAuthenticator = data?.recordType === 'authenticator'
+
     return html`
       <${LayoutWithSidebar}
-        mainView=${html`<${MainView} />`}
+        mainView=${isAuthenticator
+          ? html`<${AuthenticatorView} />`
+          : html`<${MainView} />`}
         sideView=${getSideView(currentPage, data)}
       />
     `
