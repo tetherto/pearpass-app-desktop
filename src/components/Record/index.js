@@ -6,13 +6,16 @@ import { generateAvatarInitials } from 'pear-apps-utils-avatar-initials'
 import { RECORD_COLOR_BY_TYPE } from '../../constants/recordColorByType'
 import { useRecordActionItems } from '../../hooks/useRecordActionItems'
 import { KebabMenuIcon } from '../../lib-react-components'
+import { CopyButton } from '../CopyButton'
 import { PopupMenu } from '../PopupMenu'
 import { RecordActionsPopupContent } from '../RecordActionsPopupContent'
 import { RecordAvatar } from '../RecordAvatar'
 import {
+  OtpCodeText,
   RecordActions,
   RecordInformation,
   RecordName,
+  RecordRightSection,
   RecordWrapper
 } from './styles'
 
@@ -36,7 +39,8 @@ import {
  *  onClick: () => void
  *  onSelect: () => void,
  *  testId?: string,
- *  dataId?: string
+ *  dataId?: string,
+ *  otpCode?: string | null
  * }} props
  */
 export const Record = ({
@@ -45,7 +49,8 @@ export const Record = ({
   onClick,
   onSelect,
   testId,
-  dataId
+  dataId,
+  otpCode
 }) => {
   const [isOpen, setIsOpen] = useState()
 
@@ -66,6 +71,12 @@ export const Record = ({
   }
 
   const domain = record.type === 'login' ? record?.data?.websites?.[0] : null
+
+  const formattedOtp = otpCode
+    ? otpCode.slice(0, Math.ceil(otpCode.length / 2)) +
+      ' ' +
+      otpCode.slice(Math.ceil(otpCode.length / 2))
+    : null
 
   return html`
     <${RecordWrapper}
@@ -91,25 +102,34 @@ export const Record = ({
         <//>
       <//>
 
-      ${!isSelected &&
-      html` <${RecordActions}>
-        <${PopupMenu}
-          side="right"
-          align="right"
-          isOpen=${isOpen}
-          setIsOpen=${setIsOpen}
-          content=${html`
-            <${RecordActionsPopupContent} menuItems=${actions} />
-          `}
-        >
-          <div
-            onClick=${handleActionMenuToggle}
-            data-testid="list-item-threedots"
+      <${RecordRightSection}>
+        ${formattedOtp &&
+        html`
+          <${OtpCodeText} data-testid="record-otp-code"> ${formattedOtp} <//>
+          <span onClick=${(e) => e.stopPropagation()}>
+            <${CopyButton} value=${otpCode} testId="record-otp-copy-button" />
+          </span>
+        `}
+        ${!isSelected &&
+        html` <${RecordActions}>
+          <${PopupMenu}
+            side="right"
+            align="right"
+            isOpen=${isOpen}
+            setIsOpen=${setIsOpen}
+            content=${html`
+              <${RecordActionsPopupContent} menuItems=${actions} />
+            `}
           >
-            <${KebabMenuIcon} />
-          </div>
-        <//>
-      <//>`}
+            <div
+              onClick=${handleActionMenuToggle}
+              data-testid="list-item-threedots"
+            >
+              <${KebabMenuIcon} />
+            </div>
+          <//>
+        <//>`}
+      <//>
     <//>
   `
 }
