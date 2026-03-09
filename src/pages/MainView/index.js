@@ -106,7 +106,7 @@ export const MainView = () => {
           <//>
         <//>
 
-        ${!isLoading &&
+        ${records &&
         (!records?.length
           ? html` <${EmptyCollectionView}
               selectedFolder=${selectedFolder}
