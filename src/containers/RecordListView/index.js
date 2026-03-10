@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import { useRecords } from 'pearpass-lib-vault'
+import { useOtpCodes, OtpRefreshProvider } from 'pearpass-lib-vault'
 
 import {
   ActionsSection,
@@ -19,7 +20,6 @@ import { Record } from '../../components/Record'
 import { RecordSortActionsPopupContent } from '../../components/RecordSortActionsPopupContent'
 import { useModal } from '../../context/ModalContext'
 import { useRouter } from '../../context/RouterContext'
-import { useOtpCodes } from '../../hooks/useOtpCodes'
 import {
   ArrowUpAndDown,
   ButtonFilter,
@@ -68,7 +68,7 @@ export const RecordListView = ({
 
   const [isSortPopupOpen, setIsSortPopupOpen] = useState(false)
   const [isMultiSelect, setIsMultiSelect] = useState(false)
-  const otpCodes = useOtpCodes(records)
+  const { otpCodes, refresh: refreshOtpCodes } = useOtpCodes(records)
 
   const sortActions = [
     { name: i18n._('Recent'), icon: TimeIcon, type: 'recent' },
@@ -154,116 +154,118 @@ export const RecordListView = ({
   }
 
   return html`
-    <${ViewWrapper}>
-      <${ActionsSection}>
-        <${LeftActions}>
-          ${isMultiSelect
-            ? html`<${ButtonFilter}
-                  testId="multi-select-move-button"
-                  isDisabled=${!isRecordsSelected}
-                  startIcon=${MoveToIcon}
-                  onClick=${handleMoveClick}
-                >
-                  ${i18n._('Move')}
-                <//>
+    <${OtpRefreshProvider} value=${refreshOtpCodes}>
+      <${ViewWrapper}>
+        <${ActionsSection}>
+          <${LeftActions}>
+            ${isMultiSelect
+              ? html`<${ButtonFilter}
+                    testId="multi-select-move-button"
+                    isDisabled=${!isRecordsSelected}
+                    startIcon=${MoveToIcon}
+                    onClick=${handleMoveClick}
+                  >
+                    ${i18n._('Move')}
+                  <//>
 
-                <${ButtonFilter}
-                  testId="multi-select-delete-button"
-                  isDisabled=${!isRecordsSelected}
-                  startIcon=${DeleteIcon}
-                  onClick=${handleDelete}
+                  <${ButtonFilter}
+                    testId="multi-select-delete-button"
+                    isDisabled=${!isRecordsSelected}
+                    startIcon=${DeleteIcon}
+                    onClick=${handleDelete}
+                  >
+                    ${i18n._('Delete')}
+                  <//> `
+              : html`<${PopupMenu}
+                  side="left"
+                  align="left"
+                  isOpen=${isSortPopupOpen}
+                  setIsOpen=${setIsSortPopupOpen}
+                  content=${html` <${RecordSortActionsPopupContent}
+                    onClick=${handleSortTypeChange}
+                    onClose=${() => setIsSortPopupOpen(false)}
+                    selectedType=${sortType}
+                    menuItems=${sortActions}
+                  />`}
                 >
-                  ${i18n._('Delete')}
-                <//> `
-            : html`<${PopupMenu}
-                side="left"
-                align="left"
-                isOpen=${isSortPopupOpen}
-                setIsOpen=${setIsSortPopupOpen}
-                content=${html` <${RecordSortActionsPopupContent}
-                  onClick=${handleSortTypeChange}
-                  onClose=${() => setIsSortPopupOpen(false)}
-                  selectedType=${sortType}
-                  menuItems=${sortActions}
-                />`}
-              >
-                <${ButtonFilter}
-                  testId="sort-dropdown-button"
-                  startIcon=${selectedSortAction.icon}
+                  <${ButtonFilter}
+                    testId="sort-dropdown-button"
+                    startIcon=${selectedSortAction.icon}
+                  >
+                    ${selectedSortAction.name}
+                  <//>
+                <//> `}
+          <//>
+
+          <${RightActions}>
+            ${isMultiSelect
+              ? html`<${ButtonFilter}
+                  testId="multi-select-cancel-button"
+                  onClick=${onClearSelection}
+                  startIcon=${XIcon}
                 >
-                  ${selectedSortAction.name}
-                <//>
-              <//> `}
+                  ${i18n._('Cancel')}
+                <//>`
+              : html`<${ButtonFilter}
+                  testId="multi-select-button"
+                  onClick=${() => setIsMultiSelect(true)}
+                  startIcon=${MultiSelectionIcon}
+                >
+                  ${i18n._('Multiple selection')}
+                <//> `}
+          <//>
         <//>
 
-        <${RightActions}>
-          ${isMultiSelect
-            ? html`<${ButtonFilter}
-                testId="multi-select-cancel-button"
-                onClick=${onClearSelection}
-                startIcon=${XIcon}
-              >
-                ${i18n._('Cancel')}
-              <//>`
-            : html`<${ButtonFilter}
-                testId="multi-select-button"
-                onClick=${() => setIsMultiSelect(true)}
-                startIcon=${MultiSelectionIcon}
-              >
-                ${i18n._('Multiple selection')}
-              <//> `}
+        ${!isMultiSelect &&
+        !!routeData?.folder?.length &&
+        (isFavorite
+          ? html`<${Folder}><${StarIcon} /> ${i18n._('Favorite')}<//>`
+          : html`<${Folder}><${FolderIcon} /> ${routeData.folder}<//>`)}
+
+        <${RecordsSection}>
+          ${records.map((record, index) => {
+            if (!record?.data) {
+              return html``
+            }
+
+            const isSelected = selectedRecords.some(
+              (selectedRecord) => selectedRecord.id === record?.id
+            )
+
+            const isStartOfLast7Days = isStartOfLast7DaysGroup(
+              record,
+              index,
+              records
+            )
+
+            const isStartOfLast14Days = isStartOfLast14DaysGroup(
+              record,
+              index,
+              records
+            )
+
+            return html`
+              <${React.Fragment} key=${record?.id}>
+                ${isStartOfLast7Days &&
+                html`<${DatePeriod}> ${i18n._('Last 7 days')} <//>`}
+                ${isStartOfLast14Days &&
+                html`<${DatePeriod}> ${i18n._('Last 14 days')} <//>`}
+
+                <${Record}
+                  testId="recordList-record-container"
+                  dataId=${`${record.type}-list-item`}
+                  record=${record}
+                  isSelected=${isSelected}
+                  otpCode=${otpCodes[record?.id]?.code ??
+                  record?.otpPublic?.currentCode ??
+                  null}
+                  onSelect=${() => handleSelect(record, isSelected)}
+                  onClick=${() => handleRecordClick(record, isSelected)}
+                />
+              <//>
+            `
+          })}
         <//>
-      <//>
-
-      ${!isMultiSelect &&
-      !!routeData?.folder?.length &&
-      (isFavorite
-        ? html`<${Folder}><${StarIcon} /> ${i18n._('Favorite')}<//>`
-        : html`<${Folder}><${FolderIcon} /> ${routeData.folder}<//>`)}
-
-      <${RecordsSection}>
-        ${records.map((record, index) => {
-          if (!record?.data) {
-            return html``
-          }
-
-          const isSelected = selectedRecords.some(
-            (selectedRecord) => selectedRecord.id === record?.id
-          )
-
-          const isStartOfLast7Days = isStartOfLast7DaysGroup(
-            record,
-            index,
-            records
-          )
-
-          const isStartOfLast14Days = isStartOfLast14DaysGroup(
-            record,
-            index,
-            records
-          )
-
-          return html`
-            <${React.Fragment} key=${record?.id}>
-              ${isStartOfLast7Days &&
-              html`<${DatePeriod}> ${i18n._('Last 7 days')} <//>`}
-              ${isStartOfLast14Days &&
-              html`<${DatePeriod}> ${i18n._('Last 14 days')} <//>`}
-
-              <${Record}
-                testId="recordList-record-container"
-                dataId=${`${record.type}-list-item`}
-                record=${record}
-                isSelected=${isSelected}
-                otpCode=${otpCodes[record?.id]?.code ??
-                record?.otpPublic?.currentCode ??
-                null}
-                onSelect=${() => handleSelect(record, isSelected)}
-                onClick=${() => handleRecordClick(record, isSelected)}
-              />
-            <//>
-          `
-        })}
       <//>
     <//>
   `

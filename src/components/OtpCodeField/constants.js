@@ -1,11 +1,4 @@
-export const EXPIRY_THRESHOLD_SECONDS = 5
-
-/**
- * @param {number | null} timeRemaining
- * @returns {boolean}
- */
-export const isExpiring = (timeRemaining) =>
-  timeRemaining !== null && timeRemaining <= EXPIRY_THRESHOLD_SECONDS
+export { EXPIRY_THRESHOLD_SECONDS, isExpiring } from 'pearpass-lib-vault'
 
 /**
  * @param {import('styled-components').DefaultTheme} theme

@@ -1,7 +1,7 @@
 import { html } from 'htm/react'
+import { useTimerAnimation } from 'pearpass-lib-vault'
 
 import { Fill, Timer, Track, Wrapper } from './styles'
-import { useTimerAnimation } from '../../hooks/useTimerAnimation'
 
 /**
  * @param {{

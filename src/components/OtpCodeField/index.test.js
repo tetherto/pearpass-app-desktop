@@ -6,9 +6,16 @@ import '@testing-library/jest-dom'
 import { OtpCodeField } from './index'
 
 const mockGenerateNext = jest.fn()
+const mockUseOtp = jest.fn()
 
-jest.mock('../../hooks/useOtp', () => ({
-  useOtp: jest.fn()
+jest.mock('pearpass-lib-vault', () => ({
+  useOtp: (...args) => mockUseOtp(...args),
+  formatOtpCode: (code) => {
+    if (!code) return ''
+    const mid = Math.ceil(code.length / 2)
+    return code.slice(0, mid) + ' ' + code.slice(mid)
+  },
+  OTP_TYPE: { TOTP: 'TOTP', HOTP: 'HOTP' }
 }))
 
 jest.mock('@lingui/react', () => ({
@@ -55,7 +62,7 @@ jest.mock('../TimerBar', () => ({
   )
 }))
 
-const { useOtp } = require('../../hooks/useOtp')
+const useOtp = mockUseOtp
 
 describe('OtpCodeField', () => {
   beforeEach(() => {

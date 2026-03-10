@@ -1,7 +1,7 @@
 import { html } from 'htm/react'
+import { useTimerAnimation } from 'pearpass-lib-vault'
 
 import { CircleBg, CircleFill, Svg, Wrapper } from './styles'
-import { useTimerAnimation } from '../../hooks/useTimerAnimation'
 
 const CIRCUMFERENCE = 2 * Math.PI * 5.5 // radius=5.5, ~34.558
 

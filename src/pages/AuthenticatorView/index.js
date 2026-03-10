@@ -2,7 +2,13 @@ import { useMemo, useState } from 'react'
 
 import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
-import { useRecords } from 'pearpass-lib-vault'
+import {
+  useRecords,
+  useOtpCodes,
+  OtpRefreshProvider,
+  isExpiring,
+  OTP_TYPE
+} from 'pearpass-lib-vault'
 
 import {
   EmptyState,
@@ -17,11 +23,9 @@ import {
   Wrapper
 } from './styles'
 import { InputSearch } from '../../components/InputSearch'
-import { isExpiring } from '../../components/OtpCodeField/constants'
 import { Record } from '../../components/Record'
 import { TimerCircle } from '../../components/TimerCircle'
 import { useRouter } from '../../context/RouterContext'
-import { useOtpCodes } from '../../hooks/useOtpCodes'
 
 export const AuthenticatorView = () => {
   const { i18n } = useLingui()
@@ -45,7 +49,7 @@ export const AuthenticatorView = () => {
     [records]
   )
 
-  const otpCodes = useOtpCodes(otpRecords)
+  const { otpCodes, refresh: refreshOtpCodes } = useOtpCodes(otpRecords)
 
   const handleRecordClick = (record) => {
     // Stay in authenticator view, just open the sidebar
@@ -61,7 +65,7 @@ export const AuthenticatorView = () => {
     const hotp = []
 
     for (const record of otpRecords) {
-      if (record.otpPublic?.type === 'HOTP') {
+      if (record.otpPublic?.type === OTP_TYPE.HOTP) {
         hotp.push(record)
       } else {
         const period = record.otpPublic?.period ?? 30
@@ -83,18 +87,19 @@ export const AuthenticatorView = () => {
   }, [otpRecords])
 
   return html`
-    <${Wrapper}>
-      <${Header}>
-        <${InputSearch}
-          value=${searchValue}
-          onChange=${(e) => setSearchValue(e.target.value)}
-          quantity=${otpRecords.length}
-          testId="authenticator-search-input"
-        />
-      <//>
+    <${OtpRefreshProvider} value=${refreshOtpCodes}>
+      <${Wrapper}>
+        <${Header}>
+          <${InputSearch}
+            value=${searchValue}
+            onChange=${(e) => setSearchValue(e.target.value)}
+            quantity=${otpRecords.length}
+            testId="authenticator-search-input"
+          />
+        <//>
 
-      ${otpRecords.length === 0
-        ? html`
+        ${otpRecords.length === 0
+          ? html`
             <${EmptyState}>
               <${Title}>${i18n._('No authenticator tokens')}<///>
               <span>
@@ -104,90 +109,93 @@ export const AuthenticatorView = () => {
               </span>
             <//>
           `
-        : html`
-            <${ListWrapper}>
-              ${totpGroups.map(
-                ({ period, records: groupRecords }, groupIndex) => {
-                  const firstRecordOtp = otpCodes[groupRecords[0]?.id]
-                  const timeRemaining =
-                    firstRecordOtp?.timeRemaining ??
-                    groupRecords[0]?.otpPublic?.timeRemaining ??
-                    null
+          : html`
+              <${ListWrapper}>
+                ${totpGroups.map(
+                  ({ period, records: groupRecords }, groupIndex) => {
+                    const firstRecordOtp = otpCodes[groupRecords[0]?.id]
+                    const timeRemaining =
+                      firstRecordOtp?.timeRemaining ??
+                      groupRecords[0]?.otpPublic?.timeRemaining ??
+                      null
 
-                  const expiring = isExpiring(timeRemaining)
-
-                  return html`
-                    <div key=${period}>
-                      ${groupIndex > 0 && html`<${GroupDivider} />`}
-                      <${GroupHeader}>
-                        <${TimerCircle}
-                          timeRemaining=${timeRemaining}
-                          period=${period}
-                        />
-                        <${GroupLabel}>
-                          <${GroupLabelText}>
-                            ${i18n._('Codes expiring in')}${' '}
-                          <//>
-                          <${GroupTimeValue} $expiring=${expiring}>
-                            ${timeRemaining !== null
-                              ? `${timeRemaining}s`
-                              : `${period}s`}
-                          <//>
-                        <//>
-                      <//>
-
-                      ${groupRecords.map((record) => {
-                        const otpData = otpCodes[record.id]
-                        const code =
-                          otpData?.code ?? record.otpPublic?.currentCode ?? null
-
-                        return html`
-                          <${Record}
-                            key=${record.id}
-                            testId="authenticator-record-item"
-                            dataId=${`${record.type}-list-item`}
-                            record=${record}
-                            otpCode=${code}
-                            onClick=${() => handleRecordClick(record)}
-                            onSelect=${() => {}}
-                          />
-                        `
-                      })}
-                    </div>
-                  `
-                }
-              )}
-              ${hotpRecords.length > 0 &&
-              html`
-                <div>
-                  ${totpGroups.length > 0 && html`<${GroupDivider} />`}
-                  <${GroupHeader}>
-                    <${GroupLabel}>
-                      <${GroupLabelText}> ${i18n._('Counter-based')} <//>
-                    <//>
-                  <//>
-
-                  ${hotpRecords.map((record) => {
-                    const otpData = otpCodes[record.id]
-                    const code =
-                      otpData?.code ?? record.otpPublic?.currentCode ?? null
+                    const expiring = isExpiring(timeRemaining)
 
                     return html`
-                      <${Record}
-                        key=${record.id}
-                        testId="authenticator-record-item"
-                        dataId=${`${record.type}-list-item`}
-                        record=${record}
-                        otpCode=${code}
-                        onClick=${() => handleRecordClick(record)}
-                        onSelect=${() => {}}
-                      />
+                      <div key=${period}>
+                        ${groupIndex > 0 && html`<${GroupDivider} />`}
+                        <${GroupHeader}>
+                          <${TimerCircle}
+                            timeRemaining=${timeRemaining}
+                            period=${period}
+                          />
+                          <${GroupLabel}>
+                            <${GroupLabelText}>
+                              ${i18n._('Codes expiring in')}${' '}
+                            <//>
+                            <${GroupTimeValue} $expiring=${expiring}>
+                              ${timeRemaining !== null
+                                ? `${timeRemaining}s`
+                                : `${period}s`}
+                            <//>
+                          <//>
+                        <//>
+
+                        ${groupRecords.map((record) => {
+                          const otpData = otpCodes[record.id]
+                          const code =
+                            otpData?.code ??
+                            record.otpPublic?.currentCode ??
+                            null
+
+                          return html`
+                            <${Record}
+                              key=${record.id}
+                              testId="authenticator-record-item"
+                              dataId=${`${record.type}-list-item`}
+                              record=${record}
+                              otpCode=${code}
+                              onClick=${() => handleRecordClick(record)}
+                              onSelect=${() => {}}
+                            />
+                          `
+                        })}
+                      </div>
                     `
-                  })}
-                </div>
-              `}
-            <//>
-          `}
+                  }
+                )}
+                ${hotpRecords.length > 0 &&
+                html`
+                  <div>
+                    ${totpGroups.length > 0 && html`<${GroupDivider} />`}
+                    <${GroupHeader}>
+                      <${GroupLabel}>
+                        <${GroupLabelText}> ${i18n._('Counter-based')} <//>
+                      <//>
+                    <//>
+
+                    ${hotpRecords.map((record) => {
+                      const otpData = otpCodes[record.id]
+                      const code =
+                        otpData?.code ?? record.otpPublic?.currentCode ?? null
+
+                      return html`
+                        <${Record}
+                          key=${record.id}
+                          testId="authenticator-record-item"
+                          dataId=${`${record.type}-list-item`}
+                          record=${record}
+                          otpCode=${code}
+                          onClick=${() => handleRecordClick(record)}
+                          onSelect=${() => {}}
+                        />
+                      `
+                    })}
+                  </div>
+                `}
+              <//>
+            `}
+      <//>
     <//>
   `
 }

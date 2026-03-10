@@ -1,22 +1,11 @@
 import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
+import { useOtp, formatOtpCode, OTP_TYPE } from 'pearpass-lib-vault'
 
-import { useOtp } from '../../hooks/useOtp'
 import { InputField, LockIcon } from '../../lib-react-components'
 import { CopyButton } from '../CopyButton'
 import { TimerBar } from '../TimerBar'
 import { NextCodeButton, OtpFieldContainer } from './styles'
-
-/**
- * Formats OTP code with space in the middle
- * @param {string | null} code
- * @returns {string}
- */
-const formatCode = (code) => {
-  if (!code) return ''
-  const mid = Math.ceil(code.length / 2)
-  return code.slice(0, mid) + ' ' + code.slice(mid)
-}
 
 /**
  * Displays a live OTP code inline in the login record detail view.
@@ -46,8 +35,8 @@ export const OtpCodeField = ({ recordId, otpPublic, testId }) => {
     }
   )
 
-  const formattedCode = formatCode(code)
-  const isTOTP = type === 'TOTP'
+  const formattedCode = formatOtpCode(code)
+  const isTOTP = type === OTP_TYPE.TOTP
   const hasTimeData = isTOTP && timeRemaining !== null
 
   return html`
@@ -60,7 +49,7 @@ export const OtpCodeField = ({ recordId, otpPublic, testId }) => {
         icon=${LockIcon}
         isDisabled
         additionalItems=${html`
-          ${type === 'HOTP' &&
+          ${type === OTP_TYPE.HOTP &&
           generateNext &&
           html`
             <${NextCodeButton}
