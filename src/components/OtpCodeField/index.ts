@@ -7,26 +7,23 @@ import { CopyButton } from '../CopyButton'
 import { TimerBar } from '../TimerBar'
 import { NextCodeButton, OtpFieldContainer } from './styles'
 
-/**
- * Displays a live OTP code inline in the login record detail view.
- * For TOTP: auto-refreshing code with countdown timer.
- * For HOTP: "Next Code" button to increment counter.
- *
- * @param {{
- *   recordId: string,
- *   otpPublic: {
- *     type: 'TOTP' | 'HOTP',
- *     digits: number,
- *     period?: number,
- *     issuer?: string,
- *     label?: string,
- *     currentCode: string | null,
- *     timeRemaining?: number | null
- *   },
- *   testId?: string
- * }} props
- */
-export const OtpCodeField = ({ recordId, otpPublic, testId }) => {
+interface OtpPublic {
+  type: 'TOTP' | 'HOTP'
+  digits: number
+  period?: number
+  issuer?: string
+  label?: string
+  currentCode: string | null
+  timeRemaining?: number | null
+}
+
+interface OtpCodeFieldProps {
+  recordId: string
+  otpPublic: OtpPublic
+  testId?: string
+}
+
+export const OtpCodeField = ({ recordId, otpPublic, testId }: OtpCodeFieldProps) => {
   const { i18n } = useLingui()
   const { code, timeRemaining, type, period, generateNext, isLoading } = useOtp(
     {

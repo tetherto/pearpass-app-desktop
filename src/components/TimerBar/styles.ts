@@ -1,6 +1,16 @@
 import styled from 'styled-components'
 
-import { getTimerColor } from '../OtpCodeField/constants'
+import { getTimerColor } from '../OtpCodeField/utils'
+
+interface FillProps {
+  $progress: number
+  $expiring: boolean
+  $noTransition: boolean
+}
+
+interface TimerProps {
+  $expiring: boolean
+}
 
 export const Wrapper = styled.div`
   display: flex;
@@ -20,7 +30,7 @@ export const Track = styled.div`
 export const Fill = styled.div.withConfig({
   shouldForwardProp: (prop) =>
     !['$progress', '$expiring', '$noTransition'].includes(prop)
-})`
+})<FillProps>`
   height: 100%;
   border-radius: 2px;
   background: ${({ theme, $expiring }) => getTimerColor(theme, $expiring)};
@@ -31,7 +41,7 @@ export const Fill = styled.div.withConfig({
 
 export const Timer = styled.span.withConfig({
   shouldForwardProp: (prop) => !['$expiring'].includes(prop)
-})`
+})<TimerProps>`
   font-family: 'Inter';
   font-size: 11px;
   font-weight: 600;

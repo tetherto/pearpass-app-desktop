@@ -1,6 +1,10 @@
 import styled from 'styled-components'
 
-import { getTimerColor } from '../../components/OtpCodeField/constants'
+import { getTimerColor } from '../../components/OtpCodeField/utils'
+
+interface GroupTimeValueProps {
+  $expiring: boolean
+}
 
 export const Wrapper = styled.div`
   width: 100%;
@@ -61,7 +65,7 @@ export const GroupLabelText = styled.span`
 
 export const GroupTimeValue = styled.span.withConfig({
   shouldForwardProp: (prop) => !['$expiring'].includes(prop)
-})`
+})<GroupTimeValueProps>`
   font-weight: 600;
   color: ${({ theme, $expiring }) => getTimerColor(theme, $expiring)};
 `

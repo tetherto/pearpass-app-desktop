@@ -3,14 +3,13 @@ import { useTimerAnimation } from 'pearpass-lib-vault'
 
 import { Fill, Timer, Track, Wrapper } from './styles'
 
-/**
- * @param {{
- *   timeRemaining: number | null,
- *   period: number,
- *   animated?: boolean
- * }} props
- */
-export const TimerBar = ({ timeRemaining, period, animated = true }) => {
+interface TimerBarProps {
+  timeRemaining: number | null
+  period: number
+  animated?: boolean
+}
+
+export const TimerBar = ({ timeRemaining, period, animated = true }: TimerBarProps) => {
   const { noTransition, expiring, targetTime } = useTimerAnimation(
     timeRemaining,
     period,

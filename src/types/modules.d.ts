@@ -72,6 +72,43 @@ declare module 'pearpass-lib-vault' {
   export const usePair: any
   export const authoriseCurrentProtectedVault: any
   export const RECORD_TYPES: any
+  export const OTP_TYPE: { TOTP: 'TOTP'; HOTP: 'HOTP' }
+
+  export function useOtp(params: {
+    recordId: string
+    otpPublic: any
+  }): {
+    code: string | null
+    timeRemaining: number | null
+    type: string | null
+    period: number | null
+    generateNext: (() => Promise<void>) | null
+    isLoading: boolean
+  }
+
+  export function useOtpCodes(records: any[]): {
+    otpCodes: Record<string, { code: string; timeRemaining: number; recordId: string }>
+    refresh: () => Promise<void>
+  }
+
+  export const OtpRefreshProvider: any
+  export function useOtpRefresh(): (() => void) | null
+
+  export function useTimerAnimation(
+    timeRemaining: number | null,
+    period: number,
+    animated?: boolean
+  ): {
+    noTransition: boolean
+    expiring: boolean
+    targetTime: number
+  }
+
+  export function formatOtpCode(code: string | null): string
+  export function createAlignedInterval(callback: () => void): () => void
+  export function isExpiring(timeRemaining: number | null): boolean
+  export const EXPIRY_THRESHOLD_SECONDS: number
+
   const otherExports: any
   export default otherExports
 

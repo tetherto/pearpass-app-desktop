@@ -5,14 +5,13 @@ import { CircleBg, CircleFill, Svg, Wrapper } from './styles'
 
 const CIRCUMFERENCE = 2 * Math.PI * 5.5 // radius=5.5, ~34.558
 
-/**
- * @param {{
- *   timeRemaining: number | null,
- *   period: number,
- *   animated?: boolean
- * }} props
- */
-export const TimerCircle = ({ timeRemaining, period, animated = true }) => {
+interface TimerCircleProps {
+  timeRemaining: number | null
+  period: number
+  animated?: boolean
+}
+
+export const TimerCircle = ({ timeRemaining, period, animated = true }: TimerCircleProps) => {
   const { noTransition, expiring, targetTime } = useTimerAnimation(
     timeRemaining,
     period,

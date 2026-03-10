@@ -106,14 +106,8 @@ export const MainView = () => {
           <//>
         <//>
 
-        ${records &&
-        (!records?.length
-          ? html` <${EmptyCollectionView}
-              selectedFolder=${selectedFolder}
-              isFavoritesView=${isFavoritesView}
-              isSearchActive=${!!searchValue}
-            />`
-          : html` <${ContentWrapper}>
+        ${records?.length
+          ? html` <${ContentWrapper}>
               <${RecordListView}
                 records=${records}
                 selectedRecords=${selectedRecords}
@@ -121,7 +115,13 @@ export const MainView = () => {
                 sortType=${sortType}
                 setSortType=${setSortType}
               />
-            <//>`)}
+            <//>`
+          : !isLoading &&
+            html` <${EmptyCollectionView}
+              selectedFolder=${selectedFolder}
+              isFavoritesView=${isFavoritesView}
+              isSearchActive=${!!searchValue}
+            />`}
       <//>
     <//>
   `

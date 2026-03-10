@@ -1,6 +1,12 @@
 import styled from 'styled-components'
 
-import { getTimerColor } from '../OtpCodeField/constants'
+import { getTimerColor } from '../OtpCodeField/utils'
+
+interface CircleFillProps {
+  $expiring: boolean
+  $dashOffset: number
+  $noTransition: boolean
+}
 
 export const Wrapper = styled.div`
   width: 14px;
@@ -24,7 +30,7 @@ export const CircleBg = styled.circle`
 export const CircleFill = styled.circle.withConfig({
   shouldForwardProp: (prop) =>
     !['$expiring', '$dashOffset', '$noTransition'].includes(prop)
-})`
+})<CircleFillProps>`
   fill: none;
   stroke-width: 1.5;
   stroke-linecap: round;
