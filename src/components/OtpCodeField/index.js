@@ -1,20 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
-
 import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 
 import { useOtp } from '../../hooks/useOtp'
 import { InputField, LockIcon } from '../../lib-react-components'
 import { CopyButton } from '../CopyButton'
-import { getTimerUrgency } from './constants'
-import {
-  NextCodeButton,
-  OtpFieldContainer,
-  ProgressBarFill,
-  ProgressBarTimer,
-  ProgressBarTrack,
-  ProgressBarWrapper
-} from './styles'
+import { ProgressBar } from '../ProgressBar'
+import { NextCodeButton, OtpFieldContainer } from './styles'
 
 /**
  * Formats OTP code with space in the middle
@@ -55,50 +46,7 @@ export const OtpCodeField = ({ recordId, otpPublic, testId }) => {
     }
   )
 
-  const prevTimeRef = useRef(null)
-  const noTransitionRef = useRef(true)
-  const rafRef = useRef(null)
-  const [, forceUpdate] = useState(0)
-
-  // Skip transition on jumps (reset or stale→real), but not on normal -1 ticks
-  // or same-value re-renders (from forceUpdate)
-  const timeDiff =
-    prevTimeRef.current !== null && timeRemaining !== null
-      ? Math.abs(prevTimeRef.current - timeRemaining)
-      : null
-  if (timeDiff !== null && timeDiff > 1) {
-    noTransitionRef.current = true
-  }
-  prevTimeRef.current = timeRemaining
-
-  // Two-phase render: first paint at exact position (no transition),
-  // then enable transition to target-1 position
-  useEffect(() => {
-    if (!noTransitionRef.current || timeRemaining === null) return
-
-    cancelAnimationFrame(rafRef.current)
-    rafRef.current = requestAnimationFrame(() => {
-      rafRef.current = requestAnimationFrame(() => {
-        noTransitionRef.current = false
-        forceUpdate((v) => v + 1)
-      })
-    })
-
-    return () => cancelAnimationFrame(rafRef.current)
-  })
-
   const formattedCode = formatCode(code)
-  const urgency = getTimerUrgency(timeRemaining, period)
-
-  const noTransition = noTransitionRef.current
-  // When noTransition: show exact position; otherwise target one second ahead
-  const progress =
-    type === 'TOTP' && timeRemaining !== null && period
-      ? (Math.max(0, noTransition ? timeRemaining : timeRemaining - 1) /
-          period) *
-        100
-      : 0
-
   const isTOTP = type === 'TOTP'
   const hasTimeData = isTOTP && timeRemaining !== null
 
@@ -128,18 +76,9 @@ export const OtpCodeField = ({ recordId, otpPublic, testId }) => {
       />
       ${isTOTP &&
       html`
-        <${ProgressBarWrapper}
-          style=${{ visibility: hasTimeData ? 'visible' : 'hidden' }}
-        >
-          <${ProgressBarTrack}>
-            <${ProgressBarFill}
-              $progress=${progress}
-              $urgency=${urgency}
-              $noTransition=${noTransition}
-            />
-          <//>
-          <${ProgressBarTimer} $urgency=${urgency}> ${timeRemaining}s <//>
-        <//>
+        <div style=${{ visibility: hasTimeData ? 'visible' : 'hidden' }}>
+          <${ProgressBar} timeRemaining=${timeRemaining} period=${period} />
+        </div>
       `}
     <//>
   `

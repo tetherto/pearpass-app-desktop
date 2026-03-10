@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
@@ -10,32 +10,23 @@ import {
   GroupHeader,
   GroupLabel,
   GroupLabelText,
-  GroupTimerRing,
   GroupTimeValue,
   Header,
   ListWrapper,
-  TimerCircle,
-  TimerCircleBg,
-  TimerSvg,
   Title,
   Wrapper
 } from './styles'
 import { InputSearch } from '../../components/InputSearch'
 import { getTimerUrgency } from '../../components/OtpCodeField/constants'
 import { Record } from '../../components/Record'
+import { TimerCircle } from '../../components/TimerCircle'
 import { useRouter } from '../../context/RouterContext'
 import { useOtpCodes } from '../../hooks/useOtpCodes'
-
-const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * 5.5 // radius=5.5, ~34.558
 
 export const AuthenticatorView = () => {
   const { i18n } = useLingui()
   const { navigate } = useRouter()
   const [searchValue, setSearchValue] = useState('')
-  const prevTimesRef = useRef({})
-  const noTransitionPeriodsRef = useRef({})
-  const rafRef = useRef(null)
-  const [, forceUpdate] = useState(0)
 
   const { data: records } = useRecords({
     shouldSkip: true,
@@ -55,26 +46,6 @@ export const AuthenticatorView = () => {
   )
 
   const otpCodes = useOtpCodes(otpRecords)
-
-  // Two-phase render: after painting at exact position, enable transitions
-  useEffect(() => {
-    const hasAnyNoTransition = Object.values(
-      noTransitionPeriodsRef.current
-    ).some((v) => v === true)
-    if (!hasAnyNoTransition) return
-
-    cancelAnimationFrame(rafRef.current)
-    rafRef.current = requestAnimationFrame(() => {
-      rafRef.current = requestAnimationFrame(() => {
-        for (const key of Object.keys(noTransitionPeriodsRef.current)) {
-          noTransitionPeriodsRef.current[key] = false
-        }
-        forceUpdate((v) => v + 1)
-      })
-    })
-
-    return () => cancelAnimationFrame(rafRef.current)
-  })
 
   const handleRecordClick = (record) => {
     // Stay in authenticator view, just open the sidebar
@@ -143,52 +114,16 @@ export const AuthenticatorView = () => {
                     groupRecords[0]?.otpPublic?.timeRemaining ??
                     null
 
-                  const prevTime = prevTimesRef.current[period] ?? null
-                  const timeDiff =
-                    prevTime !== null && timeRemaining !== null
-                      ? Math.abs(prevTime - timeRemaining)
-                      : null
-                  if (
-                    (timeDiff !== null && timeDiff > 1) ||
-                    !(period in noTransitionPeriodsRef.current)
-                  ) {
-                    noTransitionPeriodsRef.current[period] = true
-                  }
-                  prevTimesRef.current[period] = timeRemaining
-
-                  const noTransition =
-                    noTransitionPeriodsRef.current[period] === true
                   const urgency = getTimerUrgency(timeRemaining, period)
-                  // When noTransition: exact position; otherwise target one second ahead
-                  const targetTime =
-                    timeRemaining !== null
-                      ? Math.max(
-                          0,
-                          noTransition ? timeRemaining : timeRemaining - 1
-                        )
-                      : 0
-                  const progress =
-                    timeRemaining !== null
-                      ? (1 - targetTime / period) * CIRCLE_CIRCUMFERENCE
-                      : 0
 
                   return html`
                     <div key=${period}>
                       ${groupIndex > 0 && html`<${GroupDivider} />`}
                       <${GroupHeader}>
-                        <${GroupTimerRing}>
-                          <${TimerSvg} viewBox="0 0 14 14">
-                            <${TimerCircleBg} cx="7" cy="7" r="5.5" />
-                            <${TimerCircle}
-                              cx="7"
-                              cy="7"
-                              r="5.5"
-                              $urgency=${urgency}
-                              $dashOffset=${progress}
-                              $noTransition=${noTransition}
-                            />
-                          <//>
-                        <//>
+                        <${TimerCircle}
+                          timeRemaining=${timeRemaining}
+                          period=${period}
+                        />
                         <${GroupLabel}>
                           <${GroupLabelText}>
                             ${i18n._('Codes expiring in')}${' '}

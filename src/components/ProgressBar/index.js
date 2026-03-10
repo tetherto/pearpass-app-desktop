@@ -1,0 +1,35 @@
+import { html } from 'htm/react'
+
+import { Fill, Timer, Track, Wrapper } from './styles'
+import { useTimerAnimation } from '../../hooks/useTimerAnimation'
+
+/**
+ * @param {{
+ *   timeRemaining: number | null,
+ *   period: number,
+ *   animated?: boolean
+ * }} props
+ */
+export const ProgressBar = ({ timeRemaining, period, animated = true }) => {
+  const { noTransition, urgency, targetTime } = useTimerAnimation(
+    timeRemaining,
+    period,
+    animated
+  )
+
+  const progress =
+    timeRemaining !== null && period ? (targetTime / period) * 100 : 0
+
+  return html`
+    <${Wrapper}>
+      <${Track}>
+        <${Fill}
+          $progress=${progress}
+          $urgency=${urgency}
+          $noTransition=${noTransition}
+        />
+      <//>
+      <${Timer} $urgency=${urgency}> ${timeRemaining}s <//>
+    <//>
+  `
+}

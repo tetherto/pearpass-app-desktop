@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { TIMER_URGENCY } from '../../components/OtpCodeField/constants'
+import { getUrgencyColor } from '../../components/OtpCodeField/constants'
 
 export const Wrapper = styled.div`
   width: 100%;
@@ -49,46 +49,6 @@ export const GroupHeader = styled.div`
   padding: 12px 10px 6px;
 `
 
-export const GroupTimerRing = styled.div.withConfig({
-  shouldForwardProp: (prop) => !['$urgency'].includes(prop)
-})`
-  width: 14px;
-  height: 14px;
-  position: relative;
-  flex-shrink: 0;
-`
-
-export const TimerSvg = styled.svg`
-  width: 14px;
-  height: 14px;
-  transform: rotate(-90deg);
-`
-
-export const TimerCircleBg = styled.circle`
-  fill: none;
-  stroke: ${({ theme }) => theme.colors.grey100.mode1}33;
-  stroke-width: 1.5;
-`
-
-export const TimerCircle = styled.circle.withConfig({
-  shouldForwardProp: (prop) =>
-    !['$urgency', '$dashOffset', '$noTransition'].includes(prop)
-})`
-  fill: none;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  transition: ${({ $noTransition }) =>
-    $noTransition ? 'none' : 'stroke-dashoffset 1s linear'};
-  stroke: ${({ theme, $urgency }) => {
-    if ($urgency === TIMER_URGENCY.CRITICAL) return theme.colors.errorRed.mode1
-    if ($urgency === TIMER_URGENCY.WARNING)
-      return theme.colors.errorYellow.mode1
-    return theme.colors.primary400.mode1
-  }};
-  stroke-dasharray: 34.558;
-  stroke-dashoffset: ${({ $dashOffset }) => $dashOffset};
-`
-
 export const GroupLabel = styled.span`
   font-family: 'Inter';
   font-size: 14px;
@@ -103,12 +63,7 @@ export const GroupTimeValue = styled.span.withConfig({
   shouldForwardProp: (prop) => !['$urgency'].includes(prop)
 })`
   font-weight: 600;
-  color: ${({ theme, $urgency }) => {
-    if ($urgency === TIMER_URGENCY.CRITICAL) return theme.colors.errorRed.mode1
-    if ($urgency === TIMER_URGENCY.WARNING)
-      return theme.colors.errorYellow.mode1
-    return theme.colors.primary400.mode1
-  }};
+  color: ${({ theme, $urgency }) => getUrgencyColor(theme, $urgency)};
 `
 
 export const GroupDivider = styled.div`

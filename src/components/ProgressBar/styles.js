@@ -1,0 +1,41 @@
+import styled from 'styled-components'
+
+import { getUrgencyColor } from '../OtpCodeField/constants'
+
+export const Wrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px 0;
+`
+
+export const Track = styled.div`
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: ${({ theme }) => theme.colors.grey100.mode1}33;
+  overflow: hidden;
+`
+
+export const Fill = styled.div.withConfig({
+  shouldForwardProp: (prop) =>
+    !['$progress', '$urgency', '$noTransition'].includes(prop)
+})`
+  height: 100%;
+  border-radius: 2px;
+  background: ${({ theme, $urgency }) => getUrgencyColor(theme, $urgency)};
+  width: ${({ $progress }) => $progress}%;
+  transition: ${({ $noTransition }) =>
+    $noTransition ? 'none' : 'width 1s linear'};
+`
+
+export const Timer = styled.span.withConfig({
+  shouldForwardProp: (prop) => !['$urgency'].includes(prop)
+})`
+  font-family: 'Inter';
+  font-size: 11px;
+  font-weight: 600;
+  color: ${({ theme, $urgency }) => getUrgencyColor(theme, $urgency)};
+  min-width: 22px;
+  text-align: right;
+`

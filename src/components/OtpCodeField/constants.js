@@ -16,3 +16,9 @@ export const getTimerUrgency = (timeRemaining, period) => {
   if (ratio <= 0.4) return TIMER_URGENCY.WARNING
   return TIMER_URGENCY.NORMAL
 }
+
+export const getUrgencyColor = (theme, urgency) => {
+  if (urgency === TIMER_URGENCY.CRITICAL) return theme.colors.errorRed.mode1
+  if (urgency === TIMER_URGENCY.WARNING) return theme.colors.errorYellow.mode1
+  return theme.colors.primary400.mode1
+}
