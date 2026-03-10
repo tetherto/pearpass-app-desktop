@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { getUrgencyColor } from '../OtpCodeField/constants'
+import { getTimerColor } from '../OtpCodeField/constants'
 
 export const Wrapper = styled.div`
   display: flex;
@@ -19,23 +19,23 @@ export const Track = styled.div`
 
 export const Fill = styled.div.withConfig({
   shouldForwardProp: (prop) =>
-    !['$progress', '$urgency', '$noTransition'].includes(prop)
+    !['$progress', '$expiring', '$noTransition'].includes(prop)
 })`
   height: 100%;
   border-radius: 2px;
-  background: ${({ theme, $urgency }) => getUrgencyColor(theme, $urgency)};
+  background: ${({ theme, $expiring }) => getTimerColor(theme, $expiring)};
   width: ${({ $progress }) => $progress}%;
   transition: ${({ $noTransition }) =>
     $noTransition ? 'none' : 'width 1s linear'};
 `
 
 export const Timer = styled.span.withConfig({
-  shouldForwardProp: (prop) => !['$urgency'].includes(prop)
+  shouldForwardProp: (prop) => !['$expiring'].includes(prop)
 })`
   font-family: 'Inter';
   font-size: 11px;
   font-weight: 600;
-  color: ${({ theme, $urgency }) => getUrgencyColor(theme, $urgency)};
+  color: ${({ theme, $expiring }) => getTimerColor(theme, $expiring)};
   min-width: 22px;
   text-align: right;
 `

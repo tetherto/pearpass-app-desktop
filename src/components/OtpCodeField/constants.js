@@ -1,24 +1,16 @@
-export const TIMER_URGENCY = {
-  NORMAL: 'normal',
-  WARNING: 'warning',
-  CRITICAL: 'critical'
-}
+export const EXPIRY_THRESHOLD_SECONDS = 5
 
 /**
  * @param {number | null} timeRemaining
- * @param {number | null} period
+ * @returns {boolean}
+ */
+export const isExpiring = (timeRemaining) =>
+  timeRemaining !== null && timeRemaining <= EXPIRY_THRESHOLD_SECONDS
+
+/**
+ * @param {import('styled-components').DefaultTheme} theme
+ * @param {boolean} expiring
  * @returns {string}
  */
-export const getTimerUrgency = (timeRemaining, period) => {
-  if (timeRemaining === null || !period) return TIMER_URGENCY.NORMAL
-  const ratio = timeRemaining / period
-  if (ratio <= 0.2) return TIMER_URGENCY.CRITICAL
-  if (ratio <= 0.4) return TIMER_URGENCY.WARNING
-  return TIMER_URGENCY.NORMAL
-}
-
-export const getUrgencyColor = (theme, urgency) => {
-  if (urgency === TIMER_URGENCY.CRITICAL) return theme.colors.errorRed.mode1
-  if (urgency === TIMER_URGENCY.WARNING) return theme.colors.errorYellow.mode1
-  return theme.colors.primary400.mode1
-}
+export const getTimerColor = (theme, expiring) =>
+  expiring ? theme.colors.errorRed.mode1 : theme.colors.primary400.mode1

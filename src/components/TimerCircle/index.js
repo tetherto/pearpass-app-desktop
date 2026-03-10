@@ -13,7 +13,7 @@ const CIRCUMFERENCE = 2 * Math.PI * 5.5 // radius=5.5, ~34.558
  * }} props
  */
 export const TimerCircle = ({ timeRemaining, period, animated = true }) => {
-  const { noTransition, urgency, targetTime } = useTimerAnimation(
+  const { noTransition, expiring, targetTime } = useTimerAnimation(
     timeRemaining,
     period,
     animated
@@ -30,7 +30,7 @@ export const TimerCircle = ({ timeRemaining, period, animated = true }) => {
           cx="7"
           cy="7"
           r="5.5"
-          $urgency=${urgency}
+          $expiring=${expiring}
           $dashOffset=${dashOffset}
           $noTransition=${noTransition}
         />

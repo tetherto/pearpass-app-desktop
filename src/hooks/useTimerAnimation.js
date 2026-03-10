@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { getTimerUrgency } from '../components/OtpCodeField/constants'
+import { isExpiring } from '../components/OtpCodeField/constants'
 
 /**
  * Two-phase render animation for OTP timers.
@@ -10,7 +10,7 @@ import { getTimerUrgency } from '../components/OtpCodeField/constants'
  * @param {number | null} timeRemaining
  * @param {number} period
  * @param {boolean} [animated=true]
- * @returns {{ noTransition: boolean, urgency: string, targetTime: number }}
+ * @returns {{ noTransition: boolean, expiring: boolean, targetTime: number }}
  */
 export const useTimerAnimation = (timeRemaining, period, animated = true) => {
   const prevTimeRef = useRef(null)
@@ -42,11 +42,11 @@ export const useTimerAnimation = (timeRemaining, period, animated = true) => {
   })
 
   const noTransition = !animated || noTransitionRef.current
-  const urgency = getTimerUrgency(timeRemaining, period)
+  const expiring = isExpiring(timeRemaining)
   const targetTime =
     timeRemaining !== null
       ? Math.max(0, noTransition ? timeRemaining : timeRemaining - 1)
       : 0
 
-  return { noTransition, urgency, targetTime }
+  return { noTransition, expiring, targetTime }
 }

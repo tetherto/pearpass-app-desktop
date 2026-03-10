@@ -17,7 +17,7 @@ import {
   Wrapper
 } from './styles'
 import { InputSearch } from '../../components/InputSearch'
-import { getTimerUrgency } from '../../components/OtpCodeField/constants'
+import { isExpiring } from '../../components/OtpCodeField/constants'
 import { Record } from '../../components/Record'
 import { TimerCircle } from '../../components/TimerCircle'
 import { useRouter } from '../../context/RouterContext'
@@ -114,7 +114,7 @@ export const AuthenticatorView = () => {
                     groupRecords[0]?.otpPublic?.timeRemaining ??
                     null
 
-                  const urgency = getTimerUrgency(timeRemaining, period)
+                  const expiring = isExpiring(timeRemaining)
 
                   return html`
                     <div key=${period}>
@@ -128,7 +128,7 @@ export const AuthenticatorView = () => {
                           <${GroupLabelText}>
                             ${i18n._('Codes expiring in')}${' '}
                           <//>
-                          <${GroupTimeValue} $urgency=${urgency}>
+                          <${GroupTimeValue} $expiring=${expiring}>
                             ${timeRemaining !== null
                               ? `${timeRemaining}s`
                               : `${period}s`}

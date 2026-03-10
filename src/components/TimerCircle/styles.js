@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { getUrgencyColor } from '../OtpCodeField/constants'
+import { getTimerColor } from '../OtpCodeField/constants'
 
 export const Wrapper = styled.div`
   width: 14px;
@@ -23,14 +23,14 @@ export const CircleBg = styled.circle`
 
 export const CircleFill = styled.circle.withConfig({
   shouldForwardProp: (prop) =>
-    !['$urgency', '$dashOffset', '$noTransition'].includes(prop)
+    !['$expiring', '$dashOffset', '$noTransition'].includes(prop)
 })`
   fill: none;
   stroke-width: 1.5;
   stroke-linecap: round;
   transition: ${({ $noTransition }) =>
     $noTransition ? 'none' : 'stroke-dashoffset 1s linear'};
-  stroke: ${({ theme, $urgency }) => getUrgencyColor(theme, $urgency)};
+  stroke: ${({ theme, $expiring }) => getTimerColor(theme, $expiring)};
   stroke-dasharray: 34.558;
   stroke-dashoffset: ${({ $dashOffset }) => $dashOffset};
 `

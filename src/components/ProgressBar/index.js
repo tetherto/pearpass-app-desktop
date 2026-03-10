@@ -11,7 +11,7 @@ import { useTimerAnimation } from '../../hooks/useTimerAnimation'
  * }} props
  */
 export const ProgressBar = ({ timeRemaining, period, animated = true }) => {
-  const { noTransition, urgency, targetTime } = useTimerAnimation(
+  const { noTransition, expiring, targetTime } = useTimerAnimation(
     timeRemaining,
     period,
     animated
@@ -25,11 +25,11 @@ export const ProgressBar = ({ timeRemaining, period, animated = true }) => {
       <${Track}>
         <${Fill}
           $progress=${progress}
-          $urgency=${urgency}
+          $expiring=${expiring}
           $noTransition=${noTransition}
         />
       <//>
-      <${Timer} $urgency=${urgency}> ${timeRemaining}s <//>
+      <${Timer} $expiring=${expiring}> ${timeRemaining}s <//>
     <//>
   `
 }

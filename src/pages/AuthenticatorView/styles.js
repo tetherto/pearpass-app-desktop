@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { getUrgencyColor } from '../../components/OtpCodeField/constants'
+import { getTimerColor } from '../../components/OtpCodeField/constants'
 
 export const Wrapper = styled.div`
   width: 100%;
@@ -60,10 +60,10 @@ export const GroupLabelText = styled.span`
 `
 
 export const GroupTimeValue = styled.span.withConfig({
-  shouldForwardProp: (prop) => !['$urgency'].includes(prop)
+  shouldForwardProp: (prop) => !['$expiring'].includes(prop)
 })`
   font-weight: 600;
-  color: ${({ theme, $urgency }) => getUrgencyColor(theme, $urgency)};
+  color: ${({ theme, $expiring }) => getTimerColor(theme, $expiring)};
 `
 
 export const GroupDivider = styled.div`

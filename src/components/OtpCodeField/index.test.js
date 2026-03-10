@@ -37,11 +37,6 @@ jest.mock('../../lib-react-components', () => ({
 }))
 
 jest.mock('./styles', () => ({
-  TimerWrapper: ({ children, $urgency }) => (
-    <span data-testid="otp-timer" data-urgency={$urgency}>
-      {children}
-    </span>
-  ),
   NextCodeButton: ({ children, onClick, disabled, ...rest }) => (
     <button
       data-testid={rest['data-testid']}
@@ -51,26 +46,15 @@ jest.mock('./styles', () => ({
       {children}
     </button>
   ),
-  OtpFieldContainer: ({ children }) => <div>{children}</div>,
-  ProgressBarWrapper: ({ children }) => (
-    <div data-testid="otp-progress-bar">{children}</div>
-  ),
-  ProgressBarTrack: ({ children }) => <div>{children}</div>,
-  ProgressBarFill: ({ $progress, $urgency }) => (
-    <div
-      data-testid="otp-progress-fill"
-      data-progress={$progress}
-      data-urgency={$urgency}
-    />
-  ),
-  ProgressBarTimer: ({ children, $urgency }) => (
-    <span data-testid="otp-timer" data-urgency={$urgency}>
-      {children}
-    </span>
+  OtpFieldContainer: ({ children }) => <div>{children}</div>
+}))
+
+jest.mock('../ProgressBar', () => ({
+  ProgressBar: ({ timeRemaining }) => (
+    <div data-testid="otp-progress-bar">{timeRemaining}s</div>
   )
 }))
 
-const { TIMER_URGENCY } = require('./constants')
 const { useOtp } = require('../../hooks/useOtp')
 
 describe('OtpCodeField', () => {
@@ -78,7 +62,7 @@ describe('OtpCodeField', () => {
     jest.clearAllMocks()
   })
 
-  test('renders TOTP code with timer', () => {
+  test('renders TOTP code with progress bar', () => {
     useOtp.mockReturnValue({
       code: '123456',
       timeRemaining: 20,
@@ -105,37 +89,8 @@ describe('OtpCodeField', () => {
       'Authenticator Token'
     )
     expect(screen.getByTestId('otp-value')).toHaveTextContent('123 456')
-    expect(screen.getByTestId('otp-timer')).toHaveTextContent('20s')
+    expect(screen.getByTestId('otp-progress-bar')).toHaveTextContent('20s')
     expect(screen.getByTestId('otp-copy-button')).toBeInTheDocument()
-  })
-
-  test('TOTP timer shows correct urgency levels', () => {
-    useOtp.mockReturnValue({
-      code: '123456',
-      timeRemaining: 5,
-      type: 'TOTP',
-      period: 30,
-      generateNext: null,
-      isLoading: false
-    })
-
-    render(
-      <OtpCodeField
-        recordId="rec-1"
-        otpPublic={{
-          type: 'TOTP',
-          digits: 6,
-          period: 30,
-          currentCode: '123456',
-          timeRemaining: 5
-        }}
-      />
-    )
-
-    expect(screen.getByTestId('otp-timer')).toHaveAttribute(
-      'data-urgency',
-      TIMER_URGENCY.CRITICAL
-    )
   })
 
   test('renders HOTP code with Next Code button', () => {
@@ -163,7 +118,7 @@ describe('OtpCodeField', () => {
     expect(screen.getByTestId('otp-next-code-button')).toHaveTextContent(
       'Next Code'
     )
-    expect(screen.queryByTestId('otp-timer')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('otp-progress-bar')).not.toBeInTheDocument()
   })
 
   test('HOTP Next Code button calls generateNext', () => {
