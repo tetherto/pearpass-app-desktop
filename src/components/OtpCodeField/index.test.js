@@ -49,8 +49,8 @@ jest.mock('./styles', () => ({
   OtpFieldContainer: ({ children }) => <div>{children}</div>
 }))
 
-jest.mock('../ProgressBar', () => ({
-  ProgressBar: ({ timeRemaining }) => (
+jest.mock('../TimerBar', () => ({
+  TimerBar: ({ timeRemaining }) => (
     <div data-testid="otp-progress-bar">{timeRemaining}s</div>
   )
 }))

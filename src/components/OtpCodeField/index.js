@@ -4,7 +4,7 @@ import { html } from 'htm/react'
 import { useOtp } from '../../hooks/useOtp'
 import { InputField, LockIcon } from '../../lib-react-components'
 import { CopyButton } from '../CopyButton'
-import { ProgressBar } from '../ProgressBar'
+import { TimerBar } from '../TimerBar'
 import { NextCodeButton, OtpFieldContainer } from './styles'
 
 /**
@@ -77,7 +77,7 @@ export const OtpCodeField = ({ recordId, otpPublic, testId }) => {
       ${isTOTP &&
       html`
         <div style=${{ visibility: hasTimeData ? 'visible' : 'hidden' }}>
-          <${ProgressBar} timeRemaining=${timeRemaining} period=${period} />
+          <${TimerBar} timeRemaining=${timeRemaining} period=${period} />
         </div>
       `}
     <//>

@@ -10,7 +10,7 @@ import { useTimerAnimation } from '../../hooks/useTimerAnimation'
  *   animated?: boolean
  * }} props
  */
-export const ProgressBar = ({ timeRemaining, period, animated = true }) => {
+export const TimerBar = ({ timeRemaining, period, animated = true }) => {
   const { noTransition, expiring, targetTime } = useTimerAnimation(
     timeRemaining,
     period,
