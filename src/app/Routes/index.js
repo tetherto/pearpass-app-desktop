@@ -1,4 +1,5 @@
 import { html } from 'htm/react'
+import { OtpRefreshProvider } from 'pearpass-lib-vault'
 
 import { LayoutWithSidebar } from '../../containers/LayoutWithSidebar'
 import { RecordDetails } from '../../containers/RecordDetails'
@@ -51,12 +52,14 @@ export const Routes = ({
     const isAuthenticator = data?.recordType === 'authenticator'
 
     return html`
-      <${LayoutWithSidebar}
-        mainView=${isAuthenticator
-          ? html`<${AuthenticatorView} />`
-          : html`<${MainView} />`}
-        sideView=${getSideView(currentPage, data)}
-      />
+      <${OtpRefreshProvider}>
+        <${LayoutWithSidebar}
+          mainView=${isAuthenticator
+            ? html`<${AuthenticatorView} />`
+            : html`<${MainView} />`}
+          sideView=${getSideView(currentPage, data)}
+        />
+      <//>
     `
   }
 }
