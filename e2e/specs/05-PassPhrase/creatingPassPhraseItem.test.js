@@ -1,4 +1,4 @@
-import { test, expect } from '../../fixtures/app.runner.js';
+import { test, expect } from '../../fixtures/app.runner.js'
 import {
   LoginPage,
   VaultSelectPage,
@@ -7,15 +7,21 @@ import {
   CreateOrEditPage,
   Utilities,
   DetailsPage
-} from '../../components/index.js';
-import testData from '../../fixtures/test-data.js';
-import clipboard from 'clipboardy';
-
+} from '../../components/index.js'
+import testData from '../../fixtures/test-data.js'
+import clipboard from 'clipboardy'
 
 test.describe('Creating PassPhrase Item', () => {
   test.describe.configure({ mode: 'serial' })
 
-  let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
+  let loginPage,
+    vaultSelectPage,
+    createOrEditPage,
+    sideMenuPage,
+    mainPage,
+    utilities,
+    detailsPage,
+    page
 
   test.beforeEach(async ({ app }) => {
     page = await app.getPage()
@@ -32,13 +38,14 @@ test.describe('Creating PassPhrase Item', () => {
     await vaultSelectPage.selectVaultbyName(testData.vault.name)
   })
 
-  test.afterAll(async ({ }) => {
+  test.afterAll(async ({}) => {
     await utilities.deleteAllElements()
     await sideMenuPage.clickSidebarExitButton()
   })
 
-  test('PassPhrase item is created after fulfilling fields', async ({ page }) => {
-
+  test('PassPhrase item is created after fulfilling fields', async ({
+    page
+  }) => {
     /**
      * @qase.id PAS-627
      * @description "PassPhrase" item is created after fulfilling fields
@@ -50,14 +57,15 @@ test.describe('Creating PassPhrase Item', () => {
 
       await createOrEditPage.fillCreateOrEditInput('title', 'PassPhrase Title')
 
-      await clipboard.write('word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12')
+      await clipboard.write(
+        'word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12'
+      )
       await createOrEditPage.clickOnPasteFromClipboard()
 
       //TODO: Uncomment when Id is added
       // await createOrEditPage.fillCreateOrEditInput('note', 'Test Note')
 
       await createOrEditPage.clickOnCreateOrEditButton('save')
-
     })
 
     await test.step('OPEN ELEMENT DETAILS', async () => {
@@ -74,7 +82,6 @@ test.describe('Creating PassPhrase Item', () => {
      * @description ["PassPhrase" field] The number of words displayed in the "PassPhrase" field depends on the selected "Type" field's option and the "+1 random word" switcher
      */
     await test.step('VERIFY PASSPHRASE DETAILS', async () => {
-
       await detailsPage.verifyTitle('PassPhrase Title')
 
       await detailsPage.verifyAllRecoveryPhraseWords([
@@ -90,18 +97,17 @@ test.describe('Creating PassPhrase Item', () => {
         '#10word10',
         '#11word11',
         '#12word12'
-      ]);
-
+      ])
     })
 
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
-  test('After changing "Item" dropdown option user is moved to the selected "Item" edit screen', async ({ page }) => {
-
+  test('After changing "Item" dropdown option user is moved to the selected "Item" edit screen', async ({
+    page
+  }) => {
     await test.step('VERIFY PASSPHRASE ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('PassPhrase Title')
     })
@@ -173,11 +179,9 @@ test.describe('Creating PassPhrase Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
   test('Moving Element to Favorites folder', async ({ page }) => {
-
     await test.step('VERIFY PASSPHRASE ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('PassPhrase Title')
     })
@@ -258,7 +262,6 @@ test.describe('Creating PassPhrase Item', () => {
     //   await sideMenuPage.clickSidebarExitButton()
     //   await page.waitForTimeout(testData.timeouts.action)
     // })
-
   })
 
   //TODO: Un comment when Id is added
@@ -315,6 +318,4 @@ test.describe('Creating PassPhrase Item', () => {
   //   })
 
   // })
-  
-
 })

@@ -52,7 +52,7 @@ async function getBinStoragePath(binaryName) {
     await drive.close()
     throw new Error(
       `drive.get('${packagedBinPath}') returned empty/null.\n` +
-        `Ensure 'resources' is in pear.stage.includes and re-run 'pear stage dev'.`
+      `Ensure 'resources' is in pear.stage.includes and re-run 'pear stage dev'.`
     )
   }
 
@@ -61,6 +61,12 @@ async function getBinStoragePath(binaryName) {
   await drive.close()
 
   return binaryStoragePath
+}
+
+function getBinaryArchitectureName() {
+  // Bare runtime uses Bare.arch; fall back to process.arch for safety
+  const arch = (typeof Bare !== 'undefined' && Bare.arch) || process.arch
+  return arch === 'arm64' ? 'xsel-arm64' : 'xsel-x86_64'
 }
 
 export async function readLinuxClipboard() {
@@ -72,7 +78,7 @@ export async function readLinuxClipboard() {
     return spawn('xclip', ['-selection', 'clipboard', '-o'], STDIO)
   }
 
-  const bundledPath = await getBinStoragePath('xsel')
+  const bundledPath = await getBinStoragePath(getBinaryArchitectureName())
   return spawn(bundledPath, ['--clipboard', '--output'], STDIO)
 }
 
@@ -85,6 +91,6 @@ export async function writeLinuxClipboard() {
     return spawn('xclip', ['-selection', 'clipboard'], STDIO)
   }
 
-  const bundledPath = await getBinStoragePath('xsel')
+  const bundledPath = await getBinStoragePath(getBinaryArchitectureName())
   return spawn(bundledPath, ['--clipboard', '--input'], STDIO)
 }

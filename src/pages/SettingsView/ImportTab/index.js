@@ -1,8 +1,7 @@
-import { useState } from 'react'
-
 import { html } from 'htm/react'
 import { MAX_IMPORT_RECORDS } from 'pearpass-lib-constants'
 import {
+  decryptKeePassKdbx,
   parse1PasswordData,
   parseBitwardenData,
   parseKeePassData,
@@ -11,25 +10,17 @@ import {
   parsePearPassData,
   parseProtonPassData
 } from 'pearpass-lib-data-import'
-import { useCreateRecord } from 'pearpass-lib-vault'
+import { decryptExportData, useCreateRecord } from 'pearpass-lib-vault'
 
-import {
-  ContentContainer,
-  Description,
-  ErrorText,
-  ImportOptionsContainer,
-  ModalTitle,
-  PasswordInput
-} from './styles'
+import { ContentContainer, Description, ImportOptionsContainer } from './styles'
 import { readFileContent } from './utils/readFileContent'
 import { CardSingleSetting } from '../../../components/CardSingleSetting'
 import { ImportDataOption } from '../../../components/ImportDataOption'
-import { Overlay } from '../../../components/Overlay'
-import { ModalWrapper } from '../../../containers/Modal'
-import { ModalContent } from '../../../containers/Modal/ModalContent'
+import { DecryptFilePassword } from '../../../containers/Modal/DecryptFilePassword'
+import { useLoadingContext } from '../../../context/LoadingContext'
+import { useModal } from '../../../context/ModalContext'
 import { useToast } from '../../../context/ToastContext'
 import { useTranslation } from '../../../hooks/useTranslation'
-import { ButtonPrimary } from '../../../lib-react-components'
 import { logger } from '../../../utils/logger'
 
 const importOptions = [
@@ -82,13 +73,12 @@ const importOptions = [
     accepts: ['.csv', '.json'],
     imgSrc: '/assets/images/ProtonPass.png'
   },
-  // Not supported yet
-  // {
-  //   title: 'Encrypted file',
-  //   type: 'encrypted',
-  //   accepts: ['.json'],
-  //   icon: LockIcon
-  // },
+  {
+    title: 'Encrypted file',
+    type: 'encrypted',
+    accepts: ['.pearpass'],
+    imgSrc: '/assets/images/pearpass_logo.png'
+  },
   {
     title: 'Unencrypted file',
     type: 'unencrypted',
@@ -108,14 +98,9 @@ const isAllowedType = (fileType, accepts) =>
 
 export const ImportTab = () => {
   const { t } = useTranslation()
+  const { setIsLoading } = useLoadingContext()
   const { setToast } = useToast()
-  const [kdbxModal, setKdbxModal] = useState({
-    visible: false,
-    fileBuffer: null,
-    error: ''
-  })
-  const [kdbxPassword, setKdbxPassword] = useState('')
-  const [isUnlocking, setIsUnlocking] = useState(false)
+  const { setModal, closeModal } = useModal()
 
   const { createRecord } = useCreateRecord()
 
@@ -153,46 +138,15 @@ export const ImportTab = () => {
     })
   }
 
-  const closeKdbxModal = () => {
-    setKdbxModal({ visible: false, fileBuffer: null, error: '' })
-    setKdbxPassword('')
-    setIsUnlocking(false)
-  }
-
-  const handleKdbxSubmit = async () => {
-    setIsUnlocking(true)
-    await new Promise((r) => setTimeout(r, 0))
-    try {
-      const result = await parseKeePassData(
-        kdbxModal.fileBuffer,
-        'kdbx',
-        kdbxPassword
-      )
-      closeKdbxModal()
-      await importRecords(result)
-    } catch (err) {
-      if (err.message === 'Incorrect password') {
-        setKdbxModal((prev) => ({
-          ...prev,
-          error: t('Incorrect password. Please try again.')
-        }))
-        setKdbxPassword('')
-      } else {
-        closeKdbxModal()
-        setToast({ message: t(err.message) })
-        logger.error('KeePass KDBX import', err.message)
-      }
-    } finally {
-      setIsUnlocking(false)
-    }
-  }
-
   const handleFileChange = async ({ files, type, accepts }) => {
+    let isFileEncrypted = false
+    let encryptedData
+
     const file = files[0]
     if (!file) return
 
-    const fileType = file.name.split('.').pop()
-    let result = []
+    const filename = file.name
+    const fileType = filename.split('.').pop()
 
     if (!isAllowedType(fileType, accepts)) {
       throw new Error('Invalid file type')
@@ -200,9 +154,8 @@ export const ImportTab = () => {
 
     if (type === 'keepass' && fileType === 'kdbx') {
       try {
-        const fileContent = await readFileContent(file, { as: 'buffer' })
-        setKdbxModal({ visible: true, fileBuffer: fileContent, error: '' })
-        setKdbxPassword('')
+        isFileEncrypted = true
+        encryptedData = await readFileContent(file, { as: 'buffer' })
       } catch (error) {
         setToast({ message: t('Failed to read file') })
         logger.error(
@@ -211,33 +164,110 @@ export const ImportTab = () => {
           error.message || error
         )
       }
+    }
+
+    if (type === 'encrypted') {
+      try {
+        isFileEncrypted = true
+        encryptedData = await readFileContent(file)
+      } catch (error) {
+        setToast({ message: t('Failed to read file') })
+        logger.error(
+          'Encrypted file import',
+          'Error reading file:',
+          error.message || error
+        )
+      }
+    }
+
+    if (isFileEncrypted) {
+      setModal(
+        <DecryptFilePassword
+          encryptedData={encryptedData}
+          onSubmit={async (password) => {
+            await onImport({
+              type,
+              fileContent: encryptedData,
+              fileType,
+              password,
+              isEncrypted: true
+            })
+          }}
+        />,
+        { replace: true }
+      )
+
       return
     }
 
     const fileContent = await readFileContent(file)
 
+    await onImport({ type, fileContent, fileType })
+  }
+
+  const onImport = async ({
+    type,
+    fileContent,
+    fileType,
+    password,
+    isEncrypted
+  }) => {
+    setIsLoading(true)
+    let result = []
+    let dataToProcess = fileContent
+
+    try {
+      if (type === 'keepass' && fileType === 'kdbx') {
+        if (!password) {
+          throw new Error('Password is required for encrypted files')
+        }
+
+        dataToProcess = await decryptKeePassKdbx(fileContent, password)
+        type = 'keepass-kdbx'
+      }
+
+      if (type === 'encrypted' && isEncrypted) {
+        if (!password) {
+          throw new Error('Password is required for encrypted files')
+        }
+
+        const encryptedData = JSON.parse(fileContent)
+        dataToProcess = await decryptExportData(encryptedData, password)
+      }
+    } catch {
+      throw new Error(
+        'Failed to decrypt file. Please check your password and try again.'
+      )
+    }
+
     try {
       switch (type) {
         case '1password':
-          result = await parse1PasswordData(fileContent, fileType)
+          result = await parse1PasswordData(dataToProcess, fileType)
           break
         case 'bitwarden':
-          result = await parseBitwardenData(fileContent, fileType)
-          break
-        case 'keepass':
-          result = await parseKeePassData(fileContent, fileType)
+          result = await parseBitwardenData(dataToProcess, fileType)
           break
         case 'lastpass':
-          result = await parseLastPassData(fileContent, fileType)
+          result = await parseLastPassData(dataToProcess, fileType)
+          break
+        case 'keepass':
+          result = await parseKeePassData(dataToProcess, fileType)
+          break
+        case 'keepass-kdbx':
+          result = await parseKeePassData(dataToProcess, 'kdbx')
           break
         case 'nordpass':
-          result = await parseNordPassData(fileContent, fileType)
+          result = await parseNordPassData(dataToProcess, fileType)
           break
         case 'protonpass':
-          result = await parseProtonPassData(fileContent, fileType)
+          result = await parseProtonPassData(dataToProcess, fileType)
           break
         case 'unencrypted':
-          result = await parsePearPassData(fileContent, fileType)
+          result = await parsePearPassData(dataToProcess, fileType)
+          break
+        case 'encrypted':
+          result = await parsePearPassData(dataToProcess, 'json')
           break
         default:
           throw new Error(
@@ -247,14 +277,12 @@ export const ImportTab = () => {
 
       await importRecords(result)
     } catch (error) {
-      setToast({
-        message: t('Import failed. Please check your file and try again.')
-      })
-      logger.error(
-        'useGetMultipleFiles',
-        'Error reading file:',
-        error.message || error
+      throw new Error(
+        error.message || 'Failed to parse file. Please ensure it is valid.'
       )
+    } finally {
+      setIsLoading(false)
+      closeModal()
     }
   }
 
@@ -288,43 +316,5 @@ export const ImportTab = () => {
         <//>
       <//>
     <//>
-
-    ${kdbxModal.visible &&
-    html`<${ModalWrapper}>
-      <${Overlay} isOpen=${true} onClick=${closeKdbxModal} />
-      <${ModalContent}
-        onClose=${closeKdbxModal}
-        onSubmit=${handleKdbxSubmit}
-        headerChildren=${html`<${ModalTitle}>
-          ${t('Enter KeePass Password')}
-        <//>`}
-      >
-        <div
-          style=${{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-            padding: '16px'
-          }}
-        >
-          <${PasswordInput}
-            type="password"
-            placeholder=${t('Database password')}
-            value=${kdbxPassword}
-            autofocus
-            disabled=${isUnlocking}
-            onChange=${(e) => setKdbxPassword(e.target.value)}
-          />
-          ${kdbxModal.error && html`<${ErrorText}>${kdbxModal.error}<//>`}
-          <${ButtonPrimary}
-            type="submit"
-            size="md"
-            disabled=${!kdbxPassword || isUnlocking}
-          >
-            ${isUnlocking ? t('Decrypting...') : t('Unlock & Import')}
-          <//>
-        </div>
-      <//>
-    <//>`}
   </div>`
 }

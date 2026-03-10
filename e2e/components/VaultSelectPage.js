@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/app.runner.js';
+import { test, expect } from '../fixtures/app.runner.js'
 
 class VaultSelectPage {
   constructor(root) {
@@ -44,7 +44,6 @@ class VaultSelectPage {
     await expect(vault).toBeVisible()
     await vault.click()
   }
-
 }
 
 module.exports = { VaultSelectPage }

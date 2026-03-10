@@ -1,4 +1,4 @@
-import { test, expect } from '../../fixtures/app.runner.js';
+import { test, expect } from '../../fixtures/app.runner.js'
 import {
   LoginPage,
   VaultSelectPage,
@@ -7,13 +7,20 @@ import {
   CreateOrEditPage,
   Utilities,
   DetailsPage
-} from '../../components/index.js';
-import testData from '../../fixtures/test-data.js';
+} from '../../components/index.js'
+import testData from '../../fixtures/test-data.js'
 
 test.describe('Creating Note Item', () => {
   test.describe.configure({ mode: 'serial' })
 
-  let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
+  let loginPage,
+    vaultSelectPage,
+    createOrEditPage,
+    sideMenuPage,
+    mainPage,
+    utilities,
+    detailsPage,
+    page
 
   test.beforeEach(async ({ app }) => {
     page = await app.getPage()
@@ -30,13 +37,12 @@ test.describe('Creating Note Item', () => {
     await vaultSelectPage.selectVaultbyName(testData.vault.name)
   })
 
-  test.afterAll(async ({ }) => {
+  test.afterAll(async ({}) => {
     await utilities.deleteAllElements()
     await sideMenuPage.clickSidebarExitButton()
   })
 
   test('Note item is created after fulfilling fields', async ({ page }) => {
-
     /**
      * @qase.id PAS-641
      * @description "Note" item is created after fulfilling fields
@@ -52,7 +58,6 @@ test.describe('Creating Note Item', () => {
 
       await createOrEditPage.clickOnCreateOrEditButton('save')
       await page.waitForTimeout(testData.timeouts.action)
-
     })
 
     await test.step('OPEN ELEMENT DETAILS', async () => {
@@ -64,19 +69,18 @@ test.describe('Creating Note Item', () => {
      * @description All fields' values after creating "Note" item correspond to entered fields' values
      */
     await test.step('VERIFY NOTE DETAILS', async () => {
-
-      await detailsPage.verifyTitle('Note Title');
+      await detailsPage.verifyTitle('Note Title')
       await detailsPage.verifyNoteText('Test Note Text')
     })
 
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
-  test('After changing "Item" dropdown option user is moved to the selected "Item" edit screen', async ({ page }) => {
-
+  test('After changing "Item" dropdown option user is moved to the selected "Item" edit screen', async ({
+    page
+  }) => {
     await test.step('VERIFY NOTE ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('Note Title')
     })
@@ -148,11 +152,9 @@ test.describe('Creating Note Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
   test('Moving Element to Favorites folder', async ({ page }) => {
-
     await test.step('VERIFY NOTE ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('Note Title')
     })
@@ -233,7 +235,6 @@ test.describe('Creating Note Item', () => {
     //   await sideMenuPage.clickSidebarExitButton()
     //   await page.waitForTimeout(testData.timeouts.action)
     // })
-
   })
 
   //TODO: Un comment when Id is added
@@ -290,6 +291,4 @@ test.describe('Creating Note Item', () => {
   //   })
 
   // })
-  
-
 })

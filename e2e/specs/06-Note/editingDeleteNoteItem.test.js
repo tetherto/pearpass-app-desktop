@@ -1,4 +1,4 @@
-import { test, expect } from '../../fixtures/app.runner.js';
+import { test, expect } from '../../fixtures/app.runner.js'
 import {
   LoginPage,
   VaultSelectPage,
@@ -7,13 +7,20 @@ import {
   CreateOrEditPage,
   Utilities,
   DetailsPage
-} from '../../components/index.js';
-import testData from '../../fixtures/test-data.js';
+} from '../../components/index.js'
+import testData from '../../fixtures/test-data.js'
 
 test.describe('Editing/Deleting Note Item', () => {
   test.describe.configure({ mode: 'serial' })
 
-  let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
+  let loginPage,
+    vaultSelectPage,
+    createOrEditPage,
+    sideMenuPage,
+    mainPage,
+    utilities,
+    detailsPage,
+    page
 
   test.beforeEach(async ({ app }) => {
     page = await app.getPage()
@@ -36,7 +43,6 @@ test.describe('Editing/Deleting Note Item', () => {
   })
 
   test('Create/Edit/Delete Note item', async ({ page }) => {
-
     await test.step('CREATE NOTE ELEMENT - initial empty element collection', async () => {
       await sideMenuPage.selectSideBarCategory('note')
       await utilities.deleteAllElements()
@@ -48,7 +54,6 @@ test.describe('Editing/Deleting Note Item', () => {
 
       await createOrEditPage.clickOnCreateOrEditButton('save')
       await page.waitForTimeout(testData.timeouts.action)
-
     })
 
     await test.step('VERIFY NOTE ELEMENT IS CREATED', async () => {
@@ -84,7 +89,7 @@ test.describe('Editing/Deleting Note Item', () => {
      * @description Changes after editing all "Credit Card" item fields including folder destination correspond to entered fields' values
      */
     await test.step('VERIFY EDITED NOTE DETAILS', async () => {
-      await detailsPage.verifyTitle('EDITED Note Title');
+      await detailsPage.verifyTitle('EDITED Note Title')
       await detailsPage.verifyNoteText('EDITED Test Note Text')
     })
 
@@ -122,7 +127,5 @@ test.describe('Editing/Deleting Note Item', () => {
     await test.step('VERIFY NOTE ELEMENT IS NOT VISIBLE', async () => {
       await mainPage.verifyElementIsNotVisible()
     })
-
   })
-
 })

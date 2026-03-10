@@ -2,10 +2,10 @@
 
 exports[`PearPassPasswordField Component matches snapshot 1`] = `
 <div
-  class="sc-hvigdm heGTge"
+  class="sc-bRKDuR edxkKD"
 >
   <div
-    class="sc-ggWZvA vUxtV"
+    class="sc-fhHczv dKcsAa"
   >
      
     <svg
@@ -35,13 +35,13 @@ exports[`PearPassPasswordField Component matches snapshot 1`] = `
      
   </div>
   <div
-    class="sc-fhHczv cJLOKT"
+    class="sc-hvigdm jRCUHz"
   >
     <div
-      class="sc-dTvVRJ yIKZ"
+      class="sc-ggWZvA bkzVib"
     >
       <input
-        class="sc-jwTyAe ZPggY"
+        class="sc-dTvVRJ exhfVA"
         data-testid="pearpass-password-field"
         type="password"
         value="snapshot"
@@ -49,10 +49,10 @@ exports[`PearPassPasswordField Component matches snapshot 1`] = `
     </div>
   </div>
   <div
-    class="sc-jJLAfE RtvpZ"
+    class="sc-hjsuWn kkYIny"
   >
     <button
-      class="sc-bRKDuR jXrSvT"
+      class="sc-jJLAfE dbmTxR"
       data-testid="password-visibility-button"
       type="button"
     >

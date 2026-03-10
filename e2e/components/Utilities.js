@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/app.runner.js';
+import { test, expect } from '../fixtures/app.runner.js'
 
 class Utilities {
   constructor(root) {
@@ -24,7 +24,9 @@ class Utilities {
   }
 
   get collectionEmptySubText() {
-    return this.root.getByText('Create a new element or pass to another collection')
+    return this.root.getByText(
+      'Create a new element or pass to another collection'
+    )
   }
 
   get listItemThreeDots() {
@@ -39,11 +41,13 @@ class Utilities {
 
   async deleteAllElements() {
     while (await this.listItemThreeDots.isVisible()) {
-      await this.listItemThreeDots.click();
-      await this.listItemThreeDotsMenuDeleteItem.click();
-      await this.root.getByText('Yes').click();
+      await this.listItemThreeDots.click()
+      await this.listItemThreeDotsMenuDeleteItem.click()
+      await this.root.getByText('Yes').click()
 
-      await expect(this.collectionEmptyText).toBeVisible({ timeout: 5000 }).catch(() => { });
+      await expect(this.collectionEmptyText)
+        .toBeVisible({ timeout: 5000 })
+        .catch(() => {})
     }
   }
 
@@ -70,17 +74,16 @@ class Utilities {
   // }
 
   async pasteFromClipboard(locator, text) {
-  // Write text to clipboard
-  await this.root.page().evaluate(async (t) => {
-    await navigator.clipboard.writeText(t)
-  }, text)
-  
-  // Click and paste
-  await locator.click()
-  const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
-  await this.root.page().keyboard.press(`${modifier}+v`)
-}
+    // Write text to clipboard
+    await this.root.page().evaluate(async (t) => {
+      await navigator.clipboard.writeText(t)
+    }, text)
 
+    // Click and paste
+    await locator.click()
+    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
+    await this.root.page().keyboard.press(`${modifier}+v`)
+  }
 }
 
 module.exports = { Utilities }

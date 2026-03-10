@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/app.runner.js';
+import { test, expect } from '../fixtures/app.runner.js'
 
 class MainPage {
   constructor(root) {
@@ -21,7 +21,10 @@ class MainPage {
   }
 
   get element() {
-    return this.root.getByTestId('recordList-record-container').first().locator('span')
+    return this.root
+      .getByTestId('recordList-record-container')
+      .first()
+      .locator('span')
   }
 
   get firstElement() {
@@ -33,7 +36,10 @@ class MainPage {
   }
 
   get elementFolder() {
-    return this.root.getByTestId('recordList-record-container').locator('p').first()
+    return this.root
+      .getByTestId('recordList-record-container')
+      .locator('p')
+      .first()
   }
 
   getElementFavoriteIcon(initials) {
@@ -53,11 +59,16 @@ class MainPage {
   }
 
   getElementByPosition(position) {
-    return this.root.getByTestId('recordList-record-container').nth(`${position}`).locator('span')
+    return this.root
+      .getByTestId('recordList-record-container')
+      .nth(`${position}`)
+      .locator('span')
   }
 
   getElementByPosition1(position) {
-    return this.root.getByTestId('recordList-record-container').nth(`${position}`)
+    return this.root
+      .getByTestId('recordList-record-container')
+      .nth(`${position}`)
   }
 
   get multipleSelectionButon() {
@@ -142,7 +153,10 @@ class MainPage {
   }
 
   get multipleSelectCheckerByPosition() {
-    return this.root.getByTestId('recordList-record-container').nth(`${position}`).getByTestId('undefined-selected')
+    return this.root
+      .getByTestId('recordList-record-container')
+      .nth(`${position}`)
+      .getByTestId('undefined-selected')
   }
 
   getElementThreeDotsByPosition(position) {
@@ -150,9 +164,9 @@ class MainPage {
   }
 
   async clickOnElementThreeDotsByPosition(position) {
-    const threedots = this.getElementThreeDotsByPosition(position);
-    await expect(threedots).toBeVisible();
-    await threedots.click();
+    const threedots = this.getElementThreeDotsByPosition(position)
+    await expect(threedots).toBeVisible()
+    await threedots.click()
   }
 
   async verifyMultipleSelectiontButtonIsNotVisible() {
@@ -160,8 +174,8 @@ class MainPage {
   }
 
   async verifyElementisChecked(position) {
-    const checker = this.multipleSelectCheckerByPosition(position);
-    await expect(checker).toBeVisible();
+    const checker = this.multipleSelectCheckerByPosition(position)
+    await expect(checker).toBeVisible()
   }
 
   getCollectionButton(button_name) {
@@ -171,9 +185,9 @@ class MainPage {
   // ==== ACTIONS ====
 
   async clickCollectionButton(button_id) {
-    const collection_button = this.getCollectionButton(button_id);
-    await expect(collection_button).toBeVisible();
-    await collection_button.click();
+    const collection_button = this.getCollectionButton(button_id)
+    await expect(collection_button).toBeVisible()
+    await collection_button.click()
   }
 
   async clickMultipleSelectDeletetButton() {
@@ -195,7 +209,7 @@ class MainPage {
   }
 
   async clickCreateNewElementButton(name) {
-    const button = this.root.getByText(name) 
+    const button = this.root.getByText(name)
     await expect(button).toBeVisible()
     await button.click()
   }
@@ -216,8 +230,8 @@ class MainPage {
   }
 
   async selectSortOption(option) {
-    const sortOption = this.getSortOption(option);
-    await sortOption.click();
+    const sortOption = this.getSortOption(option)
+    await sortOption.click()
   }
 
   // ==== VERIFICATIONS ====
@@ -249,15 +263,14 @@ class MainPage {
   }
 
   async clickElementByPosition(position, element_name) {
-    const element = this.getElementByPosition1(position);
-    await expect(element).toContainText(element_name);
-    await element.click();
+    const element = this.getElementByPosition1(position)
+    await expect(element).toContainText(element_name)
+    await element.click()
   }
 
   async clickYesButton() {
-    await this.root.getByText('Yes').click();
+    await this.root.getByText('Yes').click()
   }
-
 }
 
 module.exports = { MainPage }
