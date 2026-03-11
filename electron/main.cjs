@@ -4,12 +4,11 @@
  * Electron main process: creates the window, starts pear-runtime (P2P OTA, bare workers, storage),
  * and registers secure IPC handlers so the renderer can use runtime and vault services.
  */
-const childProcess = require('child_process')
 const fs = require('fs')
-const os = require('os')
 const path = require('path')
 
-const { app, BrowserWindow, ipcMain, nativeImage, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeImage } = require('electron')
+const PearRuntime = require('pear-runtime')
 const getPearRuntimeLegacyStorage = require('pear-runtime-legacy-storage')
 const { isLinux, isWindows } = require('which-runtime')
 
@@ -17,26 +16,6 @@ const runtimeConfig = require('./runtime-config.cjs')
 const {
   createMainProcessLogger
 } = require('../src/utils/createMainProcessLogger.cjs')
-
-/**
- * Packaged app only: paths inside app.asar point at an archive file, so spawn() fails with ENOTDIR.
- * Rewrite any executable path that goes through app.asar to app.asar.unpacked (real filesystem).
- * Not applied in dev so we never touch spawn there.
- */
-// function patchSpawnForPackagedApp() {
-//   if (!app.isPackaged) return
-//   const originalSpawn = childProcess.spawn
-//   childProcess.spawn = function (command) {
-//     if (
-//       typeof command === 'string' &&
-//       command.includes('app.asar') &&
-//       !command.includes('app.asar.unpacked')
-//     ) {
-//       command = command.replace('app.asar', 'app.asar.unpacked')
-//     }
-//     return originalSpawn.apply(this, arguments)
-//   }
-// }
 
 const logger = createMainProcessLogger({ app, debugMode: true })
 
@@ -76,7 +55,7 @@ function getExecPath() {
 
 function getWorkletPath() {
   const workletDir = path.join(
-    'packages',
+    'node_modules',
     'pearpass-lib-vault-core',
     'src',
     'worklet'
@@ -89,14 +68,7 @@ function getWorkletPath() {
 
   // Dev: ESM app.js so Bare's loader can resolve fs -> bare-fs etc.
   const appPath = app.getAppPath()
-  return path.join(
-    appPath,
-    'node_modules',
-    'pearpass-lib-vault-core',
-    'src',
-    'worklet',
-    'app.js'
-  )
+  return path.join(appPath, workletDir, 'app.js')
 }
 
 function getStorageDir() {
@@ -206,10 +178,8 @@ async function startRuntime() {
 
   // to clear local vault/encryption data so the app starts from scratch.
   clearVaultStorageForDevReset(storageDir)
-  const fs = require('fs')
   const workletPath = getWorkletPath()
 
-  const PearRuntime = require('pear-runtime')
   const { PearpassVaultClient } = await import('pearpass-lib-vault-core')
   pearRuntime = new PearRuntime({
     // pear runtime doesn't care about pear (platform) directory
@@ -301,8 +271,6 @@ async function startWorkletOnly() {
   clearVaultStorageForDevReset(getStorageDir())
 
   // In packaged builds, Bare's module resolution uses the process cwd.
-  // Ensure the sidecar process starts with cwd pointing at app.asar.unpacked
-  // so it can resolve node_modules and the unpacked worklet sources.
   let previousCwd = null
   if (app.isPackaged) {
     const appRoot = path.join(process.resourcesPath, 'app')
@@ -454,9 +422,7 @@ function registerIPC() {
       key: runtimeConfig.upgrade || null,
       upgrade: runtimeConfig.upgrade,
       version: runtimeConfig.version,
-      applink: runtimeConfig.upgrade
-        ? `pear://${runtimeConfig.upgrade.replace(/^pear:\/\//, '')}`
-        : ''
+      applink: runtimeConfig.upgrade || ''
     }
   })
 
@@ -514,7 +480,6 @@ function registerIPC() {
 app.whenReady().then(async () => {
   app.setName('PearPass')
   logger.setLogPath(app.getPath('userData'))
-  // patchSpawnForPackagedApp()
   registerIPC()
   try {
     await startRuntime()

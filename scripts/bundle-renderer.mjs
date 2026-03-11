@@ -43,7 +43,8 @@ const ctx = await esbuild.context({
     'fs/promises',
     'require-addon',
     'fs-native-extensions',
-    'sodium-native'
+    'sodium-native',
+    'crypto'
   ],
   logLevel: 'info'
 })

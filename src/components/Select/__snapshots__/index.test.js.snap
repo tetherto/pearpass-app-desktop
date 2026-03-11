@@ -32,30 +32,22 @@ exports[`Select Component opens dropdown when label is clicked 1`] = `
       <div
         class="sc-bRKDuR dqdJa"
       >
-         
         English
-         
       </div>
       <div
         class="sc-bRKDuR dqdJa"
       >
-         
         Italian
-         
       </div>
       <div
         class="sc-bRKDuR dqdJa"
       >
-         
         Spanish
-         
       </div>
       <div
         class="sc-bRKDuR dqdJa"
       >
-         
         French
-         
       </div>
     </div>
   </div>

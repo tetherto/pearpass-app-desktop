@@ -53,6 +53,7 @@ class LoginPage {
   }
 
   async loginToApplication(password) {
+    await this.waitForReady()
     await expect(this.title).toHaveText('Enter your Master password')
     await this.enterPassword(password)
     await this.clickContinue()

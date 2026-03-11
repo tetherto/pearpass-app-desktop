@@ -30,7 +30,7 @@ exports[`InputFieldNote renders with custom value 1`] = `
         <span
           class="sc-dNdcvo lbJylK"
         >
-          Note
+          Comment
         </span>
         <div
           class="sc-fbQrwq hytYjv"
@@ -38,7 +38,7 @@ exports[`InputFieldNote renders with custom value 1`] = `
           <input
             class="sc-gGKoUb jNaItO"
             data-testid="input-field"
-            placeholder="Add note"
+            placeholder="Add comment"
             type="text"
             value="Test note"
           />
@@ -82,7 +82,7 @@ exports[`InputFieldNote renders with custom variant 1`] = `
         <span
           class="sc-dNdcvo lbJylK"
         >
-          Note
+          Comment
         </span>
         <div
           class="sc-fbQrwq hytYjv"
@@ -90,7 +90,7 @@ exports[`InputFieldNote renders with custom variant 1`] = `
           <input
             class="sc-gGKoUb jNaItO"
             data-testid="input-field"
-            placeholder="Add note"
+            placeholder="Add comment"
             type="text"
           />
           <div
@@ -133,7 +133,7 @@ exports[`InputFieldNote renders with default props 1`] = `
         <span
           class="sc-dNdcvo lbJylK"
         >
-          Note
+          Comment
         </span>
         <div
           class="sc-fbQrwq hytYjv"
@@ -141,7 +141,7 @@ exports[`InputFieldNote renders with default props 1`] = `
           <input
             class="sc-gGKoUb jNaItO"
             data-testid="input-field"
-            placeholder="Add note"
+            placeholder="Add comment"
             type="text"
           />
           <div

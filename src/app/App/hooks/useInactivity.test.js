@@ -15,7 +15,8 @@ jest.mock('pearpass-lib-vault', () => ({
 }))
 
 jest.mock('../../../hooks/useAutoLockPreferences', () => ({
-  getAutoLockTimeoutMs: jest.fn(() => 500)
+  getAutoLockTimeoutMs: jest.fn(() => 500),
+  useAutoLockPreferences: jest.fn(() => ({ shouldBypassAutoLock: false }))
 }))
 
 jest.mock('../../../context/LoadingContext', () => ({

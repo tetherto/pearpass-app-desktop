@@ -163,7 +163,7 @@ export const RecordDetails = () => {
           <//>
 
           <${ButtonRoundIcon}
-            data-testid="details-button-collapse"
+            testId="details-close-button"
             startIcon=${CollapseIcon}
             onClick=${handleCollapseRecordDetails}
           />

@@ -19,11 +19,12 @@ import { FormModalHeaderWrapper } from '../../../components/FormModalHeaderWrapp
 import { RadioSelect } from '../../../components/RadioSelect'
 import { SwitchWithLabel } from '../../../components/SwitchWithLabel'
 import { AuthenticationCard } from '../../../containers/AuthenticationCard'
+import { CreateFileEncryptionPassword } from '../../../containers/Modal/CreateFileEncryptionPassword'
 import { ModalContent } from '../../../containers/Modal/ModalContent'
 import { VaultPasswordFormModalContent } from '../../../containers/Modal/VaultPasswordFormModalContent'
 import { useModal } from '../../../context/ModalContext'
 import { useTranslation } from '../../../hooks/useTranslation.js'
-import { ButtonSecondary } from '../../../lib-react-components'
+import { ButtonPrimary } from '../../../lib-react-components'
 
 export const ExportTab = () => {
   const { closeModal, setModal } = useModal()
@@ -42,12 +43,12 @@ export const ExportTab = () => {
     { label: t('json'), value: 'json' }
   ]
 
-  const handleSubmitExport = (vaultsToExport) => {
+  const handleSubmitExport = (vaultsToExport, encryptionPassword = null) => {
     if (exportType === 'json') {
-      handleExportJsonPerVaultTest(vaultsToExport)
+      handleExportJsonPerVaultTest(vaultsToExport, encryptionPassword)
     }
     if (exportType === 'csv') {
-      handleExportCSVPerVault(vaultsToExport)
+      handleExportCSVPerVault(vaultsToExport, encryptionPassword)
     }
   }
 
@@ -70,8 +71,22 @@ export const ExportTab = () => {
     }
 
     const records = (await listRecords()) ?? []
+    const vaultData = [{ ...vault, records }]
 
-    handleSubmitExport([{ ...vault, records }])
+    if (shouldExportEncrypted) {
+      setModal(
+        html`<${CreateFileEncryptionPassword}
+          onSubmit=${(encryptionPassword) => {
+            handleSubmitExport(vaultData, encryptionPassword)
+            closeModal()
+          }}
+        />`,
+        { replace: true }
+      )
+    } else {
+      handleSubmitExport(vaultData, null)
+      closeModal()
+    }
 
     await refetchVault(currentVaultId, currentEncryption)
   }
@@ -81,6 +96,25 @@ export const ExportTab = () => {
     const records = (await listRecords()) ?? []
 
     return { ...vault, records }
+  }
+
+  const onUnprotectedExport = async () => {
+    const vaultsToExport = await fetchUnprotectedVault(currentVault.id)
+
+    if (shouldExportEncrypted) {
+      setModal(
+        html`<${CreateFileEncryptionPassword}
+          onSubmit=${(encryptionPassword) => {
+            handleSubmitExport([vaultsToExport], encryptionPassword)
+            closeModal()
+          }}
+        />`,
+        { replace: true }
+      )
+    } else {
+      handleSubmitExport([vaultsToExport], null)
+      closeModal()
+    }
   }
 
   const handleExport = async () => {
@@ -119,14 +153,7 @@ export const ExportTab = () => {
               )}
             />`}
             style=${{ width: '100%' }}
-            onSuccess=${async () => {
-              const vaultsToExport = await fetchUnprotectedVault(
-                currentVault.id
-              )
-
-              handleSubmitExport([vaultsToExport])
-              closeModal()
-            }}
+            onSuccess=${onUnprotectedExport}
           />
         <//>
       `)
@@ -137,29 +164,42 @@ export const ExportTab = () => {
     refetchVault()
   }, [])
 
-  return html` <${CardSingleSetting} title=${t('Export Vault')}>
+  return html` <${CardSingleSetting}
+    testId="settings-card-export-vault"
+    title=${t('Export Vault')}
+  >
     <${ContentContainer}>
-      <!-- not supported yet -->
-      <!-- <${SwitchWithLabel}
-        isSwitchFirst
-        stretch=${false}
-        label=${'Encrypted file'}
-        isOn=${shouldExportEncrypted}
-        onChange=${() => setShouldExportEncrypted((prev) => !prev)}
-        isLabelBold
-      /> -->
-
       <${RadioSelect}
         title=${t('Choose the file format to export your Vault')}
         options=${radioOptions}
         selectedOption=${exportType}
         onChange=${(type) => {
+          if (type === 'csv' && shouldExportEncrypted) {
+            setShouldExportEncrypted(false)
+          }
+
           setExportType(type)
         }}
       />
 
+      <${SwitchWithLabel}
+        description=${t(
+          'Encrypt the Vault file with the *specific encryption*'
+        )}
+        label=${t('Encrypted file')}
+        isOn=${shouldExportEncrypted}
+        onChange=${() => {
+          setExportType('json')
+
+          setShouldExportEncrypted((prev) => !prev)
+        }}
+        isLabelBold
+      />
+
       <${ActionsContainer}>
-        <${ButtonSecondary} onClick=${handleExport}> ${t('Export')} <//>
+        <${ButtonPrimary} width="180px" onClick=${handleExport}>
+          ${t('Export')}
+        <//>
       <//>
     <//>
   <//>`

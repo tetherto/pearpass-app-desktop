@@ -141,7 +141,28 @@ async function launchApp(appDir) {
     await sleep(2000)
   }
 
-  return { proc, browser, page, isWindows }
+  const app = { proc, browser, page, isWindows }
+
+  /**
+   * Returns the current app page. If the page was closed (e.g. app restarted),
+   * tries to find the new page from the browser. Use this in beforeEach to
+   * avoid "Target page, context or browser has been closed" errors.
+   */
+  app.getPage = async function getPage() {
+    if (this.page && !this.page.isClosed()) {
+      return this.page
+    }
+    const newPage = await waitForPage(this.browser, 10)
+    if (newPage) {
+      this.page = newPage
+      await this.page.waitForLoadState('domcontentloaded')
+      if (isWindows) await sleep(500)
+      return this.page
+    }
+    throw new Error('App page was closed and no new page could be found')
+  }
+
+  return app
 }
 
 import { spawnSync } from 'node:child_process';

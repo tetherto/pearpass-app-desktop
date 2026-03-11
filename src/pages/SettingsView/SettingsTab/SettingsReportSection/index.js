@@ -23,7 +23,11 @@ export const SettingsReportSection = ({
   textAreaPlaceholder,
   textAreaOnChange
 }) => html`
-  <${CardSingleSetting} title=${title} description=${description}>
+  <${CardSingleSetting}
+    testId="settings-card-report"
+    title=${title}
+    description=${description}
+  >
     <${Form}
       onSubmit=${(e) => {
         e.preventDefault()
@@ -31,13 +35,16 @@ export const SettingsReportSection = ({
       }}
     >
       <${TextArea}
+        testId="settings-report-textarea"
         value=${message}
         onChange=${(value) => textAreaOnChange(value)}
         variant="report"
         placeholder=${textAreaPlaceholder}
       />
       <${ButtonWrapper}>
-        <${ButtonSecondary} type="submit"> ${buttonText} <//>
+        <${ButtonSecondary} type="submit" testId="settings-report-send-button">
+          ${buttonText}
+        <//>
       <//>
     <//>
   <//>

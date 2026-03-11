@@ -12,10 +12,16 @@ import { ModalContent } from '../ModalContent'
  * @param {Object} props
  * @param {'file'|'image'} props.type
  * @param {string} props.accepts
+ * @param {boolean} [props.closeOnChange=true]
  * @returns {JSX.Element}
  */
 
-export const UploadFilesModalContent = ({ accepts, type, onFilesSelected }) => {
+export const UploadFilesModalContent = ({
+  accepts,
+  type,
+  onFilesSelected,
+  closeOnChange = true
+}) => {
   const isTypeImage = type === 'image'
 
   const { i18n } = useLingui()
@@ -25,7 +31,10 @@ export const UploadFilesModalContent = ({ accepts, type, onFilesSelected }) => {
     if (files && files.length > 0) {
       onFilesSelected?.(files)
     }
-    closeModal()
+
+    if (closeOnChange) {
+      closeModal()
+    }
   }
 
   return html`

@@ -21,6 +21,7 @@ import {
 import { NAVIGATION_ROUTES } from '../../../constants/navigation'
 import { useRouter } from '../../../context/RouterContext'
 import { useToast } from '../../../context/ToastContext'
+import { useAutoLockPreferences } from '../../../hooks/useAutoLockPreferences'
 import { usePasteFromClipboard } from '../../../hooks/usePasteFromClipboard'
 import { useTranslation } from '../../../hooks/useTranslation'
 import { ButtonPrimary } from '../../../lib-react-components'
@@ -45,6 +46,13 @@ export const CardLoadVault = () => {
     cancelPairActiveVault,
     isLoading: isPairing
   } = usePair()
+
+  const { setShouldBypassAutoLock } = useAutoLockPreferences()
+
+  useEffect(() => {
+    setShouldBypassAutoLock(isPairing)
+    return () => setShouldBypassAutoLock(false)
+  }, [isPairing, setShouldBypassAutoLock])
 
   const handleChange = (e) => {
     if (isPairing) {

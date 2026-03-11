@@ -44,14 +44,6 @@ Go to the cloned directory
 ```bash
 cd pearpass-app-desktop
 ```
-To update all submodules to the latest `main` branch, use the provided script.
-```bash
-npm run update-submodules
-```
-In case of specific remote use:
-```bash
-npm run update-submodules -- [remote-name]
-```
 Install npm modules
 ```bash
 npm install
@@ -105,6 +97,28 @@ The "src" folder is for development and it's ignored in package.json
     "src"     
   ]
 ```
+
+## Depended modules
+
+The following sibling modules must be present in the workspace (they are not declared as npm dependencies):
+
+- [`tether-dev-docs`](../tether-dev-docs)
+- [`pear-apps-lib-feedback`](../pear-apps-lib-feedback)
+- [`pear-apps-lib-ui-react-hooks`](../pear-apps-lib-ui-react-hooks)
+- [`pear-apps-utils-avatar-initials`](../pear-apps-utils-avatar-initials)
+- [`pear-apps-utils-date`](../pear-apps-utils-date)
+- [`pear-apps-utils-generate-unique-id`](../pear-apps-utils-generate-unique-id)
+- [`pear-apps-utils-pattern-search`](../pear-apps-utils-pattern-search)
+- [`pear-apps-utils-qr`](../pear-apps-utils-qr)
+- [`pear-apps-utils-validator`](../pear-apps-utils-validator)
+- [`pearpass-lib-constants`](../pearpass-lib-constants)
+- [`pearpass-lib-data-export`](../pearpass-lib-data-export)
+- [`pearpass-lib-data-import`](../pearpass-lib-data-import)
+- [`pearpass-lib-ui-theme-provider`](../pearpass-lib-ui-theme-provider)
+- [`pearpass-lib-vault`](../pearpass-lib-vault)
+- [`pearpass-lib-vault-core`](../pearpass-lib-vault-core)
+- [`pearpass-utils-password-check`](../pearpass-utils-password-check)
+- [`pearpass-utils-password-generator`](../pearpass-utils-password-generator)
 
 ## Dependencies
 

@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/app.runner.js';
+import { test, expect } from '../fixtures/app.runner.js'
 
 class CreateOrEditPage {
   constructor(root) {
@@ -7,18 +7,14 @@ class CreateOrEditPage {
 
   // ==== LOCATORS ====
 
-  // createoredit-button-createcustomfield  => createoredit-createcustomfield
-
   get noteTextArea() {
     return this.root.getByTestId('createoredit-textarea-note')
   }
 
-  // getNoteTextArea(field) {
-  //   return this.root.getByTestId(`createoredit-textarea-${field}`)
-  // }
-
   get insertPasswordButton() {
-    return this.root.getByTestId('passwordGenerator-button-insertpassword').first()
+    return this.root
+      .getByTestId('passwordGenerator-button-insertpassword')
+      .first()
   }
 
   getCreateOrEditInputField(field) {
@@ -66,7 +62,9 @@ class CreateOrEditPage {
   }
 
   get elementItemPasswordShowHideFirst() {
-    return this.root.getByTestId('passwordfield-button-togglevisibility').first()
+    return this.root
+      .getByTestId('passwordfield-button-togglevisibility')
+      .first()
   }
 
   get elementItemPasswordShowHideLast() {
@@ -97,10 +95,6 @@ class CreateOrEditPage {
     return this.root.locator('input[type="file"]').first()
   }
 
-  // get elementItemCloseButton() {
-  //   return this.root.getByTestId('button-round-icon').last() // button-round-icon
-  // }
-
   get elementItemCloseButton() {
     return this.root.getByTestId('modalheader-button-close').last()
   }
@@ -121,7 +115,7 @@ class CreateOrEditPage {
     return this.root.getByTestId(`passphrase-button-paste`)
   }
 
-  // ==== ACTIONS ==== 
+  // ==== ACTIONS ====
 
   async clickOnPasteFromClipboard() {
     const pasteButton = this.passPhrasePasteButton
@@ -157,22 +151,22 @@ class CreateOrEditPage {
   }
 
   async clickElementItemCloseButton() {
-    await expect(this.elementItemCloseButton).toBeVisible();
-    await this.elementItemCloseButton.click();
+    await expect(this.elementItemCloseButton).toBeVisible()
+    await this.elementItemCloseButton.click()
   }
 
   async clickLoadFileButton() {
-    await expect(this.loadFile).toBeVisible();
-    await this.loadFile.click();
+    await expect(this.loadFile).toBeVisible()
+    await this.loadFile.click()
   }
 
   async uploadFile() {
-    await this.fileInput.setInputFiles('test-files/TestPhoto.png');
+    await this.fileInput.setInputFiles('test-files/TestPhoto.png')
   }
 
   async clickOnUploadedFile() {
-    await expect(this.uploadedFileLink).toBeVisible();
-    await this.uploadedFileLink.click();
+    await expect(this.uploadedFileLink).toBeVisible()
+    await this.uploadedFileLink.click()
   }
 
   async clickCreateCustomItem() {
@@ -191,13 +185,13 @@ class CreateOrEditPage {
   }
 
   async clickShowHidePasswordButtonFirst() {
-    await expect(this.elementItemPasswordShowHideFirst).toBeVisible();
-    await this.elementItemPasswordShowHideFirst.click();
+    await expect(this.elementItemPasswordShowHideFirst).toBeVisible()
+    await this.elementItemPasswordShowHideFirst.click()
   }
 
   async clickShowHidePasswordButtonLast() {
-    await expect(this.elementItemPasswordShowHideLast).toBeVisible();
-    await this.elementItemPasswordShowHideLast.click();
+    await expect(this.elementItemPasswordShowHideLast).toBeVisible()
+    await this.elementItemPasswordShowHideLast.click()
   }
 
   async fillCreateOrEditInput(field, value) {
@@ -209,18 +203,18 @@ class CreateOrEditPage {
 
   async fillCreateOrEditTextArea(field, value) {
     const text_area = this.getCreateOrEditTextareaField(field)
-    await text_area.waitFor({ state: 'visible' }) // wait before interaction
+    await text_area.waitFor({ state: 'visible' })
     await text_area.type(value)
   }
 
   async countItems(labelOrPlaceholder, expectedCount) {
-    const itemDetail = this.getElementItemDetails(labelOrPlaceholder);
-    await expect(itemDetail).toHaveCount(expectedCount);
+    const itemDetail = this.getElementItemDetails(labelOrPlaceholder)
+    await expect(itemDetail).toHaveCount(expectedCount)
   }
 
   async openDropdownMenu() {
-    await this.dropdownFolderMenu.waitFor({ state: 'attached' });
-    await this.dropdownFolderMenu.click();
+    await this.dropdownFolderMenu.waitFor({ state: 'attached' })
+    await this.dropdownFolderMenu.click()
   }
 
   async selectFromDropdownMenu(foldername) {
@@ -237,45 +231,44 @@ class CreateOrEditPage {
   }
 
   async verifyUploadedFileIsVisible() {
-    await expect(this.uploadedFileLink).toBeVisible();
-    await expect(this.uploadedFileLink).toHaveText('TestPhoto.png');
+    await expect(this.uploadedFileLink).toBeVisible()
+    await expect(this.uploadedFileLink).toHaveText('TestPhoto.png')
   }
 
   async verifyUploadedImageIsVisible() {
-    await expect(this.uploadedImage).toBeVisible();
+    await expect(this.uploadedImage).toBeVisible()
   }
 
   async verifyUploadedImageIsNotVisible() {
-    await expect(this.uploadedImage).not.toBeVisible();
+    await expect(this.uploadedImage).not.toBeVisible()
   }
 
   async verifyItemDetailsValue(labelOrPlaceholder, expectedValue) {
-    const itemDetail = this.getElementItemDetails(labelOrPlaceholder);
-    await expect(itemDetail).toHaveValue(expectedValue);
+    const itemDetail = this.getElementItemDetails(labelOrPlaceholder)
+    await expect(itemDetail).toHaveValue(expectedValue)
   }
 
   async verifyItemDetailsValueIsNotVisible(labelOrPlaceholder) {
-    const itemDetail = this.getElementItemDetails(labelOrPlaceholder);
-    await expect(itemDetail).not.toBeVisible();
+    const itemDetail = this.getElementItemDetails(labelOrPlaceholder)
+    await expect(itemDetail).not.toBeVisible()
   }
 
   async verifyPasswordType(password_type) {
     const itemDetail = this.root.getByPlaceholder('Password')
-    await expect(itemDetail).toBeVisible();
-    await expect(itemDetail).toHaveAttribute('type', password_type);
+    await expect(itemDetail).toBeVisible()
+    await expect(itemDetail).toHaveAttribute('type', password_type)
   }
 
   async verifyItemType(placeholder, item_type) {
     const itemDetail = this.root.getByPlaceholder(placeholder).nth('1')
-    await expect(itemDetail).toBeVisible();
-    await expect(itemDetail).toHaveAttribute('type', item_type);
+    await expect(itemDetail).toBeVisible()
+    await expect(itemDetail).toHaveAttribute('type', item_type)
   }
 
   async verifyItemVisibility(placeholder, counter) {
     const itemDetail = this.root.getByPlaceholder(placeholder).nth(counter)
-    await expect(itemDetail).toBeVisible();
+    await expect(itemDetail).toBeVisible()
   }
-
 }
 
 module.exports = { CreateOrEditPage }

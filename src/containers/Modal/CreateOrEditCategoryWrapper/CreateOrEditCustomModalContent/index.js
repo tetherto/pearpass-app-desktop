@@ -91,7 +91,7 @@ export const CreateOrEditCustomModalContent = ({
     title: Validator.string().required(i18n._('Title is required')),
     customFields: Validator.array().items(
       Validator.object({
-        note: Validator.string().required(i18n._('Note is required'))
+        note: Validator.string().required(i18n._('Comment is required'))
       })
     ),
     folder: Validator.string(),

@@ -31,6 +31,7 @@ export const ButtonFilter = ({
       type=${type}
       onClick=${handleClick}
       data-testid=${testId}
+      aria-disabled=${isDisabled}
     >
       ${startIcon && html`<${startIcon} size="24" />`} ${children}
     <//>

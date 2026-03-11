@@ -1,4 +1,4 @@
-import { test, expect } from '../../fixtures/app.runner.js';
+import { test, expect } from '../../fixtures/app.runner.js'
 import {
   LoginPage,
   VaultSelectPage,
@@ -7,26 +7,32 @@ import {
   CreateOrEditPage,
   Utilities,
   DetailsPage
-} from '../../components/index.js';
-import testData from '../../fixtures/test-data.js';
+} from '../../components/index.js'
+import testData from '../../fixtures/test-data.js'
 
 test.describe('Creating Credit Card Item', () => {
   test.describe.configure({ mode: 'serial' })
 
-  let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
-
-  test.beforeAll(async ({ app }) => {
-    page = app.page
-    loginPage = new LoginPage(page.locator('body'))
-    vaultSelectPage = new VaultSelectPage(page.locator('body'))
-    mainPage = new MainPage(page.locator('body'))
-    sideMenuPage = new SideMenuPage(page.locator('body'))
-    createOrEditPage = new CreateOrEditPage(page.locator('body'))
-    utilities = new Utilities(page.locator('body'))
-    detailsPage = new DetailsPage(page.locator('body'))
-  })
+  let loginPage,
+    vaultSelectPage,
+    createOrEditPage,
+    sideMenuPage,
+    mainPage,
+    utilities,
+    detailsPage,
+    page
 
   test.beforeEach(async ({ app }) => {
+    page = await app.getPage()
+    const root = page.locator('body')
+    loginPage = new LoginPage(root)
+    vaultSelectPage = new VaultSelectPage(root)
+    mainPage = new MainPage(root)
+    sideMenuPage = new SideMenuPage(root)
+    createOrEditPage = new CreateOrEditPage(root)
+    utilities = new Utilities(root)
+    detailsPage = new DetailsPage(root)
+
     await loginPage.loginToApplication(testData.credentials.validPassword)
     await vaultSelectPage.selectVaultbyName(testData.vault.name)
   })
@@ -36,8 +42,9 @@ test.describe('Creating Credit Card Item', () => {
     await sideMenuPage.clickSidebarExitButton()
   })
 
-  test('Credit Card item is created after fulfilling fields', async ({ page }) => {
-
+  test('Credit Card item is created after fulfilling fields', async ({
+    page
+  }) => {
     /**
      * @qase.id PAS-599
      * @description "Credit Card" item is created after fulfilling fields
@@ -70,8 +77,11 @@ test.describe('Creating Credit Card Item', () => {
      * @description "All fields' values after creating "Credit Card" item correspond to entered fields' values
      */
     await test.step('VERIFY CREATED CREDIT CARD DETAILS', async () => {
-      await detailsPage.verifyItemDetailsValue('Full name', 'John');
-      await detailsPage.verifyItemDetailsValue('1234 1234 1234 1234 ', '1231 2312')
+      await detailsPage.verifyItemDetailsValue('Full name', 'John')
+      await detailsPage.verifyItemDetailsValue(
+        '1234 1234 1234 1234 ',
+        '1231 2312'
+      )
       await detailsPage.verifyItemDetailsValue('MM YY', '12 12')
       await detailsPage.verifyItemDetailsValue('123', '111')
       await detailsPage.verifyItemDetailsValue('1234', '5555')
@@ -81,11 +91,11 @@ test.describe('Creating Credit Card Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
-  test('Password visibility icon of "Security code" and "Pin code" fields displays/hides value', async ({ page }) => {
-
+  test('Password visibility icon of "Security code" and "Pin code" fields displays/hides value', async ({
+    page
+  }) => {
     await test.step('OPEN ELEMENT DETAILS', async () => {
       await mainPage.openElementDetails()
     })
@@ -104,19 +114,20 @@ test.describe('Creating Credit Card Item', () => {
     await test.step('VERIFY PIN CODE SHOW/HIDE', async () => {
       expect(createOrEditPage.verifyItemType('1234', 'password'))
       await createOrEditPage.clickShowHidePasswordButtonLast()
-      // await page.waitForTimeout(testData.timeouts.action)
+      await page.waitForTimeout(testData.timeouts.action)
       expect(createOrEditPage.verifyItemType('1234', 'text'))
+      await page.waitForTimeout(testData.timeouts.action)
     })
 
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
   // ADD FOLDER INSIDE SIDEMENU
-  test('After changing "Item" dropdown option user is moved to the selected "Item" edit screen', async ({ page }) => {
-
+  test('After changing "Item" dropdown option user is moved to the selected "Item" edit screen', async ({
+    page
+  }) => {
     await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('Credit Card Title')
     })
@@ -186,11 +197,9 @@ test.describe('Creating Credit Card Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
   test('Moving Element to Favorites folder', async ({ page }) => {
-
     await test.step('VERIFY CREDIT CARD ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('Credit Card Title')
     })
@@ -264,11 +273,11 @@ test.describe('Creating Credit Card Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
-  test('Adding Custom Field with Note option to Credit Card Items', async ({ page }) => {
-
+  test('Adding Custom Field with Note option to Credit Card Items', async ({
+    page
+  }) => {
     await test.step('OPEN/EDITLOGIN ELEMENT', async () => {
       await mainPage.openElementDetails()
       await detailsPage.editElement()
@@ -295,11 +304,11 @@ test.describe('Creating Credit Card Item', () => {
      * @description It is possible to delete additional fields
      */
     await test.step('DELETE NEW CUSTOM NOTE ITEM', async () => {
-      await createOrEditPage.deleteCustomNote();
+      await createOrEditPage.deleteCustomNote()
     })
 
     await test.step('VERIFY THERE IS NO CUSTOM NOTES ITEMS INSIDE LOGIN ELEMENT', async () => {
-      await expect(createOrEditPage.customNoteInput).toHaveCount(0);
+      await expect(createOrEditPage.customNoteInput).toHaveCount(0)
     })
 
     /**
@@ -313,11 +322,9 @@ test.describe('Creating Credit Card Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
   test('Upload file to Credit Card Items', async ({ page }) => {
-
     await test.step('VERIFY LOGIN ELEMENT IS VISIBLE', async () => {
       await mainPage.verifyElementTitle('Credit Card Title')
     })
@@ -339,9 +346,9 @@ test.describe('Creating Credit Card Item', () => {
     })
 
     /**
-   * @qase.id PAS-992
-   * @description It is possible to view uploaded files in "Edit" mode
-   */
+     * @qase.id PAS-992
+     * @description It is possible to view uploaded files in "Edit" mode
+     */
     await test.step('VERIFY UPLOADED FILE IS VISIBLE INSIDE LOGIN ITEMS', async () => {
       await createOrEditPage.verifyUploadedFileIsVisible()
     })
@@ -363,9 +370,9 @@ test.describe('Creating Credit Card Item', () => {
     })
 
     /**
-   * @qase.id PAS-997
-   * @description It is possible to view uploaded files in "View" mode
-   */
+     * @qase.id PAS-997
+     * @description It is possible to view uploaded files in "View" mode
+     */
     await test.step('VERIFY UPLOADED FILE IS VISIBLE INSIDE LOGIN ITEMS', async () => {
       await detailsPage.verifyUploadedFileIsVisible()
     })
@@ -401,11 +408,11 @@ test.describe('Creating Credit Card Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
-  test('Deleted Credit Card Items are not displayed in view/details mode ', async ({ page }) => {
-
+  test('Deleted Credit Card Items are not displayed in view/details mode ', async ({
+    page
+  }) => {
     await test.step('OPEN ELEMENT', async () => {
       await mainPage.openElementDetails()
     })
@@ -434,14 +441,17 @@ test.describe('Creating Credit Card Item', () => {
      */
     await test.step('VERIFY ELEMENT DETAILS', async () => {
       await detailsPage.verifyItemDetailsValueIsNotVisible('Full name')
-      await detailsPage.verifyItemDetailsValueIsNotVisible('1234 1234 1234 1234')
+      await detailsPage.verifyItemDetailsValueIsNotVisible(
+        '1234 1234 1234 1234'
+      )
       await detailsPage.verifyItemDetailsValueIsNotVisible('MM YY')
       await detailsPage.verifyItemDetailsValueIsNotVisible('123')
       await detailsPage.verifyItemDetailsValueIsNotVisible('1234')
       await detailsPage.verifyItemDetailsValueIsNotVisible('Add note')
     })
 
+    await test.step('CLOSE DETAILS', async () => {
+      await mainPage.clickDetailsCloseButton()
+    })
   })
-
-
 })

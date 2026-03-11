@@ -289,6 +289,14 @@ export class NativeMessagingIPCServer {
       'activeVaultRemoveFile',
       vaultHandlers.activeVaultRemoveFile.bind(vaultHandlers)
     )
+    this.secureMethodRegistry.register(
+      'fetchFavicon',
+      vaultHandlers.fetchFavicon.bind(vaultHandlers),
+      {
+        requiresStatus: ['encryption', 'vaults', 'activeVault'],
+        logLevel: 'DEBUG'
+      }
+    )
   }
 
   /**
@@ -303,7 +311,7 @@ export class NativeMessagingIPCServer {
     try {
       logger.info('IPC-SERVER', 'Starting native messaging IPC server...')
 
-      // Clean up any existing socket file
+      await this.socketManager.ensureSocketDir()
       await this.socketManager.cleanupSocket()
 
       // Build handlers from registry
@@ -391,6 +399,8 @@ export class NativeMessagingIPCServer {
 
 /** @type {NativeMessagingIPCServer|null} */
 let ipcServerInstance = null
+/** @type {Promise<NativeMessagingIPCServer>|null} */
+let startPromise = null
 
 /**
  * @param {import('pearpass-lib-vault-core').PearpassVaultClient} pearpassClient
@@ -402,10 +412,22 @@ export const startNativeMessagingIPC = async (pearpassClient) => {
     return ipcServerInstance
   }
 
-  ipcServerInstance = new NativeMessagingIPCServer(pearpassClient)
-  await ipcServerInstance.start()
+  if (startPromise) {
+    logger.info('IPC-SERVER', 'IPC server is already starting, waiting...')
+    return startPromise
+  }
 
-  return ipcServerInstance
+  startPromise = (async () => {
+    ipcServerInstance = new NativeMessagingIPCServer(pearpassClient)
+    await ipcServerInstance.start()
+    return ipcServerInstance
+  })()
+
+  try {
+    return await startPromise
+  } finally {
+    startPromise = null
+  }
 }
 
 /**

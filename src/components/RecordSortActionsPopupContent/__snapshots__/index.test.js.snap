@@ -7,6 +7,7 @@ exports[`RecordSortActionsPopupContent Component renders correctly with all menu
   >
     <div
       class="sc-hvigdm cYNyTs"
+      data-testid="sort-option-recent"
     >
       <div>
         <svg
@@ -17,6 +18,7 @@ exports[`RecordSortActionsPopupContent Component renders correctly with all menu
     </div>
     <div
       class="sc-hvigdm cYNyTs"
+      data-testid="sort-option-newToOld"
     >
       <div>
         <svg
@@ -27,6 +29,7 @@ exports[`RecordSortActionsPopupContent Component renders correctly with all menu
     </div>
     <div
       class="sc-hvigdm cYNyTs"
+      data-testid="sort-option-oldToNew"
     >
       <div>
         <svg

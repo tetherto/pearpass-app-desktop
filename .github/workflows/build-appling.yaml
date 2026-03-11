@@ -1,143 +1,81 @@
-name: Build Appling
+name: Electron-builder Build
 
 on:
   push:
-    branches:
-      - main
-      - dev
-      - staging
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Version tag'
-        required: true
-        type: string
+    branches: [main, electron-migration]
 
 jobs:
-  version:
-    runs-on: ubuntu-22.04
-    if: github.repository_owner == 'tetherto'
-    outputs:
-      version: ${{ steps.meta.outputs.VERSION }}
-    strategy:
-      matrix:
-        arch:
-          - x64
+  build-linux:
+    permissions:
+      contents: write # to upload artifacts
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Read & validate version
-        id: meta
-        run: |
-          set -euo pipefail
-          VERSION=$(jq -r '.version' package.json)
-          echo "VERSION=$VERSION"
-          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "❌ Error: package.json version ('$VERSION') is not semantic versioning (MAJOR.MINOR.PATCH)."
-            exit 1
-          fi
-          TAG="v$VERSION"
-          echo "TAG=$TAG"
-          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
-
-  linux:
-    needs: [version]
-    strategy:
-      matrix:
-        include:
-        - arch: x64
-          runs_on: ubuntu-22.04
-        - arch: arm64
-          runs_on: ubuntu-22.04-arm
-          
-    runs-on: ${{ matrix.runs_on }}      
-    defaults:
-      run:
-        working-directory: ./appling
-    env:
-      APP_FILE: ${{ github.ref == 'refs/heads/main' && 'app' || github.ref == 'refs/heads/staging' && 'app.staging' || 'app.dev' }}.cjs
-    steps:
-      - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@tetherto'
-
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y curl ca-certificates build-essential git libgtk-4-dev pkg-config fuse file
-          # sudo apt-get install -y clang pkg-config libgtk-4-dev clang-tools fuse file
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh 20
-          npm install --global bare-build
           npm install
-
-      - name: Build Linux AppImage
+      - name: Build application
+        env:
+          PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
         run: |
-          bare-build --host=linux-${{ matrix.arch }} --package --icon lib/icons/linux/icon.png ${{ env.APP_FILE }}
+          npm run dist:linux
+
+      - name: "Install @actions/artifact module"
+        id: install-actions-artifact-module
+        run: |
+          npm install @actions/artifact@2.3.2 --global
+          echo "NODE_PATH=$(npm root --quiet -g)" >> $GITHUB_ENV
       
-      - name: Find & rename AppImage file
-        id: find_file
-        run: |
-          set -euo pipefail
-          APPIMAGE_PATH=$(find "$GITHUB_WORKSPACE" -name "*.AppImage" -type f | head -n 1)
-          echo "Original AppImage: $APPIMAGE_PATH"
-
-          NEW_NAME="PearPass-Desktop-Linux-${{ matrix.arch }}-v${{ needs.version.outputs.version }}.AppImage"
-          NEW_PATH="$GITHUB_WORKSPACE/$NEW_NAME"
-
-          mv "$APPIMAGE_PATH" "$NEW_PATH"
-          echo "Renamed AppImage to: $NEW_PATH"
-
-          echo "APPIMAGE_PATH=$NEW_PATH" >> "$GITHUB_OUTPUT"
-
-          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_OUTPUT
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ steps.find_file.outputs.APPIMAGE_PATH != '' }}
+      - name: "Extract Actions runtime variables" 
+        id: extract-runtime-environment-variables
+        uses: actions/github-script@v7
+        env:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: PearPass-Desktop-Linux-${{ matrix.arch }}-v${{ needs.version.outputs.version }}.AppImage
-          path: "${{ steps.find_file.outputs.APPIMAGE_PATH }}"
+          script: |
+            core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
+            
+      - name: "Upload folders as artifacts"
+        id: upload-artifacts
+        run: |
+          const fs = require('fs');
+          const path = require('path');
+          const { DefaultArtifactClient } = require('@actions/artifact');
 
-  macos:
-    runs-on: macos-14
-    needs: [version]
-    strategy:
-      matrix:
-        arch:
-          - x64
-          - arm64
-    defaults:
-      run:
-        working-directory: ./appling
-    env:
-      # Apple code signing identity - used for app, installer, and DMG signing
-      APPLE_SIGNING_IDENTITY: "959D2C8BB8323AEF9C2367ACA2F854AE4D7DE458"
-      APP_FILE: ${{ github.ref == 'refs/heads/main' && 'app' || github.ref == 'refs/heads/staging' && 'app.staging' || 'app.dev' }}.cjs
+          const artifact = new DefaultArtifactClient();
+
+          function listFilesRecursive (dir) {
+            let results = [];
+            const list = fs.readdirSync(dir);
+            list.forEach(function (file) {
+              const filePath = path.join(dir, file);
+              const stat = fs.statSync(filePath);
+              if (stat && stat.isDirectory()) {
+                results = results.concat(listFilesRecursive(filePath));
+              } else if (stat && stat.isFile()) {
+                results.push(filePath);
+              }
+            });
+            return results;
+          }
+
+          const files = listFilesRecursive('dist');
+          files.forEach(file => {
+            const artifactName = path.basename(file);
+            console.log(`Uploading artifact: ${artifactName} from ${file}`);
+            artifact.uploadArtifact(artifactName, [file], './dist');
+          });
+        shell: node {0}
+  build-macos:
+    permissions:
+      contents: write # to upload artifacts
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@tetherto'
-
-      - name: Install dependencies
-        run: |
-          npm install --global bare-build
-          npm install
-
-      - name: Audit dependencies
-        run: |
-          npm audit --production --audit-level=high || echo "::warning::npm audit found vulnerabilities"
-
       - name: Install the Apple certificate and provisioning profile
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
@@ -168,102 +106,126 @@ jobs:
           security list-keychain -d user -s $KEYCHAIN_PATH
 
           # add notarytool credentials
-          xcrun notarytool store-credentials "pearpass" --key "$APIKEY_PATH" --key-id S3AG2UXSC5 --issuer 2067dae8-140d-4016-9a2b-d6ea80a20708
+          xcrun notarytool store-credentials "notary" --key "$APIKEY_PATH" --key-id S3AG2UXSC5 --issuer 2067dae8-140d-4016-9a2b-d6ea80a20708
 
           # apply provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-
-      - name: Build macOS app
+      - name: Install dependencies
         run: |
-          bare-build \
-            --identifier "com.pears.pass" \
-            --host=darwin-${{ matrix.arch }} \
-            --icon lib/icons/darwin/icon.png \
-            --sign \
-            --identity "$APPLE_SIGNING_IDENTITY" \
-            --application-identity "$APPLE_SIGNING_IDENTITY" \
-            --installer-identity "$APPLE_SIGNING_IDENTITY" \
-            --keychain "pearpass" \
-            --entitlements entitlements.plist \
-            --hardened-runtime \
-            ${{ env.APP_FILE }}
-
-      - name: Find App file
-        id: find_file
+          npm install
+      - name: Build application
+        env:
+          MAC_CODESIGN_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+          PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          set -euo pipefail
-          APP_PATH=$(find "$GITHUB_WORKSPACE" -name "*.app" -type d | head -n 1)
-          echo "Found app at: $APP_PATH"
-          echo "APP_PATH=$APP_PATH" >> "$GITHUB_OUTPUT"
+          npm run dist:mac
 
-          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_OUTPUT
-
-      - name: Create DMG
-        id: create_dmg
-        if: ${{ steps.find_file.outputs.APP_PATH != '' }}
+      - name: "Install @actions/artifact module"
+        id: install-actions-artifact-module
         run: |
-          set -euo pipefail
-          npm install --global create-dmg
-
-          APP_PATH="${{ steps.find_file.outputs.APP_PATH }}"
-          VERSION="${{ needs.version.outputs.version }}"
-          ARCH="${{ matrix.arch }}"
-
-          create-dmg --identity="$APPLE_SIGNING_IDENTITY" --no-version-in-filename "$APP_PATH"
-
-          # Find the DMG that was just created in the current working directory (./appling)
-          RAW_DMG=$(ls ./*.dmg | head -n 1)
-          echo "Raw DMG from create-dmg: $RAW_DMG"
-
-          DMG_NAME="PearPass-Desktop-MacOS-${ARCH}-v${VERSION}.dmg"
-          mv "$RAW_DMG" "$DMG_NAME"
-
-          DMG_PATH="$PWD/$DMG_NAME"
-          echo "Renamed DMG to: $DMG_PATH"
-          echo "DMG_PATH=$DMG_PATH" >> "$GITHUB_OUTPUT"
-
-
-      - name: Notarize DMG
-        if: ${{ steps.create_dmg.outputs.DMG_PATH != '' }}
-        run: |
-          xcrun notarytool submit "${{ steps.create_dmg.outputs.DMG_PATH }}" --keychain-profile "pearpass" --wait
-
-      - name: Staple DMG
-        if: ${{ steps.create_dmg.outputs.DMG_PATH != '' }}
-        run: |
-          xcrun stapler staple "${{ steps.create_dmg.outputs.DMG_PATH }}"
-          xcrun stapler validate "${{ steps.create_dmg.outputs.DMG_PATH }}"
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ steps.create_dmg.outputs.DMG_PATH != '' }}
+          npm install @actions/artifact@2.3.2 --global
+          echo "NODE_PATH=$(npm root --quiet -g)" >> $GITHUB_ENV
+      
+      - name: "Extract Actions runtime variables" 
+        id: extract-runtime-environment-variables
+        uses: actions/github-script@v7
+        env:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: PearPass-Desktop-MacOS-${{ matrix.arch }}-v${{ needs.version.outputs.version }}.dmg
-          path: ${{ steps.create_dmg.outputs.DMG_PATH }}
-
-      - name: Clean up keychain and provisioning profile
-        if: ${{ always() }}
+          script: |
+            core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
+            
+      - name: "Upload folders as artifacts"
+        id: upload-artifacts
         run: |
-          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.provisionprofile
+          const fs = require('fs');
+          const path = require('path');
+          const { DefaultArtifactClient } = require('@actions/artifact');
 
-  release:
-    runs-on: ubuntu-latest
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const productName = pkg.build.productName;
+          const version = pkg.version;
+
+          const dmgName = `${productName}-${version}-arm64.dmg`;
+          const dmgPath = path.join('dist', dmgName);
+
+          if (!fs.existsSync(dmgPath)) {
+            throw new Error(`Expected DMG not found at ${dmgPath}`);
+          }
+
+          const artifact = new DefaultArtifactClient();
+          console.log(`Uploading macOS DMG: ${dmgName} from ${dmgPath}`);
+          artifact.uploadArtifact(dmgName, [dmgPath], 'dist');
+        shell: node {0}
+  build-win32:
     permissions:
-      contents: write
-    needs: [version, linux, macos]
-    if: github.ref == 'refs/heads/main'
+      contents: write # to upload artifacts
+    runs-on: self-hosted # self-hosted signer
     steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v5
-        with:
-          path: artifacts/
-          merge-multiple: true
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - name: Install dependencies
+        run: |
+          npm install
+      - name: Build application
+        env:
+          WIN_SUBJECT: ${{ secrets.WIN_SUBJECT }}
+          WIN_THUMBPRINT: ${{ secrets.WIN_THUMBPRINT }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          npm run dist:win
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
+      - name: "Install @actions/artifact module"
+        id: install-actions-artifact-module
+        run: |
+          npm install @actions/artifact@2.3.2 --global
+          echo "NODE_PATH=$(npm root --quiet -g)" >> $GITHUB_ENV
+      
+      - name: "Extract Actions runtime variables" 
+        id: extract-runtime-environment-variables
+        uses: actions/github-script@v7
+        env:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ needs.version.outputs.version }}
-          name: PearPass-Desktop-v${{ needs.version.outputs.version }}
-          files: artifacts/**
+          script: |
+            core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
+            
+      - name: "Upload folders as artifacts"
+        id: upload-artifacts
+        env:
+          NODE_PATH: ${{ env.NODE_PATH }}
+        run: |
+          const fs = require('fs');
+          const path = require('path');
+          const { DefaultArtifactClient } = require('@actions/artifact');
+
+          const artifact = new DefaultArtifactClient()
+
+          function listFilesRecursive (dir) {
+            let results = []
+            const list = fs.readdirSync(dir)
+            list.forEach(function (file) {
+              const filePath = path.join(dir, file)
+              const stat = fs.statSync(filePath)
+              if (stat && stat.isDirectory()) {
+                results = results.concat(listFilesRecursive(filePath))
+              } else if (stat && stat.isFile()) {
+                results.push(filePath)
+              }
+            })
+            return results
+          }
+
+          const files = listFilesRecursive('out/make')
+          files.forEach(file => {
+            const artifactName = path.basename(file)
+            console.log(`Uploading artifact: ${artifactName} from ${file}`)
+            artifact.uploadArtifact(artifactName, [file], './out/make')
+          })
+        shell: node {0}

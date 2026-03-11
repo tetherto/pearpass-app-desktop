@@ -8,6 +8,8 @@ import { SelectItemWrapper } from './styles'
  *    item: { label: string }
  *  }} props
  */
-export const SelectItem = ({ item, onClick }) => html`
-  <${SelectItemWrapper} onClick=${() => onClick?.()}> ${item.label} <//>
+export const SelectItem = ({ item, onClick, testId }) => html`
+  <${SelectItemWrapper} data-testid=${testId} onClick=${() => onClick?.()}>
+    ${item.label}
+  <//>
 `

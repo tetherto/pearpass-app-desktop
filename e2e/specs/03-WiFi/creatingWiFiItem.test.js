@@ -1,4 +1,4 @@
-import { test, expect } from '../../fixtures/app.runner.js';
+import { test, expect } from '../../fixtures/app.runner.js'
 import {
   LoginPage,
   VaultSelectPage,
@@ -7,37 +7,42 @@ import {
   CreateOrEditPage,
   Utilities,
   DetailsPage
-} from '../../components/index.js';
-import testData from '../../fixtures/test-data.js';
+} from '../../components/index.js'
+import testData from '../../fixtures/test-data.js'
 
 test.describe('Creating WiFi Item', () => {
   test.describe.configure({ mode: 'serial' })
 
-  let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
-
-  test.beforeAll(async ({ app }) => {
-    page = app.page
-    loginPage = new LoginPage(page.locator('body'))
-    vaultSelectPage = new VaultSelectPage(page.locator('body'))
-    mainPage = new MainPage(page.locator('body'))
-    sideMenuPage = new SideMenuPage(page.locator('body'))
-    createOrEditPage = new CreateOrEditPage(page.locator('body'))
-    utilities = new Utilities(page.locator('body'))
-    detailsPage = new DetailsPage(page.locator('body'))
-  })
+  let loginPage,
+    vaultSelectPage,
+    createOrEditPage,
+    sideMenuPage,
+    mainPage,
+    utilities,
+    detailsPage,
+    page
 
   test.beforeEach(async ({ app }) => {
+    page = await app.getPage()
+    const root = page.locator('body')
+    loginPage = new LoginPage(root)
+    vaultSelectPage = new VaultSelectPage(root)
+    mainPage = new MainPage(root)
+    sideMenuPage = new SideMenuPage(root)
+    createOrEditPage = new CreateOrEditPage(root)
+    utilities = new Utilities(root)
+    detailsPage = new DetailsPage(root)
+
     await loginPage.loginToApplication(testData.credentials.validPassword)
     await vaultSelectPage.selectVaultbyName(testData.vault.name)
   })
 
-  test.afterAll(async ({ }) => {
+  test.afterAll(async ({}) => {
     await utilities.deleteAllElements()
     await sideMenuPage.clickSidebarExitButton()
   })
 
   test('WiFi item is created after fulfilling fields', async ({ page }) => {
-
     /**
      * @qase.id PAS-613
      * @description "Wi-Fi" item is created after fulfilling fields
@@ -52,7 +57,6 @@ test.describe('Creating WiFi Item', () => {
       await createOrEditPage.fillCreateOrEditInput('note', 'WiFi Note')
 
       await createOrEditPage.clickOnCreateOrEditButton('save')
-
     })
 
     await test.step('OPEN ELEMENT DETAILS', async () => {
@@ -64,7 +68,7 @@ test.describe('Creating WiFi Item', () => {
      * @description All fields' values after creating "Wi-Fi" item correspond to entered fields' values
      */
     await test.step('VERIFY WIFI DETAILS', async () => {
-      await detailsPage.verifyTitle('WiFi Title');
+      await detailsPage.verifyTitle('WiFi Title')
       await detailsPage.verifyItemDetailsValue('Password', 'WiFi Pass')
       await detailsPage.verifyItemDetailsValue('Add note', 'WiFi Note')
     })
@@ -72,11 +76,11 @@ test.describe('Creating WiFi Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
-  test('Password visibility icon of "Password" field displays/hides value', async ({ page }) => {
-
+  test('Password visibility icon of "Password" field displays/hides value', async ({
+    page
+  }) => {
     await test.step('VERIFY WIFI ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('WiFi Title')
     })
@@ -95,11 +99,11 @@ test.describe('Creating WiFi Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
-  test('After changing "Item" dropdown option user is moved to the selected "Item" edit screen', async ({ page }) => {
-
+  test('After changing "Item" dropdown option user is moved to the selected "Item" edit screen', async ({
+    page
+  }) => {
     await test.step('VERIFY WIFI ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('WiFi Title')
     })
@@ -171,11 +175,9 @@ test.describe('Creating WiFi Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
   test('Moving Element to Favorites folder', async ({ page }) => {
-
     await test.step('VERIFY WIFI ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('WiFi Title')
     })
@@ -249,11 +251,9 @@ test.describe('Creating WiFi Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
   test('Adding Custom Field with Note option', async ({ page }) => {
-
     await test.step('VERIFY WIFI ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('WiFi Title')
     })
@@ -272,11 +272,11 @@ test.describe('Creating WiFi Item', () => {
     })
 
     await test.step('CLICK ON NOTE OPTION FROM CREATE CUSTOM MENU', async () => {
-      await createOrEditPage.clickCustomItemOptionNote();
+      await createOrEditPage.clickCustomItemOptionNote()
     })
 
     await test.step('VERIFY THERE IS ONE NEW CUSTOM NOTES ITEMS INSIDE WIFI ELEMENT', async () => {
-      await expect(createOrEditPage.customNoteInput).toHaveCount(1);
+      await expect(createOrEditPage.customNoteInput).toHaveCount(1)
     })
 
     /**
@@ -284,11 +284,11 @@ test.describe('Creating WiFi Item', () => {
      * @description It is possible to delete additional fields
      */
     await test.step('DELETE NEW CUSTOM NOTE ITEM', async () => {
-      await createOrEditPage.deleteCustomNote();
+      await createOrEditPage.deleteCustomNote()
     })
 
     await test.step('VERIFY THERE IS NO CUSTOM NOTES ITEMS INSIDE WIFI ELEMENT', async () => {
-      await expect(createOrEditPage.customNoteInput).toHaveCount(0);
+      await expect(createOrEditPage.customNoteInput).toHaveCount(0)
     })
 
     /**
@@ -302,11 +302,9 @@ test.describe('Creating WiFi Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
   test('Deleted WiFi Items are not displayed in view/details mode ', async () => {
-
     await test.step('VERIFY WIFI ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('WiFi Title')
     })
@@ -334,10 +332,12 @@ test.describe('Creating WiFi Item', () => {
      * @description Empty "Wi-Fi" item fields are not displayed in view mode
      */
     await test.step('VERIFY ELEMENT DETAILS', async () => {
-      await detailsPage.verifyTitle('WiFi Title');
+      await detailsPage.verifyTitle('WiFi Title')
       await detailsPage.verifyItemDetailsValueIsNotVisible('Add note')
     })
 
+    await test.step('CLOSE DETAILS', async () => {
+      await mainPage.clickDetailsCloseButton()
+    })
   })
-
 })

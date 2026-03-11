@@ -15,6 +15,6 @@ export const Description = styled.span`
 
 export const ActionsContainer = styled.div`
   display: flex;
-  justify-content: start;
+  justify-content: center;
   gap: 10px;
 `

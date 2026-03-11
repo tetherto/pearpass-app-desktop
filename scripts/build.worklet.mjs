@@ -13,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.join(__dirname, '..')
 const workletDir = path.join(
   root,
-  'packages',
+  'node_modules',
   'pearpass-lib-vault-core',
   'src',
   'worklet'

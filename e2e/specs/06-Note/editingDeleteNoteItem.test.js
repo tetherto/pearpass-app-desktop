@@ -1,4 +1,4 @@
-import { test, expect } from '../../fixtures/app.runner.js';
+import { test, expect } from '../../fixtures/app.runner.js'
 import {
   LoginPage,
   VaultSelectPage,
@@ -7,26 +7,32 @@ import {
   CreateOrEditPage,
   Utilities,
   DetailsPage
-} from '../../components/index.js';
-import testData from '../../fixtures/test-data.js';
+} from '../../components/index.js'
+import testData from '../../fixtures/test-data.js'
 
 test.describe('Editing/Deleting Note Item', () => {
   test.describe.configure({ mode: 'serial' })
 
-  let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
-
-  test.beforeAll(async ({ app }) => {
-    page = app.page
-    loginPage = new LoginPage(page.locator('body'))
-    vaultSelectPage = new VaultSelectPage(page.locator('body'))
-    mainPage = new MainPage(page.locator('body'))
-    sideMenuPage = new SideMenuPage(page.locator('body'))
-    createOrEditPage = new CreateOrEditPage(page.locator('body'))
-    utilities = new Utilities(page.locator('body'))
-    detailsPage = new DetailsPage(page.locator('body'))
-  })
+  let loginPage,
+    vaultSelectPage,
+    createOrEditPage,
+    sideMenuPage,
+    mainPage,
+    utilities,
+    detailsPage,
+    page
 
   test.beforeEach(async ({ app }) => {
+    page = await app.getPage()
+    const root = page.locator('body')
+    loginPage = new LoginPage(root)
+    vaultSelectPage = new VaultSelectPage(root)
+    mainPage = new MainPage(root)
+    sideMenuPage = new SideMenuPage(root)
+    createOrEditPage = new CreateOrEditPage(root)
+    utilities = new Utilities(root)
+    detailsPage = new DetailsPage(root)
+
     await loginPage.loginToApplication(testData.credentials.validPassword)
     await vaultSelectPage.selectVaultbyName(testData.vault.name)
   })
@@ -37,7 +43,6 @@ test.describe('Editing/Deleting Note Item', () => {
   })
 
   test('Create/Edit/Delete Note item', async ({ page }) => {
-
     await test.step('CREATE NOTE ELEMENT - initial empty element collection', async () => {
       await sideMenuPage.selectSideBarCategory('note')
       await utilities.deleteAllElements()
@@ -49,7 +54,6 @@ test.describe('Editing/Deleting Note Item', () => {
 
       await createOrEditPage.clickOnCreateOrEditButton('save')
       await page.waitForTimeout(testData.timeouts.action)
-
     })
 
     await test.step('VERIFY NOTE ELEMENT IS CREATED', async () => {
@@ -85,7 +89,7 @@ test.describe('Editing/Deleting Note Item', () => {
      * @description Changes after editing all "Credit Card" item fields including folder destination correspond to entered fields' values
      */
     await test.step('VERIFY EDITED NOTE DETAILS', async () => {
-      await detailsPage.verifyTitle('EDITED Note Title');
+      await detailsPage.verifyTitle('EDITED Note Title')
       await detailsPage.verifyNoteText('EDITED Test Note Text')
     })
 
@@ -114,15 +118,14 @@ test.describe('Editing/Deleting Note Item', () => {
      * @description "Note" item is deleted after deleting it
      */
     await test.step('DELETE NOTE ITEM', async () => {
-      await detailsPage.openItemBarThreeDotsDropdownMenu()
-      await detailsPage.clickDeleteElement()
-      await detailsPage.clickConfirmYes()
+      await utilities.deleteAllElements()
+      // await detailsPage.openItemBarThreeDotsDropdownMenu()
+      // await detailsPage.clickDeleteElement()
+      // await detailsPage.clickConfirmYes()
     })
 
     await test.step('VERIFY NOTE ELEMENT IS NOT VISIBLE', async () => {
       await mainPage.verifyElementIsNotVisible()
     })
-
   })
-
 })

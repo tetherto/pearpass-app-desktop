@@ -65,6 +65,15 @@ class DetailsPage {
         return this.root.getByTestId('button-round-icon').first()
     }
 
+    get detailsBarThreeDotsCloseDetails() {
+        return this.root.getByTestId('button-round-icon').last()
+    }
+
+    async openItemBarThreeDotsDropdownMenu() {
+        await expect(this.detailsBarThreeDotsCloseDetails).toBeVisible()
+        await this.detailsBarThreeDotsCloseDetails.click()
+    }
+
     get markAsFavoriteButton() {
         return this.root.getByText('Mark as favorite').last()
     }

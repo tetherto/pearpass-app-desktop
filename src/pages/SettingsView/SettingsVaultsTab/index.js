@@ -18,12 +18,16 @@ export const SettingsVaultsTab = () => {
 
   return html`
     <${CardSingleSetting}
+      testId="settings-card-your-vault"
       title=${i18n._('Your Vault')}
       description=${i18n._('Share, edit, or delete your vault from one place.')}
     >
       <${Content}>
         <${ListItem}
           key=${vault.name}
+          testId="settings-vault-item"
+          editTestId="settings-vault-edit-button"
+          deleteTestId="settings-vault-delete-button"
           itemName="${vault.name}"
           itemDateText=${vaultCreatedFormat(vault.createdAt)}
           onEditClick=${() =>

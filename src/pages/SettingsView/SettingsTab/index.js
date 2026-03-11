@@ -124,7 +124,10 @@ export const SettingsTab = () => {
 
     <${SettingsPasswordsSection} />
 
-    <${CardSingleSetting} title=${i18n._('Version')}>
+    <${CardSingleSetting}
+      testId="settings-card-version"
+      title=${i18n._('Version')}
+    >
       <${VersionWrapper}> ${currentVersion} <//>
     <//>
   `

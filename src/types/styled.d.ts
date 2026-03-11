@@ -36,6 +36,9 @@ declare module 'styled-components' {
       black: {
         dark: string
         mode1: string
+      },
+      secondary400: {
+        mode1: string
       }
     }
   }

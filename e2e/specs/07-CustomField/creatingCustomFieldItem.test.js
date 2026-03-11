@@ -1,4 +1,4 @@
-import { test, expect } from '../../fixtures/app.runner.js';
+import { test, expect } from '../../fixtures/app.runner.js'
 import {
   LoginPage,
   VaultSelectPage,
@@ -7,37 +7,44 @@ import {
   CreateOrEditPage,
   Utilities,
   DetailsPage
-} from '../../components/index.js';
-import testData from '../../fixtures/test-data.js';
+} from '../../components/index.js'
+import testData from '../../fixtures/test-data.js'
 
 test.describe('Creating Custom Field Item', () => {
   test.describe.configure({ mode: 'serial' })
 
-  let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
-
-  test.beforeAll(async ({ app }) => {
-    page = app.page
-    loginPage = new LoginPage(page.locator('body'))
-    vaultSelectPage = new VaultSelectPage(page.locator('body'))
-    mainPage = new MainPage(page.locator('body'))
-    sideMenuPage = new SideMenuPage(page.locator('body'))
-    createOrEditPage = new CreateOrEditPage(page.locator('body'))
-    utilities = new Utilities(page.locator('body'))
-    detailsPage = new DetailsPage(page.locator('body'))
-  })
+  let loginPage,
+    vaultSelectPage,
+    createOrEditPage,
+    sideMenuPage,
+    mainPage,
+    utilities,
+    detailsPage,
+    page
 
   test.beforeEach(async ({ app }) => {
+    page = await app.getPage()
+    const root = page.locator('body')
+    loginPage = new LoginPage(root)
+    vaultSelectPage = new VaultSelectPage(root)
+    mainPage = new MainPage(root)
+    sideMenuPage = new SideMenuPage(root)
+    createOrEditPage = new CreateOrEditPage(root)
+    utilities = new Utilities(root)
+    detailsPage = new DetailsPage(root)
+
     await loginPage.loginToApplication(testData.credentials.validPassword)
     await vaultSelectPage.selectVaultbyName(testData.vault.name)
   })
 
-  test.afterAll(async ({ }) => {
+  test.afterAll(async ({}) => {
     await utilities.deleteAllElements()
     await sideMenuPage.clickSidebarExitButton()
   })
 
-  test('Custom Field item is created after fulfilling fields', async ({ page }) => {
-
+  test('Custom Field item is created after fulfilling fields', async ({
+    page
+  }) => {
     /**
      * @qase.id PAS-655
      * @description "Custom" item is created after fulfilling fields
@@ -47,11 +54,13 @@ test.describe('Creating Custom Field Item', () => {
       await utilities.deleteAllElements()
       await mainPage.clickCreateNewElementButton('Create a custom element')
 
-      await createOrEditPage.fillCreateOrEditInput('title', 'Custom Field Title')
+      await createOrEditPage.fillCreateOrEditInput(
+        'title',
+        'Custom Field Title'
+      )
 
       await createOrEditPage.clickOnCreateOrEditButton('save')
       await page.waitForTimeout(testData.timeouts.action)
-
     })
 
     await test.step('OPEN ELEMENT DETAILS', async () => {
@@ -69,11 +78,11 @@ test.describe('Creating Custom Field Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
-  test('After changing "Item" dropdown option user is moved to the selected "Item" edit screen', async ({ page }) => {
-
+  test('After changing "Item" dropdown option user is moved to the selected "Item" edit screen', async ({
+    page
+  }) => {
     await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('Custom Field Title')
     })
@@ -143,11 +152,9 @@ test.describe('Creating Custom Field Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
   test('Moving Element to Favorites folder', async ({ page }) => {
-
     await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('Custom Field Title')
     })
@@ -193,6 +200,7 @@ test.describe('Creating Custom Field Item', () => {
     await test.step('OPEN DETAILS THREE DOTS MENU AND CLICK ON MARK AS FAVORITE - MORE OPTIONS', async () => {
       await detailsPage.openItemBarThreeDotsDropdownMenu()
       await detailsPage.clickMarkAsFavoriteButton()
+      await page.waitForTimeout(testData.timeouts.action)
     })
 
     /**
@@ -221,11 +229,9 @@ test.describe('Creating Custom Field Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
   test('Adding Custom Field with Note option', async ({ page }) => {
-
     await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('Custom Field Title')
     })
@@ -244,11 +250,11 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     await test.step('CLICK ON NOTE OPTION FROM CREATE CUSTOM MENU', async () => {
-      await createOrEditPage.clickCustomItemOptionNote();
+      await createOrEditPage.clickCustomItemOptionNote()
     })
 
     await test.step('VERIFY THERE IS ONE NEW CUSTOM NOTES ITEMS INSIDE LOGIN ELEMENT', async () => {
-      await expect(createOrEditPage.customNoteInput).toHaveCount(1);
+      await expect(createOrEditPage.customNoteInput).toHaveCount(1)
     })
 
     /**
@@ -256,11 +262,11 @@ test.describe('Creating Custom Field Item', () => {
      * @description It is possible to delete additional fields
      */
     await test.step('DELETE NEW CUSTOM NOTE ITEM', async () => {
-      await createOrEditPage.deleteCustomNote();
+      await createOrEditPage.deleteCustomNote()
     })
 
     await test.step('VERIFY THERE IS NO CUSTOM NOTES ITEMS INSIDE LOGIN ELEMENT', async () => {
-      await expect(createOrEditPage.customNoteInput).toHaveCount(0);
+      await expect(createOrEditPage.customNoteInput).toHaveCount(0)
     })
 
     /**
@@ -274,11 +280,9 @@ test.describe('Creating Custom Field Item', () => {
     await test.step('EXIT TO LOGIN SCREEN', async () => {
       await sideMenuPage.clickSidebarExitButton()
     })
-
   })
 
   test('Upload file to Login Items', async ({ page }) => {
-
     await test.step('VERIFY LOGIN ELEMENT CREATED', async () => {
       await mainPage.verifyElementTitle('Custom Field Title')
     })
@@ -300,9 +304,9 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     /**
-   * @qase.id PAS-1012
-   * @description It is possible to view uploaded files in "Edit" mode
-   */
+     * @qase.id PAS-1012
+     * @description It is possible to view uploaded files in "Edit" mode
+     */
     await test.step('VERIFY UPLOADED FILE IS VISIBLE INSIDE LOGIN ITEMS', async () => {
       await createOrEditPage.verifyUploadedFileIsVisible()
     })
@@ -324,9 +328,9 @@ test.describe('Creating Custom Field Item', () => {
     })
 
     /**
-   * @qase.id PAS-1017
-   * @description It is possible to view uploaded files in "View" mode
-   */
+     * @qase.id PAS-1017
+     * @description It is possible to view uploaded files in "View" mode
+     */
     await test.step('VERIFY UPLOADED FILE IS VISIBLE INSIDE LOGIN ITEMS', async () => {
       await detailsPage.verifyUploadedFileIsVisible()
     })
@@ -355,6 +359,10 @@ test.describe('Creating Custom Field Item', () => {
       await createOrEditPage.verifyUploadedImageIsNotVisible()
     })
 
+    await test.step('CLOSE DETAILS', async () => {
+      await mainPage.clickDetailsCloseButton()
+    })
+
     // await test.step('CLICK CLOSE (X) BUTTON', async () => {
     //   await createOrEditPage.clickElementItemCloseButton()
     // })
@@ -362,7 +370,6 @@ test.describe('Creating Custom Field Item', () => {
     // await test.step('EXIT TO LOGIN SCREEN', async () => {
     //   await sideMenuPage.clickSidebarExitButton()
     // })
-
   })
 
   // TODO: Missing ID's. Waiting
@@ -407,5 +414,4 @@ test.describe('Creating Custom Field Item', () => {
   //   })
 
   // })
-
 })

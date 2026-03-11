@@ -21,11 +21,6 @@ class SideMenuPage {
     await expect(this.getSideMenuFolder(folderName)).toBeVisible();
   }
 
-
-  // getSideMenuFolder(foldername) {
-  //   return this.root.getByTestId(`sidebar-folder-${foldername}`)
-  // }
-
   getSidebarCategory(categoryname) {
     return this.root.getByTestId(`sidebar-category-${categoryname}`)
   }
@@ -38,15 +33,20 @@ class SideMenuPage {
     return this.root.getByTestId('button-primary');
   }
 
-  // get favoritesFolder() {
-  //   return this.page.getByTestId('sidebar-folder-favorites')
-  // }
-
   get favoritesFolder() {
-  return this.root.getByTestId('sidebar-folder-favorites')
-}
+    return this.root.getByTestId('sidebar-folder-favorites')
+  }
+
+  get sidebarSettingsButton() {
+    return this.root.getByTestId('sidebar-settings-button')
+  }
 
   // ==== ACTIONS ====
+
+  async clickSidebarSettingsButton() {
+    await expect(this.sidebarSettingsButton).toBeVisible()
+    await this.sidebarSettingsButton.click()
+  }
 
   async selectSideBarCategory(name) {
     const category = this.getSidebarCategory(name)
@@ -58,9 +58,6 @@ class SideMenuPage {
     const folder = this.getSideMenuFolder(foldername)
     await expect(folder).toBeVisible()
 
-    // Reveal action buttons (Delete)
-    // await folder.click()
-
     await folder
       .getByText(foldername)
       .locator('..')
@@ -71,13 +68,10 @@ class SideMenuPage {
     const deleteButton = folder
       .locator('..') // parent container
       .getByText('Delete', { exact: true })
-
-    // await expect(deleteButton).toBeVisible()
     await deleteButton.click()
-
     await expect(this.confirmButton).toBeVisible()
     await this.confirmButton.click()
-}
+  }
 
   async clickSidebarAddButton() {
     await expect(this.sidebarAddButton).toBeVisible()

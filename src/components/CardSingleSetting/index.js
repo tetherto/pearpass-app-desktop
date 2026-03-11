@@ -14,9 +14,10 @@ export const CardSingleSetting = ({
   title,
   description,
   children,
-  additionalHeaderContent
+  additionalHeaderContent,
+  testId
 }) => html`
-  <${Container}>
+  <${Container} data-testid=${testId}>
     <${Header}>
       <${Title}>${title}<//>
       ${additionalHeaderContent && additionalHeaderContent}

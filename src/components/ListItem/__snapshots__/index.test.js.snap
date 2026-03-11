@@ -35,7 +35,6 @@ exports[`Item Component matches snapshot when action icons are clicked: after ac
         />
       </span>
       <span>
-         
         <svg
           data-testid="brush-icon"
         />
@@ -85,7 +84,6 @@ exports[`Item Component matches snapshot when action icons are clicked: initial 
         />
       </span>
       <span>
-         
         <svg
           data-testid="brush-icon"
         />
@@ -135,7 +133,6 @@ exports[`Item Component renders Item component correctly and matches snapshot 1`
         />
       </span>
       <span>
-         
         <svg
           data-testid="brush-icon"
         />
