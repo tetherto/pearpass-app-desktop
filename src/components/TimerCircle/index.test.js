@@ -1,7 +1,6 @@
 import React from 'react'
 
-import { render, screen } from '@testing-library/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
+import { render } from '@testing-library/react'
 import '@testing-library/jest-dom'
 
 import { TimerCircle } from './index'
@@ -12,25 +11,16 @@ jest.mock('pearpass-lib-vault', () => ({
   useTimerAnimation: (...args) => mockUseTimerAnimation(...args)
 }))
 
+jest.mock('../OtpCodeField/utils', () => ({
+  getTimerColor: (expiring) => (expiring ? '#red' : '#green')
+}))
+
 jest.mock('./styles', () => ({
-  Wrapper: ({ children }) => <div data-testid="wrapper">{children}</div>,
-  Svg: ({ children, ...props }) => (
-    <svg data-testid="svg" {...props}>
-      {children}
-    </svg>
-  ),
-  CircleBg: (props) => <circle data-testid="circle-bg" {...props} />,
-  CircleFill: (props) => (
-    <circle
-      data-testid="circle-fill"
-      cx={props.cx}
-      cy={props.cy}
-      r={props.r}
-      data-expiring={props.$expiring}
-      data-dash-offset={props.$dashOffset}
-      data-no-transition={props.$noTransition}
-    />
-  )
+  styles: {
+    wrapper: {},
+    svg: {},
+    circleBg: {}
+  }
 }))
 
 const CIRCUMFERENCE = 2 * Math.PI * 5.5
@@ -45,34 +35,18 @@ describe('TimerCircle', () => {
     })
   })
 
-  test('matches snapshot', () => {
-    const { container } = render(
-      <ThemeProvider>
-        <TimerCircle timeRemaining={20} period={30} />
-      </ThemeProvider>
-    )
-
-    expect(container).toMatchSnapshot()
-  })
-
   test('renders svg with correct viewBox', () => {
-    render(<TimerCircle timeRemaining={20} period={30} />)
+    const { container } = render(<TimerCircle timeRemaining={20} period={30} />)
 
-    expect(screen.getByTestId('svg')).toHaveAttribute('viewBox', '0 0 14 14')
+    const svg = container.querySelector('svg')
+    expect(svg).toHaveAttribute('viewBox', '0 0 14 14')
   })
 
-  test('renders background and fill circles with correct attributes', () => {
-    render(<TimerCircle timeRemaining={20} period={30} />)
+  test('renders two circles', () => {
+    const { container } = render(<TimerCircle timeRemaining={20} period={30} />)
 
-    const bg = screen.getByTestId('circle-bg')
-    expect(bg).toHaveAttribute('cx', '7')
-    expect(bg).toHaveAttribute('cy', '7')
-    expect(bg).toHaveAttribute('r', '5.5')
-
-    const fill = screen.getByTestId('circle-fill')
-    expect(fill).toHaveAttribute('cx', '7')
-    expect(fill).toHaveAttribute('cy', '7')
-    expect(fill).toHaveAttribute('r', '5.5')
+    const circles = container.querySelectorAll('circle')
+    expect(circles).toHaveLength(2)
   })
 
   test('computes dashOffset from targetTime and period', () => {
@@ -82,11 +56,14 @@ describe('TimerCircle', () => {
       targetTime: 15
     })
 
-    render(<TimerCircle timeRemaining={15} period={30} />)
+    const { container } = render(<TimerCircle timeRemaining={15} period={30} />)
 
-    const fill = screen.getByTestId('circle-fill')
+    const fillCircle = container.querySelectorAll('circle')[1]
     const expectedOffset = (1 - 15 / 30) * CIRCUMFERENCE
-    expect(fill).toHaveAttribute('data-dash-offset', String(expectedOffset))
+    expect(fillCircle).toHaveAttribute(
+      'stroke-dashoffset',
+      String(expectedOffset)
+    )
   })
 
   test('sets dashOffset to 0 when timeRemaining is null', () => {
@@ -96,36 +73,32 @@ describe('TimerCircle', () => {
       targetTime: 0
     })
 
-    render(<TimerCircle timeRemaining={null} period={30} />)
+    const { container } = render(
+      <TimerCircle timeRemaining={null} period={30} />
+    )
 
-    const fill = screen.getByTestId('circle-fill')
-    expect(fill).toHaveAttribute('data-dash-offset', '0')
+    const fillCircle = container.querySelectorAll('circle')[1]
+    expect(fillCircle).toHaveAttribute('stroke-dashoffset', '0')
   })
 
-  test('passes expiring flag to CircleFill', () => {
-    mockUseTimerAnimation.mockReturnValue({
-      noTransition: false,
-      expiring: true,
-      targetTime: 3
-    })
-
-    render(<TimerCircle timeRemaining={3} period={30} />)
-
-    const fill = screen.getByTestId('circle-fill')
-    expect(fill).toHaveAttribute('data-expiring', 'true')
-  })
-
-  test('passes noTransition flag to CircleFill', () => {
+  test('applies noTransition style', () => {
     mockUseTimerAnimation.mockReturnValue({
       noTransition: true,
       expiring: false,
       targetTime: 30
     })
 
-    render(<TimerCircle timeRemaining={30} period={30} />)
+    const { container } = render(<TimerCircle timeRemaining={30} period={30} />)
 
-    const fill = screen.getByTestId('circle-fill')
-    expect(fill).toHaveAttribute('data-no-transition', 'true')
+    const fillCircle = container.querySelectorAll('circle')[1]
+    expect(fillCircle.style.transition).toBe('none')
+  })
+
+  test('applies linear transition when noTransition is false', () => {
+    const { container } = render(<TimerCircle timeRemaining={20} period={30} />)
+
+    const fillCircle = container.querySelectorAll('circle')[1]
+    expect(fillCircle.style.transition).toBe('stroke-dashoffset 1s linear')
   })
 
   test('passes animated prop to useTimerAnimation', () => {

@@ -53,15 +53,11 @@ jest.mock('../../lib-react-components', () => ({
 }))
 
 jest.mock('./styles', () => ({
-  NextCodeButton: ({ children, onClick, disabled, ...rest }) => (
-    <button
-      data-testid={rest['data-testid']}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {children}
-    </button>
-  )
+  styles: {
+    nextCodeButton: {},
+    nextCodeButtonHover: {},
+    nextCodeButtonDisabled: {}
+  }
 }))
 
 jest.mock('../TimerBar', () => ({

@@ -1,7 +1,8 @@
 import { html } from 'htm/react'
 import { useTimerAnimation } from 'pearpass-lib-vault'
 
-import { Fill, Timer, Track, Wrapper } from './styles'
+import { getTimerColor } from '../OtpCodeField/utils'
+import { styles } from './styles'
 
 interface TimerBarProps {
   timeRemaining: number | null
@@ -19,16 +20,23 @@ export const TimerBar = ({ timeRemaining, period, animated = true }: TimerBarPro
   const progress =
     timeRemaining !== null && period ? (targetTime / period) * 100 : 0
 
+  const color = getTimerColor(expiring)
+
   return html`
-    <${Wrapper}>
-      <${Track}>
-        <${Fill}
-          $progress=${progress}
-          $expiring=${expiring}
-          $noTransition=${noTransition}
+    <div style=${styles.wrapper}>
+      <div style=${styles.track}>
+        <div
+          style=${{
+            ...styles.fill,
+            background: color,
+            width: `${progress}%`,
+            transition: noTransition ? 'none' : 'width 1s linear'
+          }}
         />
-      <//>
-      <${Timer} $expiring=${expiring}> ${timeRemaining}s <//>
-    <//>
+      </div>
+      <span style=${{ ...styles.timer, color }}>
+        ${timeRemaining}s
+      </span>
+    </div>
   `
 }

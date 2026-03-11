@@ -1,4 +1,4 @@
-import { DefaultTheme } from 'styled-components'
+import { colors } from 'pearpass-lib-ui-theme-provider'
 
-export const getTimerColor = (theme: DefaultTheme, expiring: boolean): string =>
-  expiring ? theme.colors.errorRed.mode1 : theme.colors.primary400.mode1
+export const getTimerColor = (expiring: boolean): string =>
+  expiring ? colors.errorRed.mode1 : colors.primary400.mode1

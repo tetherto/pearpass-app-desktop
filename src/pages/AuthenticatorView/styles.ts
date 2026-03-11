@@ -67,7 +67,7 @@ export const GroupTimeValue = styled.span.withConfig({
   shouldForwardProp: (prop) => !['$expiring'].includes(prop)
 })<GroupTimeValueProps>`
   font-weight: 600;
-  color: ${({ theme, $expiring }) => getTimerColor(theme, $expiring)};
+  color: ${({ $expiring }) => getTimerColor($expiring)};
 `
 
 export const GroupDivider = styled.div`
