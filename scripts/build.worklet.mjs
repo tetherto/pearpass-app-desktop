@@ -23,10 +23,11 @@ const workletDir = path.join(
 const externalizeNodeModules = {
   name: 'externalize-node-modules',
   setup(build) {
-    build.onResolve({ filter: /^[^./]/ }, (args) => ({
-      path: args.path,
-      external: true
-    }))
+    build.onResolve({ filter: /^[^./]/ }, (args) => {
+      // Skip Windows absolute paths (e.g. C:\, F:\)
+      if (/^[A-Za-z]:[/\\]/.test(args.path)) return null
+      return { path: args.path, external: true }
+    })
   }
 }
 

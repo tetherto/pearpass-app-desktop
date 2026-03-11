@@ -33,6 +33,7 @@
     "dmg": {},
     "win": {
       "icon": "assets/win32/icon.png",
+      "signAndEditExecutable": false,
       "target": "nsis"
     },
     "linux": {
@@ -108,11 +109,12 @@
     "pack": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --dir && npm install",
     "dist": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder && npm install",
     "dist:mac": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --mac && mkdir -p out/darwin-arm64/pearpass-app-desktop/app && cp -R dist/mac-arm64/PearPass.app out/darwin-arm64/pearpass-app-desktop/app/ && npm install && npm run pear:build:darwin",
-    "dist:win": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --win && npm install",
+    "dist:win": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && powershell -NoProfile -ExecutionPolicy Bypass -Command \"Stop-Process -Name PearPass -Force -ErrorAction SilentlyContinue; if (Test-Path 'dist/win-unpacked') { Remove-Item -Recurse -Force 'dist/win-unpacked' -ErrorAction SilentlyContinue; Start-Sleep -Milliseconds 500; if (Test-Path 'dist/win-unpacked') { Remove-Item -Recurse -Force 'dist/win-unpacked' } }\" && npx electron-builder --win --dir && node -e \"const fs=require('fs');const outRoot='out/win32-x64/pearpass-app-desktop';const outApp=outRoot + '/app';fs.rmSync(outRoot,{recursive:true,force:true});fs.mkdirSync(outApp,{recursive:true});fs.cpSync('dist/win-unpacked',outApp,{recursive:true});\" && npm install && npm run pear:build:win",
     "dist:linux": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux && npm install",
     "dist:snap": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux snap && npm install",
     "dist:flatpak": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux flatpak && npm install",
-    "pear:build:darwin": "pear-build --package=./package.json --darwin-arm64-app ./out/darwin-arm64/pearpass-app-desktop --target ../pearpass-app-desktop-$npm_package_version"
+    "pear:build:darwin": "npx pear-build --package=./package.json --darwin-arm64-app ./out/darwin-arm64/pearpass-app-desktop --target ../pearpass-app-desktop-$npm_package_version",
+    "pear:build:win": "npx pear-build --package=./package.json --win32-x64-app ./out/win32-x64/pearpass-app-desktop --target ../pearpass-app-desktop-%npm_package_version%"
   },
   "devDependencies": {
     "@babel/core": "7.26.10",
