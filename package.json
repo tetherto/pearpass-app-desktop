@@ -108,7 +108,7 @@
     "pack": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --dir && npm install",
     "dist": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder && npm install",
     "dist:mac": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --mac && mkdir -p out/darwin-arm64/pearpass-app-desktop/app && cp -R dist/mac-arm64/PearPass.app out/darwin-arm64/pearpass-app-desktop/app/ && npm install && npm run pear:build:darwin",
-    "dist:win": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && powershell -NoProfile -ExecutionPolicy Bypass -Command \"Stop-Process -Name PearPass -Force -ErrorAction SilentlyContinue; if (Test-Path 'dist/win-unpacked') { Remove-Item -Recurse -Force 'dist/win-unpacked' -ErrorAction SilentlyContinue; Start-Sleep -Milliseconds 500; if (Test-Path 'dist/win-unpacked') { Remove-Item -Recurse -Force 'dist/win-unpacked' } }\" && npx electron-builder --win --dir && node -e \"const fs=require('fs');const outRoot='out/win32-x64/pearpass-app-desktop';const outApp=outRoot + '/app';fs.rmSync(outRoot,{recursive:true,force:true});fs.mkdirSync(outApp,{recursive:true});fs.cpSync('dist/win-unpacked',outApp,{recursive:true});\" && npm install && npm run pear:build:win",
+    "dist:win": "node scripts/dist.win.mjs",
     "dist:linux": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux && npm install",
     "dist:snap": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux snap && npm install",
     "dist:flatpak": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux flatpak && npm install",
@@ -189,7 +189,7 @@
     "pearpass-lib-data-import": "git+https://github.com/tetherto/pearpass-lib-data-import.git",
     "pearpass-lib-ui-theme-provider": "git+https://github.com/tetherto/pearpass-lib-ui-theme-provider.git",
     "pearpass-lib-vault": "git+https://github.com/tetherto/pearpass-lib-vault.git",
-    "pearpass-lib-vault-core": "git+https://github.com/tetherto/pearpass-lib-vault-core.git",
+    "pearpass-lib-vault-core": "git+https://github.com/tetherto/pearpass-lib-vault-core.git#electron-migration",
     "pearpass-utils-password-check": "git+https://github.com/tetherto/pearpass-utils-password-check.git",
     "pearpass-utils-password-generator": "git+https://github.com/tetherto/pearpass-utils-password-generator.git",
     "react": "19.1.0",
@@ -198,7 +198,7 @@
   },
   "overrides": {
     "@xmldom/xmldom": "^0.8.10",
-    "react": "$react",
-    "react-dom": "$react-dom"
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   }
 }
