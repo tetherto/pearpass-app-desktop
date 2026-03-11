@@ -15,14 +15,15 @@ interface TimerProps {
 export const Wrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px 0;
+  gap: 8px;
+  padding: 4px 10px 6px;
+  width: 100%;
 `
 
 export const Track = styled.div`
   flex: 1;
-  height: 4px;
-  border-radius: 2px;
+  height: 6px;
+  border-radius: 20px;
   background: ${({ theme }) => theme.colors.grey100.mode1}33;
   overflow: hidden;
 `
@@ -32,7 +33,7 @@ export const Fill = styled.div.withConfig({
     !['$progress', '$expiring', '$noTransition'].includes(prop)
 })<FillProps>`
   height: 100%;
-  border-radius: 2px;
+  border-radius: 10px;
   background: ${({ theme, $expiring }) => getTimerColor(theme, $expiring)};
   width: ${({ $progress }) => $progress}%;
   transition: ${({ $noTransition }) =>
@@ -43,8 +44,8 @@ export const Timer = styled.span.withConfig({
   shouldForwardProp: (prop) => !['$expiring'].includes(prop)
 })<TimerProps>`
   font-family: 'Inter';
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 500;
   color: ${({ theme, $expiring }) => getTimerColor(theme, $expiring)};
   min-width: 22px;
   text-align: right;

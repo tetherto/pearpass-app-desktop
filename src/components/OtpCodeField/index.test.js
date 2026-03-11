@@ -33,11 +33,20 @@ jest.mock('../CopyButton', () => ({
 }))
 
 jest.mock('../../lib-react-components', () => ({
-  InputField: ({ label, value, additionalItems, testId }) => (
+  InputField: ({
+    label,
+    value,
+    additionalItems,
+    belowInputContent,
+    testId
+  }) => (
     <div data-testid={testId}>
       <span data-testid="otp-label">{label}</span>
       <span data-testid="otp-value">{value}</span>
       <div data-testid="otp-additional">{additionalItems}</div>
+      {belowInputContent && (
+        <div data-testid="otp-below-input">{belowInputContent}</div>
+      )}
     </div>
   ),
   LockIcon: () => <span>LockIcon</span>
@@ -52,8 +61,7 @@ jest.mock('./styles', () => ({
     >
       {children}
     </button>
-  ),
-  OtpFieldContainer: ({ children }) => <div>{children}</div>
+  )
 }))
 
 jest.mock('../TimerBar', () => ({

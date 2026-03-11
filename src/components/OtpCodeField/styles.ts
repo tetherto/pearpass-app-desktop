@@ -1,14 +1,5 @@
 import styled from 'styled-components'
 
-export const OtpFieldContainer = styled.div`
-  /* Restore border/radius on OutlineInputWrapper when progress bar follows */
-  & > div:first-child {
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    border-bottom: 1px solid ${({ theme }) => theme.colors.grey100.mode1};
-  }
-`
-
 export const NextCodeButton = styled.button`
   display: inline-flex;
   align-items: center;

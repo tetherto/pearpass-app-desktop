@@ -5,7 +5,7 @@ import { useOtp, formatOtpCode, OTP_TYPE } from 'pearpass-lib-vault'
 import { InputField, LockIcon } from '../../lib-react-components'
 import { CopyButton } from '../CopyButton'
 import { TimerBar } from '../TimerBar'
-import { NextCodeButton, OtpFieldContainer } from './styles'
+import { NextCodeButton } from './styles'
 
 interface OtpPublic {
   type: 'TOTP' | 'HOTP'
@@ -36,36 +36,37 @@ export const OtpCodeField = ({ recordId, otpPublic, testId }: OtpCodeFieldProps)
   const isTOTP = type === OTP_TYPE.TOTP
   const hasTimeData = isTOTP && timeRemaining !== null
 
-  return html`
-    <${isTOTP ? OtpFieldContainer : 'div'}>
-      <${InputField}
-        testId=${testId || 'otp-code-field'}
-        label=${i18n._('Authenticator Token')}
-        value=${formattedCode}
-        variant="outline"
-        icon=${LockIcon}
-        isDisabled
-        additionalItems=${html`
-          ${type === OTP_TYPE.HOTP &&
-          generateNext &&
-          html`
-            <${NextCodeButton}
-              onClick=${generateNext}
-              disabled=${isLoading}
-              data-testid="otp-next-code-button"
-            >
-              ${i18n._('Next Code')}
-            <//>
-          `}
-          <${CopyButton} value=${code} testId="otp-copy-button" />
-        `}
-      />
-      ${isTOTP &&
-      html`
-        <div style=${{ visibility: hasTimeData ? 'visible' : 'hidden' }}>
+  const timerBar = isTOTP
+    ? html`
+        <div style=${{ visibility: hasTimeData ? 'visible' : 'hidden', width: '100%' }}>
           <${TimerBar} timeRemaining=${timeRemaining} period=${period} />
         </div>
+      `
+    : null
+
+  return html`
+    <${InputField}
+      testId=${testId || 'otp-code-field'}
+      label=${i18n._('Authenticator Token')}
+      value=${formattedCode}
+      variant="outline"
+      icon=${LockIcon}
+      isDisabled
+      belowInputContent=${timerBar}
+      additionalItems=${html`
+        ${type === OTP_TYPE.HOTP &&
+        generateNext &&
+        html`
+          <${NextCodeButton}
+            onClick=${generateNext}
+            disabled=${isLoading}
+            data-testid="otp-next-code-button"
+          >
+            ${i18n._('Next Code')}
+          <//>
+        `}
+        <${CopyButton} value=${code} testId="otp-copy-button" />
       `}
-    <//>
+    />
   `
 }
