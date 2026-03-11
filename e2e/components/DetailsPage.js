@@ -7,6 +7,26 @@ class DetailsPage {
 
     // ==== LOCATORS ====
 
+    get getItemDetailsCustomInput() {
+        return this.root.getByPlaceholder('Add note');
+    }
+
+    // async verifyCustomNoteText(expectedText) {
+    //     const input = page.getByPlaceholder('Add comment');
+    //     await expect(input).toHaveValue('Test Note');
+    // }
+
+    async verifyCustomNoteText(expectedText) {
+        await expect(this.getItemDetailsCustomInput).toBeVisible()
+        await expect(this.getItemDetailsCustomInput).toHaveValue(expectedText)
+    }
+
+    // async verifyCustomNoteText(note_text) {
+    //     const noteTextDetail = this.getItemDetailsCustomInput
+    //     await expect(noteTextDetail).toBeVisible();
+    //     await expect(noteTextDetail).toHaveText(note_text);
+    // }
+
     get getItemDetailsTitle() {
         return this.root.locator('[data-testid^="details-title"]');
     }
@@ -65,6 +85,15 @@ class DetailsPage {
         return this.root.getByTestId('button-round-icon').first()
     }
 
+    get detailsBarThreeDotsCloseDetails() {
+        return this.root.getByTestId('button-round-icon').last()
+    }
+
+    async openItemBarThreeDotsDropdownMenu() {
+        await expect(this.detailsBarThreeDotsCloseDetails).toBeVisible()
+        await this.detailsBarThreeDotsCloseDetails.click()
+    }
+
     get markAsFavoriteButton() {
         return this.root.getByText('Mark as favorite').last()
     }
@@ -82,7 +111,7 @@ class DetailsPage {
     }
 
     get elementItemCloseButton() {
-        return this.root.getByTestId('modalheader-button-close').last()
+        return this.root.getByTestId('modalheader-button-close').last() //modalheader-button-close
     }
 
     get createNewFolderButton() {

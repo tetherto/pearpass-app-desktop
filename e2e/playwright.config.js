@@ -1,32 +1,36 @@
-/** @type {import('@playwright/test').PlaywrightTestConfig} */
-module.exports = {
-  timeout: 5 * 60 * 3000,
-  use: {
-    screenshot: 'only-on-failure',
-    actionTimeout: 30000,
-    navigationTimeout: 60000
-  },
+import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
   reporter: [
-    ['html', { outputFolder: 'test-artifacts/report' }],
+    ['list'],
     [
       'playwright-qase-reporter',
       {
         mode: 'testops',
-        debug: true,
+        debug: false,
         testops: {
           api: {
-            token: process.env.QASE_API_TOKEN
+            token: '93d463e7ca693a401ff7bff5a12125fdba52d70540585ff1a562ac0ecacb1235',
           },
           project: 'PAS',
           uploadAttachments: true,
           run: {
-            complete: true
-          }
-        }
-      }
-    ]
+            title: 'Automated Playwright Run',
+            description: 'Nightly regression tests',
+            complete: true,
+          },
+          batch: {
+            size: 100,
+          },
+        },
+        framework: {
+          browser: {
+            addAsParameter: true,
+            parameterName: 'Browser',
+          },
+          markAsFlaky: true,
+        },
+      },
+    ],
   ],
-  outputDir: 'test-artifacts/results',
-  workers: 1,
-  fullyParallel: false
-}
+});

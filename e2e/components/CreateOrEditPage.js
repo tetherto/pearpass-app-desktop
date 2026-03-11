@@ -7,15 +7,98 @@ class CreateOrEditPage {
 
   // ==== LOCATORS ====
 
-  // createoredit-button-createcustomfield  => createoredit-createcustomfield
+  getPasswordStrenghtCheck(strenght_type) {
+    return this.root.getByTestId(`passwordcheck-strength-${strenght_type}`)
+  }
+
+  // async verifyPasswordStrength(password_strenght) {
+  //   const passwordStrenghtCheck = this.getPasswordStrenghtCheck(password_strenght)
+  //   await expect(passwordStrenghtCheck).toBeVisible()
+  // }
+
+  async verifyPasswordStrenght(strenght, type, text ) {
+    const element = this.root.getByTestId(`passwordcheck-strength-${strenght}`);
+    await expect(element).toBeVisible();
+    await expect(element).toHaveAttribute('type', type);
+    await expect(element).toHaveText(text);
+  }
+
+  get charactersliderContainer() {
+    return this.root.getByTestId('passwordgenerator-characterslider-container')
+  }
+
+  get charactersliderContainer() {
+    return this.root.getByTestId('passwordgenerator-characterslider-container')
+  }
+
+  getCharsliderByPositionNumber(position_number) {
+    return this.root.getByTestId(`passwordgenerator-characterSlider-${position_number}`)
+  }
+
+  async verifyCharsliderByPositionNumber(position) {
+    const characterslider_container = this.charactersliderContainer
+    await expect(characterslider_container).toBeVisible()
+    const characterslider_number = this.getCharsliderByPositionNumber(position)
+    await expect(characterslider_number).toBeVisible()
+  }
+
+  get switchwithlabelContainer() {
+    return this.root.getByTestId('ruleselector-switchwithlabel-specialCharacters')
+  }
+  
+  getswitchByPositionState(switch_state) {
+    return this.root.getByTestId(`switchwithlabel-switch-${switch_state}`)
+  }
+
+  async verifySpecialCharactersSwitchByState(state) {
+    const switch_container = this.switchwithlabelContainer
+    await expect(switch_container).toBeVisible()
+    const switch_state = this.getswitchByPositionState(state)
+    await expect(switch_state).toBeVisible()
+  }
+
+  async clickSwitchByState(state) {
+    const switch_container = this.switchwithlabelContainer
+    await expect(switch_container).toBeVisible()
+    const switch_state = this.getswitchByPositionState(state)
+    await expect(switch_state).toBeVisible()
+    await switch_state.click()
+  }
+
+
+  // ruleselector-switchwithlabel-specialCharacters
+  // switchwithlabel-switch-on
+
+
+  get passphraseRadioButtonContainer() {
+    return this.root.getByTestId('radioselect-container')
+  }
+
+  getPasswordRadioButtonState(state) {
+    return this.root.getByTestId(`radioselect-password-${state}`)
+  }
+
+  getPassphraseRadioButtonState(state) {
+    return this.root.getByTestId(`radioselect-passphrase-${state}`)
+  }
+
+  async verifyRadioButtonPasswordState(password_state) {
+    const radiobuttons_container = this.passphraseRadioButtonContainer
+    await expect(radiobuttons_container).toBeVisible()
+    const password_radiobutton_state = this.getPasswordRadioButtonState(password_state)
+    await expect(password_radiobutton_state).toBeVisible()
+  }
+
+  async verifyRadioButtonPassphraseState(passphrase_state) {
+    const radiobuttons_container = this.passphraseRadioButtonContainer
+    await expect(radiobuttons_container).toBeVisible()
+    const passphrase_radiobutton_state = this.getPassphraseRadioButtonState(passphrase_state)
+    await expect(passphrase_radiobutton_state).toBeVisible()
+  }
 
   get noteTextArea() {
     return this.root.getByTestId('createoredit-textarea-note')
   }
-
-  // getNoteTextArea(field) {
-  //   return this.root.getByTestId(`createoredit-textarea-${field}`)
-  // }
 
   get insertPasswordButton() {
     return this.root.getByTestId('passwordGenerator-button-insertpassword').first()
@@ -43,6 +126,14 @@ class CreateOrEditPage {
 
   get customNoteInput() {
     return this.root.getByTestId('customfields-input-note-0')
+  }
+
+  // TODO: need to change customfields-input-note-0 to createoredit-input-note-0
+  async fillCustomNoteInput() {
+    const input = this.customNoteInput
+    await input.waitFor({ state: 'visible' })
+    await input.fill('')
+    await input.fill('Custom Note')
   }
 
   get deleteCustomNoteItem() {
@@ -96,10 +187,6 @@ class CreateOrEditPage {
   get fileInput() {
     return this.root.locator('input[type="file"]').first()
   }
-
-  // get elementItemCloseButton() {
-  //   return this.root.getByTestId('button-round-icon').last() // button-round-icon
-  // }
 
   get elementItemCloseButton() {
     return this.root.getByTestId('modalheader-button-close').last()
@@ -209,7 +296,7 @@ class CreateOrEditPage {
 
   async fillCreateOrEditTextArea(field, value) {
     const text_area = this.getCreateOrEditTextareaField(field)
-    await text_area.waitFor({ state: 'visible' }) // wait before interaction
+    await text_area.waitFor({ state: 'visible' })
     await text_area.type(value)
   }
 
