@@ -18,6 +18,7 @@ jobs:
       - name: Build application
         env:
           PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           npm run dist:linux:appimage:all
 
