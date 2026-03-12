@@ -2,7 +2,7 @@
 
 import fs from 'node:fs'
 import { execSync, spawnSync } from 'node:child_process'
-import pkg from '../package.json'
+
 function run(command) {
   execSync(command, { stdio: 'inherit', shell: true })
 }

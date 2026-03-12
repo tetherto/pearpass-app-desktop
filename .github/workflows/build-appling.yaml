@@ -2,7 +2,7 @@ name: Electron-builder Build
 
 on:
   push:
-    branches: [main, electron-migration]
+    branches: [main, electron-migration, electron-migration-linux-ci]
 
 jobs:
   build-linux:
@@ -19,7 +19,7 @@ jobs:
         env:
           PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
         run: |
-          npm run dist:linux
+          npm run dist:linux:appimage:all
 
       - name: "Install @actions/artifact module"
         id: install-actions-artifact-module
