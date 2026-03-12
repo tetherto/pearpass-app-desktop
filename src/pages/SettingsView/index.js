@@ -56,13 +56,13 @@ const renderActiveContent = (activeTab) => {
 
 export const SettingsView = () => {
   const { t } = useTranslation()
-  const { navigate } = useRouter()
+  const { navigate, data } = useRouter()
 
   const handleGoBack = () => {
     navigate('vault', { recordType: 'all' })
   }
 
-  const [activeTab, setActiveTab] = useState('security')
+  const [activeTab, setActiveTab] = useState(data?.initialTab || 'security')
 
   return html`
     <${Wrapper}>

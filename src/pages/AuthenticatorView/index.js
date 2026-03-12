@@ -2,10 +2,16 @@ import { useMemo, useState } from 'react'
 
 import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
+import { colors } from 'pearpass-lib-ui-theme-provider'
 import { useRecords, isExpiring, OTP_TYPE } from 'pearpass-lib-vault'
 
 import {
   EmptyState,
+  EmptyStateCTAs,
+  EmptyStateDescription,
+  EmptyStatePrimaryButton,
+  EmptyStateSecondaryButton,
+  EmptyStateTextGroup,
   GroupDivider,
   GroupHeader,
   GroupLabel,
@@ -20,10 +26,17 @@ import { InputSearch } from '../../components/InputSearch'
 import { Record } from '../../components/Record'
 import { TimerCircle } from '../../components/TimerCircle'
 import { useRouter } from '../../context/RouterContext'
+import { useCreateOrEditRecord } from '../../hooks/useCreateOrEditRecord'
+import {
+  AuthenticatorIllustration,
+  PlusIcon,
+  SaveIcon
+} from '../../lib-react-components'
 
 export const AuthenticatorView = () => {
   const { i18n } = useLingui()
   const { navigate } = useRouter()
+  const { handleCreateOrEditRecord } = useCreateOrEditRecord()
   const [searchValue, setSearchValue] = useState('')
 
   const { data: records } = useRecords({
@@ -92,12 +105,31 @@ export const AuthenticatorView = () => {
       ${otpRecords.length === 0
         ? html`
             <${EmptyState}>
-              <${Title}>${i18n._('No authenticator tokens')}<///>
-              <span>
-                ${i18n._(
-                  'Add an authenticator secret key to a login record to see it here.'
-                )}
-              </span>
+              <${AuthenticatorIllustration} width="100%" height="151" />
+
+              <${EmptyStateTextGroup}>
+                <${Title}>${i18n._('No codes saved')}<///>
+                <${EmptyStateDescription}>
+                  ${i18n._(
+                    'Save your first authenticator code or import your codes from another authenticator app.'
+                  )}
+                <//>
+              <//>
+
+              <${EmptyStateCTAs}>
+                <${EmptyStatePrimaryButton}
+                  onClick=${() => handleCreateOrEditRecord({ recordType: 'login' })}
+                >
+                  <${PlusIcon} size="16" color=${colors.grey500.mode1} />
+                  ${i18n._('Add Code')}
+                <//>
+                <${EmptyStateSecondaryButton}
+                  onClick=${() => navigate('settings', { initialTab: 'vault' })}
+                >
+                  <${SaveIcon} size="16" color=${colors.primary400.mode1} />
+                  ${i18n._('Import Codes')}
+                <//>
+              <//>
             <//>
           `
         : html`

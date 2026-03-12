@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import { useOtp, formatOtpCode, OTP_TYPE } from 'pearpass-lib-vault'
@@ -7,7 +5,7 @@ import { useOtp, formatOtpCode, OTP_TYPE } from 'pearpass-lib-vault'
 import { InputField, LockIcon } from '../../lib-react-components'
 import { CopyButton } from '../CopyButton'
 import { TimerBar } from '../TimerBar'
-import { styles } from './styles'
+import { NextCodeButton } from './styles'
 
 interface OtpPublic {
   type: 'TOTP' | 'HOTP'
@@ -27,7 +25,6 @@ interface OtpCodeFieldProps {
 
 export const OtpCodeField = ({ recordId, otpPublic, testId }: OtpCodeFieldProps) => {
   const { i18n } = useLingui()
-  const [isHovered, setIsHovered] = useState(false)
   const { code, timeRemaining, type, period, generateNext, isLoading } = useOtp(
     {
       recordId,
@@ -47,12 +44,6 @@ export const OtpCodeField = ({ recordId, otpPublic, testId }: OtpCodeFieldProps)
       `
     : null
 
-  const nextCodeButtonStyle = {
-    ...styles.nextCodeButton,
-    ...(isHovered && !isLoading ? styles.nextCodeButtonHover : {}),
-    ...(isLoading ? styles.nextCodeButtonDisabled : {})
-  }
-
   return html`
     <${InputField}
       testId=${testId || 'otp-code-field'}
@@ -66,16 +57,13 @@ export const OtpCodeField = ({ recordId, otpPublic, testId }: OtpCodeFieldProps)
         ${type === OTP_TYPE.HOTP &&
         generateNext &&
         html`
-          <button
+          <${NextCodeButton}
             onClick=${generateNext}
             disabled=${isLoading}
-            style=${nextCodeButtonStyle}
-            onMouseEnter=${() => setIsHovered(true)}
-            onMouseLeave=${() => setIsHovered(false)}
             data-testid="otp-next-code-button"
           >
             ${i18n._('Next Code')}
-          </button>
+          <//>
         `}
         <${CopyButton} value=${code} testId="otp-copy-button" />
       `}
