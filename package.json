@@ -113,7 +113,7 @@
     "dist:mac": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && SKIP_NOTARIZE=true npx electron-builder --mac && mkdir -p out/darwin-arm64 && cp -R dist/mac-arm64/PearPass.app out/darwin-arm64/ && npm install && npm run pear:build:darwin",
     "dist:mac:ci": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --mac && mkdir -p out/darwin-arm64 && cp -R dist/mac-arm64/PearPass.app out/darwin-arm64/ && npm install && npm run pear:build:darwin",
     "dist:win": "node scripts/dist.win.mjs",
-    "dist:linux": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux --dir && mkdir -p out/linux-x64/PearPass.app && rm -rf out/linux-x64/PearPass.app/Contents && cp -R dist/linux-unpacked out/linux-x64/PearPass.app/Contents && npm install && npm run pear:build:linux",
+    "dist:linux": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux --dir && mkdir -p out/linux-x64/PearPass.app && rm -rf out/linux-x64/PearPass.app && cp -R dist/linux-unpacked out/linux-x64/PearPass.app && npm install && npm run pear:build:linux",
     "dist:snap": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux snap && npm install",
     "dist:flatpak": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux flatpak && npm install",
     "pear:build:darwin": "npx pear-build --package=./package.json --darwin-arm64-app ./out/darwin-arm64/PearPass.app --target ../pearpass-app-desktop-$npm_package_version",
