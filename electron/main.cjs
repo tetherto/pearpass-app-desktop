@@ -10,8 +10,9 @@ const path = require('path')
 const { app, BrowserWindow, ipcMain, nativeImage } = require('electron')
 const PearRuntime = require('pear-runtime')
 const getPearRuntimeLegacyStorage = require('pear-runtime-legacy-storage')
-const { isLinux, isWindows } = require('which-runtime')
+const { isLinux, isWindows, isMac } = require('which-runtime')
 
+const pkg = require('../package.json')
 const runtimeConfig = require('./runtime-config.cjs')
 const {
   createMainProcessLogger
@@ -181,6 +182,8 @@ async function startRuntime() {
   const workletPath = getWorkletPath()
 
   const { PearpassVaultClient } = await import('pearpass-lib-vault-core')
+  const extension = isLinux ? '.AppImage' : isMac ? '.app' : '.msix'
+
   pearRuntime = new PearRuntime({
     // pear runtime doesn't care about pear (platform) directory
     dir: storageDir,
@@ -188,7 +191,7 @@ async function startRuntime() {
     version: runtimeConfig.version,
     app: app.isPackaged ? getExecPath() : null,
     bundled: !!app.isPackaged,
-    name: 'pearpass-app-desktop/app/PearPass.app'
+    name: `${pkg.productName}${extension}`
   })
 
   await pearRuntime.ready()

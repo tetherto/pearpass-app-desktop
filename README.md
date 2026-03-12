@@ -50,14 +50,11 @@ npm install
 ```
 generate translation keys
 ```bash
-npm run lingui:extract
-```
-```bash
-npm run lingui:compile
+npm run build
 ```
 run the app
 ```bash
-pear run --dev .
+npm run dev
 ```
 
 ## Testing

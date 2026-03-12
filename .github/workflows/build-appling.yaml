@@ -121,7 +121,7 @@ jobs:
           PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          npm run dist:mac
+          npm run dist:mac:ci
 
       - name: "Install @actions/artifact module"
         id: install-actions-artifact-module
@@ -148,7 +148,7 @@ jobs:
           const { DefaultArtifactClient } = require('@actions/artifact');
 
           const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-          const productName = pkg.build.productName;
+          const productName = pkg.productName;
           const version = pkg.version;
 
           const dmgName = `${productName}-${version}-arm64.dmg`;

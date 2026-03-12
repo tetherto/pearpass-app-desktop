@@ -2,7 +2,7 @@
 
 import fs from 'node:fs'
 import { execSync, spawnSync } from 'node:child_process'
-
+import pkg from '../package.json'
 function run(command) {
   execSync(command, { stdio: 'inherit', shell: true })
 }
@@ -37,7 +37,7 @@ function stopPearPassProcess() {
       '-ExecutionPolicy',
       'Bypass',
       '-Command',
-      "Stop-Process -Name PearPass -Force -ErrorAction SilentlyContinue"
+      'Stop-Process -Name PearPass -Force -ErrorAction SilentlyContinue'
     ],
     { stdio: 'inherit' }
   )
@@ -60,10 +60,9 @@ function main() {
   run('npx electron-builder --win --dir')
 
   const outRoot = 'out/win32-x64/pearpass-app-desktop'
-  const outApp = `${outRoot}/app`
   removeDirIfExists(outRoot)
-  fs.mkdirSync(outApp, { recursive: true })
-  fs.cpSync('dist/win-unpacked', outApp, { recursive: true })
+  fs.mkdirSync(outRoot, { recursive: true })
+  fs.cpSync('dist/win-unpacked', outRoot, { recursive: true })
 
   run('npm install')
   run('npm run pear:build:win')
