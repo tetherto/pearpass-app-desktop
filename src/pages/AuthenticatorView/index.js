@@ -2,12 +2,7 @@ import { useMemo, useState } from 'react'
 
 import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
-import {
-  useRecords,
-  useOtpCodes,
-  isExpiring,
-  OTP_TYPE
-} from 'pearpass-lib-vault'
+import { useRecords, isExpiring, OTP_TYPE } from 'pearpass-lib-vault'
 
 import {
   EmptyState,
@@ -47,8 +42,6 @@ export const AuthenticatorView = () => {
     () => (records || []).filter((r) => r.otpPublic),
     [records]
   )
-
-  const { otpCodes } = useOtpCodes(otpRecords)
 
   const handleRecordClick = (record) => {
     // Stay in authenticator view, just open the sidebar
@@ -111,11 +104,8 @@ export const AuthenticatorView = () => {
             <${ListWrapper}>
               ${totpGroups.map(
                 ({ period, records: groupRecords }, groupIndex) => {
-                  const firstRecordOtp = otpCodes[groupRecords[0]?.id]
                   const timeRemaining =
-                    firstRecordOtp?.timeRemaining ??
-                    groupRecords[0]?.otpPublic?.timeRemaining ??
-                    null
+                    groupRecords[0]?.otpPublic?.timeRemaining ?? null
 
                   const expiring = isExpiring(timeRemaining)
 
@@ -139,23 +129,19 @@ export const AuthenticatorView = () => {
                         <//>
                       <//>
 
-                      ${groupRecords.map((record) => {
-                        const otpData = otpCodes[record.id]
-                        const code =
-                          otpData?.code ?? record.otpPublic?.currentCode ?? null
-
-                        return html`
+                      ${groupRecords.map(
+                        (record) => html`
                           <${Record}
                             key=${record.id}
                             testId="authenticator-record-item"
                             dataId=${`${record.type}-list-item`}
                             record=${record}
-                            otpCode=${code}
+                            otpCode=${record.otpPublic?.currentCode ?? null}
                             onClick=${() => handleRecordClick(record)}
                             onSelect=${() => {}}
                           />
                         `
-                      })}
+                      )}
                     </div>
                   `
                 }
@@ -170,23 +156,19 @@ export const AuthenticatorView = () => {
                     <//>
                   <//>
 
-                  ${hotpRecords.map((record) => {
-                    const otpData = otpCodes[record.id]
-                    const code =
-                      otpData?.code ?? record.otpPublic?.currentCode ?? null
-
-                    return html`
+                  ${hotpRecords.map(
+                    (record) => html`
                       <${Record}
                         key=${record.id}
                         testId="authenticator-record-item"
                         dataId=${`${record.type}-list-item`}
                         record=${record}
-                        otpCode=${code}
+                        otpCode=${record.otpPublic?.currentCode ?? null}
                         onClick=${() => handleRecordClick(record)}
                         onSelect=${() => {}}
                       />
                     `
-                  })}
+                  )}
                 </div>
               `}
             <//>

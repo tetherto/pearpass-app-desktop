@@ -86,11 +86,6 @@ declare module 'pearpass-lib-vault' {
     isLoading: boolean
   }
 
-  export function useOtpCodes(records: any[]): {
-    otpCodes: Record<string, { code: string; timeRemaining: number; recordId: string }>
-    refresh: () => Promise<void>
-  }
-
   export const OtpRefreshProvider: any
   export function useOtpRefresh(): (() => void) | null
 

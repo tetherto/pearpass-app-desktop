@@ -3,11 +3,10 @@ import fs from 'fs/promises'
 import os from 'os'
 import path from 'path'
 
-import {
-  MANIFEST_NAME,
-  NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION,
-  EXTENSION_ID
-} from 'pearpass-lib-constants'
+import { MANIFEST_NAME, EXTENSION_ID } from 'pearpass-lib-constants'
+
+const NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION =
+  'pear://zy4xkq1g8wrdze8ybm8cpq7x3iy1rga8pgtapocxcm7yawuyondo'
 
 import { logger } from './logger'
 
