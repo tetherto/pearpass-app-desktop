@@ -297,6 +297,31 @@ export class NativeMessagingIPCServer {
         logLevel: 'DEBUG'
       }
     )
+
+    // OTP methods
+    this.secureMethodRegistry.register(
+      'generateOtpCodesByIds',
+      vaultHandlers.generateOtpCodesByIds.bind(vaultHandlers),
+      {
+        requiresStatus: ['encryption', 'vaults', 'activeVault'],
+        logLevel: 'DEBUG'
+      }
+    )
+    this.secureMethodRegistry.register(
+      'generateHotpNext',
+      vaultHandlers.generateHotpNext.bind(vaultHandlers),
+      { requiresStatus: ['encryption', 'vaults', 'activeVault'] }
+    )
+    this.secureMethodRegistry.register(
+      'addOtpToRecord',
+      vaultHandlers.addOtpToRecord.bind(vaultHandlers),
+      { requiresStatus: ['encryption', 'vaults', 'activeVault'] }
+    )
+    this.secureMethodRegistry.register(
+      'removeOtpFromRecord',
+      vaultHandlers.removeOtpFromRecord.bind(vaultHandlers),
+      { requiresStatus: ['encryption', 'vaults', 'activeVault'] }
+    )
   }
 
   /**
