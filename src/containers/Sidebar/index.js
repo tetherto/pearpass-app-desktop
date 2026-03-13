@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import { html } from 'htm/react'
 import { matchPatternToValue } from 'pear-apps-utils-pattern-search'
+import { AUTHENTICATOR_ENABLED } from 'pearpass-lib-constants'
 import {
   closeAllInstances,
   useFolders,
@@ -189,17 +190,20 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
               })}
             <//>
 
-            <${SidebarAuthenticatorSection}>
-              <${SidebarFolder}
-                key="authenticator"
-                isOpen=${false}
-                onClick=${() => handleFolderClick('authenticator')}
-                name=${t('Authenticator')}
-                icon=${LockIcon}
-                isActive=${routerData?.recordType === 'authenticator'}
-                hasMenu=${false}
-              />
-            <//>
+            ${AUTHENTICATOR_ENABLED &&
+            html`
+              <${SidebarAuthenticatorSection}>
+                <${SidebarFolder}
+                  key="authenticator"
+                  isOpen=${false}
+                  onClick=${() => handleFolderClick('authenticator')}
+                  name=${t('Authenticator')}
+                  icon=${LockIcon}
+                  isActive=${routerData?.recordType === 'authenticator'}
+                  hasMenu=${false}
+                />
+              <//>
+            `}
           <//>
         `}
       <//>

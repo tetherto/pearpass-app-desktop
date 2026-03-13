@@ -1,4 +1,5 @@
 import { html } from 'htm/react'
+import { AUTHENTICATOR_ENABLED } from 'pearpass-lib-constants'
 import { OtpRefreshProvider } from 'pearpass-lib-vault'
 
 import { LayoutWithSidebar } from '../../containers/LayoutWithSidebar'
@@ -49,7 +50,8 @@ export const Routes = ({
   }
 
   if (currentPage === 'vault') {
-    const isAuthenticator = data?.recordType === 'authenticator'
+    const isAuthenticator =
+      AUTHENTICATOR_ENABLED && data?.recordType === 'authenticator'
 
     return html`
       <${OtpRefreshProvider}>

@@ -4,6 +4,7 @@ import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import { useForm } from 'pear-apps-lib-ui-react-hooks'
 import { Validator } from 'pear-apps-utils-validator'
+import { AUTHENTICATOR_ENABLED } from 'pearpass-lib-constants'
 import { RECORD_TYPES, useCreateRecord, useRecords } from 'pearpass-lib-vault'
 
 import { CreateCustomField } from '../../../../components/CreateCustomField'
@@ -325,17 +326,19 @@ export const CreateOrEditLoginModalContent = ({
             />
           <//>
         `}
-
-        <${FormGroup}>
-          <${PasswordField}
-            testId="createoredit-input-otpsecret"
-            label=${i18n._('Authenticator Secret Key')}
-            placeholder=${i18n._('Enter Secret Key or otpauth:// URI')}
-            variant="outline"
-            icon=${LockIcon}
-            ...${register('otpSecret')}
-          />
-        <//>
+        ${AUTHENTICATOR_ENABLED &&
+        html`
+          <${FormGroup}>
+            <${PasswordField}
+              testId="createoredit-input-otpsecret"
+              label=${i18n._('Authenticator Secret Key')}
+              placeholder=${i18n._('Enter Secret Key or otpauth:// URI')}
+              variant="outline"
+              icon=${LockIcon}
+              ...${register('otpSecret')}
+            />
+          <//>
+        `}
 
         <${CompoundField}>
           ${websitesList.map(
