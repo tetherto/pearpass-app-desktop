@@ -2,7 +2,7 @@ name: Electron-builder Build
 
 on:
   push:
-    branches: [main, electron-migration]
+    branches: [main, electron-migration, electron-migration-linux-ci-2]
 
 jobs:
   build-linux:
@@ -64,164 +64,164 @@ jobs:
             await artifact.uploadArtifact(name, [file], path.dirname(file));
           }
         shell: node {0}
-  build-macos:
-    permissions:
-      contents: write # to upload artifacts
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-      - name: Install the Apple certificate and provisioning profile
-        env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
-          P12_PASSWORD: ${{ secrets.APPLE_P12_PASSWORD }}
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
-          KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
-          APIKEY_BASE64: ${{ secrets.APPLE_APIKEY }}
-        run: |
-          # create variables
-          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-          PP_PATH=$RUNNER_TEMP/build_pp.provisionprofile
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-          APIKEY_PATH=$RUNNER_TEMP/AuthKey.p8
+  # build-macos:
+  #   permissions:
+  #     contents: write # to upload artifacts
+  #   runs-on: macos-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #     - name: Install the Apple certificate and provisioning profile
+  #       env:
+  #         BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
+  #         P12_PASSWORD: ${{ secrets.APPLE_P12_PASSWORD }}
+  #         BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
+  #         KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
+  #         APIKEY_BASE64: ${{ secrets.APPLE_APIKEY }}
+  #       run: |
+  #         # create variables
+  #         CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+  #         PP_PATH=$RUNNER_TEMP/build_pp.provisionprofile
+  #         KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+  #         APIKEY_PATH=$RUNNER_TEMP/AuthKey.p8
 
-          # import certificate and provisioning profile from secrets
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
-          echo -n "$APIKEY_BASE64" | base64 --decode -o $APIKEY_PATH
+  #         # import certificate and provisioning profile from secrets
+  #         echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+  #         echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+  #         echo -n "$APIKEY_BASE64" | base64 --decode -o $APIKEY_PATH
 
-          # create temporary keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+  #         # create temporary keychain
+  #         security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+  #         security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+  #         security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
-          # import certificate to keychain
-          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security list-keychain -d user -s $KEYCHAIN_PATH
+  #         # import certificate to keychain
+  #         security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+  #         security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+  #         security list-keychain -d user -s $KEYCHAIN_PATH
 
-          # add notarytool credentials
-          xcrun notarytool store-credentials "notary" --key "$APIKEY_PATH" --key-id S3AG2UXSC5 --issuer 2067dae8-140d-4016-9a2b-d6ea80a20708
+  #         # add notarytool credentials
+  #         xcrun notarytool store-credentials "notary" --key "$APIKEY_PATH" --key-id S3AG2UXSC5 --issuer 2067dae8-140d-4016-9a2b-d6ea80a20708
 
-          # apply provisioning profile
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-      - name: Install dependencies
-        run: |
-          npm install
-      - name: Build application
-        env:
-          MAC_CODESIGN_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
-          CSC_NAME: ${{ secrets.MACOS_SIGNING_IDENTITY }}
-          PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
-          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
-        run: |
-          npm run dist:mac:ci
+  #         # apply provisioning profile
+  #         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+  #         cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+  #     - name: Install dependencies
+  #       run: |
+  #         npm install
+  #     - name: Build application
+  #       env:
+  #         MAC_CODESIGN_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+  #         CSC_NAME: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+  #         PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
+  #         GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+  #       run: |
+  #         npm run dist:mac:ci
 
-      - name: "Install @actions/artifact module"
-        id: install-actions-artifact-module
-        run: |
-          npm install @actions/artifact@2.3.2 --global
-          echo "NODE_PATH=$(npm root --quiet -g)" >> $GITHUB_ENV
+  #     - name: "Install @actions/artifact module"
+  #       id: install-actions-artifact-module
+  #       run: |
+  #         npm install @actions/artifact@2.3.2 --global
+  #         echo "NODE_PATH=$(npm root --quiet -g)" >> $GITHUB_ENV
       
-      - name: "Extract Actions runtime variables" 
-        id: extract-runtime-environment-variables
-        uses: actions/github-script@v7
-        env:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          script: |
-            core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
-            core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
+  #     - name: "Extract Actions runtime variables" 
+  #       id: extract-runtime-environment-variables
+  #       uses: actions/github-script@v7
+  #       env:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         script: |
+  #           core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
+  #           core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
+  #           core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
             
-      - name: "Upload folders as artifacts"
-        id: upload-artifacts
-        run: |
-          const fs = require('fs');
-          const path = require('path');
-          const { DefaultArtifactClient } = require('@actions/artifact');
+  #     - name: "Upload folders as artifacts"
+  #       id: upload-artifacts
+  #       run: |
+  #         const fs = require('fs');
+  #         const path = require('path');
+  #         const { DefaultArtifactClient } = require('@actions/artifact');
 
-          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-          const productName = pkg.productName;
-          const version = pkg.version;
+  #         const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+  #         const productName = pkg.productName;
+  #         const version = pkg.version;
 
-          const dmgName = `${productName}-${version}-arm64.dmg`;
-          const dmgPath = path.join('dist', dmgName);
+  #         const dmgName = `${productName}-${version}-arm64.dmg`;
+  #         const dmgPath = path.join('dist', dmgName);
 
-          if (!fs.existsSync(dmgPath)) {
-            throw new Error(`Expected DMG not found at ${dmgPath}`);
-          }
+  #         if (!fs.existsSync(dmgPath)) {
+  #           throw new Error(`Expected DMG not found at ${dmgPath}`);
+  #         }
 
-          const artifact = new DefaultArtifactClient();
-          console.log(`Uploading macOS DMG: ${dmgName} from ${dmgPath}`);
-          artifact.uploadArtifact(dmgName, [dmgPath], 'dist');
-        shell: node {0}
-  build-win32:
-    permissions:
-      contents: write # to upload artifacts
-    runs-on: self-hosted # self-hosted signer
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-      - name: Install dependencies
-        run: |
-          npm install
-      - name: Build application
-        env:
-          WIN_SUBJECT: ${{ secrets.WIN_SUBJECT }}
-          WIN_THUMBPRINT: ${{ secrets.WIN_THUMBPRINT }}
-          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
-        run: |
-          npm run dist:win
+  #         const artifact = new DefaultArtifactClient();
+  #         console.log(`Uploading macOS DMG: ${dmgName} from ${dmgPath}`);
+  #         artifact.uploadArtifact(dmgName, [dmgPath], 'dist');
+  #       shell: node {0}
+  # build-win32:
+  #   permissions:
+  #     contents: write # to upload artifacts
+  #   runs-on: self-hosted # self-hosted signer
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #     - name: Install dependencies
+  #       run: |
+  #         npm install
+  #     - name: Build application
+  #       env:
+  #         WIN_SUBJECT: ${{ secrets.WIN_SUBJECT }}
+  #         WIN_THUMBPRINT: ${{ secrets.WIN_THUMBPRINT }}
+  #         GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+  #       run: |
+  #         npm run dist:win
 
-      - name: "Install @actions/artifact module"
-        id: install-actions-artifact-module
-        run: |
-          npm install @actions/artifact@2.3.2 --global
-          echo "NODE_PATH=$(npm root --quiet -g)" >> $GITHUB_ENV
+  #     - name: "Install @actions/artifact module"
+  #       id: install-actions-artifact-module
+  #       run: |
+  #         npm install @actions/artifact@2.3.2 --global
+  #         echo "NODE_PATH=$(npm root --quiet -g)" >> $GITHUB_ENV
       
-      - name: "Extract Actions runtime variables" 
-        id: extract-runtime-environment-variables
-        uses: actions/github-script@v7
-        env:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          script: |
-            core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
-            core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
+  #     - name: "Extract Actions runtime variables" 
+  #       id: extract-runtime-environment-variables
+  #       uses: actions/github-script@v7
+  #       env:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         script: |
+  #           core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
+  #           core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
+  #           core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
             
-      - name: "Upload folders as artifacts"
-        id: upload-artifacts
-        env:
-          NODE_PATH: ${{ env.NODE_PATH }}
-        run: |
-          const fs = require('fs');
-          const path = require('path');
-          const { DefaultArtifactClient } = require('@actions/artifact');
+  #     - name: "Upload folders as artifacts"
+  #       id: upload-artifacts
+  #       env:
+  #         NODE_PATH: ${{ env.NODE_PATH }}
+  #       run: |
+  #         const fs = require('fs');
+  #         const path = require('path');
+  #         const { DefaultArtifactClient } = require('@actions/artifact');
 
-          const artifact = new DefaultArtifactClient()
+  #         const artifact = new DefaultArtifactClient()
 
-          function listFilesRecursive (dir) {
-            let results = []
-            const list = fs.readdirSync(dir)
-            list.forEach(function (file) {
-              const filePath = path.join(dir, file)
-              const stat = fs.statSync(filePath)
-              if (stat && stat.isDirectory()) {
-                results = results.concat(listFilesRecursive(filePath))
-              } else if (stat && stat.isFile()) {
-                results.push(filePath)
-              }
-            })
-            return results
-          }
+  #         function listFilesRecursive (dir) {
+  #           let results = []
+  #           const list = fs.readdirSync(dir)
+  #           list.forEach(function (file) {
+  #             const filePath = path.join(dir, file)
+  #             const stat = fs.statSync(filePath)
+  #             if (stat && stat.isDirectory()) {
+  #               results = results.concat(listFilesRecursive(filePath))
+  #             } else if (stat && stat.isFile()) {
+  #               results.push(filePath)
+  #             }
+  #           })
+  #           return results
+  #         }
 
-          const files = listFilesRecursive('out/make')
-          files.forEach(file => {
-            const artifactName = path.basename(file)
-            console.log(`Uploading artifact: ${artifactName} from ${file}`)
-            artifact.uploadArtifact(artifactName, [file], './out/make')
-          })
-        shell: node {0}
+  #         const files = listFilesRecursive('out/make')
+  #         files.forEach(file => {
+  #           const artifactName = path.basename(file)
+  #           console.log(`Uploading artifact: ${artifactName} from ${file}`)
+  #           artifact.uploadArtifact(artifactName, [file], './out/make')
+  #         })
+  #       shell: node {0}
