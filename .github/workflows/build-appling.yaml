@@ -2,7 +2,7 @@ name: Electron-builder Build
 
 on:
   push:
-    branches: [main, electron-migration, electron-migration-linux-ci-1]
+    branches: [main, electron-migration]
 
 jobs:
   build-linux:
