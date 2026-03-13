@@ -48,27 +48,19 @@ jobs:
 
           const artifact = new DefaultArtifactClient();
 
-          function listFilesRecursive (dir) {
-            let results = [];
-            const list = fs.readdirSync(dir);
-            list.forEach(function (file) {
-              const filePath = path.join(dir, file);
-              const stat = fs.statSync(filePath);
-              if (stat && stat.isDirectory()) {
-                results = results.concat(listFilesRecursive(filePath));
-              } else if (stat && stat.isFile()) {
-                results.push(filePath);
-              }
-            });
-            return results;
-          }
+          const appImages = [
+            { file: 'out/linux-x64/PearPass.AppImage', name: 'PearPass-x64.AppImage' },
+            { file: 'out/linux-arm64/PearPass.AppImage', name: 'PearPass-arm64.AppImage' }
+          ];
 
-          const files = listFilesRecursive('dist');
-          files.forEach(file => {
-            const artifactName = path.basename(file);
-            console.log(`Uploading artifact: ${artifactName} from ${file}`);
-            artifact.uploadArtifact(artifactName, [file], './dist');
-          });
+          for (const { file, name } of appImages) {
+            if (!fs.existsSync(file)) {
+              console.warn(`Skipping ${name}: ${file} not found`);
+              continue;
+            }
+            console.log(`Uploading artifact: ${name} from ${file}`);
+            await artifact.uploadArtifact(name, [file], path.dirname(file));
+          }
         shell: node {0}
   build-macos:
     permissions:
