@@ -11,11 +11,6 @@ class CreateOrEditPage {
     return this.root.getByTestId(`passwordcheck-strength-${strenght_type}`)
   }
 
-  // async verifyPasswordStrength(password_strenght) {
-  //   const passwordStrenghtCheck = this.getPasswordStrenghtCheck(password_strenght)
-  //   await expect(passwordStrenghtCheck).toBeVisible()
-  // }
-
   async verifyPasswordStrenght(strenght, type, text ) {
     const element = this.root.getByTestId(`passwordcheck-strength-${strenght}`);
     await expect(element).toBeVisible();
@@ -362,6 +357,9 @@ class CreateOrEditPage {
     const itemDetail = this.root.getByPlaceholder(placeholder).nth(counter)
     await expect(itemDetail).toBeVisible();
   }
+
+  // Create Login Item
+  
 
 }
 

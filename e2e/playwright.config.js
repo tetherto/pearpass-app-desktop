@@ -1,6 +1,8 @@
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
+  testDir: './specs',
+  workers: 1, // jedna instanca Electron aplikacije; više workera uzrokuje ECONNREFUSED
   reporter: [
     ['list'],
     [
