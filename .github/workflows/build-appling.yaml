@@ -42,8 +42,10 @@ jobs:
       - name: "Upload folders as artifacts"
         id: upload-artifacts
         run: |
-          const fs = require('fs');
-          const path = require('path');
+          import { createRequire } from 'node:module';
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const require = createRequire(import.meta.url);
           const { DefaultArtifactClient } = require('@actions/artifact');
 
           const artifact = new DefaultArtifactClient();
