@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
 import { colors } from 'pearpass-lib-ui-theme-provider'
-import { useRecords, isExpiring, OTP_TYPE } from 'pearpass-lib-vault'
+import { useRecords, isExpiring, groupOtpRecords } from 'pearpass-lib-vault'
 
 import {
   EmptyState,
@@ -64,32 +64,10 @@ export const AuthenticatorView = () => {
     })
   }
 
-  // Separate TOTP and HOTP records, group TOTP by period
-  const { totpGroups, hotpRecords } = useMemo(() => {
-    const groupMap = {}
-    const hotp = []
-
-    for (const record of otpRecords) {
-      if (record.otpPublic?.type === OTP_TYPE.HOTP) {
-        hotp.push(record)
-      } else {
-        const period = record.otpPublic?.period ?? 30
-        if (!groupMap[period]) {
-          groupMap[period] = []
-        }
-        groupMap[period].push(record)
-      }
-    }
-
-    const groups = Object.entries(groupMap)
-      .map(([period, groupRecords]) => ({
-        period: Number(period),
-        records: groupRecords
-      }))
-      .sort((a, b) => a.period - b.period)
-
-    return { totpGroups: groups, hotpRecords: hotp }
-  }, [otpRecords])
+  const { totpGroups, hotpRecords } = useMemo(
+    () => groupOtpRecords(otpRecords),
+    [otpRecords]
+  )
 
   return html`
     <${Wrapper}>

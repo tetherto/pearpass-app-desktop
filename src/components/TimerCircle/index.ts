@@ -6,6 +6,7 @@ import { styles } from './styles'
 
 const SIZE = 14
 const RADIUS = 5.5
+const STROKE_WIDTH = 1.5
 const CENTER = SIZE / 2
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 
@@ -47,7 +48,7 @@ export const TimerCircle = ({ timeRemaining, period, animated = true }: TimerCir
           r=${RADIUS}
           fill="none"
           stroke=${color}
-          strokeWidth="1.5"
+          strokeWidth=${STROKE_WIDTH}
           strokeLinecap="round"
           strokeDasharray=${CIRCUMFERENCE}
           strokeDashoffset=${dashOffset}

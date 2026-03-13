@@ -5,17 +5,7 @@ import { useOtp, formatOtpCode, OTP_TYPE } from 'pearpass-lib-vault'
 import { InputField, LockIcon } from '../../lib-react-components'
 import { CopyButton } from '../CopyButton'
 import { TimerBar } from '../TimerBar'
-import { NextCodeButton } from './styles'
-
-interface OtpPublic {
-  type: 'TOTP' | 'HOTP'
-  digits: number
-  period?: number
-  issuer?: string
-  label?: string
-  currentCode: string | null
-  timeRemaining?: number | null
-}
+import type { OtpPublic } from 'pearpass-lib-vault/src/types'
 
 interface OtpCodeFieldProps {
   recordId: string
@@ -57,13 +47,14 @@ export const OtpCodeField = ({ recordId, otpPublic, testId }: OtpCodeFieldProps)
         ${type === OTP_TYPE.HOTP &&
         generateNext &&
         html`
-          <${NextCodeButton}
+          <button
             onClick=${generateNext}
             disabled=${isLoading}
             data-testid="otp-next-code-button"
+            className="inline-flex items-center gap-1 rounded-md border border-grey100-mode1 bg-transparent px-2 py-1 text-xs font-medium text-white-mode1 outline-none hover:border-primary400-mode1 disabled:cursor-not-allowed disabled:opacity-50"
           >
             ${i18n._('Next Code')}
-          <//>
+          </button>
         `}
         <${CopyButton} value=${code} testId="otp-copy-button" />
       `}

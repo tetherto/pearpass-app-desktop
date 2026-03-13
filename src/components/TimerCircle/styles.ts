@@ -1,16 +1,14 @@
 import { colors } from 'pearpass-lib-ui-theme-provider'
 
-const SIZE = 14
-
 export const styles = {
   wrapper: {
-    width: SIZE,
-    height: SIZE,
+    width: 14,
+    height: 14,
     flexShrink: 0
   },
   svg: {
-    width: SIZE,
-    height: SIZE,
+    width: 14,
+    height: 14,
     transform: 'rotate(-90deg)'
   },
   circleBg: {
