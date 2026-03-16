@@ -1,8 +1,6 @@
-import { darkTheme } from '@tetherto/pearpass-lib-ui-kit/theme'
+import type { ThemeColors } from '@tetherto/pearpass-lib-ui-kit/theme'
 
-const { colors } = darkTheme
-
-export const styles = {
+export const createStyles = (colors: ThemeColors) => ({
   dialog: {
     position: 'relative' as const,
     zIndex: 1,
@@ -105,4 +103,4 @@ export const styles = {
     overflow: 'hidden',
     alignItems: 'center'
   }
-}
+})

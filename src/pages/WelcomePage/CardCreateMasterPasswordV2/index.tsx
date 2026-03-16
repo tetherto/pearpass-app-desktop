@@ -18,8 +18,9 @@ import {
   InfoOutlined,
   ReportProblemRound
 } from '@tetherto/pearpass-lib-ui-kit/icons'
+import { useTheme } from '@tetherto/pearpass-lib-ui-kit/theme'
 
-import { styles } from './styles'
+import { createStyles } from './styles'
 import { LOCAL_STORAGE_KEYS } from '../../../constants/localStorage'
 import { useGlobalLoading } from '../../../context/LoadingContext'
 import { useRouter } from '../../../context/RouterContext'
@@ -36,6 +37,8 @@ export const CardCreateMasterPasswordV2 = () => {
   const { t } = useTranslation()
   const { currentPage, navigate } = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const { theme } = useTheme()
+  const styles = createStyles(theme.colors)
 
   useGlobalLoading({ isLoading })
 

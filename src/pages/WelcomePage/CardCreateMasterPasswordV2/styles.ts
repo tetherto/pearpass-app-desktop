@@ -1,8 +1,6 @@
-import { darkTheme } from '@tetherto/pearpass-lib-ui-kit/theme'
+import type { ThemeColors } from '@tetherto/pearpass-lib-ui-kit/theme'
 
-const { colors } = darkTheme
-
-export const styles = {
+export const createStyles = (colors: ThemeColors) => ({
   card: {
     background: colors.colorSurfacePrimary,
     border: `1px solid ${colors.colorBorderPrimary}`,
@@ -124,4 +122,4 @@ export const styles = {
     textDecoration: 'underline',
     textDecorationStyle: 'solid' as const
   }
-}
+})

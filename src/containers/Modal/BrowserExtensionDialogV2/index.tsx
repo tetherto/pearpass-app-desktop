@@ -2,8 +2,9 @@ import React from 'react'
 
 import { Button } from '@tetherto/pearpass-lib-ui-kit'
 import { Close, OpenInNew } from '@tetherto/pearpass-lib-ui-kit/icons'
+import { useTheme } from '@tetherto/pearpass-lib-ui-kit/theme'
 
-import { styles } from './styles'
+import { createStyles } from './styles'
 import { LOCAL_STORAGE_KEYS } from '../../../constants/localStorage'
 import { CHROME_EXTENSION_STORE_LINK } from '../../../constants/pearpassLinks'
 import { useModal } from '../../../context/ModalContext'
@@ -12,6 +13,8 @@ import { useTranslation } from '../../../hooks/useTranslation'
 export const BrowserExtensionDialogV2 = () => {
   const { t } = useTranslation()
   const { closeModal } = useModal()
+  const { theme } = useTheme()
+  const styles = createStyles(theme.colors)
 
   const handleDismiss = () => {
     localStorage.setItem(LOCAL_STORAGE_KEYS.EXTENSION_DIALOG_DISMISSED, 'true')
