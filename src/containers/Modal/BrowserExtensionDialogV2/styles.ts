@@ -1,7 +1,13 @@
+import { darkTheme } from '@tetherto/pearpass-lib-ui-kit/theme'
+
+const { colors } = darkTheme
+
 export const styles = {
   dialog: {
-    backgroundColor: '#15180e',
-    border: '1px solid #212814',
+    position: 'relative' as const,
+    zIndex: 1,
+    backgroundColor: colors.colorSurfacePrimary,
+    border: `1px solid ${colors.colorBorderPrimary}`,
     borderRadius: '8px',
     width: '500px',
     display: 'flex' as const,
@@ -13,11 +19,11 @@ export const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '12px 16px',
-    borderBottom: '1px solid #212814',
+    borderBottom: `1px solid ${colors.colorBorderPrimary}`,
     overflow: 'hidden'
   },
   headerTitle: {
-    color: 'white',
+    color: colors.colorTextPrimary,
     fontFamily: "'Inter', sans-serif",
     fontSize: '14px',
     fontWeight: 500,
@@ -28,7 +34,7 @@ export const styles = {
   closeButton: {
     background: 'none',
     border: 'none',
-    color: 'white',
+    color: colors.colorTextPrimary,
     cursor: 'pointer',
     display: 'flex' as const,
     alignItems: 'center',
@@ -51,130 +57,11 @@ export const styles = {
   },
   browserMockup: {
     width: '100%',
-    display: 'flex' as const,
-    flexDirection: 'column' as const,
     borderRadius: '8px',
-    overflow: 'hidden',
-    height: '80px'
-  },
-  tabBar: {
-    display: 'flex' as const,
-    alignItems: 'center',
-    gap: '8px',
-    padding: '8px 12px',
-    backgroundColor: '#202124',
-    opacity: 0.5,
-    borderTopLeftRadius: '8px',
-    borderTopRightRadius: '8px',
-    height: '42px',
-    boxSizing: 'border-box' as const
-  },
-  tabActive: {
-    display: 'flex' as const,
-    alignItems: 'center',
-    gap: '9px',
-    padding: '8px',
-    borderRadius: '8px 8px 0 0',
-    backgroundColor: '#35363a',
-    overflow: 'hidden'
-  },
-  tabFavicon: {
-    width: '16px',
-    height: '16px',
-    borderRadius: '16px',
-    backgroundColor: '#a7a7a7',
-    flexShrink: 0
-  },
-  tabTitle: {
-    width: '82px',
-    height: '10px',
-    borderRadius: '11px',
-    backgroundColor: '#a7a7a7'
-  },
-  tabClose: {
-    width: '18px',
-    height: '18px',
-    color: '#a7a7a7'
-  },
-  tabPlus: {
-    color: '#a7a7a7',
-    fontSize: '16px'
-  },
-  urlBar: {
-    display: 'flex' as const,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '5px 12px',
-    backgroundColor: '#35363a',
-    height: '38px',
-    boxSizing: 'border-box' as const
-  },
-  urlNavIcons: {
-    display: 'flex' as const,
-    gap: '4px',
-    opacity: 0.5,
-    alignItems: 'center'
-  },
-  navIcon: {
-    width: '16px',
-    height: '16px',
-    color: '#a7a7a7'
-  },
-  urlInputWrapper: {
-    display: 'flex' as const,
-    alignItems: 'center',
-    gap: '3px',
-    padding: '6px 10px',
-    backgroundColor: '#202124',
-    borderRadius: '14px',
-    height: '28px',
-    boxSizing: 'border-box' as const,
-    opacity: 0.5,
-    flex: 1,
-    margin: '0 12px',
-    overflow: 'hidden'
-  },
-  urlLock: {
-    width: '12px',
-    height: '12px',
-    color: '#a7a7a7',
-    flexShrink: 0
-  },
-  urlText: {
-    flex: 1,
-    height: '10px',
-    borderRadius: '11px',
-    backgroundColor: '#2b2c2f'
-  },
-  urlStar: {
-    width: '16px',
-    height: '16px',
-    color: '#a7a7a7',
-    flexShrink: 0
-  },
-  urlRightIcons: {
-    display: 'flex' as const,
-    gap: '13px',
-    alignItems: 'center'
-  },
-  vaultSymbol: {
-    width: '28px',
-    height: '28px',
-    borderRadius: '28px',
-    backgroundColor: '#202124',
-    display: 'flex' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#b0d944',
-    fontFamily: "'Inter', sans-serif",
-    fontSize: '10px',
-    fontWeight: 700
-  },
-  moreIcon: {
-    width: '16px',
-    height: '16px',
-    color: '#a7a7a7',
-    opacity: 0.5
+    height: '80px',
+    objectFit: 'cover' as const,
+    userSelect: 'none' as const,
+    pointerEvents: 'none' as const
   },
   textContent: {
     display: 'flex' as const,
@@ -188,7 +75,7 @@ export const styles = {
     fontFamily: "'Humble Nostalgia', sans-serif",
     fontSize: '28px',
     fontWeight: 400,
-    color: 'white',
+    color: colors.colorTextPrimary,
     margin: 0,
     whiteSpace: 'pre-wrap' as const
   },
@@ -196,7 +83,7 @@ export const styles = {
     fontFamily: "'Inter', sans-serif",
     fontSize: '14px',
     fontWeight: 400,
-    color: '#bdc3ac',
+    color: colors.colorTextSecondary,
     margin: 0,
     whiteSpace: 'pre-wrap' as const
   },
@@ -206,7 +93,7 @@ export const styles = {
     left: 0,
     right: 0,
     height: '20px',
-    background: 'linear-gradient(to bottom, rgba(21,24,14,0), rgba(21,24,14,0.7) 55%, #15180e)',
+    background: `linear-gradient(to bottom, rgba(21,24,14,0), rgba(21,24,14,0.7) 55%, ${colors.colorSurfacePrimary})`,
     pointerEvents: 'none' as const
   },
   footer: {
@@ -214,7 +101,7 @@ export const styles = {
     justifyContent: 'flex-end',
     gap: '8px',
     padding: '12px 16px',
-    borderTop: '1px solid #212814',
+    borderTop: `1px solid ${colors.colorBorderPrimary}`,
     overflow: 'hidden',
     alignItems: 'center'
   }
