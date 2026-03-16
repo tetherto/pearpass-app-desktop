@@ -114,7 +114,6 @@
     "dist:win": "npm run build && electron-forge make --platform=win32 --arch=x64 && npm run pear:build:win",
     "dist:linux:x64": "rm -rf dist && npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux AppImage --x64 && rm -rf out/linux-x64 && mkdir -p out/linux-x64 && cp dist/PearPass.AppImage out/linux-x64/PearPass.AppImage && npm install && npm run pear:build:linux:x64",
     "dist:linux:arm64": "rm -rf dist && npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux AppImage --arm64 && rm -rf out/linux-arm64 && mkdir -p out/linux-arm64 && cp dist/PearPass.AppImage out/linux-arm64/PearPass.AppImage && npm install && npm run pear:build:linux:arm64",
-    "dist:linux:all": "npm run dist:linux:x64 && npm run dist:linux:arm64",
     "dist:snap": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux snap && npm install",
     "dist:flatpak": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux flatpak && npm install",
     "pear:build:darwin:arm64": "npx pear-build --package=./package.json --darwin-arm64-app ./out/darwin-arm64/PearPass.app --target ../pearpass-app-desktop-$npm_package_version",
