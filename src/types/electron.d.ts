@@ -17,6 +17,7 @@ declare global {
       checkUpdated: () => Promise<boolean>
       vaultInvoke: (method: string, args?: unknown[]) => Promise<{ ok: boolean; data?: unknown; error?: string }>
       vaultOnUpdate: (cb: () => void) => () => void
+      openExternal: (url: string) => Promise<void>
     }
   }
 }

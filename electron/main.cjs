@@ -7,7 +7,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const { app, BrowserWindow, ipcMain, nativeImage } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeImage, shell } = require('electron')
 const PearRuntime = require('pear-runtime')
 const getPearRuntimeLegacyStorage = require('pear-runtime-legacy-storage')
 const { isLinux, isWindows, isMac } = require('which-runtime')
@@ -449,6 +449,10 @@ function registerIPC() {
     'runtime:checkUpdated',
     async () => !!(pearRuntime && pearRuntime.updated)
   )
+
+  ipcMain.handle('shell:openExternal', async (_event, url) => {
+    await shell.openExternal(url)
+  })
 
   ipcMain.handle('vault:invoke', async (_event, { method, args }) => {
     if (!vaultClient) {
