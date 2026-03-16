@@ -1,5 +1,5 @@
-// @ts-ignore - V2_DESIGN_ENABLED is added locally to pearpass-lib-constants
-import { V2_DESIGN_ENABLED } from 'pearpass-lib-constants'
+// @ts-ignore
+import { DESIGN_VERSION } from 'pearpass-lib-constants'
 // @ts-ignore - some hooks not resolved by TS due to re-export chain
 import { useCreateVault, useUserData, useVault, useVaults } from 'pearpass-lib-vault'
 
@@ -22,7 +22,7 @@ export const CardUnlockPearPass = () => {
   const handleSuccess = async (password: string) => {
     await initVaults({ password })
 
-    if (V2_DESIGN_ENABLED) {
+    if (DESIGN_VERSION === 2) {
       try {
         const freshVaults = await refetchVaults()
 

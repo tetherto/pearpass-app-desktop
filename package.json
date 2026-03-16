@@ -12,7 +12,7 @@
     "asar": false,
     "files": [
       "electron/**/*",
-    "dist/**/*",
+      "dist/**/*",
       "index.html",
       "index.js",
       "packages/**/*",
@@ -130,7 +130,6 @@
     "@electron-forge/cli": "^7.6.0",
     "@electron-forge/maker-dmg": "^7.6.0",
     "@electron-forge/maker-msix": "^7.6.0",
-
     "@electron/notarize": "^2.2.1",
     "@lingui/cli": "5.1.2",
     "@testing-library/dom": "^10.4.1",
@@ -179,7 +178,7 @@
     "@lingui/macro": "5.1.2",
     "@lingui/react": "5.1.2",
     "@rive-app/react-canvas": "4.22.1",
-    "@tetherto/pearpass-lib-ui-kit": "git+https://github.com/tetherto/pearpass-lib-ui-react-native-components.git#design-system-v2",
+    "@tetherto/pearpass-lib-ui-kit": "git+https://github.com/tetherto/pearpass-lib-ui-react-native-components.git",
     "bare-os": "3.6.2",
     "bare-subprocess": "5.2.1",
     "buffer": "6.0.3",
@@ -214,7 +213,6 @@
     "react-dom": "19.1.0",
     "styled-components": "6.1.19"
   },
-
   "overrides": {
     "@xmldom/xmldom": "^0.8.10",
     "react": "$react",
