@@ -2,13 +2,20 @@ name: Electron-builder Build
 
 on:
   push:
-    branches: [main, electron-migration]
+    branches: [main, dev, staging, electron-migration]
 
 jobs:
   build-linux:
     permissions:
       contents: write # to upload artifacts
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - arch: x64
+            runs_on: ubuntu-latest
+          - arch: arm64
+            runs_on: ubuntu-latest
+    runs-on: ${{ matrix.runs_on }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -20,15 +27,15 @@ jobs:
           PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          npm run dist:linux:all
+          npm run dist:linux:${{ matrix.arch }}
 
       - name: "Install @actions/artifact module"
         id: install-actions-artifact-module
         run: |
           npm install @actions/artifact@2.3.2 --global
           echo "NODE_PATH=$(npm root --quiet -g)" >> $GITHUB_ENV
-      
-      - name: "Extract Actions runtime variables" 
+
+      - name: "Extract Actions runtime variables"
         id: extract-runtime-environment-variables
         uses: actions/github-script@v7
         env:
@@ -38,36 +45,40 @@ jobs:
             core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
             core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
-            
-      - name: "Upload folders as artifacts"
+
+      - name: "Upload AppImage artifact"
         id: upload-artifacts
         run: |
-          import { createRequire } from 'node:module';
-          import fs from 'node:fs';
-          import path from 'node:path';
-          const require = createRequire(import.meta.url);
+          const fs = require('fs');
+          const path = require('path');
           const { DefaultArtifactClient } = require('@actions/artifact');
 
-          const artifact = new DefaultArtifactClient();
+          const arch = '${{ matrix.arch }}';
+          const file = `out/linux-${arch}/PearPass.AppImage`;
+          const name = `PearPass-${arch}.AppImage`;
 
-          const appImages = [
-            { file: 'out/linux-x64/PearPass.AppImage', name: 'PearPass-x64.AppImage' },
-            { file: 'out/linux-arm64/PearPass.AppImage', name: 'PearPass-arm64.AppImage' }
-          ];
-
-          for (const { file, name } of appImages) {
-            if (!fs.existsSync(file)) {
-              console.warn(`Skipping ${name}: ${file} not found`);
-              continue;
-            }
-            console.log(`Uploading artifact: ${name} from ${file}`);
-            await artifact.uploadArtifact(name, [file], path.dirname(file));
+          if (!fs.existsSync(file)) {
+            throw new Error(`Expected AppImage not found at ${file}`);
           }
+
+          const artifact = new DefaultArtifactClient();
+          console.log(`Uploading Linux ${arch} AppImage: ${name} from ${file}`);
+          artifact.uploadArtifact(name, [file], path.dirname(file));
         shell: node {0}
+
   build-macos:
     permissions:
       contents: write # to upload artifacts
-    runs-on: macos-latest
+    strategy:
+      matrix:
+        include:
+          - arch: arm64
+            runs_on: macos-latest
+            dmg_suffix: "-arm64"
+          - arch: x64
+            runs_on: macos-13
+            dmg_suffix: ""
+    runs-on: ${{ matrix.runs_on }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -116,15 +127,15 @@ jobs:
           PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          npm run dist:mac:ci
+          npm run dist:mac:ci:${{ matrix.arch }}
 
       - name: "Install @actions/artifact module"
         id: install-actions-artifact-module
         run: |
           npm install @actions/artifact@2.3.2 --global
           echo "NODE_PATH=$(npm root --quiet -g)" >> $GITHUB_ENV
-      
-      - name: "Extract Actions runtime variables" 
+
+      - name: "Extract Actions runtime variables"
         id: extract-runtime-environment-variables
         uses: actions/github-script@v7
         env:
@@ -134,8 +145,8 @@ jobs:
             core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
             core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
-            
-      - name: "Upload folders as artifacts"
+
+      - name: "Upload macOS DMG artifact"
         id: upload-artifacts
         run: |
           const fs = require('fs');
@@ -146,7 +157,7 @@ jobs:
           const productName = pkg.productName;
           const version = pkg.version;
 
-          const dmgName = `${productName}-${version}-arm64.dmg`;
+          const dmgName = `${productName}-${version}${{ matrix.dmg_suffix }}.dmg`;
           const dmgPath = path.join('dist', dmgName);
 
           if (!fs.existsSync(dmgPath)) {
@@ -154,9 +165,10 @@ jobs:
           }
 
           const artifact = new DefaultArtifactClient();
-          console.log(`Uploading macOS DMG: ${dmgName} from ${dmgPath}`);
+          console.log(`Uploading macOS ${{ matrix.arch }} DMG: ${dmgName} from ${dmgPath}`);
           artifact.uploadArtifact(dmgName, [dmgPath], 'dist');
         shell: node {0}
+
   build-win32:
     permissions:
       contents: write # to upload artifacts
@@ -180,8 +192,8 @@ jobs:
         run: |
           npm install @actions/artifact@2.3.2 --global
           echo "NODE_PATH=$(npm root --quiet -g)" >> $GITHUB_ENV
-      
-      - name: "Extract Actions runtime variables" 
+
+      - name: "Extract Actions runtime variables"
         id: extract-runtime-environment-variables
         uses: actions/github-script@v7
         env:
@@ -191,7 +203,7 @@ jobs:
             core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
             core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
-            
+
       - name: "Upload Windows MSIX artifact"
         id: upload-artifacts
         env:
