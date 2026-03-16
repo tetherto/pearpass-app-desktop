@@ -2,7 +2,7 @@ name: Electron-builder Build
 
 on:
   push:
-    branches: [main, dev, staging, electron-migration, ci-changes-electron-1]
+    branches: [main, dev, staging, electron-migration, ci-changes-electron-2]
 
 jobs:
   build-linux:
@@ -76,8 +76,8 @@ jobs:
             runs_on: macos-latest
             dmg_suffix: "-arm64"
           - arch: x64
-            runs_on: macos-13
-            dmg_suffix: ""
+            runs_on: macos-latest
+            dmg_suffix: "-x64"
     runs-on: ${{ matrix.runs_on }}
     steps:
       - uses: actions/checkout@v4
