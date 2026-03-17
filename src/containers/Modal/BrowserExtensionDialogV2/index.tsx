@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Button } from '@tetherto/pearpass-lib-ui-kit'
+import { Button, Dialog } from '@tetherto/pearpass-lib-ui-kit'
 import { Close, OpenInNew } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { useTheme } from '@tetherto/pearpass-lib-ui-kit/theme'
 
@@ -28,20 +28,35 @@ export const BrowserExtensionDialogV2 = () => {
   }
 
   return (
-    <div style={styles.dialog}>
-      <div style={styles.header}>
-        <p style={styles.headerTitle}>
-          {t('Improve your sign-in experience')}
-        </p>
-        <button
-          style={styles.closeButton}
-          onClick={handleDismiss}
-          aria-label="Close"
-        >
-          <Close width={16} height={16} />
-        </button>
-      </div>
-
+    <Dialog
+      title={
+        <div style={styles.customHeader}>
+          <span style={styles.headerTitle}>
+            {t('Improve your sign-in experience')}
+          </span>
+          <button
+            style={styles.closeButton}
+            onClick={handleDismiss}
+            aria-label="Close"
+          >
+            <Close width={16} height={16} />
+          </button>
+        </div>
+      }
+      open
+      onClose={handleDismiss}
+      hideCloseButton
+      footer={
+        <>
+          <Button variant="secondary" size="small" onClick={handleDismiss}>
+            {t("I'll do it later")}
+          </Button>
+          <Button variant="primary" size="small" onClick={handleDownload} iconBefore={<OpenInNew width={16} height={16} />}>
+            {t('Download Extension')}
+          </Button>
+        </>
+      }
+    >
       <div style={styles.body}>
         <img
           src="assets/images/browser_mockup.svg"
@@ -61,17 +76,7 @@ export const BrowserExtensionDialogV2 = () => {
           </p>
         </div>
 
-        <div style={styles.fadeGradient} />
       </div>
-
-      <div style={styles.footer}>
-        <Button variant="secondary" size="small" onClick={handleDismiss}>
-          {t("I'll do it later")}
-        </Button>
-        <Button variant="primary" size="small" onClick={handleDownload} iconBefore={<OpenInNew width={16} height={16} />}>
-          {t('Download Extension')}
-        </Button>
-      </div>
-    </div>
+    </Dialog>
   )
 }

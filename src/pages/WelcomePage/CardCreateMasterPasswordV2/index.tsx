@@ -11,7 +11,7 @@ import {
 } from 'pearpass-lib-vault/src/utils/buffer'
 // @ts-ignore - JS module without type declarations
 import { checkPasswordStrength } from 'pearpass-utils-password-check'
-import { AlertMessage, Button, PasswordField } from '@tetherto/pearpass-lib-ui-kit'
+import { AlertMessage, Button, Form, Link, PasswordField, Text, Title } from '@tetherto/pearpass-lib-ui-kit'
 import type { PasswordIndicatorVariant } from '@tetherto/pearpass-lib-ui-kit'
 import {
   KeyboardArrowRightFilled,
@@ -132,15 +132,19 @@ export const CardCreateMasterPasswordV2 = () => {
 
   return (
     <div style={styles.card}>
-      <form onSubmit={handleSubmit(onSubmit)} style={styles.container}>
+      {/* @ts-ignore - plain CSS objects passed to react-strict-dom components */}
+      <Form onSubmit={handleSubmit(onSubmit)} style={styles.container}>
         <div style={styles.header}>
-          <h2 style={styles.title}>{t('Create Master Password')}</h2>
-          <p style={styles.subtitle}>
-            <span>{t('Create a Master Password, or ')}</span>{' '}
-            <span style={styles.subtitleLink} onClick={handleLoadVaultClick}>
+          {/* @ts-ignore */}
+          <Title as="h2" style={styles.title}>{t('Create Master Password')}</Title>
+          {/* @ts-ignore */}
+          <Text as="p" style={styles.subtitle}>
+            <Text as="span">{t('Create a Master Password, or ')}</Text>{' '}
+            {/* @ts-ignore */}
+            <Link style={styles.subtitleLink} onClick={handleLoadVaultClick}>
               {t('continue with existing PearPass')}
-            </span>
-          </p>
+            </Link>
+          </Text>
         </div>
 
         <div style={styles.fieldsWrapper}>
@@ -158,11 +162,12 @@ export const CardCreateMasterPasswordV2 = () => {
                 <div style={styles.toastIcon}>
                   <InfoOutlined width={16} height={16} />
                 </div>
-                <span style={styles.toastText}>
+                {/* @ts-ignore */}
+                <Text as="span" style={styles.toastText}>
                   {t(
                     'Strong passwords are usually at least 8 characters long, hard to guess, use a mix of letters, numbers, and symbols, and aren\'t based on personal information.'
                   )}
-                </span>
+                </Text>
               </div>
             )}
           </div>
@@ -190,18 +195,19 @@ export const CardCreateMasterPasswordV2 = () => {
         </div>
 
         <div style={styles.footerRow}>
-          <div style={styles.touText}>
-            <span>{t('By clicking Continue, you confirm that you have read and agree to the ')}</span>{' '}
-            <a
+          {/* @ts-ignore */}
+          <Text as="span" style={styles.touText}>
+            <Text as="span">{t('By clicking Continue, you confirm that you have read and agree to the ')}</Text>{' '}
+            <Link
+              // @ts-ignore - plain CSS object
               style={styles.touLink}
               href={TERMS_OF_USE}
-              target="_blank"
-              rel="noopener noreferrer"
+              isExternal
             >
               {t('PearPass Application Terms of Use')}
-            </a>
-            <span>.</span>
-          </div>
+            </Link>
+            <Text as="span">.</Text>
+          </Text>
           <Button
             variant="primary"
             size="small"
@@ -213,7 +219,7 @@ export const CardCreateMasterPasswordV2 = () => {
             {t('Continue')}
           </Button>
         </div>
-      </form>
+      </Form>
     </div>
   )
 }

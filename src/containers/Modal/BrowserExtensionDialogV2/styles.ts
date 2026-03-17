@@ -1,32 +1,18 @@
 import type { ThemeColors } from '@tetherto/pearpass-lib-ui-kit/theme'
 
 export const createStyles = (colors: ThemeColors) => ({
-  dialog: {
-    position: 'relative' as const,
-    zIndex: 1,
-    backgroundColor: colors.colorSurfacePrimary,
-    border: `1px solid ${colors.colorBorderPrimary}`,
-    borderRadius: '8px',
-    width: '500px',
+  customHeader: {
     display: 'flex' as const,
-    flexDirection: 'column' as const,
-    overflow: 'hidden'
-  },
-  header: {
-    display: 'flex' as const,
-    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '12px 16px',
-    borderBottom: `1px solid ${colors.colorBorderPrimary}`,
-    overflow: 'hidden'
+    justifyContent: 'space-between',
+    width: '100%'
   },
   headerTitle: {
-    color: colors.colorTextPrimary,
     fontFamily: "'Inter', sans-serif",
     fontSize: '14px',
     fontWeight: 500,
     lineHeight: 'normal',
-    margin: 0,
+    color: colors.colorTextPrimary,
     whiteSpace: 'nowrap' as const
   },
   closeButton: {
@@ -47,10 +33,8 @@ export const createStyles = (colors: ThemeColors) => ({
     display: 'flex' as const,
     flexDirection: 'column' as const,
     alignItems: 'flex-start',
-    padding: '24px',
+    padding: '8px',
     gap: '32px',
-    overflowX: 'hidden' as const,
-    overflowY: 'auto' as const,
     position: 'relative' as const
   },
   browserMockup: {
@@ -85,22 +69,4 @@ export const createStyles = (colors: ThemeColors) => ({
     margin: 0,
     whiteSpace: 'pre-wrap' as const
   },
-  fadeGradient: {
-    position: 'absolute' as const,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: '20px',
-    background: `linear-gradient(to bottom, rgba(21,24,14,0), rgba(21,24,14,0.7) 55%, ${colors.colorSurfacePrimary})`,
-    pointerEvents: 'none' as const
-  },
-  footer: {
-    display: 'flex' as const,
-    justifyContent: 'flex-end',
-    gap: '8px',
-    padding: '12px 16px',
-    borderTop: `1px solid ${colors.colorBorderPrimary}`,
-    overflow: 'hidden',
-    alignItems: 'center'
-  }
 })
