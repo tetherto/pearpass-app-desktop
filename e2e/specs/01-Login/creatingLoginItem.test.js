@@ -11,7 +11,7 @@ import {
 import testData from '../../fixtures/test-data.js';
 import { qase } from 'playwright-qase-reporter';
 
-test.describe.only('Creating Login Item', () => {
+test.describe('Creating Login Item', () => {
   test.describe.configure({ mode: 'serial' })
 
   let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
@@ -19,18 +19,15 @@ test.describe.only('Creating Login Item', () => {
   test.beforeAll(async ({ app }) => {
     page = await app.getPage();
     const root = page.locator('body');
-
     loginPage = new LoginPage(root);
     vaultSelectPage = new VaultSelectPage(root);
     sideMenuPage = new SideMenuPage(root);
     utilities = new Utilities(root);
     mainPage = new MainPage(root);
 
-    // Login and setup vault
     await loginPage.loginToApplication(testData.credentials.validPassword);
     await vaultSelectPage.selectVaultbyName(testData.vault.name);
 
-    // Prepare the environment
     await sideMenuPage.selectSideBarCategory('login');
     await utilities.deleteAllElements();
     await mainPage.clickCreateNewElementButton('Create a login');
@@ -39,7 +36,6 @@ test.describe.only('Creating Login Item', () => {
   });
 
   test.beforeEach(async ({ app }) => {
-    // Re-bind to current page so we never use a closed page (avoids "Target page has been closed")
     page = await app.getPage()
     const root = page.locator('body')
     loginPage = new LoginPage(root)
@@ -53,12 +49,8 @@ test.describe.only('Creating Login Item', () => {
   })
 
   test.afterAll(async () => {
-    try {
-      if (utilities) await utilities.deleteAllElements()
-      if (sideMenuPage) await sideMenuPage.clickSidebarExitButton()
-    } catch (e) {
-      if (!e.message?.includes('closed') && !e.message?.includes('Target page')) throw e
-    }
+    await utilities.deleteAllElements()
+    await sideMenuPage.clickSidebarExitButton()
   })
 
   test('Creating the "Login" item', async ({ page }) => {
@@ -68,12 +60,11 @@ test.describe.only('Creating Login Item', () => {
     await createOrEditPage.fillCreateOrEditInput('password', 'Test Pass')
     await createOrEditPage.fillCreateOrEditInput('website', 'https://www.website.co')
     await createOrEditPage.fillCreateOrEditInput('note', 'Test Note')
-
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await page.waitForTimeout(testData.timeouts.action)
   })
 
-  test('Viewing created item - all fields match ', async ({ page }) => {
+  test('Viewing created item. Verify item details', async ({ page }) => {
     qase.id(1929);
     await mainPage.verifyElementTitle('Login Title')
     await mainPage.openElementDetails()
@@ -97,14 +88,10 @@ test.describe.only('Creating Login Item', () => {
     await sideMenuPage.clickSidebarAddButton()
     await detailsPage.fillCreateNewFolderTitleInput('Test Folder')
     await detailsPage.clickCreateFolderButton()
-
-    // await mainPage.openElementDetails()
-
     await detailsPage.editElement()
     await createOrEditPage.openDropdownMenu()
     await createOrEditPage.selectFromDropdownMenu('Test Folder')
     await createOrEditPage.clickOnCreateOrEditButton('save')
-
     await detailsPage.getItemDetailsFolderName('Test Folder')
     await mainPage.verifyElementFolderName('Test Folder')
   })
@@ -167,7 +154,6 @@ test.describe.only('Creating Login Item', () => {
     await createOrEditPage.clickCustomItemOptionNote()
     await expect(createOrEditPage.customNoteInput).toHaveCount(1)
     await createOrEditPage.fillCustomNoteInput()
-
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await page.waitForTimeout(testData.timeouts.action)
     await mainPage.clickDetailsCloseButton()
@@ -207,7 +193,6 @@ test.describe.only('Creating Login Item', () => {
     await createOrEditPage.verifyUploadedFileIsVisible()
     await createOrEditPage.clickOnUploadedFile()
     await createOrEditPage.verifyUploadedImageIsVisible()
-
     await createOrEditPage.clickElementItemCloseButton()
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await page.waitForTimeout(testData.timeouts.action)
@@ -233,16 +218,12 @@ test.describe.only('Creating Login Item', () => {
     await mainPage.verifyElementTitle('Login Title')
     await mainPage.openElementDetails()
     await detailsPage.editElement()
-    
     await createOrEditPage.fillCreateOrEditInput('username', '')
     await createOrEditPage.fillCreateOrEditInput('password', '')
     await createOrEditPage.fillCreateOrEditInput('website', '')
     await createOrEditPage.fillCreateOrEditInput('note', '')
-
     await createOrEditPage.clickOnCreateOrEditButton('save')
-
     await mainPage.openElementDetails()
-
     await detailsPage.verifyItemDetailsValue('https://', '')
     await detailsPage.verifyItemDetailsValueIsNotVisible('Email or username')
     await detailsPage.verifyItemDetailsValueIsNotVisible('Password')

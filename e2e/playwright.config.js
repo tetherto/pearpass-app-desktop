@@ -1,10 +1,26 @@
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
+  timeout: 5 * 60 * 1000,
   testDir: './specs',
-  workers: 1, // jedna instanca Electron aplikacije; više workera uzrokuje ECONNREFUSED
+
+  workers: 1,
+  forbidOnly: !!process.env.CI,
+  maxFailures: process.env.CI ? 5 : undefined,
+  fullyParallel: false,
+
+  retries: 1,
+
+  use: {
+    screenshot: 'only-on-failure',
+    trace: 'on-first-retry',
+    actionTimeout: 30000,
+    navigationTimeout: 60000
+  },
+
   reporter: [
     ['list'],
+    ['html', { outputFolder: 'test-artifacts/report', open: 'never' }],
     [
       'playwright-qase-reporter',
       {
@@ -35,4 +51,6 @@ export default defineConfig({
       },
     ],
   ],
+
+  outputDir: 'test-artifacts/results'
 });

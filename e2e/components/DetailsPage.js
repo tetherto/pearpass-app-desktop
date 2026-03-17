@@ -210,16 +210,16 @@ class DetailsPage {
         await yesButton.click()
     }
 
-    async deleteElementFromDetails() {
-        while (!(await this.collectionEmptyText.isVisible())) {
-            await this.element.first().click();
-            await this.itemBarThreeDots.click();
-            await this.deleteElementButton.click();
-            await this.root.getByText('Yes').click();
+    // async deleteElementFromDetails() {
+    //     while (!(await this.collectionEmptyText.isVisible())) {
+    //         await this.element.first().click();
+    //         await this.itemBarThreeDots.click();
+    //         await this.deleteElementButton.click();
+    //         await this.root.getByText('Yes').click();
 
-            await expect(this.collectionEmptyText).toBeVisible({ timeout: 5000 }).catch(() => { });
-        }
-    }
+    //         await expect(this.collectionEmptyText).toBeVisible({ timeout: 5000 }).catch(() => { });
+    //     }
+    // }
 
     async clickShowHidePasswordButton() {
         await expect(this.elementItemPasswordShowHide).toBeVisible();

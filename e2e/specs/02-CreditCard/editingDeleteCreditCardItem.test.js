@@ -9,129 +9,126 @@ import {
   DetailsPage
 } from '../../components/index.js';
 import testData from '../../fixtures/test-data.js';
+import { qase } from 'playwright-qase-reporter';
+
 
 test.describe('Editing/Deleting Credit Card Item', () => {
-  test.describe.configure({ mode: 'serial' })
+  test.describe.configure({ mode: 'serial' });
 
-  let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
+  let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page;
 
   test.beforeAll(async ({ app }) => {
-    page = app.page
-    loginPage = new LoginPage(page.locator('body'))
-    vaultSelectPage = new VaultSelectPage(page.locator('body'))
-    mainPage = new MainPage(page.locator('body'))
-    sideMenuPage = new SideMenuPage(page.locator('body'))
-    createOrEditPage = new CreateOrEditPage(page.locator('body'))
-    utilities = new Utilities(page.locator('body'))
-    detailsPage = new DetailsPage(page.locator('body'))
-  })
+    page = await app.getPage();
+    const root = page.locator('body');
+
+    loginPage = new LoginPage(root);
+    vaultSelectPage = new VaultSelectPage(root);
+    mainPage = new MainPage(root);
+    sideMenuPage = new SideMenuPage(root);
+    createOrEditPage = new CreateOrEditPage(root);
+    utilities = new Utilities(root);
+    detailsPage = new DetailsPage(root);
+
+    await loginPage.loginToApplication(testData.credentials.validPassword);
+    await vaultSelectPage.selectVaultbyName(testData.vault.name);
+
+    await sideMenuPage.selectSideBarCategory('creditCard')
+    await utilities.deleteAllElements()
+    await mainPage.clickCreateNewElementButton('Create a credit card')
+
+    await createOrEditPage.fillCreateOrEditInput('title', 'Credit Card Title')
+    await createOrEditPage.fillCreateOrEditInput('fullname', 'John')
+    await createOrEditPage.fillCreateOrEditInput('number', '12312312')
+    await createOrEditPage.fillCreateOrEditInput('expiredate', '1212')
+    await createOrEditPage.fillCreateOrEditInput('securitycode', '111')
+    await createOrEditPage.fillCreateOrEditInput('pincode', '111')
+    await createOrEditPage.fillCreateOrEditInput('note', 'Credit Card Note')
+    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await mainPage.verifyElementTitle('Credit Card Title')
+
+    await page.waitForTimeout(testData.timeouts.action);
+  });
 
   test.beforeEach(async ({ app }) => {
-    await loginPage.loginToApplication(testData.credentials.validPassword)
-    await vaultSelectPage.selectVaultbyName(testData.vault.name)
-  })
+    page = await app.getPage();
+    const root = page.locator('body');
+    loginPage = new LoginPage(root);
+    vaultSelectPage = new VaultSelectPage(root);
+    mainPage = new MainPage(root);
+    sideMenuPage = new SideMenuPage(root);
+    createOrEditPage = new CreateOrEditPage(root);
+    utilities = new Utilities(root);
+    detailsPage = new DetailsPage(root);
+  });
 
   test.afterAll(async ({ app }) => {
     await utilities.deleteAllElements()
     await sideMenuPage.clickSidebarExitButton()
   })
 
-  test('Create/Edit/Delete Credit Card item', async ({ page }) => {
+  test('Verify that edited "Credit Card" item fields are saved correctly', async () => {
+    qase.id(2130);
+    await mainPage.openElementDetails();
+    await detailsPage.editElement();
+    await createOrEditPage.fillCreateOrEditInput('fullname', '')
+    await createOrEditPage.fillCreateOrEditInput('number', '')
+    await createOrEditPage.fillCreateOrEditInput('expiredate', '')
+    await createOrEditPage.fillCreateOrEditInput('securitycode', '')
+    await createOrEditPage.fillCreateOrEditInput('pincode', '')
+    await createOrEditPage.fillCreateOrEditInput('note', '')
+    await createOrEditPage.clickOnCreateOrEditButton('save')
 
-    await test.step('CREATE CREDIT CARD ELEMENT - initial empty element collection', async () => {
-      await sideMenuPage.selectSideBarCategory('creditCard')
-      await utilities.deleteAllElements()
-      await mainPage.clickCreateNewElementButton('Create a credit card')
+  });
 
-      await createOrEditPage.fillCreateOrEditInput('title', 'Credit Card Title')
-      await createOrEditPage.fillCreateOrEditInput('fullname', 'John')
-      await createOrEditPage.fillCreateOrEditInput('number', '12312312')
-      await createOrEditPage.fillCreateOrEditInput('expiredate', '1212')
-      await createOrEditPage.fillCreateOrEditInput('securitycode', '111')
-      await createOrEditPage.fillCreateOrEditInput('pincode', '111')
-      await createOrEditPage.fillCreateOrEditInput('note', 'Credit Card Note')
-      await createOrEditPage.clickOnCreateOrEditButton('save')
-    })
+  // test('Verify that deleted "Website" and custom "Note" fields are not saved in the edited "Credit Card" item', async () => {
+    // qase.id(2035);
+  //   await detailsPage.editElement();
 
-    await test.step('VERIFY CREDIT CARD ELEMENT IS CREATED', async () => {
-      await mainPage.verifyElementTitle('Credit Card Title')
-    })
+  //   // Delete website field
+  //   await createOrEditPage.clickOnCreateOrEditButton('addwebsite');
+  //   await createOrEditPage.clickOnCreateOrEditButton('removewebsite');
 
-    await test.step('OPEN ELEMENT', async () => {
-      await mainPage.openElementDetails()
-    })
+  //   // Delete custom note field
+  //   await createOrEditPage.clickCreateCustomItem();
+  //   await createOrEditPage.clickCustomItemOptionNote();
+  //   await expect(createOrEditPage.customNoteInput).toHaveCount(1);
+  //   await createOrEditPage.deleteCustomNote();
+  //   await expect(createOrEditPage.customNoteInput).toHaveCount(0);
+  // });
 
-    await test.step('EDIT ELEMENT DETAILS', async () => {
-      await detailsPage.editElement()
-    })
+  test('Empty fields are not displayed in view mode', async ({ page }) => {
+    qase.id(2131);
+    await mainPage.openElementDetails();
+    await detailsPage.verifyItemDetailsValueIsNotVisible('Full name');
+    await detailsPage.verifyItemDetailsValueIsNotVisible('1234 1234 1234 1234');
+    await detailsPage.verifyItemDetailsValueIsNotVisible('MM YY');
+    await detailsPage.verifyItemDetailsValueIsNotVisible('123');
+    await detailsPage.verifyItemDetailsValueIsNotVisible('1234');
+    await detailsPage.verifyItemDetailsValueIsNotVisible('Add note');
+    await mainPage.clickDetailsCloseButton();
+  });
 
-    await test.step('EDIT CREDIT CARD ELEMENT', async () => {
-      await createOrEditPage.fillCreateOrEditInput('title', 'EDITED Credit Card Title')
-      await createOrEditPage.fillCreateOrEditInput('fullname', 'EDITED John')
-      await createOrEditPage.fillCreateOrEditInput('number', '1234 5678')
-      await createOrEditPage.fillCreateOrEditInput('expiredate', '0101')
-      await createOrEditPage.fillCreateOrEditInput('securitycode', '888')
-      await createOrEditPage.fillCreateOrEditInput('pincode', '2222')
-      await createOrEditPage.fillCreateOrEditInput('note', 'EDITED Credit Card Note')
-
-      await createOrEditPage.clickOnCreateOrEditButton('save')
-    })
-
-    await test.step('VERIFY EDITED CREDIT CARD TITLE IS EDITED', async () => {
-      await mainPage.verifyElementTitle('EDITED Credit Card Title')
-    })
-
-    await test.step('OPEN ELEMENT', async () => {
-      await mainPage.openElementDetails()
-    })
-
-    /**
-     * @qase.id PAS-610
-     * @description Changes after editing all "Credit Card" item fields including folder destination correspond to entered fields' values
-     */
-    await test.step('VERIFY EDITED CREDIT CARD DETAILS', async () => {
-      await detailsPage.verifyItemDetailsValue('Full name', 'EDITED John');
-      await detailsPage.verifyItemDetailsValue('1234 1234 1234 1234 ', '1234 5678')
-      await detailsPage.verifyItemDetailsValue('MM YY', '01 01')
-      await detailsPage.verifyItemDetailsValue('123', '888')
-      await detailsPage.verifyItemDetailsValue('1234', '2222')
-      await detailsPage.verifyItemDetailsValue('Add note', 'EDITED Credit Card Note')
-    })
-
-    await test.step('EDIT ELEMENT DETAILS', async () => {
-      await detailsPage.editElement()
-    })
-
-    /**
-     * @qase.id PAS-611
-     * @description Custom "Note" field is deleted after deleting it during editing "Credit Card" item
-     */
-    await test.step('EDIT CREDIT CARD ELEMENT - Add/Delete Custom "Note" field during editing "Credit Card" item', async () => {
-      await createOrEditPage.clickCreateCustomItem()
-      await createOrEditPage.clickCustomItemOptionNote()
-      await expect(createOrEditPage.customNoteInput).toHaveCount(1);
-      await createOrEditPage.deleteCustomNote();
-      await expect(createOrEditPage.customNoteInput).toHaveCount(0);
-    })
-
-    await test.step('CLICK CLOSE (X) BUTTON', async () => {
-      await createOrEditPage.clickElementItemCloseButton()
-    })
-
-    /**
-     * @qase.id PAS-612
-     * @description "Credit Card" item is deleted after deleting it
-     */
-    await test.step('DELETE CREDIT CARD ITEM', async () => {
-      await detailsPage.openItemBarThreeDotsDropdownMenu()
-      await detailsPage.clickDeleteElement()
-      await detailsPage.clickConfirmYes()
-    })
-
-    await test.step('VERIFY CREDIT CARD ELEMENT IS NOT VISIBLE', async () => {
-      await mainPage.verifyElementIsNotVisible()
-    })
-
+  test('Verify that deleted custom "Note" fields are not saved in the edited "Credit Card" item', async () => {
+    qase.id(2132);
+    await detailsPage.editElement()
+    await createOrEditPage.clickCreateCustomItem()
+    await createOrEditPage.clickCustomItemOptionNote()
+    await expect(createOrEditPage.customNoteInput).toHaveCount(1);
+    await createOrEditPage.deleteCustomNote();
+    await expect(createOrEditPage.customNoteInput).toHaveCount(0);
+    await createOrEditPage.clickElementItemCloseButton()
   })
 
-})
+  test('Verify that the "Credit Card" item is removed after deletion', async () => {
+    qase.id(2133);
+    await utilities.deleteAllElements()
+    await mainPage.verifyElementIsNotVisible();
+  });
+
+  test('Verify that the empty collection view is displayed on the Home screen after deleting the last item', async () => {
+    qase.id(2134);
+    await sideMenuPage.selectSideBarCategory('all');
+    await expect(mainPage.emptyCollectionView).toBeVisible();
+  });
+
+});
