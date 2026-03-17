@@ -20,5 +20,5 @@ export const ContentWrapper = styled.div`
   height: 100%;
   flex: 1;
   padding-top: 13px;
-  overflow-y: auto;
+  overflow: hidden;
 `

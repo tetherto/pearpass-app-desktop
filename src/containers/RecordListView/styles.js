@@ -38,9 +38,10 @@ export const Folder = styled.div`
 
 export const RecordsSection = styled.div`
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  position: relative;
 `
 
 export const DatePeriod = styled.div`
