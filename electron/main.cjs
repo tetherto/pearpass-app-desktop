@@ -11,7 +11,16 @@ const { app, BrowserWindow, ipcMain, nativeImage } = require('electron')
 const PearRuntime = require('pear-runtime')
 const getPearRuntimeLegacyStorage = require('pear-runtime-legacy-storage')
 const { isLinux, isWindows, isMac } = require('which-runtime')
-const debugMode = false
+let debugMode = false
+
+;(async () => {
+  try {
+    const { DEBUG_MODE } = await import('../src/constants/appConstants.js')
+    debugMode = DEBUG_MODE
+  } catch {
+    // fall back to default debugMode = false
+  }
+})()
 
 const pkg = require('../package.json')
 const runtimeConfig = require('./runtime-config.cjs')
@@ -330,6 +339,7 @@ async function startWorkletOnly() {
 }
 
 function createWindow() {
+  const isV2 = runtimeConfig.designVersion === 2
   // Resolve app icon per-platform
   let iconPath = null
   if (process.platform === 'darwin') {
@@ -365,7 +375,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1440,
     height: 1024,
-    ...(process.platform === 'darwin'
+    ...(isMac && isV2
       ? {
           titleBarStyle: 'hidden',
           trafficLightPosition: { x: 18, y: 12 }
@@ -373,6 +383,7 @@ function createWindow() {
       : {}),
     backgroundColor: '#1F2430',
     icon: iconPath && iconImage && !iconImage.isEmpty() ? iconPath : undefined,
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       nodeIntegration: true,
@@ -386,6 +397,40 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+}
+
+function fromSerializableArg(data) {
+  if (data && typeof data === 'object' && data.__base64) {
+    return Buffer.from(data.__base64, 'base64')
+  }
+  if (data && typeof data === 'object' && !Array.isArray(data)) {
+    const out = {}
+    for (const k of Object.keys(data)) {
+      out[k] = fromSerializableArg(data[k])
+    }
+    return out
+  }
+  if (Array.isArray(data)) {
+    return data.map(fromSerializableArg)
+  }
+  return data
+}
+
+function toSerializableArg(value) {
+  if (Buffer.isBuffer(value)) {
+    return { __base64: value.toString('base64') }
+  }
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    const out = {}
+    for (const k of Object.keys(value)) {
+      out[k] = toSerializableArg(value[k])
+    }
+    return out
+  }
+  if (Array.isArray(value)) {
+    return value.map(toSerializableArg)
+  }
+  return value
 }
 
 function registerIPC() {
@@ -469,18 +514,10 @@ function registerIPC() {
       throw new Error(`Unknown vault method: ${method}`)
     }
     const rawArgs = args || []
-    const deserialized = rawArgs.map((arg) => {
-      if (arg && typeof arg === 'object' && arg.__base64) {
-        return Buffer.from(arg.__base64, 'base64')
-      }
-      return arg
-    })
+    const deserialized = rawArgs.map(fromSerializableArg)
     try {
-      let result = await fn.apply(vaultClient, deserialized)
-      if (Buffer.isBuffer(result)) {
-        result = { __base64: result.toString('base64') }
-      }
-      return { ok: true, data: result }
+      const result = await fn.apply(vaultClient, deserialized)
+      return { ok: true, data: toSerializableArg(result) }
     } catch (err) {
       return {
         ok: false,

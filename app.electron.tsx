@@ -22,6 +22,7 @@ import { startNativeMessagingIPC } from './src/services/nativeMessagingIPCServer
 import { logger } from './src/utils/logger'
 import { setFontsAndResetCSS } from './styles'
 import { AutoLockProvider } from './src/hooks/useAutoLockPreferences'
+import { DEBUG_MODE } from './src/constants/appConstants'
 
 setFontsAndResetCSS()
 i18n.load('en', messages)
@@ -85,7 +86,7 @@ async function init() {
   // Seed shared PearPass client singleton so code that calls
   // createOrGetPearpassClient() without arguments (e.g. extension pairing)
   // can reuse this Electron vault client instance and storage path.
-  createOrGetPearpassClient(client as any, config.storage, { debugMode: true })
+  createOrGetPearpassClient(client as any, config.storage, { debugMode: DEBUG_MODE })
 
   setPearpassVaultClient(client)
   if (getNativeMessagingEnabled()) {

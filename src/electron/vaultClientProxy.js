@@ -44,6 +44,16 @@ function fromSerializableData(data) {
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i)
     return typeof Buffer !== 'undefined' ? Buffer.from(bytes) : bytes
   }
+  if (data && typeof data === 'object' && !Array.isArray(data)) {
+    const out = {}
+    for (const k of Object.keys(data)) {
+      out[k] = fromSerializableData(data[k])
+    }
+    return out
+  }
+  if (Array.isArray(data)) {
+    return data.map(fromSerializableData)
+  }
   return data
 }
 
