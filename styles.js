@@ -21,7 +21,11 @@ export const setFontsAndResetCSS = () => {
         format('truetype');
     }
 
-    @layer reset {
+    @layer globals {
+      :root {
+        --title-bar-height: ${process.platform === 'darwin' ? '44px' : '0px'};
+      }
+
       pear-ctrl[data-platform='darwin'] {
         margin-top: 12px;
         margin-left: 10px;
@@ -111,8 +115,6 @@ export const setFontsAndResetCSS = () => {
         margin: 0;
         padding: 0;
         border: 0;
-        font-size: 100%;
-        font: inherit;
         vertical-align: baseline;
       }
       article,
@@ -134,15 +136,20 @@ export const setFontsAndResetCSS = () => {
       }
       html {
         height: 100%;
-        display: flex;
-        padding-top: var(--title-bar-height);
+        overflow: hidden;
+        background-color: ${({ theme }) => theme.colors.colorBackground};
       }
       body {
+        height: 100%;
         line-height: 1;
-        flex: 1;
+        font-family: 'Inter';
+        font-size: 16px;
+        overflow: hidden;
+        background-color: ${({ theme }) => theme.colors.colorBackground};
       }
       #root {
         height: 100%;
+        overflow: hidden;
       }
       #bar {
         backdrop-filter: blur(64px);
@@ -151,12 +158,13 @@ export const setFontsAndResetCSS = () => {
         padding: 0;
         color: ${({ theme }) => theme.colors.white.mode1};
         white-space: nowrap;
-        position: fixed;
-        z-index: 10000;
-        width: 100%;
-        left: 0;
-        top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: ${process.platform === 'darwin' ? 'auto' : 'none'};
+        visibility: ${process.platform === 'darwin' ? 'visible' : 'hidden'};
       }
+
       ol,
       ul {
         list-style: none;

@@ -15,8 +15,14 @@ const watch = process.argv.includes('--watch')
 const require = createRequire(import.meta.url)
 const postcss = require('postcss')
 const babel = require('@babel/core')
+const fg = require('fast-glob')
 const reactStrictDomPostcssPlugin = require('react-strict-dom/postcss-plugin')
 const strictDomBabelConfig = require(path.join(root, 'babel.strict-dom.cjs'))
+const strictDomCssInclude = [
+  'app.electron.tsx',
+  'src/**/*.{js,jsx,mjs,ts,tsx}',
+  'node_modules/@tetherto/pearpass-lib-ui-kit/dist/**/*.js'
+]
 const strictDomRuntimePaths = [
   `${path.sep}node_modules${path.sep}react-strict-dom${path.sep}dist${path.sep}`,
   `${path.sep}node_modules${path.sep}@tetherto${path.sep}pearpass-lib-ui-kit${path.sep}dist${path.sep}`
@@ -63,14 +69,16 @@ function strictDomCssPlugin() {
     setup(build) {
       build.onLoad({ filter: /strict\.css$/ }, async (args) => {
         const source = await readFile(args.path, 'utf8')
+        const watchFiles = fg.sync(strictDomCssInclude, {
+          cwd: root,
+          absolute: true,
+          onlyFiles: true,
+          dot: false
+        })
         const result = await postcss([
           reactStrictDomPostcssPlugin({
             cwd: root,
-            include: [
-              'app.electron.tsx',
-              'src/**/*.{js,jsx,mjs,ts,tsx}',
-              'node_modules/@tetherto/pearpass-lib-ui-kit/dist/**/*.js'
-            ],
+            include: strictDomCssInclude,
             babelConfig: strictDomBabelConfig,
             useCSSLayers: true
           })
@@ -79,7 +87,8 @@ function strictDomCssPlugin() {
         return {
           contents: result.css,
           loader: 'css',
-          resolveDir: path.dirname(args.path)
+          resolveDir: path.dirname(args.path),
+          watchFiles
         }
       })
     }

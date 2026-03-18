@@ -1,5 +1,5 @@
-import type { ThemeColors } from '@tetherto/pearpass-lib-ui-kit/theme'
-import { rawTokens } from '@tetherto/pearpass-lib-ui-kit/theme'
+import type { ThemeColors } from '@tetherto/pearpass-lib-ui-kit'
+import { rawTokens } from '@tetherto/pearpass-lib-ui-kit'
 
 export const createStyles = (colors: ThemeColors) => ({
   card: {

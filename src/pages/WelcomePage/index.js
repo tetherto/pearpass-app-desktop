@@ -1,13 +1,13 @@
 import React from 'react'
 
 import { html } from 'htm/react'
-import { DESIGN_VERSION } from 'pearpass-lib-constants'
 
 import { CardCreateMasterPassword } from './CardCreateMasterPassword'
 import { CardCreateMasterPasswordV2 } from './CardCreateMasterPasswordV2'
 import { CardLoadVault } from './CardLoadVault'
 import { CardNewVaultCredentials } from './CardNewVaultCredentials'
 import { CardUnlockPearPass } from './CardUnlockPearPass'
+import { CardUnlockPearPassV2 } from './CardUnlockPearPassV2'
 import { CardUnlockVault } from './CardUnlockVault'
 import { CardUploadBackupFile } from './CardUploadBackupFile'
 import { CardVaultSelect } from './CardVaultSelect'
@@ -16,22 +16,22 @@ import { CardVaultActions, PageContainer } from './styles'
 import { InitialPageWrapper } from '../../components/InitialPageWrapper'
 import { NAVIGATION_ROUTES } from '../../constants/navigation'
 import { useRouter } from '../../context/RouterContext'
+import { isV2 } from '../../utils/designVersion'
 
-const V2_STATES = new Set([NAVIGATION_ROUTES.CREATE_MASTER_PASSWORD])
+const V2_STATES = new Set([
+  NAVIGATION_ROUTES.CREATE_MASTER_PASSWORD,
+  NAVIGATION_ROUTES.MASTER_PASSWORD
+])
 
 export const WelcomePage = () => {
   const { data } = useRouter()
 
-  const isV2Screen = DESIGN_VERSION === 2 && V2_STATES.has(data.state)
-
   const Card = React.useMemo(() => {
     switch (data.state) {
       case NAVIGATION_ROUTES.CREATE_MASTER_PASSWORD:
-        return DESIGN_VERSION === 2
-          ? CardCreateMasterPasswordV2
-          : CardCreateMasterPassword
+        return isV2() ? CardCreateMasterPasswordV2 : CardCreateMasterPassword
       case NAVIGATION_ROUTES.MASTER_PASSWORD:
-        return CardUnlockPearPass
+        return isV2() ? CardUnlockPearPassV2 : CardUnlockPearPass
       case NAVIGATION_ROUTES.VAULTS:
         return CardVaultSelect
       case NAVIGATION_ROUTES.LOAD_VAULT:
@@ -49,12 +49,8 @@ export const WelcomePage = () => {
     }
   }, [data.state])
 
-  if (isV2Screen) {
-    return html`
-      <${PageContainer}>
-        <${Card} />
-      <//>
-    `
+  if (isV2() && V2_STATES.has(data.state)) {
+    return html`<${Card} />`
   }
 
   return html`
