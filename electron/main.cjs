@@ -7,7 +7,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const { app, BrowserWindow, ipcMain, nativeImage } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeImage, shell } = require('electron')
 const PearRuntime = require('pear-runtime')
 const getPearRuntimeLegacyStorage = require('pear-runtime-legacy-storage')
 const { isLinux, isWindows, isMac } = require('which-runtime')
@@ -393,6 +393,20 @@ function createWindow() {
   })
 
   mainWindow.loadFile(path.join(__dirname, '..', 'index.html'))
+
+  // Open external links in the default browser instead of the Electron window
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url)
+    return { action: 'deny' }
+  })
+
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    const appUrl = mainWindow.webContents.getURL()
+    if (url !== appUrl) {
+      event.preventDefault()
+      shell.openExternal(url)
+    }
+  })
 
   mainWindow.on('closed', () => {
     mainWindow = null
