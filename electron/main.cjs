@@ -20,6 +20,13 @@ const {
 } = require('../src/utils/createMainProcessLogger.cjs')
 
 const logger = createMainProcessLogger({ app, debugMode })
+
+if (isLinux && app.isPackaged) {
+  // AppImage users can hit chrome-sandbox permission failures on some distros.
+  // Disable Chromium sandbox only for packaged Linux builds as a compatibility fallback.
+  app.commandLine.appendSwitch('no-sandbox')
+  app.commandLine.appendSwitch('disable-setuid-sandbox')
+}
 // Enable auto-reload during development for main + renderer code
 if (!app.isPackaged) {
   try {
