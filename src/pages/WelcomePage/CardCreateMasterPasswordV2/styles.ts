@@ -22,103 +22,71 @@ export const createStyles = (colors: ThemeColors) => ({
   container: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '24px',
+    gap: `${rawTokens.spacing24}px`,
     alignItems: 'stretch',
     justifyContent: 'center',
     width: '100%',
-    maxWidth: '500px',
-    borderRadius: '8px'
+    maxWidth: '500px'
   },
 
   header: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '6px',
+    gap: `${rawTokens.spacing6}px`,
     width: '100%'
-  },
-  title: {
-    fontFamily: "'Humble Nostalgia', sans-serif",
-    fontSize: '28px',
-    fontWeight: 400,
-    color: colors.colorTextTertiary,
-    margin: 0,
-    lineHeight: 'normal'
-  },
-  subtitle: {
-    color: colors.colorTextPrimary,
-    fontFamily: "'Inter', sans-serif",
-    fontSize: '14px',
-    fontWeight: 400,
-    lineHeight: 'normal',
-    margin: 0
-  },
-  subtitleLink: {
-    color: colors.colorPrimary,
-    cursor: 'pointer',
-    textDecoration: 'underline',
-    textDecorationStyle: 'solid' as const
   },
 
   fieldsWrapper: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '12px',
+    gap: `${rawTokens.spacing12}px`,
     width: '100%'
   },
 
   passwordWrapper: {
     display: 'flex',
     flexDirection: 'column' as const,
-    borderRadius: '8px',
     width: '100%',
     isolation: 'isolate' as const
   },
 
   toast: {
     display: 'flex',
-    gap: '8px',
+    gap: `${rawTokens.spacing8}px`,
     alignItems: 'center',
-    padding: '12px',
+    padding: `${rawTokens.spacing12}px`,
     backgroundColor: colors.colorSurfaceHover,
     border: `1px solid ${colors.colorBorderSecondary}`,
     borderTop: 'none',
-    borderBottomLeftRadius: '8px',
-    borderBottomRightRadius: '8px',
+    borderBottomLeftRadius: `${rawTokens.radius8}px`,
+    borderBottomRightRadius: `${rawTokens.radius8}px`,
     width: '100%',
     boxSizing: 'border-box' as const,
     zIndex: 1
   },
   toastIcon: {
     flexShrink: 0,
-    width: '16px',
-    height: '16px',
+    width: `${rawTokens.spacing16}px`,
+    height: `${rawTokens.spacing16}px`,
     color: colors.colorTextTertiary
   },
-  toastText: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: '12px',
-    fontWeight: 400,
-    color: colors.colorTextTertiary,
-    lineHeight: 'normal',
-    flex: 1
-  },
-
   footerRow: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%'
   },
-  touText: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: '12px',
-    fontWeight: 400,
-    color: colors.colorTextSecondary,
-    lineHeight: 'normal',
+  touContainer: {
+    padding: '5px 0',
     maxWidth: '302px',
-    padding: '5px 0'
+  },
+  touText: {
+    color: colors.colorTextSecondary
   },
   touLink: {
+    fontFamily: "'Inter', sans-serif",
+    fontSize: `${rawTokens.fontSize12}px`,
+    fontWeight: 400,
     color: colors.colorLinkText,
     textDecoration: 'underline',
     textDecorationStyle: 'solid' as const

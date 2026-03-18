@@ -1,8 +1,8 @@
 import React from 'react'
 
-import { Button, Dialog } from '@tetherto/pearpass-lib-ui-kit'
-import { Close, OpenInNew } from '@tetherto/pearpass-lib-ui-kit/icons'
-import { useTheme } from '@tetherto/pearpass-lib-ui-kit/theme'
+import { Button, Dialog, Text, Title } from '@tetherto/pearpass-lib-ui-kit'
+import { OpenInNew } from '@tetherto/pearpass-lib-ui-kit/icons'
+import { useTheme } from '@tetherto/pearpass-lib-ui-kit'
 
 import { createStyles } from './styles'
 import { LOCAL_STORAGE_KEYS } from '../../../constants/localStorage'
@@ -29,23 +29,8 @@ export const BrowserExtensionDialogV2 = () => {
 
   return (
     <Dialog
-      title={
-        <div style={styles.customHeader}>
-          <span style={styles.headerTitle}>
-            {t('Improve your sign-in experience')}
-          </span>
-          <button
-            style={styles.closeButton}
-            onClick={handleDismiss}
-            aria-label="Close"
-          >
-            <Close width={16} height={16} />
-          </button>
-        </div>
-      }
-      open
+      title={t('Improve your sign-in experience')}
       onClose={handleDismiss}
-      hideCloseButton
       footer={
         <>
           <Button variant="secondary" size="small" onClick={handleDismiss}>
@@ -65,15 +50,17 @@ export const BrowserExtensionDialogV2 = () => {
         />
 
         <div style={styles.textContent}>
-          <p style={styles.heading}>
+          {/* @ts-ignore */}
+          <Title as="h2" style={styles.heading}>
             {t("You've got the app.")}{'\n'}
             {t('Now unlock the full experience.')}
-          </p>
-          <p style={styles.description}>
+          </Title>
+          {/* @ts-ignore */}
+          <Text as="p" variant="label" style={styles.description}>
             {t('Install the browser extension to autofill passwords, save new logins with one click, and sign in instantly —')}{'\n'}
             {t('right where you browse.')}{'\n\n'}
             {t('No copy-paste. No interruptions. Just seamless security.')}
-          </p>
+          </Text>
         </div>
 
       </div>

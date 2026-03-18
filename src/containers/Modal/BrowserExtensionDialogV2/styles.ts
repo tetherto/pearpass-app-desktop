@@ -1,45 +1,18 @@
-import type { ThemeColors } from '@tetherto/pearpass-lib-ui-kit/theme'
+import type { ThemeColors } from '@tetherto/pearpass-lib-ui-kit'
+import { rawTokens } from '@tetherto/pearpass-lib-ui-kit'
 
 export const createStyles = (colors: ThemeColors) => ({
-  customHeader: {
-    display: 'flex' as const,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%'
-  },
-  headerTitle: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: '14px',
-    fontWeight: 500,
-    lineHeight: 'normal',
-    color: colors.colorTextPrimary,
-    whiteSpace: 'nowrap' as const
-  },
-  closeButton: {
-    background: 'none',
-    border: 'none',
-    color: colors.colorTextPrimary,
-    cursor: 'pointer',
-    display: 'flex' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '24px',
-    height: '24px',
-    padding: 0,
-    borderRadius: '6px',
-    flexShrink: 0
-  },
   body: {
     display: 'flex' as const,
     flexDirection: 'column' as const,
     alignItems: 'flex-start',
-    padding: '8px',
-    gap: '32px',
+    padding: rawTokens.spacing8,
+    gap: rawTokens.spacing32,
     position: 'relative' as const
   },
   browserMockup: {
     width: '100%',
-    borderRadius: '8px',
+    borderRadius: rawTokens.radius8,
     height: '80px',
     objectFit: 'cover' as const,
     userSelect: 'none' as const,
@@ -48,25 +21,16 @@ export const createStyles = (colors: ThemeColors) => ({
   textContent: {
     display: 'flex' as const,
     flexDirection: 'column' as const,
-    gap: '12px',
+    gap: rawTokens.spacing12,
     width: '100%',
     textAlign: 'center' as const,
     lineHeight: 'normal'
   },
   heading: {
-    fontFamily: "'Humble Nostalgia', sans-serif",
-    fontSize: '28px',
-    fontWeight: 400,
-    color: colors.colorTextPrimary,
-    margin: 0,
     whiteSpace: 'pre-wrap' as const
   },
   description: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: '14px',
-    fontWeight: 400,
     color: colors.colorTextSecondary,
-    margin: 0,
     whiteSpace: 'pre-wrap' as const
   },
 })

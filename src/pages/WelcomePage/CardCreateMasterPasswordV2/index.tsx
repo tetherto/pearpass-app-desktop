@@ -18,7 +18,7 @@ import {
   InfoOutlined,
   ReportProblemRound
 } from '@tetherto/pearpass-lib-ui-kit/icons'
-import { useTheme } from '@tetherto/pearpass-lib-ui-kit/theme'
+import { useTheme } from '@tetherto/pearpass-lib-ui-kit'
 
 import { createStyles } from './styles'
 import { LOCAL_STORAGE_KEYS } from '../../../constants/localStorage'
@@ -135,13 +135,10 @@ export const CardCreateMasterPasswordV2 = () => {
       {/* @ts-ignore - plain CSS objects passed to react-strict-dom components */}
       <Form onSubmit={handleSubmit(onSubmit)} style={styles.container}>
         <div style={styles.header}>
-          {/* @ts-ignore */}
-          <Title as="h2" style={styles.title}>{t('Create Master Password')}</Title>
-          {/* @ts-ignore */}
-          <Text as="p" style={styles.subtitle}>
+          <Title as="h2">{t('Create Master Password')}</Title>
+          <Text as="p">
             <Text as="span">{t('Create a Master Password, or ')}</Text>{' '}
-            {/* @ts-ignore */}
-            <Link style={styles.subtitleLink} onClick={handleLoadVaultClick}>
+            <Link onClick={handleLoadVaultClick}>
               {t('continue with existing PearPass')}
             </Link>
           </Text>
@@ -162,8 +159,7 @@ export const CardCreateMasterPasswordV2 = () => {
                 <div style={styles.toastIcon}>
                   <InfoOutlined width={16} height={16} />
                 </div>
-                {/* @ts-ignore */}
-                <Text as="span" style={styles.toastText}>
+                <Text as="span" variant="caption">
                   {t(
                     'Strong passwords are usually at least 8 characters long, hard to guess, use a mix of letters, numbers, and symbols, and aren\'t based on personal information.'
                   )}
@@ -195,9 +191,9 @@ export const CardCreateMasterPasswordV2 = () => {
         </div>
 
         <div style={styles.footerRow}>
-          {/* @ts-ignore */}
-          <Text as="span" style={styles.touText}>
-            <Text as="span">{t('By clicking Continue, you confirm that you have read and agree to the ')}</Text>{' '}
+          <div style={styles.touContainer}>
+            {/* @ts-ignore */}
+            <Text as="span" variant="caption" style={styles.touText}>{t('By clicking Continue, you confirm that you have read and agree to the ')}</Text>{' '}
             <Link
               // @ts-ignore - plain CSS object
               style={styles.touLink}
@@ -207,7 +203,7 @@ export const CardCreateMasterPasswordV2 = () => {
               {t('PearPass Application Terms of Use')}
             </Link>
             <Text as="span">.</Text>
-          </Text>
+          </div>
           <Button
             variant="primary"
             size="small"
