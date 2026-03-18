@@ -188,21 +188,29 @@ export const RecordListView = ({
     return result
   }, [records, i18n])
 
+  const itemHeights = useMemo(
+    () =>
+      flatItems.map((item) =>
+        item.kind === 'header' ? ITEM_HEIGHT_HEADER : ITEM_HEIGHT_RECORD
+      ),
+    [flatItems]
+  )
+
   const itemOffsets = useMemo((): number[] => {
     let top = 0
-    return flatItems.map((item, i) => {
+    return flatItems.map((_, i) => {
       const offset = top
-      const h = item.kind === 'header' ? ITEM_HEIGHT_HEADER : ITEM_HEIGHT_RECORD
+      const h = itemHeights[i]
       top += h + (i < flatItems.length - 1 ? ITEM_GAP : 0)
       return offset
     })
-  }, [flatItems])
+  }, [flatItems, itemHeights])
 
   const totalHeight = useMemo(() => {
     if (!flatItems.length) return 0
     const last = flatItems.length - 1
-    return itemOffsets[last] + (flatItems[last].kind === 'header' ? ITEM_HEIGHT_HEADER : ITEM_HEIGHT_RECORD)
-  }, [flatItems, itemOffsets])
+    return itemOffsets[last] + itemHeights[last]
+  }, [flatItems.length, itemHeights, itemOffsets])
 
   const { startIndex, endIndex } = useMemo(() => {
     if (!flatItems.length) return { startIndex: 0, endIndex: -1 }
@@ -212,7 +220,7 @@ export const RecordListView = ({
     let lo = 0, hi = flatItems.length - 1
     while (lo < hi) {
       const mid = (lo + hi) >> 1
-      const h = flatItems[mid].kind === 'header' ? ITEM_HEIGHT_HEADER : ITEM_HEIGHT_RECORD
+      const h = itemHeights[mid]
       if (itemOffsets[mid] + h <= viewTop) lo = mid + 1
       else hi = mid
     }
@@ -223,7 +231,7 @@ export const RecordListView = ({
       startIndex: Math.max(0, lo - OVERSCAN),
       endIndex: Math.min(flatItems.length - 1, end + OVERSCAN)
     }
-  }, [scrollTop, containerHeight, flatItems, itemOffsets])
+  }, [scrollTop, containerHeight, flatItems, itemHeights, itemOffsets])
 
   const isRecordsSelected = selectedRecords.length > 0
   const isFavorite = routeData.folder === FAVORITES_FOLDER_ID
