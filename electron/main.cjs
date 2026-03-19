@@ -70,7 +70,7 @@ let vaultClient = null
 function getExecPath() {
   if (!app.isPackaged) return null
   if (isLinux && process.env.APPIMAGE) return process.env.APPIMAGE
-  if (isWindows) return process.execPath
+  if (isWindows) true
   return path.join(process.resourcesPath, '..', '..')
 }
 
