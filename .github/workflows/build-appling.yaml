@@ -1,20 +1,19 @@
 name: Electron-builder Build
 
 on:
-  workflow_dispatch:
   push:
     branches: [main, dev, staging]
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Version tag'
+        description: "Version tag"
         required: true
         type: string
 
 jobs:
   build-linux:
     permissions:
-      contents: write 
+      contents: write
     strategy:
       matrix:
         include:
@@ -206,4 +205,3 @@ jobs:
           macos_notarization_method: "appstore_connect"
           windows_subject: ${{ secrets.WIN_SUBJECT }}
           windows_thumbprint: ${{ secrets.WIN_THUMBPRINT }}
-     
