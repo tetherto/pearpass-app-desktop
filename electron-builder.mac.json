@@ -3,7 +3,7 @@
   "icon": "assets/darwin/icon.png",
   "asar": false,
   "directories": {
-    "output": "build/mac-dist"
+    "output": "out"
   },
   "files": [
     "electron/**/*",

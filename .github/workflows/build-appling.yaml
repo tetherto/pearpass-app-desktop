@@ -1,6 +1,7 @@
 name: Electron-builder Build
 
 on:
+  workflow_dispatch:
   push:
     branches: [main, dev, staging, electron-migration]
 
@@ -120,6 +121,17 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
+      - name: Build Prod App
+        run: |
+          npm run build:prod
+      - name: Prune dependencies
+        run: |
+          npm prune --omit=dev
+      - name: Setup Electron and Builder
+        run: |
+          npm install -g electron
+          npm install -g electron-builder
+          npm install -g pear-build
       - name: Build application
         env:
           MAC_CODESIGN_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
@@ -127,7 +139,7 @@ jobs:
           PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          npm run dist:mac:ci:${{ matrix.arch }}
+          npm run dist:mac:${{ matrix.arch }}
 
       - name: "Install @actions/artifact module"
         id: install-actions-artifact-module

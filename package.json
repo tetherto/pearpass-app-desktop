@@ -37,7 +37,9 @@
     "dmg": {},
     "linux": {
       "icon": "assets/linux/icon.png",
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "artifactName": "${productName}.${ext}"
     },
     "toolsets": {
@@ -111,17 +113,17 @@
     "dev:reset": "PEARPASS_DEV_RESET=1 npm run dev",
     "pack": "npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --dir && npm install",
     "dist": "npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npx electron-builder && npm install",
-    "dist:mac:arm64": "npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && SKIP_NOTARIZE=true npm exec --yes --package electron-builder@23.6.0 -- electron-builder --mac --arm64 -c electron-builder.mac.json && mkdir -p out/darwin-arm64 && cp -R build/mac-dist/mac-arm64/PearPass.app out/darwin-arm64/ && npm install && npm run pear:build:darwin:arm64",
-    "dist:mac:ci:arm64": "npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder@23.6.0 -- electron-builder --mac --arm64 -c electron-builder.mac.json && mkdir -p out/darwin-arm64 && cp -R build/mac-dist/mac-arm64/PearPass.app out/darwin-arm64/ && npm install && npm run pear:build:darwin:arm64",
-    "dist:mac:x64": "npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && SKIP_NOTARIZE=true npm exec --yes --package electron-builder@23.6.0 -- electron-builder --mac --x64 -c electron-builder.mac.json && mkdir -p out/darwin-x64 && cp -R build/mac-dist/mac/PearPass.app out/darwin-x64/ && npm install && npm run pear:build:darwin:x64",
-    "dist:mac:ci:x64": "npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder@23.6.0 -- electron-builder --mac --x64 -c electron-builder.mac.json && mkdir -p out/darwin-x64 && cp -R build/mac-dist/mac/PearPass.app out/darwin-x64/ && npm install && npm run pear:build:darwin:x64",
+    "dist:mac:arm64": "npx electron-builder --mac --arm64 -c electron-builder.mac.json && npm run pear:build:darwin:arm64",
+    "dist:mac:x64": "npx electron-builder --mac --x64 -c electron-builder.mac.json && npm run pear:build:darwin:x64",
+    "dist:mac:arm64:dev": "SKIP_NOTARIZE=true CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist:mac:arm64",
+    "dist:mac:x64:dev": "SKIP_NOTARIZE=true CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist:mac:x64",
     "dist:win": "npm run build:prod && electron-forge make --platform=win32 --arch=x64 && npm run pear:build:win",
     "dist:linux:x64": "rm -rf dist && npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder -- electron-builder --linux AppImage --x64 && rm -rf out/linux-x64 && mkdir -p out/linux-x64 && cp dist/PearPass.AppImage out/linux-x64/PearPass.AppImage && npm install && npm run pear:build:linux:x64",
     "dist:linux:arm64": "rm -rf dist && npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder -- electron-builder --linux AppImage --arm64 && rm -rf out/linux-arm64 && mkdir -p out/linux-arm64 && cp dist/PearPass.AppImage out/linux-arm64/PearPass.AppImage && npm install && npm run pear:build:linux:arm64",
     "dist:snap": "npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder -- electron-builder --linux snap && npm install",
     "dist:flatpak": "npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder -- electron-builder --linux flatpak && npm install",
-    "pear:build:darwin:arm64": "npx pear-build --package=./package.json --darwin-arm64-app ./out/darwin-arm64/PearPass.app --target ../pearpass-app-desktop-$npm_package_version",
-    "pear:build:darwin:x64": "npx pear-build --package=./package.json --darwin-x64-app ./out/darwin-x64/PearPass.app --target ../pearpass-app-desktop-$npm_package_version",
+    "pear:build:darwin:arm64": "npx pear-build --package=./package.json --darwin-arm64-app ./out/mac-arm64/PearPass.app --target ../pearpass-app-desktop-$npm_package_version",
+    "pear:build:darwin:x64": "npx pear-build --package=./package.json --darwin-x64-app ./out/mac/PearPass.app --target ../pearpass-app-desktop-$npm_package_version",
     "pear:build:win": "npx pear-build --package=./package.json --win32-x64-app ./out/PearPass/PearPass.msix --target ../pearpass-app-desktop-%npm_package_version%",
     "pear:build:linux:x64": "npx pear-build --package=./package.json --linux-x64-app ./out/linux-x64/PearPass.AppImage --target ../pearpass-app-desktop-$npm_package_version",
     "pear:build:linux:arm64": "npx pear-build --package=./package.json --linux-arm64-app ./out/linux-arm64/PearPass.AppImage --target ../pearpass-app-desktop-$npm_package_version"
@@ -172,7 +174,7 @@
     "pear-interface": "1.0.0",
     "pear-runtime-updater": "^2.0.2",
     "prettier": "3.4.2",
-    "@tetherto/tether-dev-docs": "git+https://github.com/tetherto/tether-dev-docs.git",
+    "tether-dev-docs": "git+https://github.com/tetherto/tether-dev-docs.git",
     "typescript": "5.9.3",
     "wait-on": "^8.0.0",
     "which-runtime": "^1.3.2"
