@@ -217,8 +217,8 @@
   },
   "overrides": {
     "@xmldom/xmldom": "^0.8.10",
-    "react": "$react",
-    "react-dom": "$react-dom",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "electron-windows-msix": "git+https://github.com/chetasr/electron-windows-msix.git"
   }
 }
