@@ -132,6 +132,7 @@ jobs:
           npm install -g electron
           npm install -g electron-builder
           npm install -g pear-build
+          npm install @electron/notarize --no-save
       - name: Build application
         env:
           MAC_CODESIGN_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
