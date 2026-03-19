@@ -175,7 +175,7 @@ jobs:
           const version = pkg.version;
 
           const dmgName = `${productName}-${version}${{ matrix.dmg_suffix }}.dmg`;
-          const dmgPath = path.join('dist', dmgName);
+          const dmgPath = path.join('out', dmgName);
 
           if (!fs.existsSync(dmgPath)) {
             throw new Error(`Expected DMG not found at ${dmgPath}`);
@@ -183,7 +183,7 @@ jobs:
 
           const artifact = new DefaultArtifactClient();
           console.log(`Uploading macOS ${{ matrix.arch }} DMG: ${dmgName} from ${dmgPath}`);
-          artifact.uploadArtifact(dmgName, [dmgPath], 'dist');
+          artifact.uploadArtifact(dmgName, [dmgPath], 'out');
         shell: node {0}
 
   build-win32:
