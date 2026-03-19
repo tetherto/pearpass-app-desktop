@@ -68,6 +68,7 @@ declare module '@tetherto/pearpass-lib-vault' {
   }): UseVaultResult
   export const useVaults: any
   export const useVault: any
+  export const useCreateVault: any
   export const useInvite: any
   export const usePair: any
   export const authoriseCurrentProtectedVault: any

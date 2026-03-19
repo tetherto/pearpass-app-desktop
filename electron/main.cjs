@@ -521,6 +521,10 @@ function registerIPC() {
     async () => !!(pearRuntime && pearRuntime.updated)
   )
 
+  ipcMain.handle('shell:openExternal', async (_event, url) => {
+    await shell.openExternal(url)
+  })
+
   ipcMain.handle('vault:invoke', async (_event, { method, args }) => {
     if (!vaultClient) {
       throw new Error('Vault client not ready')

@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
-import { CLIPBOARD_CLEAR_TIMEOUT } from 'pearpass-lib-constants'
+import { CLIPBOARD_CLEAR_TIMEOUT } from '@tetherto/pearpass-lib-constants'
 
 import { useCopyToClipboard } from './useCopyToClipboard.electron'
 import { LOCAL_STORAGE_KEYS } from '../constants/localStorage'

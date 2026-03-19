@@ -1,13 +1,14 @@
 import fs from 'fs'
-import { platform } from 'os'
+import { homedir, platform } from 'os'
 import { join } from 'path'
+
+import { IPC_SOCKET_DIR_NAME } from '@tetherto/pearpass-lib-constants'
 
 import { logger } from '../../utils/logger'
 
 const { unlink } = fs.promises
 
-const SOCKET_DIR_NAME = 'pearpass'
-const getSocketDir = () => join(Pear.config.pearDir, SOCKET_DIR_NAME)
+const getSocketDir = () => join(homedir(), IPC_SOCKET_DIR_NAME)
 
 /**
  * Manages IPC socket creation and cleanup
