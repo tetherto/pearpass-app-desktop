@@ -29,12 +29,5 @@
   },
   "afterSign": "scripts/notarize.cjs",
   "afterPack": "scripts/afterPack.cjs",
-  "dmg": {},
-  "publish": [
-    {
-      "provider": "github",
-      "owner": "tetherto",
-      "repo": "pearpass-app-desktop"
-    }
-  ]
+  "dmg": {}
 }
