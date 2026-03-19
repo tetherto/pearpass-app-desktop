@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { render, screen, fireEvent } from '@testing-library/react'
-import { PASSPHRASE_WORD_COUNTS } from 'pearpass-lib-constants'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
+import { PASSPHRASE_WORD_COUNTS } from '@tetherto/pearpass-lib-constants'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 import '@testing-library/jest-dom'
 
 import { PassPhraseSettings } from '../PassPhraseSettings'

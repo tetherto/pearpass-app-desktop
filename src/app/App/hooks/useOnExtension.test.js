@@ -9,7 +9,7 @@ const { useOnExtensionExit } = require('./useOnExtensionExit')
 const mockNavigate = jest.fn()
 const mockResetState = jest.fn()
 
-jest.mock('pearpass-lib-vault', () => ({
+jest.mock('@tetherto/pearpass-lib-vault', () => ({
   useVaults: () => ({
     resetState: mockResetState
   })

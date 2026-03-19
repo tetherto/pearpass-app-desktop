@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
+import { generateAvatarInitials } from '@tetherto/pear-apps-utils-avatar-initials'
+import { formatOtpCode } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { generateAvatarInitials } from 'pear-apps-utils-avatar-initials'
-import { formatOtpCode } from 'pearpass-lib-vault'
 
 import { RECORD_COLOR_BY_TYPE } from '../../constants/recordColorByType'
 import { useRecordActionItems } from '../../hooks/useRecordActionItems'

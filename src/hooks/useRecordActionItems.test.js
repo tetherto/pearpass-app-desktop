@@ -15,7 +15,7 @@ jest.mock('../context/RouterContext', () => ({
   useRouter: jest.fn()
 }))
 
-jest.mock('pearpass-lib-vault', () => ({
+jest.mock('@tetherto/pearpass-lib-vault', () => ({
   useRecords: () => ({
     deleteRecords: mockDeleteRecord,
     updateFavoriteState: mockUpdateFavoriteState

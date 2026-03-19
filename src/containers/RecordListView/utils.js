@@ -1,4 +1,4 @@
-import { MS_PER_WEEK } from 'pearpass-lib-constants'
+import { MS_PER_WEEK } from '@tetherto/pearpass-lib-constants'
 /**
  * @param {{
  *  record: {

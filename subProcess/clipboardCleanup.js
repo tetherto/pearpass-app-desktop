@@ -1,10 +1,10 @@
 /** @typedef {import('pear-interface')} */ /* global Pear */
 
+import { CLIPBOARD_CLEAR_TIMEOUT } from '@tetherto/pearpass-lib-constants'
 import fs from 'bare-fs'
 import os from 'bare-os'
 import path from 'bare-path'
 import { spawn, spawnSync } from 'bare-subprocess'
-import { CLIPBOARD_CLEAR_TIMEOUT } from 'pearpass-lib-constants'
 
 import { readLinuxClipboard, writeLinuxClipboard } from './linuxClipboard.js'
 

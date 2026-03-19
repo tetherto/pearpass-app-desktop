@@ -1,8 +1,8 @@
-import { PearpassVaultClient } from 'pearpass-lib-vault-core'
+import { PearpassVaultClient } from '@tetherto/pearpass-lib-vault-core'
 
 import { createOrGetPearpassClient } from './createOrGetPearpassClient'
 
-jest.mock('pearpass-lib-vault-core', () => ({
+jest.mock('@tetherto/pearpass-lib-vault-core', () => ({
   PearpassVaultClient: jest.fn(),
   workletLogger: {
     setLogOutput: jest.fn()

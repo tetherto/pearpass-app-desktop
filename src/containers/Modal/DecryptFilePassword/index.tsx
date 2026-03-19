@@ -1,6 +1,6 @@
 import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { Validator } from 'pear-apps-utils-validator'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { Validator } from '@tetherto/pear-apps-utils-validator'
 
 import { FormModalHeaderWrapper } from '../../../components/FormModalHeaderWrapper'
 import { useLoadingContext } from '../../../context/LoadingContext'

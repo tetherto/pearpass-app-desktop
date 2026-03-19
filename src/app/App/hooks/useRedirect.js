@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { useUserData } from 'pearpass-lib-vault'
+import { useUserData } from '@tetherto/pearpass-lib-vault'
 
 import { NAVIGATION_ROUTES } from '../../../constants/navigation'
 import { useRouter } from '../../../context/RouterContext'

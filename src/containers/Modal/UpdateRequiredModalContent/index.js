@@ -1,6 +1,6 @@
 import { useLingui } from '@lingui/react'
+import { useCountDown } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import { html } from 'htm/react'
-import { useCountDown } from 'pear-apps-lib-ui-react-hooks'
 
 import {
   ButtonWrapper,

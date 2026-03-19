@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 
 import { useLingui } from '@lingui/react'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { DATE_FORMAT } from '@tetherto/pearpass-lib-constants'
 import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { DATE_FORMAT } from 'pearpass-lib-constants'
 
 import { CopyButton } from '../../../components/CopyButton'
 import { FormGroup } from '../../../components/FormGroup'

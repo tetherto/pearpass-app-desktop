@@ -1,15 +1,15 @@
 import { useState } from 'react'
 
-import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { Validator } from 'pear-apps-utils-validator'
-import { TERMS_OF_USE } from 'pearpass-lib-constants'
-import { useUserData } from 'pearpass-lib-vault'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { Validator } from '@tetherto/pear-apps-utils-validator'
+import { TERMS_OF_USE } from '@tetherto/pearpass-lib-constants'
+import { useUserData } from '@tetherto/pearpass-lib-vault'
 import {
   stringToBuffer,
   clearBuffer
-} from 'pearpass-lib-vault/src/utils/buffer'
-import { checkPasswordStrength } from 'pearpass-utils-password-check'
+} from '@tetherto/pearpass-lib-vault/src/utils/buffer'
+import { checkPasswordStrength } from '@tetherto/pearpass-utils-password-check'
+import { html } from 'htm/react'
 
 import {
   ButtonWrapper,

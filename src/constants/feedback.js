@@ -17,7 +17,7 @@ import {
   GOOGLE_FORM_MAPPING_DEVICE_MODEL,
   GOOGLE_FORM_MAPPING_MESSAGE,
   GOOGLE_FORM_MAPPING_APP_VERSION
-} from 'pearpass-lib-constants'
+} from '@tetherto/pearpass-lib-constants'
 
 import { isDev } from '../utils/envGetter'
 

@@ -6,7 +6,7 @@ import { ModalProvider, useModal } from './ModalContext'
 import { BASE_TRANSITION_DURATION } from '../constants/transitions'
 import '@testing-library/jest-dom'
 
-jest.mock('pear-apps-utils-generate-unique-id', () => ({
+jest.mock('@tetherto/pear-apps-utils-generate-unique-id', () => ({
   generateUniqueId: jest.fn(() => 'unique-id')
 }))
 

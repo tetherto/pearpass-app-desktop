@@ -1,8 +1,8 @@
-import { colors } from 'pearpass-lib-ui-theme-provider'
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import { getIconProps } from './getIconProps'
 
-jest.mock('pearpass-lib-ui-theme-provider', () => ({
+jest.mock('@tetherto/pearpass-lib-ui-theme-provider', () => ({
   colors: {
     white: {
       mode1: '#FFFFFF'

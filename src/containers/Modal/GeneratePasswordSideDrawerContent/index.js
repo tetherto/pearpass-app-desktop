@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
 
 import { useLingui } from '@lingui/react'
-import { html } from 'htm/react'
 import {
   generatePassphrase,
   generatePassword
-} from 'pearpass-utils-password-generator'
+} from '@tetherto/pearpass-utils-password-generator'
+import { html } from 'htm/react'
 
 import { RadioSelect } from '../../../components/RadioSelect'
 import { useModal } from '../../../context/ModalContext'

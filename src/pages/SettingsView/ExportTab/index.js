@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 
-import { html } from 'htm/react'
 import {
   authoriseCurrentProtectedVault,
   getCurrentProtectedVaultEncryption,
@@ -8,7 +7,8 @@ import {
   getVaultById,
   listRecords,
   useVault
-} from 'pearpass-lib-vault'
+} from '@tetherto/pearpass-lib-vault'
+import { html } from 'htm/react'
 
 import { ActionsContainer, ContentContainer } from './styles'
 import { handleExportCSVPerVault } from './utils/exportCsvPerVault'

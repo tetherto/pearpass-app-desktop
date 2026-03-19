@@ -1,5 +1,5 @@
+import { useRecordCountsByType } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { useRecordCountsByType } from 'pearpass-lib-vault'
 
 import { CategoriesContainer } from './styles'
 import { SidebarCategory } from '../../../components/SidebarCategory'

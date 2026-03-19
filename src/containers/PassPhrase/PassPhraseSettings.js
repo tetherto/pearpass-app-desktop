@@ -1,6 +1,6 @@
 import { useLingui } from '@lingui/react'
+import { PASSPHRASE_TYPE_OPTIONS } from '@tetherto/pearpass-lib-constants'
 import { html } from 'htm/react'
-import { PASSPHRASE_TYPE_OPTIONS } from 'pearpass-lib-constants'
 
 import {
   PassPraseSettingsContainer,

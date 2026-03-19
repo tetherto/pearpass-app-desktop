@@ -1,4 +1,5 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
+import { CLIPBOARD_CLEAR_TIMEOUT } from '@tetherto/pearpass-lib-constants'
 
 import { useCopyToClipboard } from './useCopyToClipboard.electron'
 import { LOCAL_STORAGE_KEYS } from '../constants/localStorage'
@@ -14,6 +15,9 @@ describe('useCopyToClipboard.electron', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     localStorage.clear()
+    window.electronAPI = {
+      clearClipboardAfter: jest.fn()
+    }
 
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,
@@ -83,6 +87,10 @@ describe('useCopyToClipboard.electron', () => {
       expect(result.current.isCopied).toBe(true)
       expect(onCopy).toHaveBeenCalledTimes(1)
     })
+    expect(window.electronAPI.clearClipboardAfter).toHaveBeenCalledWith(
+      'secret',
+      CLIPBOARD_CLEAR_TIMEOUT
+    )
   })
 
   it('logs and returns false when text is invalid', async () => {

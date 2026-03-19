@@ -1,6 +1,10 @@
 import { useEffect, useRef } from 'react'
 
-import { closeAllInstances, useUserData, useVaults } from 'pearpass-lib-vault'
+import {
+  closeAllInstances,
+  useUserData,
+  useVaults
+} from '@tetherto/pearpass-lib-vault'
 
 import { NAVIGATION_ROUTES } from '../../../constants/navigation'
 import { useLoadingContext } from '../../../context/LoadingContext'

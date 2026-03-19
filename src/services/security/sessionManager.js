@@ -85,7 +85,7 @@ export const decryptWithSession = (sessionId, nonce, ciphertext) => {
 /**
  * Begin handshake: given extension ephemeral public key (base64),
  * return host ephemeral public key and signature over transcript.
- * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
+ * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
  * @param {string} extensionEphemeralPublicKeyB64
  * @returns {{ hostEphemeralPubB64: string, signatureB64: string, sessionId: string }}
  */

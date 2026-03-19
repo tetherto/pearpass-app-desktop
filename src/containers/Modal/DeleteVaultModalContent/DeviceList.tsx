@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 
 import { html } from 'htm/react'
-import { colors } from 'pearpass-lib-ui-theme-provider'
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import {
   CheckIcon,

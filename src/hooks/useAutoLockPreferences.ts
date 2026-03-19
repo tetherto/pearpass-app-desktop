@@ -8,7 +8,7 @@ import {
   useState
 } from 'react'
 
-import { DEFAULT_AUTO_LOCK_TIMEOUT, AUTO_LOCK_ENABLED } from 'pearpass-lib-constants'
+import { DEFAULT_AUTO_LOCK_TIMEOUT, AUTO_LOCK_ENABLED } from '@tetherto/pearpass-lib-constants'
 
 import { LOCAL_STORAGE_KEYS } from '../constants/localStorage'
 import { applyAutoLockEnabled, applyAutoLockTimeout } from '../utils/autoLock'

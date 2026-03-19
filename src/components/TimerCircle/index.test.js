@@ -7,7 +7,7 @@ import { TimerCircle } from './index'
 
 const mockUseTimerAnimation = jest.fn()
 
-jest.mock('pearpass-lib-vault', () => ({
+jest.mock('@tetherto/pearpass-lib-vault', () => ({
   useTimerAnimation: (...args) => mockUseTimerAnimation(...args)
 }))
 

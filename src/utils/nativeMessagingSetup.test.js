@@ -3,7 +3,7 @@ import fs from 'fs/promises'
 import os from 'os'
 import path from 'path'
 
-import { NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION } from 'pearpass-lib-constants'
+import { NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION } from '@tetherto/pearpass-lib-constants'
 
 import {
   setupNativeMessaging,

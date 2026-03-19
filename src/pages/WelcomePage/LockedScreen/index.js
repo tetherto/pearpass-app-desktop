@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 
+import { useUserData } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { useUserData } from 'pearpass-lib-vault'
 import { useTheme } from 'styled-components'
 
 import {

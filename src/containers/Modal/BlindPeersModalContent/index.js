@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 
-import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import {
   BLIND_PEER_FORM_NAME,
   BLIND_PEERS_FORM_NAME,
   BLIND_PEER_TYPE
-} from 'pearpass-lib-constants'
-import { useBlindMirrors } from 'pearpass-lib-vault'
+} from '@tetherto/pearpass-lib-constants'
+import { useBlindMirrors } from '@tetherto/pearpass-lib-vault'
+import { html } from 'htm/react'
 
 import {
   ActionsContainer,

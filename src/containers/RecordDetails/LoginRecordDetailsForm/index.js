@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 
 import { useLingui } from '@lingui/react'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { isBefore, subtractDateUnits } from '@tetherto/pear-apps-utils-date'
 import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { isBefore, subtractDateUnits } from 'pear-apps-utils-date'
 
 import { AlertBox } from '../../../components/AlertBox'
 import { CopyButton } from '../../../components/CopyButton'

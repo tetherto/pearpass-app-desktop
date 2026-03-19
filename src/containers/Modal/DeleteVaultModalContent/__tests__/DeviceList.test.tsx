@@ -2,7 +2,7 @@ import React from 'react'
 import '@testing-library/jest-dom'
 
 import { render, screen, fireEvent } from '@testing-library/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import { DeviceList } from '../DeviceList'
 import { Device } from '../types'

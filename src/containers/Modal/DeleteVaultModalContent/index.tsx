@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { Validator } from 'pear-apps-utils-validator'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { Validator } from '@tetherto/pear-apps-utils-validator'
 import {
   authoriseCurrentProtectedVault,
   useUserData,
   useVault
-} from 'pearpass-lib-vault'
+} from '@tetherto/pearpass-lib-vault'
 
 import { DeviceList } from './DeviceList'
 import {
@@ -32,8 +32,8 @@ import {
 import { getDeviceName } from '../../../utils/getDeviceName'
 import { logger } from '../../../utils/logger'
 import { ModalContent } from '../ModalContent'
-import { clearBuffer, stringToBuffer } from 'pearpass-lib-vault/src/utils/buffer'
-import {PROTECTED_VAULT_ENABLED} from 'pearpass-lib-constants'
+import { clearBuffer, stringToBuffer } from '@tetherto/pearpass-lib-vault/src/utils/buffer'
+import {PROTECTED_VAULT_ENABLED} from '@tetherto/pearpass-lib-constants'
 import { FlowType, Device, DeleteVaultModalContentProps } from './types'
 
 export const DeleteVaultModalContent = ({

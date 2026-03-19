@@ -1,13 +1,12 @@
-// @ts-ignore
-import { DESIGN_VERSION } from 'pearpass-lib-constants'
 // @ts-ignore - some hooks not resolved by TS due to re-export chain
-import { useCreateVault, useUserData, useVault, useVaults } from 'pearpass-lib-vault'
+import { useCreateVault, useUserData, useVault, useVaults } from '@tetherto/pearpass-lib-vault'
 
 import { AlertBox } from '../../../components/AlertBox'
 import { NAVIGATION_ROUTES } from '../../../constants/navigation'
 import { AuthenticationCard } from '../../../containers/AuthenticationCard'
 import { useRouter } from '../../../context/RouterContext'
 import { useTranslation } from '../../../hooks/useTranslation'
+import { isV2 } from '../../../utils/designVersion'
 import { getDeviceName } from '../../../utils/getDeviceName'
 import { logger } from '../../../utils/logger'
 
@@ -22,7 +21,7 @@ export const CardUnlockPearPass = () => {
   const handleSuccess = async (password: string) => {
     await initVaults({ password })
 
-    if (DESIGN_VERSION === 2) {
+    if (isV2()) {
       try {
         const freshVaults = await refetchVaults()
 

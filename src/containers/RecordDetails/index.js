@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 
 import { useLingui } from '@lingui/react'
+import { generateAvatarInitials } from '@tetherto/pear-apps-utils-avatar-initials'
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { useRecordById, useRecords } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { generateAvatarInitials } from 'pear-apps-utils-avatar-initials'
-import { colors } from 'pearpass-lib-ui-theme-provider'
-import { useRecordById, useRecords } from 'pearpass-lib-vault'
 
 import { RecordDetailsContent } from './RecordDetailsContent'
 import {

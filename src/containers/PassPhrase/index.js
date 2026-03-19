@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 
-import { html } from 'htm/react'
 import {
   PASSPHRASE_WORD_COUNTS,
   VALID_WORD_COUNTS,
   DEFAULT_SELECTED_TYPE
-} from 'pearpass-lib-constants'
-import { colors } from 'pearpass-lib-ui-theme-provider'
+} from '@tetherto/pearpass-lib-constants'
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { html } from 'htm/react'
 
 import { PassPhraseSettings } from './PassPhraseSettings'
 import {

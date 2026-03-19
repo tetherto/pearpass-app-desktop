@@ -7,10 +7,12 @@
 const fs = require('fs')
 const path = require('path')
 
-const { app, BrowserWindow, ipcMain, nativeImage, shell } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeImage, shell, clipboard } = require('electron')
 const PearRuntime = require('pear-runtime')
+
 const getPearRuntimeLegacyStorage = require('pear-runtime-legacy-storage')
 const { isLinux, isWindows, isMac } = require('which-runtime')
+const { scheduleClipboardCleanup } = require('./clipboardCleanup.cjs')
 let debugMode = false
 
 ;(async () => {
@@ -53,7 +55,7 @@ let pearRuntime = null
 /** @type {import('bare-sidecar') | null} */
 let workletSidecar = null
 
-/** @type {import('pearpass-lib-vault-core').PearpassVaultClient | null} */
+/** @type {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient | null} */
 let vaultClient = null
 
 function getExecPath() {
@@ -66,7 +68,7 @@ function getExecPath() {
 function getWorkletPath() {
   const workletDir = path.join(
     'node_modules',
-    'pearpass-lib-vault-core',
+    '@tetherto/pearpass-lib-vault-core',
     'src',
     'worklet'
   )
@@ -190,7 +192,7 @@ async function startRuntime() {
   clearVaultStorageForDevReset(storageDir)
   const workletPath = getWorkletPath()
 
-  const { PearpassVaultClient } = await import('pearpass-lib-vault-core')
+  const { PearpassVaultClient } = await import('@tetherto/pearpass-lib-vault-core')
   const extension = isLinux ? '.AppImage' : isMac ? '.app' : '.msix'
 
   pearRuntime = new PearRuntime({
@@ -272,7 +274,7 @@ async function startWorkletOnly() {
   // bare-sidecar is a dependency of pear-runtime and will be hoisted into
   // this app's node_modules, so we can require it directly.
   const Sidecar = require('bare-sidecar')
-  const { PearpassVaultClient } = await import('pearpass-lib-vault-core')
+  const { PearpassVaultClient } = await import('@tetherto/pearpass-lib-vault-core')
 
   const workletPath = getWorkletPath()
   if (!fs.existsSync(workletPath)) {
@@ -543,6 +545,17 @@ function registerIPC() {
         code: err.code
       }
     }
+  })
+
+  ipcMain.handle('clipboard:clearAfter', async (_event, { text, delayMs }) => {
+    return scheduleClipboardCleanup({
+      app,
+      clipboard,
+      logger,
+      isWindows,
+      text,
+      delayMs
+    })
   })
 }
 

@@ -1,9 +1,13 @@
 import { useMemo, useState } from 'react'
 
 import { useLingui } from '@lingui/react'
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
+import {
+  useRecords,
+  isExpiring,
+  groupOtpRecords
+} from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { colors } from 'pearpass-lib-ui-theme-provider'
-import { useRecords, isExpiring, groupOtpRecords } from 'pearpass-lib-vault'
 
 import {
   EmptyState,

@@ -8,7 +8,7 @@ import { OtpCodeField } from './index'
 const mockGenerateNext = jest.fn()
 const mockUseOtp = jest.fn()
 
-jest.mock('pearpass-lib-vault', () => ({
+jest.mock('@tetherto/pearpass-lib-vault', () => ({
   useOtp: (...args) => mockUseOtp(...args),
   formatOtpCode: (code) => {
     if (!code) return ''

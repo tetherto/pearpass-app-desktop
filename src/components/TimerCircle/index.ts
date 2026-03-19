@@ -1,5 +1,5 @@
 import { html } from 'htm/react'
-import { useTimerAnimation } from 'pearpass-lib-vault'
+import { useTimerAnimation } from '@tetherto/pearpass-lib-vault'
 
 import { getTimerColor } from '../OtpCodeField/utils'
 import { styles } from './styles'

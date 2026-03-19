@@ -9,8 +9,8 @@ import {
 import {
   KeyboardArrowRightRound
 } from '@tetherto/pearpass-lib-ui-kit/icons'
-import { useUserData, useVault, useVaults } from 'pearpass-lib-vault'
-import { clearBuffer, stringToBuffer } from 'pearpass-lib-vault/src/utils/buffer'
+import { useUserData, useVault, useVaults } from '@tetherto/pearpass-lib-vault'
+import { clearBuffer, stringToBuffer } from '@tetherto/pearpass-lib-vault/src/utils/buffer'
 
 import { OnboardingShell } from '../../../components/OnboardingShell'
 import { NAVIGATION_ROUTES } from '../../../constants/navigation'

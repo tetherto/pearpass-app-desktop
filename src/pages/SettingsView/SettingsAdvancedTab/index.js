@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 
+import { AUTO_LOCK_ENABLED } from '@tetherto/pearpass-lib-constants'
 import { html } from 'htm/react'
-import { AUTO_LOCK_ENABLED } from 'pearpass-lib-constants'
 
 import { AutoLockConfiguration } from './SettingsAutoLockConfiguration'
 import { SettingsBlindPeersSection } from './SettingsBlindPeersSection'

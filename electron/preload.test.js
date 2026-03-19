@@ -58,6 +58,7 @@ describe('preload.cjs', () => {
     expect(typeof window.electronAPI.applyUpdate).toBe('function')
     expect(typeof window.electronAPI.restart).toBe('function')
     expect(typeof window.electronAPI.checkUpdated).toBe('function')
+    expect(typeof window.electronAPI.clearClipboardAfter).toBe('function')
     expect(typeof window.electronAPI.vaultInvoke).toBe('function')
     expect(typeof window.electronAPI.vaultOnUpdate).toBe('function')
   })
@@ -70,12 +71,17 @@ describe('preload.cjs', () => {
     await window.electronAPI.applyUpdate()
     await window.electronAPI.restart()
     await window.electronAPI.checkUpdated()
+    await window.electronAPI.clearClipboardAfter('secret', 30000)
 
     expect(ipcRenderer.invoke).toHaveBeenCalledWith('app:getVersion')
     expect(ipcRenderer.invoke).toHaveBeenCalledWith('runtime:getConfig')
     expect(ipcRenderer.invoke).toHaveBeenCalledWith('runtime:applyUpdate')
     expect(ipcRenderer.invoke).toHaveBeenCalledWith('runtime:restart')
     expect(ipcRenderer.invoke).toHaveBeenCalledWith('runtime:checkUpdated')
+    expect(ipcRenderer.invoke).toHaveBeenCalledWith('clipboard:clearAfter', {
+      text: 'secret',
+      delayMs: 30000
+    })
   })
 
   it('routes vaultInvoke through ipcRenderer.invoke with payload', async () => {

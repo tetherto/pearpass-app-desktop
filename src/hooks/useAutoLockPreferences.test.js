@@ -1,6 +1,6 @@
 // Mock the constants module before imports
 const DEFAULT_AUTO_LOCK_TIMEOUT = 300000
-jest.mock('pearpass-lib-constants', () => ({
+jest.mock('@tetherto/pearpass-lib-constants', () => ({
   DEFAULT_AUTO_LOCK_TIMEOUT: 300000,
   AUTO_LOCK_ENABLED: true
 }))

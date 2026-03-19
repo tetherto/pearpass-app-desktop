@@ -1,11 +1,11 @@
 import { useLingui } from '@lingui/react'
 import { html } from 'htm/react'
-import { useOtp, formatOtpCode, OTP_TYPE } from 'pearpass-lib-vault'
+import { useOtp, formatOtpCode, OTP_TYPE } from '@tetherto/pearpass-lib-vault'
 
 import { InputField, LockIcon } from '../../lib-react-components'
 import { CopyButton } from '../CopyButton'
 import { TimerBar } from '../TimerBar'
-import type { OtpPublic } from 'pearpass-lib-vault/src/types'
+import type { OtpPublic } from '@tetherto/pearpass-lib-vault/src/types'
 
 interface OtpCodeFieldProps {
   recordId: string

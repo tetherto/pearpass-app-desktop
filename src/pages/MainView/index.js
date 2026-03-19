@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
+import { useRecords } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { DESIGN_VERSION } from 'pearpass-lib-constants'
-import { useRecords } from 'pearpass-lib-vault'
 
 import { ContentWrapper, SearchContainer, Wrapper } from './styles'
 import { ButtonPlusCreateNew } from '../../components/ButtonPlusCreateNew'
@@ -20,6 +19,7 @@ import { useCreateOrEditRecord } from '../../hooks/useCreateOrEditRecord'
 import { useRecordMenuItems } from '../../hooks/useRecordMenuItems'
 import { isNativeMessagingIPCRunning } from '../../services/nativeMessagingIPCServer'
 import { getNativeMessagingEnabled } from '../../services/nativeMessagingPreferences'
+import { isV2 } from '../../utils/designVersion'
 import { isFavorite } from '../../utils/isFavorite'
 
 const SORT_BY_TYPE = {
@@ -45,7 +45,7 @@ export const MainView = () => {
   const { setModal } = useModal()
 
   useEffect(() => {
-    if (DESIGN_VERSION !== 2) return
+    if (!isV2()) return
 
     const enabled = getNativeMessagingEnabled()
     const isRunning = isNativeMessagingIPCRunning()
@@ -93,7 +93,7 @@ export const MainView = () => {
     setIsOpen(false)
   }
 
-  const BannerWrapper = DESIGN_VERSION === 2 ? React.Fragment : BannerProvider
+  const BannerWrapper = isV2() ? React.Fragment : BannerProvider
 
   return html`
     <${BannerWrapper}>

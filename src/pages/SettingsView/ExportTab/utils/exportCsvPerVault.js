@@ -1,4 +1,4 @@
-import { parseDataToCsvText } from 'pearpass-lib-data-export'
+import { parseDataToCsvText } from '@tetherto/pearpass-lib-data-export'
 
 import { downloadFile } from './downloadFile'
 import { downloadZip } from './downloadZip'

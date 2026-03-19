@@ -16,7 +16,7 @@ jest.mock('bare-subprocess', () => ({
   spawn: jest.fn(),
   spawnSync: jest.fn()
 }))
-jest.mock('pearpass-lib-constants', () => ({
+jest.mock('@tetherto/pearpass-lib-constants', () => ({
   CLIPBOARD_CLEAR_TIMEOUT: 1000
 }))
 jest.mock('../src/utils/logger', () => ({

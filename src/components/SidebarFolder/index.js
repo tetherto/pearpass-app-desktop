@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
 import { html } from 'htm/react'
-import { colors } from 'pearpass-lib-ui-theme-provider'
 
 import { FolderIcon, KebabMenuIcon, PlusIcon } from '../../lib-react-components'
 import { EditFolderPopupContent } from '../EditFolderPopupContent'

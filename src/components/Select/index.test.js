@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { fireEvent, render } from '@testing-library/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import { Select } from './index'
 import '@testing-library/jest-dom'

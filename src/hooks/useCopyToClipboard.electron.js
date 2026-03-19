@@ -5,6 +5,8 @@
  */
 import React, { useState, useEffect } from 'react'
 
+import { CLIPBOARD_CLEAR_TIMEOUT } from '@tetherto/pearpass-lib-constants'
+
 import { LOCAL_STORAGE_KEYS } from '../constants/localStorage'
 import { logger } from '../utils/logger'
 
@@ -38,7 +40,13 @@ export const useCopyToClipboard = ({ onCopy } = {}) => {
       () => {
         setIsCopied(true)
         onCopy?.()
-        // Clear-after-delay could be added via electronAPI.clearClipboardAfter(delayMs) in main
+        // Clear clipboard automatically after delay
+        if (window.electronAPI) {
+          window.electronAPI.clearClipboardAfter?.(
+            text,
+            CLIPBOARD_CLEAR_TIMEOUT
+          )
+        }
       },
       (err) => {
         logger.error(

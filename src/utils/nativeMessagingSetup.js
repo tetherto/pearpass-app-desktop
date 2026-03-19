@@ -7,7 +7,7 @@ import {
   MANIFEST_NAME,
   // NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION,
   EXTENSION_ID
-} from 'pearpass-lib-constants'
+} from '@tetherto/pearpass-lib-constants'
 
 import { logger } from './logger'
 

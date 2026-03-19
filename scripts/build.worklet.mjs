@@ -14,7 +14,7 @@ const root = path.join(__dirname, '..')
 const workletDir = path.join(
   root,
   'node_modules',
-  'pearpass-lib-vault-core',
+  '@tetherto/pearpass-lib-vault-core',
   'src',
   'worklet'
 )

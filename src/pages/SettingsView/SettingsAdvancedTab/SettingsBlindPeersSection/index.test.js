@@ -2,7 +2,7 @@ import React from 'react'
 
 import { render, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import { SettingsBlindPeersSection } from './index'
 
@@ -38,7 +38,7 @@ const mockGetBlindMirrors = jest.fn()
 const mockAddBlindMirrors = jest.fn()
 const mockAddDefaultBlindMirrors = jest.fn()
 
-jest.mock('pearpass-lib-vault', () => {
+jest.mock('@tetherto/pearpass-lib-vault', () => {
   const stableData = []
   return {
     useBlindMirrors: () => ({
@@ -51,14 +51,14 @@ jest.mock('pearpass-lib-vault', () => {
   }
 })
 
-jest.mock('pearpass-lib-constants', () => ({
+jest.mock('@tetherto/pearpass-lib-constants', () => ({
   BLIND_PEER_TYPE: {
     PERSONAL: 'personal',
     DEFAULT: 'default'
   }
 }))
 
-jest.mock('pearpass-lib-ui-theme-provider', () => ({
+jest.mock('@tetherto/pearpass-lib-ui-theme-provider', () => ({
   ThemeProvider: ({ children }) => <div>{children}</div>,
   colors: {
     primary400: {

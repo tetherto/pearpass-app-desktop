@@ -1,12 +1,12 @@
 import React from 'react'
 
-jest.mock('pearpass-utils-password-check', () => ({
+jest.mock('@tetherto/pearpass-utils-password-check', () => ({
   checkPasswordStrength: jest.fn(),
   checkPassphraseStrength: jest.fn()
 }))
 
 import { render, fireEvent } from '@testing-library/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import '@testing-library/jest-dom'
 import { PearPassInputField } from '.'

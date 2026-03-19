@@ -1,9 +1,12 @@
-import { workletLogger, PearpassVaultClient } from 'pearpass-lib-vault-core'
+import {
+  workletLogger,
+  PearpassVaultClient
+} from '@tetherto/pearpass-lib-vault-core'
 
 let pearpassClient = null
 
 /**
- * @param {import('pearpass-lib-vault-core').PearpassVaultClient} [ipc]
+ * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} [ipc]
  * @param {string} [storagePath]  absolute path where vaults live
  * @param {{ debugMode?: boolean }} [opts={}]
  * @returns {PearpassVaultClient}

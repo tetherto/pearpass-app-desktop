@@ -6,7 +6,7 @@ jest.mock('@lingui/react', () => ({
   }))
 }))
 
-jest.mock('pearpass-utils-password-check', () => ({
+jest.mock('@tetherto/pearpass-utils-password-check', () => ({
   checkPasswordStrength: jest.fn(),
   checkPassphraseStrength: jest.fn(),
   PASSWORD_STRENGTH: {
@@ -17,8 +17,8 @@ jest.mock('pearpass-utils-password-check', () => ({
 }))
 
 import { render, fireEvent } from '@testing-library/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
-import { checkPasswordStrength } from 'pearpass-utils-password-check'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { checkPasswordStrength } from '@tetherto/pearpass-utils-password-check'
 
 import { PasswordField } from './index'
 import '@testing-library/jest-dom'

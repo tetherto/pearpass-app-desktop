@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { render, fireEvent } from '@testing-library/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import { PearPassPasswordFieldV2 } from './index'
 import '@testing-library/jest-dom'
@@ -27,7 +27,7 @@ describe('PearPassPasswordFieldV2 Component', () => {
       })
     )
 
-    const input = getByTestId('pearpass-password-field-v2') as HTMLInputElement
+    const input = getByTestId('@tetherto/pearpass-password-field-v2') as HTMLInputElement
     expect(input).toBeInTheDocument()
     expect(input).toHaveAttribute('type', 'password')
     expect(input.value).toBe('secret')
@@ -45,7 +45,7 @@ describe('PearPassPasswordFieldV2 Component', () => {
       })
     )
 
-    const input = getByTestId('pearpass-password-field-v2')
+    const input = getByTestId('@tetherto/pearpass-password-field-v2')
     fireEvent.change(input, { target: { value: 'newsecret' } })
     expect(handleChange).toHaveBeenCalledWith('newsecret')
   })
@@ -62,7 +62,7 @@ describe('PearPassPasswordFieldV2 Component', () => {
       })
     )
 
-    const input = getByTestId('pearpass-password-field-v2')
+    const input = getByTestId('@tetherto/pearpass-password-field-v2')
     fireEvent.change(input, { target: { value: 'newsecret' } })
     expect(handleChange).not.toHaveBeenCalled()
   })
@@ -78,8 +78,8 @@ describe('PearPassPasswordFieldV2 Component', () => {
       })
     )
 
-    const input = getByTestId('pearpass-password-field-v2')
-    const toggle = getByTestId('pearpass-password-field-v2-toggle')
+    const input = getByTestId('@tetherto/pearpass-password-field-v2')
+    const toggle = getByTestId('@tetherto/pearpass-password-field-v2-toggle')
 
     expect(input).toHaveAttribute('type', 'password')
 

@@ -1,4 +1,4 @@
-import { AUTO_LOCK_ENABLED } from 'pearpass-lib-constants'
+import { AUTO_LOCK_ENABLED } from '@tetherto/pearpass-lib-constants'
 
 import { LOCAL_STORAGE_KEYS } from '../constants/localStorage'
 

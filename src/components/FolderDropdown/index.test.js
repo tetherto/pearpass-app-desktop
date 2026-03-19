@@ -2,14 +2,14 @@ import React from 'react'
 
 import { useLingui } from '@lingui/react'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { useFolders } from 'pearpass-lib-vault'
+import { useFolders } from '@tetherto/pearpass-lib-vault'
 
 import { FolderDropdown } from './index'
 import '@testing-library/jest-dom'
 
 const mockSetModal = jest.fn()
 
-jest.mock('pearpass-lib-vault', () => ({
+jest.mock('@tetherto/pearpass-lib-vault', () => ({
   useFolders: jest.fn()
 }))
 

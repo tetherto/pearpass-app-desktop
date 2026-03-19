@@ -1,5 +1,4 @@
-import { html } from 'htm/react'
-import { MAX_IMPORT_RECORDS } from 'pearpass-lib-constants'
+import { MAX_IMPORT_RECORDS } from '@tetherto/pearpass-lib-constants'
 import {
   decryptKeePassKdbx,
   parse1PasswordData,
@@ -9,8 +8,12 @@ import {
   parseNordPassData,
   parsePearPassData,
   parseProtonPassData
-} from 'pearpass-lib-data-import'
-import { decryptExportData, useCreateRecord } from 'pearpass-lib-vault'
+} from '@tetherto/pearpass-lib-data-import'
+import {
+  decryptExportData,
+  useCreateRecord
+} from '@tetherto/pearpass-lib-vault'
+import { html } from 'htm/react'
 
 import { ContentContainer, Description, ImportOptionsContainer } from './styles'
 import { readFileContent } from './utils/readFileContent'

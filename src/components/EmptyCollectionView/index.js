@@ -1,5 +1,5 @@
+import { RECORD_TYPES } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { RECORD_TYPES } from 'pearpass-lib-vault'
 
 import {
   CollectionsContainer,

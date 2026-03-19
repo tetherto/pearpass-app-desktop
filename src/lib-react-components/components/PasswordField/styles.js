@@ -1,4 +1,4 @@
-import { PASSWORD_STRENGTH } from 'pearpass-utils-password-check'
+import { PASSWORD_STRENGTH } from '@tetherto/pearpass-utils-password-check'
 import styled from 'styled-components'
 
 export const PasswordStrongnessWrapper = styled.div.withConfig({

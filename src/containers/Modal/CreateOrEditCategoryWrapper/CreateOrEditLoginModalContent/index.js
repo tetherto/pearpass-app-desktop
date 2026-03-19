@@ -1,11 +1,15 @@
 import React from 'react'
 
 import { useLingui } from '@lingui/react'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { Validator } from '@tetherto/pear-apps-utils-validator'
+import { AUTHENTICATOR_ENABLED } from '@tetherto/pearpass-lib-constants'
+import {
+  RECORD_TYPES,
+  useCreateRecord,
+  useRecords
+} from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { Validator } from 'pear-apps-utils-validator'
-import { AUTHENTICATOR_ENABLED } from 'pearpass-lib-constants'
-import { RECORD_TYPES, useCreateRecord, useRecords } from 'pearpass-lib-vault'
 
 import { CreateCustomField } from '../../../../components/CreateCustomField'
 import { FolderDropdown } from '../../../../components/FolderDropdown'

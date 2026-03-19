@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 
-import { html } from 'htm/react'
 import {
   checkPassphraseStrength,
   checkPasswordStrength
-} from 'pearpass-utils-password-check'
+} from '@tetherto/pearpass-utils-password-check'
+import { html } from 'htm/react'
 
 import { PasswordStrongnessWrapper } from './styles'
 import { useTranslation } from '../../../hooks/useTranslation'

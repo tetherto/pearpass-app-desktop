@@ -3,8 +3,11 @@
  */
 import { i18n } from '@lingui/core'
 import { I18nProvider } from '@lingui/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
-import { setPearpassVaultClient, VaultProvider } from 'pearpass-lib-vault'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
+import {
+  setPearpassVaultClient,
+  VaultProvider
+} from '@tetherto/pearpass-lib-vault'
 import { createRoot } from 'react-dom/client'
 import { ThemeProvider as UIKitProvider } from '@tetherto/pearpass-lib-ui-kit'
 
@@ -52,7 +55,6 @@ function renderApp() {
         </ThemeProvider>
       </LoadingProvider>
     </UIKitProvider>
-
   )
 }
 
@@ -86,7 +88,9 @@ async function init() {
   // Seed shared PearPass client singleton so code that calls
   // createOrGetPearpassClient() without arguments (e.g. extension pairing)
   // can reuse this Electron vault client instance and storage path.
-  createOrGetPearpassClient(client as any, config.storage, { debugMode: DEBUG_MODE })
+  createOrGetPearpassClient(client as any, config.storage, {
+    debugMode: DEBUG_MODE
+  })
 
   setPearpassVaultClient(client)
   if (getNativeMessagingEnabled()) {

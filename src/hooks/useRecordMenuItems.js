@@ -1,4 +1,4 @@
-import { RECORD_TYPES } from 'pearpass-lib-vault'
+import { RECORD_TYPES } from '@tetherto/pearpass-lib-vault'
 
 import { useTranslation } from './useTranslation'
 import { RECORD_COLOR_BY_TYPE } from '../constants/recordColorByType'

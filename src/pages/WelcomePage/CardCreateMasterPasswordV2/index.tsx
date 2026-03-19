@@ -3,14 +3,14 @@ import React, { useState } from 'react'
 import { useForm } from 'pear-apps-lib-ui-react-hooks'
 import { Validator } from 'pear-apps-utils-validator'
 // @ts-ignore - JS module re-export
-import { TERMS_OF_USE } from 'pearpass-lib-constants'
-import { useUserData } from 'pearpass-lib-vault'
+import { TERMS_OF_USE } from '@tetherto/pearpass-lib-constants'
+import { useUserData } from '@tetherto/pearpass-lib-vault'
 import {
   stringToBuffer,
   clearBuffer
-} from 'pearpass-lib-vault/src/utils/buffer'
+} from '@tetherto/pearpass-lib-vault/src/utils/buffer'
 // @ts-ignore - JS module without type declarations
-import { checkPasswordStrength } from 'pearpass-utils-password-check'
+import { checkPasswordStrength } from '@tetherto/pearpass-utils-password-check'
 import { AlertMessage, Button, Form, Link, PasswordField, Text, Title } from '@tetherto/pearpass-lib-ui-kit'
 import type { PasswordIndicatorVariant } from '@tetherto/pearpass-lib-ui-kit'
 import {

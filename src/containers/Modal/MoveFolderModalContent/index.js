@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { useLingui } from '@lingui/react'
+import { useRecords, useFolders } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { useRecords, useFolders } from 'pearpass-lib-vault'
 
 import { useModal } from '../../../context/ModalContext'
 import { ModalContent } from '../ModalContent'

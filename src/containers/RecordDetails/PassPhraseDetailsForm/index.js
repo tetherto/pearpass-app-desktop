@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
 
 import { CopyButton } from '../../../components/CopyButton'
 import { FormGroup } from '../../../components/FormGroup'

@@ -2,13 +2,13 @@
 
 /* eslint-disable */
 
-declare module 'pearpass-lib-ui-theme-provider' {
+declare module '@tetherto/pearpass-lib-ui-theme-provider' {
   export const ThemeProvider: any
   export const colors: any
   export const themes: any
 }
 
-declare module 'pearpass-lib-vault' {
+declare module '@tetherto/pearpass-lib-vault' {
   export interface Vault {
     id: string
     name: string
@@ -167,25 +167,25 @@ declare module 'pearpass-lib-vault' {
   }
 }
 
-declare module 'pear-apps-lib-ui-react-hooks' {
+declare module '@tetherto/pear-apps-lib-ui-react-hooks' {
   export const useCountDown: any
   export const useForm: any
 }
 
-declare module 'pear-apps-utils-qr' {
+declare module '@tetherto/pear-apps-utils-qr' {
   export const generateQRCodeSVG: any
 }
 
-declare module 'pear-apps-utils-validator' {
+declare module '@tetherto/pear-apps-utils-validator' {
   export const Validator: any
 }
 
-declare module 'pearpass-lib-vault/src/utils/buffer' {
+declare module '@tetherto/pearpass-lib-vault/src/utils/buffer' {
   export const clearBuffer: (buffer: any) => void
   export const stringToBuffer: (value: string) => any
 }
 
-declare module 'pearpass-lib-constants' {
+declare module '@tetherto/pearpass-lib-constants' {
   export const PROTECTED_VAULT_ENABLED: boolean
   export const BE_AUTO_LOCK_ENABLED: boolean
   export const DEFAULT_AUTO_LOCK_TIMEOUT: number

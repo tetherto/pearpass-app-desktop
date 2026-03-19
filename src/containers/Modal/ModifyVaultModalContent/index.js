@@ -1,10 +1,10 @@
 import { useEffect, useState, useMemo } from 'react'
 
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { Validator } from '@tetherto/pear-apps-utils-validator'
+import { PROTECTED_VAULT_ENABLED } from '@tetherto/pearpass-lib-constants'
+import { useVault } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { Validator } from 'pear-apps-utils-validator'
-import { PROTECTED_VAULT_ENABLED } from 'pearpass-lib-constants'
-import { useVault } from 'pearpass-lib-vault'
 
 import { RadioSelect } from '../../../components/RadioSelect'
 import { useLoadingContext } from '../../../context/LoadingContext'

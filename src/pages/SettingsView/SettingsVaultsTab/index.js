@@ -1,7 +1,7 @@
 import { useLingui } from '@lingui/react'
+import { DELETE_VAULT_ENABLED } from '@tetherto/pearpass-lib-constants'
+import { useVault } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { DELETE_VAULT_ENABLED } from 'pearpass-lib-constants'
-import { useVault } from 'pearpass-lib-vault'
 
 import { Content } from './styles'
 import { CardSingleSetting } from '../../../components/CardSingleSetting'

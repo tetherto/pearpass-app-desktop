@@ -1,14 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react'
 
-import { html } from 'htm/react'
-import { matchPatternToValue } from 'pear-apps-utils-pattern-search'
-import { AUTHENTICATOR_ENABLED } from 'pearpass-lib-constants'
+import { matchPatternToValue } from '@tetherto/pear-apps-utils-pattern-search'
+import { AUTHENTICATOR_ENABLED } from '@tetherto/pearpass-lib-constants'
 import {
   closeAllInstances,
   useFolders,
   useVault,
   useVaults
-} from 'pearpass-lib-vault'
+} from '@tetherto/pearpass-lib-vault'
+import { html } from 'htm/react'
 
 import { SideBarCategories } from './SidebarCategories'
 import {

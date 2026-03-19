@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { render } from '@testing-library/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import { SettingsDevicesSection } from './index'
 
@@ -15,11 +15,11 @@ jest.mock('@lingui/react', () => ({
   })
 }))
 
-jest.mock('pear-apps-utils-date', () => ({
+jest.mock('@tetherto/pear-apps-utils-date', () => ({
   formatDate: () => 'formatted-date'
 }))
 
-jest.mock('pearpass-lib-vault', () => ({
+jest.mock('@tetherto/pearpass-lib-vault', () => ({
   useVault: () => ({
     data: {
       createdAt: 1749797696879,

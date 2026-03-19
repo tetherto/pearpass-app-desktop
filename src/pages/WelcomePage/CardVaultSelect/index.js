@@ -1,7 +1,7 @@
 import { useLingui } from '@lingui/react'
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { useVault, useVaults } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { colors } from 'pearpass-lib-ui-theme-provider'
-import { useVault, useVaults } from 'pearpass-lib-vault'
 
 import {
   ButtonWrapper,

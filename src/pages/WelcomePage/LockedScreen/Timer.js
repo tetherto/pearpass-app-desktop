@@ -1,5 +1,5 @@
+import { useCountDown } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import { html } from 'htm/react'
-import { useCountDown } from 'pear-apps-lib-ui-react-hooks'
 
 /**
  * Timer component that displays a countdown from an initial number of seconds.

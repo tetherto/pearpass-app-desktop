@@ -1,5 +1,5 @@
+import { checkPassphraseStrength } from '@tetherto/pearpass-utils-password-check'
 import { html } from 'htm/react'
-import { checkPassphraseStrength } from 'pearpass-utils-password-check'
 
 import { useTranslation } from '../../../../hooks/useTranslation'
 import { HighlightString, NoticeText } from '../../../../lib-react-components'

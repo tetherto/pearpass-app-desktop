@@ -12,7 +12,7 @@ function readDesignVersion() {
       __dirname,
       '..',
       'node_modules',
-      'pearpass-lib-constants',
+      '@tetherto/pearpass-lib-constants',
       'src',
       'constants',
       'flags.js'

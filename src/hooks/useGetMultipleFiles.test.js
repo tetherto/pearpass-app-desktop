@@ -1,10 +1,10 @@
 import { renderHook, waitFor } from '@testing-library/react'
-import { vaultGetFile } from 'pearpass-lib-vault'
+import { vaultGetFile } from '@tetherto/pearpass-lib-vault'
 
 import { useGetMultipleFiles } from './useGetMultipleFiles'
 import { logger } from '../utils/logger'
 
-jest.mock('pearpass-lib-vault', () => ({
+jest.mock('@tetherto/pearpass-lib-vault', () => ({
   vaultGetFile: jest.fn()
 }))
 

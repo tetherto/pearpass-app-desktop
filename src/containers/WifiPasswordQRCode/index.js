@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 
 import { useLingui } from '@lingui/react'
+import { generateQRCodeSVG } from '@tetherto/pear-apps-utils-qr'
 import { html } from 'htm/react'
-import { generateQRCodeSVG } from 'pear-apps-utils-qr'
 
 import { Container, QRCode, QrContainer, Title } from './styles'
 import { logger } from '../../utils/logger'

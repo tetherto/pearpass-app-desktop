@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 
-import { html } from 'htm/react'
 import {
   sendGoogleFormFeedback,
   sendSlackFeedback
-} from 'pear-apps-lib-feedback'
-import { PRIVACY_POLICY, TERMS_OF_USE } from 'pearpass-lib-constants'
-import { colors } from 'pearpass-lib-ui-theme-provider'
+} from '@tetherto/pear-apps-lib-feedback'
+import { PRIVACY_POLICY, TERMS_OF_USE } from '@tetherto/pearpass-lib-constants'
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { html } from 'htm/react'
 
 import { CardSingleSetting } from '../../../components/CardSingleSetting'
 import {

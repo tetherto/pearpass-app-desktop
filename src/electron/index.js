@@ -19,7 +19,7 @@ export function getElectronConfig() {
 }
 
 /**
- * @returns {Promise<import('pearpass-lib-vault-core').PearpassVaultClient | null>}
+ * @returns {Promise<import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient | null>}
  */
 export function getElectronVaultClient() {
   if (

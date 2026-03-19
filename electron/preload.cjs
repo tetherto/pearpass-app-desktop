@@ -35,6 +35,8 @@ window.electronAPI = {
   applyUpdate: () => ipcRenderer.invoke('runtime:applyUpdate'),
   restart: () => ipcRenderer.invoke('runtime:restart'),
   checkUpdated: () => ipcRenderer.invoke('runtime:checkUpdated'),
+  clearClipboardAfter: (text, delayMs) =>
+    ipcRenderer.invoke('clipboard:clearAfter', { text, delayMs }),
   vaultInvoke: (method, args) =>
     ipcRenderer.invoke('vault:invoke', { method, args }),
   vaultOnUpdate: (cb) => {
