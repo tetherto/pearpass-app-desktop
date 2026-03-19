@@ -2,7 +2,7 @@ name: Desktop Build
 
 on:
   push:
-    branches: [main, dev, staging]
+    branches: [main, dev, staging, ci-flatpak-support]
 
 jobs:
   build-flatpak:
