@@ -3,16 +3,11 @@ import fs from 'fs/promises'
 import os from 'os'
 import path from 'path'
 
-import {
-  MANIFEST_NAME,
-  // NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION,
-  EXTENSION_ID
-} from '@tetherto/pearpass-lib-constants'
+import { MANIFEST_NAME, EXTENSION_ID } from '@tetherto/pearpass-lib-constants'
 
 import { logger } from './logger'
 
-const NATIVE_MESSAGING_BRIDGE_PEAR_LINK_TEMP =
-  'pear://fmsw9ndr1imn9m6zpq1rq5nwhxfi6dp6oz5k45o1dm3zrp3hwgzy'
+const NATIVE_BRIDGE_PROCESS_IDENTIFIER = 'pearpass-lib-native-messaging-bridge'
 
 const promisify =
   (fn) =>
@@ -24,9 +19,10 @@ const execAsync = promisify(child_process.exec)
 
 /**
  * Returns platform-specific paths and file names for the native host executable (wrapper)
+ * @param {string} userDataPath - Electron userData directory
  * @returns {{ platform: string, executableFileName: string, executablePath: string }}
  */
-export const getNativeHostExecutableInfo = () => {
+export const getNativeHostExecutableInfo = (userDataPath) => {
   const platform = os.platform()
   let executableFileName
 
@@ -44,7 +40,7 @@ export const getNativeHostExecutableInfo = () => {
       throw new Error(`Unsupported platform: ${platform}`)
   }
 
-  const storageDir = path.join(Pear.config.storage, 'native-messaging')
+  const storageDir = path.join(userDataPath, 'native-messaging')
   const executablePath = path.join(storageDir, executableFileName)
 
   return {
@@ -56,71 +52,37 @@ export const getNativeHostExecutableInfo = () => {
 
 /**
  * Generates a wrapper executable (shell script on Unix, cmd file on Windows)
+ * that uses the Electron binary (with ELECTRON_RUN_AS_NODE=1) to run the
+ * native messaging bridge script.
  * @param {string} executablePath - Path to write the wrapper
+ * @param {string} electronExecPath - Path to the Electron executable
+ * @param {string} bridgeScriptPath - Path to the bridge entry point (index.js)
  * @returns {Promise<{success: boolean, message: string}>}
  */
-export const generateNativeHostExecutable = async (executablePath) => {
+export const generateNativeHostExecutable = async (
+  executablePath,
+  electronExecPath,
+  bridgeScriptPath
+) => {
   try {
     const platform = os.platform()
-    const arch = os.arch()
-    const bridgePath = path.dirname(executablePath)
     let content
 
-    if (platform === 'darwin') {
-      const pearPath = path.join(
-        os.homedir(),
-        'Library',
-        'Application Support',
-        'pear',
-        'current',
-        'by-arch',
-        `${platform}-${arch}`,
-        'bin',
-        'pear-runtime'
-      )
+    if (platform === 'darwin' || platform === 'linux') {
       content = `#!/bin/bash
-# PearPass Native Messaging Host for macOS
-# Launches the native host using pear run
+# PearPass Native Messaging Host
+# Runs the native messaging bridge via Electron's embedded Node.js
 
-cd "${bridgePath}"
-exec "${pearPath}" run --trusted ${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_TEMP}
-`
-    } else if (platform === 'linux') {
-      const pearPath = path.join(
-        os.homedir(),
-        '.config',
-        'pear',
-        'current',
-        'by-arch',
-        `${platform}-${arch}`,
-        'bin',
-        'pear-runtime'
-      )
-      content = `#!/bin/bash
-# PearPass Native Messaging Host for Linux
-# Launches the native host using pear run
-
-cd "${bridgePath}"
-exec "${pearPath}" run --trusted ${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_TEMP}
+export ELECTRON_RUN_AS_NODE=1
+exec "${electronExecPath}" "${bridgeScriptPath}"
 `
     } else if (platform === 'win32') {
-      const pearPath = path.join(
-        os.homedir(),
-        'AppData',
-        'Roaming',
-        'pear',
-        'current',
-        'by-arch',
-        `${platform}-${arch}`,
-        'bin',
-        'pear-runtime.exe'
-      )
       content = `@echo off
-REM PearPass Native Messaging Host for Windows
-REM Launches the native host using pear run
+REM PearPass Native Messaging Host
+REM Runs the native messaging bridge via Electron's embedded Node.js
 
-cd /d "${bridgePath}"
-"${pearPath}" run --trusted ${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_TEMP}
+set ELECTRON_RUN_AS_NODE=1
+"${electronExecPath}" "${bridgeScriptPath}"
 `
     } else {
       throw new Error(`Unsupported platform: ${platform}`)
@@ -429,14 +391,12 @@ export const cleanupNativeMessaging = async () => {
  */
 export const killNativeMessagingHostProcesses = async () => {
   try {
-    const { platform } = getNativeHostExecutableInfo()
+    const platform = os.platform()
 
     if (platform === 'win32') {
-      // Windows: Kill the pear-runtime.exe process running our native messaging bridge
-      // The parent cmd.exe (spawned by Chrome) will automatically terminate when its child is killed
+      // Find processes with the bridge module in their command line and force-kill them
       try {
-        // Use PowerShell to find processes with the unique bridge seed in their command line
-        const psCmd = `powershell -NoProfile -Command "Get-WmiObject Win32_Process | Where-Object {\$_.CommandLine -like '*${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_TEMP}*'} | ForEach-Object { taskkill /PID \$_.ProcessId /F }"`
+        const psCmd = `powershell -NoProfile -Command "Get-WmiObject Win32_Process | Where-Object {\$_.CommandLine -like '*${NATIVE_BRIDGE_PROCESS_IDENTIFIER}*'} | ForEach-Object { taskkill /PID \$_.ProcessId /F }"`
         await execAsync(psCmd)
         logger.info(
           'NATIVE-MESSAGING-KILL',
@@ -449,13 +409,12 @@ export const killNativeMessagingHostProcesses = async () => {
         )
       }
     } else {
-      // macOS/Linux: Kill by the bridge seed in the command line
-      // The wrapper script uses 'exec' so the process name becomes 'pear run <seed>'
+      // macOS/Linux: the wrapper uses 'exec' so the bridge module path appears in the process args
       try {
-        await execAsync(`pkill -f "${NATIVE_MESSAGING_BRIDGE_PEAR_LINK_TEMP}"`)
+        await execAsync(`pkill -f "${NATIVE_BRIDGE_PROCESS_IDENTIFIER}"`)
         logger.info(
           'NATIVE-MESSAGING-KILL',
-          'Killed native messaging host process by bridge seed'
+          'Killed native messaging host process'
         )
       } catch (error) {
         logger.info(
@@ -476,16 +435,25 @@ export const killNativeMessagingHostProcesses = async () => {
  * Sets up native messaging for a given extension ID
  * @returns {Promise<{success: boolean, message: string, manifestPath?: string}>}
  */
-export const setupNativeMessaging = async () => {
+export const setupNativeMessaging = async ({
+  userDataPath,
+  execPath,
+  bridgePath
+}) => {
   try {
     // Determine platform-specific executable path and names
-    const { platform, executablePath } = getNativeHostExecutableInfo()
+    const { platform, executablePath } =
+      getNativeHostExecutableInfo(userDataPath)
 
     // Ensure directory for executable exists
     await fs.mkdir(path.dirname(executablePath), { recursive: true })
 
     // Generate the native messaging executable wrapper
-    const execResult = await generateNativeHostExecutable(executablePath)
+    const execResult = await generateNativeHostExecutable(
+      executablePath,
+      execPath,
+      bridgePath
+    )
     if (!execResult.success) {
       throw new Error(execResult.message)
     }

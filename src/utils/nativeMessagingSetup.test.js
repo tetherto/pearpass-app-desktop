@@ -3,8 +3,6 @@ import fs from 'fs/promises'
 import os from 'os'
 import path from 'path'
 
-import { NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION } from '@tetherto/pearpass-lib-constants'
-
 import {
   setupNativeMessaging,
   getNativeHostExecutableInfo,
@@ -15,6 +13,10 @@ import {
 } from './nativeMessagingSetup'
 
 // Mock dependencies
+jest.mock('@tetherto/pearpass-lib-constants', () => ({
+  MANIFEST_NAME: 'com.pearpass.native_messaging',
+  EXTENSION_ID: 'mock-extension-id'
+}))
 jest.mock('os')
 jest.mock('fs/promises')
 jest.mock('path')
@@ -27,12 +29,9 @@ jest.mock('./logger', () => ({
   }
 }))
 
-// Mock Pear global
-global.Pear = {
-  config: {
-    storage: '/mock/storage'
-  }
-}
+const MOCK_USER_DATA_PATH = '/mock/userData'
+const MOCK_EXEC_PATH = '/mock/electron/PearPass'
+const MOCK_BRIDGE_PATH = '/mock/dist/native-messaging-bridge.bundle.cjs'
 
 // Helper to reset mocks
 const resetMocks = () => {
@@ -54,7 +53,7 @@ describe('getNativeHostExecutableInfo', () => {
 
   it('should return correct info for macOS', () => {
     os.platform.mockReturnValue('darwin')
-    const info = getNativeHostExecutableInfo()
+    const info = getNativeHostExecutableInfo(MOCK_USER_DATA_PATH)
     expect(info.platform).toBe('darwin')
     expect(info.executableFileName).toBe('pearpass-native-host.sh')
     expect(info.executablePath).toContain('native-messaging')
@@ -62,7 +61,7 @@ describe('getNativeHostExecutableInfo', () => {
 
   it('should return correct info for Linux', () => {
     os.platform.mockReturnValue('linux')
-    const info = getNativeHostExecutableInfo()
+    const info = getNativeHostExecutableInfo(MOCK_USER_DATA_PATH)
     expect(info.platform).toBe('linux')
     expect(info.executableFileName).toBe('pearpass-native-host.sh')
     expect(info.executablePath).toContain('native-messaging')
@@ -70,7 +69,7 @@ describe('getNativeHostExecutableInfo', () => {
 
   it('should return correct info for Windows', () => {
     os.platform.mockReturnValue('win32')
-    const info = getNativeHostExecutableInfo()
+    const info = getNativeHostExecutableInfo(MOCK_USER_DATA_PATH)
     expect(info.platform).toBe('win32')
     expect(info.executableFileName).toBe('pearpass-native-host.cmd')
     expect(info.executablePath).toContain('native-messaging')
@@ -78,7 +77,7 @@ describe('getNativeHostExecutableInfo', () => {
 
   it('should throw error for unsupported platform', () => {
     os.platform.mockReturnValue('freebsd')
-    expect(() => getNativeHostExecutableInfo()).toThrow(
+    expect(() => getNativeHostExecutableInfo(MOCK_USER_DATA_PATH)).toThrow(
       'Unsupported platform: freebsd'
     )
   })
@@ -90,7 +89,9 @@ describe('generateNativeHostExecutable', () => {
   it('should generate executable for macOS', async () => {
     os.platform.mockReturnValue('darwin')
     const result = await generateNativeHostExecutable(
-      '/mock/path/pearpass-native-host.sh'
+      '/mock/path/pearpass-native-host.sh',
+      MOCK_EXEC_PATH,
+      MOCK_BRIDGE_PATH
     )
     expect(result.success).toBe(true)
     expect(fs.writeFile).toHaveBeenCalled()
@@ -100,13 +101,17 @@ describe('generateNativeHostExecutable', () => {
     )
     const writeCall = fs.writeFile.mock.calls[0]
     expect(writeCall[1]).toContain('#!/bin/bash')
-    expect(writeCall[1]).toContain('pear-runtime')
+    expect(writeCall[1]).toContain('ELECTRON_RUN_AS_NODE=1')
+    expect(writeCall[1]).toContain(MOCK_EXEC_PATH)
+    expect(writeCall[1]).toContain(MOCK_BRIDGE_PATH)
   })
 
   it('should generate executable for Linux', async () => {
     os.platform.mockReturnValue('linux')
     const result = await generateNativeHostExecutable(
-      '/mock/path/pearpass-native-host.sh'
+      '/mock/path/pearpass-native-host.sh',
+      MOCK_EXEC_PATH,
+      MOCK_BRIDGE_PATH
     )
     expect(result.success).toBe(true)
     expect(fs.writeFile).toHaveBeenCalled()
@@ -116,32 +121,44 @@ describe('generateNativeHostExecutable', () => {
     )
     const writeCall = fs.writeFile.mock.calls[0]
     expect(writeCall[1]).toContain('#!/bin/bash')
-    expect(writeCall[1]).toContain('.config/pear')
+    expect(writeCall[1]).toContain('ELECTRON_RUN_AS_NODE=1')
+    expect(writeCall[1]).toContain(MOCK_EXEC_PATH)
   })
 
   it('should generate executable for Windows', async () => {
     os.platform.mockReturnValue('win32')
     const result = await generateNativeHostExecutable(
-      'C:/mock/path/pearpass-native-host.cmd'
+      'C:/mock/path/pearpass-native-host.cmd',
+      MOCK_EXEC_PATH,
+      MOCK_BRIDGE_PATH
     )
     expect(result.success).toBe(true)
     expect(fs.writeFile).toHaveBeenCalled()
     expect(fs.chmod).not.toHaveBeenCalled()
     const writeCall = fs.writeFile.mock.calls[0]
     expect(writeCall[1]).toContain('@echo off')
-    expect(writeCall[1]).toContain('pear-runtime.exe')
+    expect(writeCall[1]).toContain('ELECTRON_RUN_AS_NODE=1')
+    expect(writeCall[1]).toContain(MOCK_EXEC_PATH)
   })
 
   it('should handle write errors', async () => {
     fs.writeFile.mockRejectedValueOnce(new Error('write failed'))
-    const result = await generateNativeHostExecutable('/mock/path/script.sh')
+    const result = await generateNativeHostExecutable(
+      '/mock/path/script.sh',
+      MOCK_EXEC_PATH,
+      MOCK_BRIDGE_PATH
+    )
     expect(result.success).toBe(false)
     expect(result.message).toContain('Failed to generate executable')
   })
 
   it('should throw error for unsupported platform', async () => {
     os.platform.mockReturnValue('aix')
-    const result = await generateNativeHostExecutable('/mock/path/script.sh')
+    const result = await generateNativeHostExecutable(
+      '/mock/path/script.sh',
+      MOCK_EXEC_PATH,
+      MOCK_BRIDGE_PATH
+    )
     expect(result.success).toBe(false)
     expect(result.message).toContain('Unsupported platform')
   })
@@ -276,7 +293,7 @@ describe('killNativeMessagingHostProcesses', () => {
     expect(execMock).toHaveBeenCalledTimes(1)
     const cmd = execMock.mock.calls[0][0]
     expect(cmd).toContain('pkill -f')
-    expect(cmd).toContain(NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION)
+    expect(cmd).toContain('pearpass-lib-native-messaging-bridge')
   })
 
   it('should kill processes on macOS', async () => {
@@ -333,7 +350,11 @@ describe('setupNativeMessaging', () => {
   beforeEach(resetMocks)
 
   it('should succeed on linux and write manifest files', async () => {
-    const result = await setupNativeMessaging()
+    const result = await setupNativeMessaging({
+      userDataPath: MOCK_USER_DATA_PATH,
+      execPath: MOCK_EXEC_PATH,
+      bridgePath: MOCK_BRIDGE_PATH
+    })
     expect(result.success).toBe(true)
     expect(result.message).toMatch(
       /Native messaging host installed successfully/
@@ -345,7 +366,11 @@ describe('setupNativeMessaging', () => {
 
   it('should succeed on macOS and write manifest files', async () => {
     os.platform.mockReturnValue('darwin')
-    const result = await setupNativeMessaging()
+    const result = await setupNativeMessaging({
+      userDataPath: MOCK_USER_DATA_PATH,
+      execPath: MOCK_EXEC_PATH,
+      bridgePath: MOCK_BRIDGE_PATH
+    })
     expect(result.success).toBe(true)
     expect(result.message).toMatch(
       /Native messaging host installed successfully/
@@ -357,21 +382,33 @@ describe('setupNativeMessaging', () => {
 
   it('should handle unsupported platforms', async () => {
     os.platform.mockReturnValue('unknown')
-    const result = await setupNativeMessaging()
+    const result = await setupNativeMessaging({
+      userDataPath: MOCK_USER_DATA_PATH,
+      execPath: MOCK_EXEC_PATH,
+      bridgePath: MOCK_BRIDGE_PATH
+    })
     expect(result.success).toBe(false)
     expect(result.message).toMatch(/Unsupported platform/)
   })
 
   it('should handle manifest write errors gracefully', async () => {
     fs.writeFile.mockRejectedValueOnce(new Error('write failed'))
-    const result = await setupNativeMessaging()
+    const result = await setupNativeMessaging({
+      userDataPath: MOCK_USER_DATA_PATH,
+      execPath: MOCK_EXEC_PATH,
+      bridgePath: MOCK_BRIDGE_PATH
+    })
     expect(result.success).toBe(false)
     expect(result.message).toMatch(/Failed to setup native messaging/)
   })
 
   it('should handle script creation errors', async () => {
     fs.writeFile.mockRejectedValueOnce(new Error('script write failed'))
-    const result = await setupNativeMessaging()
+    const result = await setupNativeMessaging({
+      userDataPath: MOCK_USER_DATA_PATH,
+      execPath: MOCK_EXEC_PATH,
+      bridgePath: MOCK_BRIDGE_PATH
+    })
     expect(result.success).toBe(false)
     expect(result.message).toMatch(/Failed to setup native messaging/)
   })
@@ -382,7 +419,11 @@ describe('setupNativeMessaging', () => {
     const execMock = jest.fn((cmd, cb) => cb(null, ''))
     child_process.exec.mockImplementation(execMock)
 
-    const result = await setupNativeMessaging()
+    const result = await setupNativeMessaging({
+      userDataPath: MOCK_USER_DATA_PATH,
+      execPath: MOCK_EXEC_PATH,
+      bridgePath: MOCK_BRIDGE_PATH
+    })
     expect(result.success).toBe(true)
     expect(result.message).toMatch(
       /Native messaging host installed successfully/
@@ -398,7 +439,11 @@ describe('setupNativeMessaging', () => {
       .mockRejectedValueOnce(new Error('write failed')) // second browser fails
       .mockResolvedValueOnce() // third browser
 
-    const result = await setupNativeMessaging()
+    const result = await setupNativeMessaging({
+      userDataPath: MOCK_USER_DATA_PATH,
+      execPath: MOCK_EXEC_PATH,
+      bridgePath: MOCK_BRIDGE_PATH
+    })
     expect(result.success).toBe(true)
   })
 
@@ -412,7 +457,11 @@ describe('setupNativeMessaging', () => {
       .mockRejectedValueOnce(new Error('ENOENT')) // chromium snap not found
       .mockRejectedValueOnce(new Error('ENOENT')) // brave not found
 
-    const result = await setupNativeMessaging()
+    const result = await setupNativeMessaging({
+      userDataPath: MOCK_USER_DATA_PATH,
+      execPath: MOCK_EXEC_PATH,
+      bridgePath: MOCK_BRIDGE_PATH
+    })
     expect(result.success).toBe(true)
     // 1 executable write + 1 manifest write (only google-chrome)
     expect(fs.writeFile).toHaveBeenCalledTimes(2)

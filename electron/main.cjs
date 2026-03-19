@@ -87,6 +87,16 @@ function getStorageDir() {
   return app.getPath('userData')
 }
 
+function getNativeBridgePath() {
+  const bundleFile = path.join('dist', 'native-messaging-bridge.bundle.cjs')
+
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, 'app', bundleFile)
+  }
+
+  return path.join(app.getAppPath(), bundleFile)
+}
+
 /**
  * In dev, when PEARPASS_DEV_RESET=1, clear vault/encryption data so the app
  * Only runs when NODE_ENV !== 'production'.
@@ -493,7 +503,10 @@ function registerIPC() {
       key: runtimeConfig.upgrade || null,
       upgrade: runtimeConfig.upgrade,
       version: runtimeConfig.version,
-      applink: runtimeConfig.upgrade || ''
+      applink: runtimeConfig.upgrade || '',
+      userDataPath: getStorageDir(),
+      execPath: process.execPath,
+      bridgePath: getNativeBridgePath()
     }
   })
 
