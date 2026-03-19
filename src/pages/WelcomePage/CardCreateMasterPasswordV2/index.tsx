@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { Validator } from 'pear-apps-utils-validator'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { Validator } from '@tetherto/pear-apps-utils-validator'
 // @ts-ignore - JS module re-export
 import { TERMS_OF_USE } from '@tetherto/pearpass-lib-constants'
 import { useUserData } from '@tetherto/pearpass-lib-vault'
