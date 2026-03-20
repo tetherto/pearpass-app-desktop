@@ -109,7 +109,8 @@ const VAULT_METHODS = [
   'generateOtpCodesByIds',
   'generateHotpNext',
   'addOtpToRecord',
-  'removeOtpFromRecord'
+  'removeOtpFromRecord',
+  'fetchFavicon'
 ]
 
 /**
