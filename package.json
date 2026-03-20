@@ -61,8 +61,7 @@
     "name": "pearpass-app-desktop",
     "routes": ".",
     "unrouted": [
-      "/packages/pearpass-lib-vault-core/src/worklet/app.js",
-      "/subProcess/clipboardCleanup.js"
+      "/packages/pearpass-lib-vault-core/src/worklet/app.js"
     ],
     "gui": {
       "backgroundColor": "#1F2430",
