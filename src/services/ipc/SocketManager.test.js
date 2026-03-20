@@ -1,11 +1,15 @@
 jest.mock('fs', () => ({
   promises: {
-    unlink: jest.fn()
+    unlink: jest.fn(),
+    mkdir: jest.fn()
   }
 }))
 jest.mock('os', () => ({
   platform: jest.fn(),
-  tmpdir: jest.fn()
+  homedir: jest.fn().mockReturnValue('/home/testuser')
+}))
+jest.mock('pearpass-lib-constants', () => ({
+  IPC_SOCKET_DIR_NAME: '.pearpass'
 }))
 jest.mock('../../utils/logger', () => ({
   logger: {
@@ -13,12 +17,6 @@ jest.mock('../../utils/logger', () => ({
     warn: jest.fn()
   }
 }))
-
-global.Pear = {
-  config: {
-    pearDir: '/tmp'
-  }
-}
 
 import fs from 'fs'
 
@@ -28,7 +26,7 @@ const { logger } = require('../../utils/logger')
 
 describe('SocketManager', () => {
   const socketName = 'testSocket'
-  const unixPath = '/tmp/pearpass/testSocket.sock'
+  const unixPath = '/home/testuser/.pearpass/testSocket.sock'
   const winPath = '\\\\?\\pipe\\testSocket'
 
   beforeEach(() => {
@@ -44,7 +42,6 @@ describe('SocketManager', () => {
 
     it('returns Unix socket path on non-win32', () => {
       require('os').platform.mockReturnValue('linux')
-      require('os').tmpdir.mockReturnValue('/tmp')
       const manager = new SocketManager(socketName)
       expect(manager.getSocketPath(socketName)).toBe(unixPath)
     })
@@ -53,7 +50,7 @@ describe('SocketManager', () => {
   describe('getPath', () => {
     it('returns the socket path', () => {
       require('os').platform.mockReturnValue('linux')
-      require('os').tmpdir.mockReturnValue('/tmp')
+
       const manager = new SocketManager(socketName)
       expect(manager.getPath()).toBe(unixPath)
     })
@@ -69,7 +66,7 @@ describe('SocketManager', () => {
 
     it('calls unlink and logs info on Unix', async () => {
       require('os').platform.mockReturnValue('linux')
-      require('os').tmpdir.mockReturnValue('/tmp')
+
       fs.promises.unlink.mockResolvedValue()
       const manager = new SocketManager(socketName)
       await manager.cleanupSocket()
@@ -82,7 +79,7 @@ describe('SocketManager', () => {
 
     it('logs warn if unlink throws non-ENOENT error', async () => {
       require('os').platform.mockReturnValue('linux')
-      require('os').tmpdir.mockReturnValue('/tmp')
+
       const error = new Error('fail')
       error.code = 'EACCES'
       fs.promises.unlink.mockRejectedValue(error)
@@ -96,7 +93,7 @@ describe('SocketManager', () => {
 
     it('does not log warn if unlink throws ENOENT error', async () => {
       require('os').platform.mockReturnValue('linux')
-      require('os').tmpdir.mockReturnValue('/tmp')
+
       const error = new Error('not found')
       error.code = 'ENOENT'
       fs.promises.unlink.mockRejectedValue(error)
@@ -110,7 +107,6 @@ describe('SocketManager', () => {
 describe('getIpcPath', () => {
   it('returns socket path for given name', () => {
     require('os').platform.mockReturnValue('linux')
-    require('os').tmpdir.mockReturnValue('/tmp')
-    expect(getIpcPath('foo')).toBe('/tmp/pearpass/foo.sock')
+    expect(getIpcPath('foo')).toBe('/home/testuser/.pearpass/foo.sock')
   })
 })

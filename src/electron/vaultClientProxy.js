@@ -92,6 +92,7 @@ const VAULT_METHODS = [
   'addDefaultBlindMirrors',
   'removeAllBlindMirrors',
   'encryptionInit',
+  'encryptExportData',
   'encryptionGetStatus',
   'encryptionGet',
   'encryptionAdd',
@@ -110,7 +111,8 @@ const VAULT_METHODS = [
   'generateHotpNext',
   'addOtpToRecord',
   'removeOtpFromRecord',
-  'fetchFavicon'
+  'fetchFavicon',
+  'decryptExportData'
 ]
 
 /**

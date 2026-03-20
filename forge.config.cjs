@@ -1,11 +1,15 @@
 const fs = require('fs')
 const path = require('path')
-const pkg = require('./package.json')
-const appName = pkg.productName ?? pkg.name
+
 const { isWindows } = require('which-runtime')
 
-function getWindowsKitVersion () {
-  const programFiles = process.env['PROGRAMFILES(X86)'] || process.env.PROGRAMFILES
+const pkg = require('./package.json')
+
+const appName = pkg.productName ?? pkg.name
+
+function getWindowsKitVersion() {
+  const programFiles =
+    process.env['PROGRAMFILES(X86)'] || process.env.PROGRAMFILES
   if (!programFiles) return undefined
   const kitsDir = path.join(programFiles, 'Windows Kits')
   try {
@@ -24,7 +28,7 @@ function getWindowsKitVersion () {
   }
 }
 
-let packagerConfig = {
+const packagerConfig = {
   icon: path.join(__dirname, 'assets', 'win32', 'icon'),
   protocols: [{ name: appName, schemes: [pkg.name] }],
   derefSymlinks: true
@@ -38,11 +42,18 @@ module.exports = {
     {
       name: '@electron-forge/maker-msix',
       config: {
-        appManifest: path.join(__dirname, 'build-assets', 'win', 'AppxManifest.xml'),
+        appManifest: path.join(
+          __dirname,
+          'build-assets',
+          'win',
+          'AppxManifest.xml'
+        ),
         packageAssets: path.join(__dirname, 'build-assets', 'icon'),
+        createPri: false,
         windowsKitVersion: getWindowsKitVersion(),
         manifestVariables: {
-          publisher: 'CN=&quot;Tether Operations, SA de CV&quot;, O=&quot;Tether Operations, SA de CV&quot;, L=San Salvador, C=SV, SERIALNUMBER=2025120324, OID.2.5.4.15=Private Organization, OID.1.3.6.1.4.1.311.60.2.1.3=SV'
+          publisher:
+            'CN=&quot;Tether Operations, SA de CV&quot;, O=&quot;Tether Operations, SA de CV&quot;, L=San Salvador, C=SV, SERIALNUMBER=2025120324, OID.2.5.4.15=Private Organization, OID.1.3.6.1.4.1.311.60.2.1.3=SV'
         },
         windowsSignOptions: {
           certificateSha1: '874b95fdc8a490a3d3bab28643902948b2c7ad43',
@@ -57,16 +68,27 @@ module.exports = {
 
   hooks: {
     preMake: async () => {
-      fs.rmSync(path.join(__dirname, 'out', 'make'), { recursive: true, force: true })
+      fs.rmSync(path.join(__dirname, 'out', 'make'), {
+        recursive: true,
+        force: true
+      })
 
-      const pkgJson = JSON.parse(fs.readFileSync(path.resolve('package.json'), 'utf8'))
-      const [major, minor, patch] = pkgJson.version.split('-')[0].split('.').map(Number)
+      const pkgJson = JSON.parse(
+        fs.readFileSync(path.resolve('package.json'), 'utf8')
+      )
+      const [major, minor, patch] = pkgJson.version
+        .split('-')[0]
+        .split('.')
+        .map(Number)
       const msixVersion = `${major}.${minor}.${patch}.0`
       const manifestPath = path.resolve('build-assets/win/AppxManifest.xml')
       const manifest = fs.readFileSync(manifestPath, 'utf8')
       fs.writeFileSync(
         manifestPath,
-        manifest.replace(/Version="\d+\.\d+\.\d+\.\d+"/, `Version="${msixVersion}"`)
+        manifest.replace(
+          /Version="\d+\.\d+\.\d+\.\d+"/,
+          `Version="${msixVersion}"`
+        )
       )
     },
     postMake: async (forgeConfig, results) => {
@@ -84,7 +106,10 @@ module.exports = {
         }
       }
       if (isWindows) {
-        fs.rmSync(path.join(__dirname, 'out', 'make'), { recursive: true, force: true })
+        fs.rmSync(path.join(__dirname, 'out', 'make'), {
+          recursive: true,
+          force: true
+        })
       }
     }
   },
@@ -100,4 +125,3 @@ module.exports = {
     }
   ]
 }
-

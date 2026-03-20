@@ -2,12 +2,18 @@ name: Electron-builder Build
 
 on:
   push:
-    branches: [main, dev, staging, electron-migration]
+    branches: [main, dev, staging]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Version tag"
+        required: true
+        type: string
 
 jobs:
   build-linux:
     permissions:
-      contents: write # to upload artifacts
+      contents: write
     strategy:
       matrix:
         include:
@@ -120,14 +126,25 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
+      - name: Build Prod App
+        run: |
+          npm run build:prod
+      - name: Prune dependencies
+        run: |
+          npm prune --omit=dev
+      - name: Setup Electron and Builder
+        run: |
+          npm install -g electron
+          npm install -g electron-builder@23.6.0
+          npm install -g pear-build
+          npm install @electron/notarize --no-save
       - name: Build application
         env:
           MAC_CODESIGN_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
           CSC_NAME: ${{ secrets.MACOS_SIGNING_IDENTITY }}
           PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
-          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          npm run dist:mac:ci:${{ matrix.arch }}
+          npm run dist:mac:${{ matrix.arch }}
 
       - name: "Install @actions/artifact module"
         id: install-actions-artifact-module
@@ -158,7 +175,7 @@ jobs:
           const version = pkg.version;
 
           const dmgName = `${productName}-${version}${{ matrix.dmg_suffix }}.dmg`;
-          const dmgPath = path.join('dist', dmgName);
+          const dmgPath = path.join('out', dmgName);
 
           if (!fs.existsSync(dmgPath)) {
             throw new Error(`Expected DMG not found at ${dmgPath}`);
@@ -166,64 +183,24 @@ jobs:
 
           const artifact = new DefaultArtifactClient();
           console.log(`Uploading macOS ${{ matrix.arch }} DMG: ${dmgName} from ${dmgPath}`);
-          artifact.uploadArtifact(dmgName, [dmgPath], 'dist');
+          artifact.uploadArtifact(dmgName, [dmgPath], 'out');
         shell: node {0}
 
   build-win32:
     permissions:
       contents: write # to upload artifacts
-    runs-on: self-hosted # self-hosted signer
+    runs-on: windows-latest # self-hosted signer
+    env:
+      HUSKY: 0
+    outputs:
+      artifact-links: ${{ steps.build.outputs.artifact-links }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-      - name: Install dependencies
-        run: |
-          npm install
-      - name: Build application
-        env:
-          WIN_SUBJECT: ${{ secrets.WIN_SUBJECT }}
-          WIN_THUMBPRINT: ${{ secrets.WIN_THUMBPRINT }}
-          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
-        run: |
-          npm run dist:win
-
-      - name: "Install @actions/artifact module"
-        id: install-actions-artifact-module
-        run: |
-          npm install @actions/artifact@2.3.2 --global
-          echo "NODE_PATH=$(npm root --quiet -g)" >> $GITHUB_ENV
-
-      - name: "Extract Actions runtime variables"
-        id: extract-runtime-environment-variables
-        uses: actions/github-script@v7
-        env:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: holepunchto/make-pear-app@main
+        id: build
         with:
-          script: |
-            core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
-            core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
-
-      - name: "Upload Windows MSIX artifact"
-        id: upload-artifacts
-        env:
-          NODE_PATH: ${{ env.NODE_PATH }}
-        run: |
-          const fs = require('fs');
-          const path = require('path');
-          const { DefaultArtifactClient } = require('@actions/artifact');
-
-          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-          const productName = pkg.productName || pkg.name;
-
-          const msixName = `${productName}.msix`;
-          const msixPath = path.join('out', productName, msixName);
-
-          if (!fs.existsSync(msixPath)) {
-            throw new Error(`Expected MSIX not found at ${msixPath}`);
-          }
-
-          const artifact = new DefaultArtifactClient();
-          console.log(`Uploading Windows MSIX: ${msixName} from ${msixPath}`);
-          artifact.uploadArtifact(msixName, [msixPath], path.dirname(msixPath));
-        shell: node {0}
+          channel: "stable"
+          macos_notarization_method: "appstore_connect"
+          windows_subject: ${{ secrets.WIN_SUBJECT }}
+          windows_thumbprint: ${{ secrets.WIN_THUMBPRINT }}

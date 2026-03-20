@@ -7,7 +7,6 @@ import { useRouter } from '../../../context/RouterContext'
 import { useTranslation } from '../../../hooks/useTranslation'
 
 export const CardUnlockPearPass = () => {
-  // @ts-ignore TODO: ignore for now, next PR will fix properly
   const { t } = useTranslation()
   const { currentPage, navigate } = useRouter()
   const { initVaults } = useVaults()

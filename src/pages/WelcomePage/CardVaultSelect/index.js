@@ -63,7 +63,7 @@ export const CardVaultSelect = () => {
     <${CardContainer}>
       <${CardTitle}>
         <${Title} data-testid="vault-title">
-          ${data.length > 0
+          ${data?.length > 0
             ? i18n._('Open an existing vault or create a new one.')
             : i18n._('Set up your vault')}
         <//>
