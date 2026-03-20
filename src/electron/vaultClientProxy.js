@@ -111,6 +111,7 @@ const VAULT_METHODS = [
   'generateHotpNext',
   'addOtpToRecord',
   'removeOtpFromRecord',
+  'fetchFavicon',
   'decryptExportData'
 ]
 
