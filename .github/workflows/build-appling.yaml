@@ -109,8 +109,8 @@ jobs:
 
       - name: Install Flatpak runtime and SDK
         run: |
-          flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          flatpak install -y flathub org.gnome.Platform//49 org.gnome.Sdk//49
+          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak install --user -y --noninteractive flathub org.gnome.Platform//49 org.gnome.Sdk//49
 
       - name: Install dependencies
         run: |
