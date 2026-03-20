@@ -23,6 +23,10 @@
       {
         "from": "assets",
         "to": "assets"
+      },
+      {
+        "from": "resources/bin",
+        "to": "bin"
       }
     ],
     "mac": {

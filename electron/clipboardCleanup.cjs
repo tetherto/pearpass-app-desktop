@@ -41,7 +41,7 @@ function spawnDetachedClipboardHelper(secretPath, token, statePath, delayMs) {
     {
       detached: true,
       env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' },
-      stdio: 'ignore',
+      stdio: 'inherit',
       windowsHide: true
     }
   )
@@ -86,7 +86,7 @@ function spawnDetachedWindowsClipboardHelper(
     ],
     {
       detached: true,
-      stdio: 'ignore',
+      stdio: 'inherit',
       windowsHide: true
     }
   )
@@ -113,10 +113,12 @@ function scheduleClipboardCleanup({ app, clipboard, logger, isWindows, text, del
   )
 
   try {
+    console.log(`[clipboardCleanup] Scheduling detached cleanup: token=${token}, delayMs=${finalDelayMs}`)
     fs.writeFileSync(secretPath, textToMatch, { encoding: 'utf8', mode: 0o600 })
     fs.writeFileSync(statePath, token, { encoding: 'utf8', mode: 0o600 })
 
     if (isWindows) {
+      console.log('[clipboardCleanup] Spawning Windows helper')
       spawnDetachedWindowsClipboardHelper(
         secretPath,
         token,
@@ -124,6 +126,7 @@ function scheduleClipboardCleanup({ app, clipboard, logger, isWindows, text, del
         finalDelayMs
       )
     } else {
+      console.log('[clipboardCleanup] Spawning non-Windows helper')
       spawnDetachedClipboardHelper(secretPath, token, statePath, finalDelayMs)
     }
 

@@ -1,5 +1,6 @@
 const fs = require('fs')
 const { spawnSync } = require('child_process')
+const { readClipboardWithFallback, clearClipboardWithFallback } = require('./linuxClipboardFallback.cjs')
 
 function removeFileIfExists(filePath) {
   try {
@@ -72,6 +73,10 @@ function readClipboard() {
       }
     }
 
+    // Neither xsel nor xclip found as system commands — try bundled binary
+    const fallbackResult = readClipboardWithFallback()
+    if (typeof fallbackResult === 'string') return fallbackResult
+
     logLinuxClipboardSkip()
     return null
   }
@@ -95,11 +100,17 @@ function clearClipboard() {
     ]
 
     for (const [command, args] of commands) {
+      console.log(`[clipboardCleanupHelper] Attempting to clear using: ${command} ${JSON.stringify(args)}`)
       const result = runClipboardCommand(command, args, '')
       if (!result.error && result.status === 0) {
+        console.log(`[clipboardCleanupHelper] Clear successful using: ${command}`)
         return
       }
+      console.warn(`[clipboardCleanupHelper] Clear failed with: ${command}. Error: ${result.error || result.status}`)
     }
+
+    // Neither xsel nor xclip found as system commands — try bundled binary
+    if (clearClipboardWithFallback()) return
 
     logLinuxClipboardSkip()
     return
@@ -114,23 +125,35 @@ async function runClipboardCleanup({
   statePath,
   delayMs = 30000
 }) {
+  console.log(`[clipboardCleanupHelper] Loading secret from ${secretPath}`)
   const expectedText = readSecretFromFile(secretPath)
 
+  console.log(`[clipboardCleanupHelper] Starting ${delayMs / 1000}s timer...`)
   await sleep(delayMs)
+  console.log(`[clipboardCleanupHelper] Timer expired. Checking state...`)
 
   if (readCurrentToken(statePath) !== token) {
+    console.log(`[clipboardCleanupHelper] Token mismatch. Cleanup aborted. token=${token}`)
     return false
   }
 
   try {
+    console.log(`[clipboardCleanupHelper] Reading clipboard content for match...`)
     const clipboardText = readClipboard()
 
     if (typeof clipboardText !== 'string') {
+      console.error(`[clipboardCleanupHelper] Clipboard check failed: content is not a string.`)
       return false
     }
 
     if (clipboardText === expectedText) {
+      console.log(`[clipboardCleanupHelper] MATCH: Clipboard still contains secret. Clearing...`)
       clearClipboard()
+
+      const postClearText = readClipboard()
+      console.log(`[clipboardCleanupHelper] Verification reading: clipboard contains: "${postClearText}"`)
+    } else {
+      console.log(`[clipboardCleanupHelper] NO MATCH: Clipboard has been changed since copy (length=${clipboardText.length})`)
     }
 
     return true
