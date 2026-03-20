@@ -36,9 +36,9 @@ jobs:
           npm prune --omit=dev
       - name: Setup Electron and Builder
         run: |
-          npm install -g electron
-          npm install -g electron-builder
-          npm install -g pear-build
+          npm install electron --no-save
+          npm install electron-builder --no-save
+          npm install pear-build --no-save
       - name: Build application
         env:
           PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
