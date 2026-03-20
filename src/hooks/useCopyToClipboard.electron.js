@@ -38,12 +38,10 @@ export const useCopyToClipboard = ({ onCopy } = {}) => {
     }
     navigator.clipboard.writeText(text).then(
       () => {
-        console.log('[useCopyToClipboard] Copy successful. text=', text)
         setIsCopied(true)
         onCopy?.()
         // Clear clipboard automatically after delay
         if (window.electronAPI) {
-          console.log('[useCopyToClipboard] Scheduling clipboard clear in', CLIPBOARD_CLEAR_TIMEOUT, 'ms')
           window.electronAPI.clearClipboardAfter?.(
             text,
             CLIPBOARD_CLEAR_TIMEOUT

@@ -65,7 +65,6 @@ function prepareBundledBinary() {
   try {
     fs.copyFileSync(sourcePath, destPath)
     fs.chmodSync(destPath, 0o755)
-    console.log(`[linuxClipboardFallback] Extracted bundled xsel to: ${destPath}`)
     return destPath
   } catch (err) {
     process.stderr.write(
@@ -82,7 +81,6 @@ function prepareBundledBinary() {
  * @returns {string | null}
  */
 function readClipboardWithFallback() {
-  console.log('[linuxClipboardFallback] Attempting bundled xsel fallback for read...')
 
   const binaryPath = prepareBundledBinary()
   if (!binaryPath) return null
@@ -93,7 +91,6 @@ function readClipboardWithFallback() {
   })
 
   if (!result.error && result.status === 0) {
-    console.log('[linuxClipboardFallback] Read successful with bundled xsel.')
     return result.stdout || ''
   }
 
@@ -110,7 +107,6 @@ function readClipboardWithFallback() {
  * @returns {boolean}
  */
 function clearClipboardWithFallback() {
-  console.log('[linuxClipboardFallback] Attempting bundled xsel fallback for clear...')
 
   const binaryPath = prepareBundledBinary()
   if (!binaryPath) return false
@@ -122,7 +118,6 @@ function clearClipboardWithFallback() {
   })
 
   if (!result.error && result.status === 0) {
-    console.log('[linuxClipboardFallback] Clear successful with bundled xsel.')
     return true
   }
 
