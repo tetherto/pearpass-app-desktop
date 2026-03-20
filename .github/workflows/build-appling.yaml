@@ -72,6 +72,95 @@ jobs:
           artifact.uploadArtifact(name, [file], path.dirname(file));
         shell: node {0}
 
+  build-snap:
+    permissions:
+      contents: write # to upload artifacts
+    strategy:
+      matrix:
+        include:
+          - arch: x64
+            runs_on: ubuntu-latest
+            # electron-builder uses Debian arch names for snap artifacts
+            snap_arch: amd64
+          - arch: arm64
+            # Native ARM runner — cross-compiling snaps on x64 is unsupported
+            # because snapcraft --destructive-mode builds for the host arch.
+            # See: https://github.com/electron-userland/electron-builder/issues/5626
+            runs_on: ubuntu-24.04-arm
+            snap_arch: arm64
+    runs-on: ${{ matrix.runs_on }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+
+      # snapd is pre-installed on ubuntu runners, but snapcraft is not.
+      # electron-builder invokes `snapcraft snap --destructive-mode` internally
+      # when building snap targets (bypasses LXD/Multipass, builds on host).
+      # See: https://www.electron.build/snap.html
+      - name: Install Snapcraft
+        run: sudo snap install snapcraft --classic
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build snap
+        env:
+          PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: npm run dist:snap:${{ matrix.arch }}
+
+      - name: "Install @actions/artifact module"
+        id: install-actions-artifact-module
+        run: |
+          npm install @actions/artifact@2.3.2 --global
+          echo "NODE_PATH=$(npm root --quiet -g)" >> $GITHUB_ENV
+
+      - name: "Extract Actions runtime variables"
+        id: extract-runtime-environment-variables
+        uses: actions/github-script@v7
+        env:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
+
+      - name: "Upload snap artifact"
+        id: upload-artifacts
+        run: |
+          const fs = require('fs');
+          const path = require('path');
+          const { DefaultArtifactClient } = require('@actions/artifact');
+
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const productName = pkg.productName;
+          const version = pkg.version;
+          const snapArch = '${{ matrix.snap_arch }}';
+
+          // electron-builder outputs snap to dist/ using the artifactName pattern
+          // configured in package.json: ${productName}_${version}_${arch}.${ext}
+          const snapName = `${productName}_${version}_${snapArch}.snap`;
+          const snapPath = path.join('dist', snapName);
+
+          if (!fs.existsSync(snapPath)) {
+            // Fallback: find any .snap file in dist/
+            const distFiles = fs.readdirSync('dist');
+            const snapFile = distFiles.find(f => f.endsWith('.snap'));
+            if (!snapFile) {
+              throw new Error(`No .snap file found in dist/. Files: ${distFiles.join(', ')}`);
+            }
+            const fallbackPath = path.join('dist', snapFile);
+            const artifact = new DefaultArtifactClient();
+            console.log(`Uploading snap (fallback): ${snapFile} from ${fallbackPath}`);
+            artifact.uploadArtifact(`PearPass-${snapArch}.snap`, [fallbackPath], 'dist');
+          } else {
+            const artifact = new DefaultArtifactClient();
+            console.log(`Uploading snap: ${snapName} from ${snapPath}`);
+            artifact.uploadArtifact(`PearPass-${snapArch}.snap`, [snapPath], 'dist');
+          }
+        shell: node {0}
+
   build-macos:
     permissions:
       contents: write # to upload artifacts

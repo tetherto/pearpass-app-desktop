@@ -42,6 +42,29 @@
       ],
       "artifactName": "${productName}.${ext}"
     },
+    "snap": {
+      "confinement": "classic",
+      "grade": "stable",
+      "summary": "A secure, decentralized and fully local password manager",
+      "artifactName": "${productName}_${version}_${arch}.${ext}",
+      "plugs": [
+        "default",
+        {
+          "dot-config-pear": {
+            "interface": "personal-files",
+            "write": [
+              "$HOME/.config/pear"
+            ]
+          }
+        },
+        {
+          "shmem": {
+            "interface": "shared-memory",
+            "private": true
+          }
+        }
+      ]
+    },
     "toolsets": {
       "appimage": "1.0.2"
     },
@@ -87,8 +110,7 @@
         "tsconfig.json",
         "eslint.config.js",
         "jest.config.js",
-        "flatpak",
-        "snapcraft"
+        "flatpak"
       ]
     }
   },
@@ -122,6 +144,8 @@
     "dist:linux:x64": "rm -rf dist && npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder -- electron-builder --linux AppImage --x64 && rm -rf out/linux-x64 && mkdir -p out/linux-x64 && cp dist/PearPass.AppImage out/linux-x64/PearPass.AppImage && npm install && npm run pear:build:linux:x64",
     "dist:linux:arm64": "rm -rf dist && npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder -- electron-builder --linux AppImage --arm64 && rm -rf out/linux-arm64 && mkdir -p out/linux-arm64 && cp dist/PearPass.AppImage out/linux-arm64/PearPass.AppImage && npm install && npm run pear:build:linux:arm64",
     "dist:snap": "npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder -- electron-builder --linux snap && npm install",
+    "dist:snap:x64": "npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder -- electron-builder --linux snap --x64 && npm install",
+    "dist:snap:arm64": "npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder -- electron-builder --linux snap --arm64 && npm install",
     "dist:flatpak": "npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder -- electron-builder --linux flatpak && npm install",
     "pear:build:darwin:arm64": "npx pear-build --package=./package.json --darwin-arm64-app ./out/mac-arm64/PearPass.app --target ../pearpass-app-desktop-$npm_package_version",
     "pear:build:darwin:x64": "npx pear-build --package=./package.json --darwin-x64-app ./out/mac/PearPass.app --target ../pearpass-app-desktop-$npm_package_version",
