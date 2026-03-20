@@ -119,15 +119,15 @@
     "dist:mac:arm64:dev": "SKIP_NOTARIZE=true CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist:mac:arm64",
     "dist:mac:x64:dev": "SKIP_NOTARIZE=true CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist:mac:x64",
     "dist:win": "npm run build:prod && electron-forge make --platform=win32 --arch=x64 && npm run pear:build:win",
-    "dist:linux:x64": "rm -rf dist && npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder -- electron-builder --linux AppImage --x64 && rm -rf out/linux-x64 && mkdir -p out/linux-x64 && cp dist/PearPass.AppImage out/linux-x64/PearPass.AppImage && npm install && npm run pear:build:linux:x64",
-    "dist:linux:arm64": "rm -rf dist && npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder -- electron-builder --linux AppImage --arm64 && rm -rf out/linux-arm64 && mkdir -p out/linux-arm64 && cp dist/PearPass.AppImage out/linux-arm64/PearPass.AppImage && npm install && npm run pear:build:linux:arm64",
+    "dist:linux:x64": "npx electron-builder --linux --x64 -c electron-builder.linux.json --publish never && npm run pear:build:linux:x64",
+    "dist:linux:arm64": "npx electron-builder --linux --arm64 -c electron-builder.linux.json --publish never && npm run pear:build:linux:arm64",
     "dist:snap": "npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder -- electron-builder --linux snap && npm install",
     "dist:flatpak": "npm install && npm run build:prod && npm prune --omit=dev && npm install electron --no-save && npm exec --yes --package electron-builder -- electron-builder --linux flatpak && npm install",
     "pear:build:darwin:arm64": "npx pear-build --package=./package.json --darwin-arm64-app ./out/mac-arm64/PearPass.app --target ../pearpass-app-desktop-$npm_package_version",
     "pear:build:darwin:x64": "npx pear-build --package=./package.json --darwin-x64-app ./out/mac/PearPass.app --target ../pearpass-app-desktop-$npm_package_version",
     "pear:build:win": "npx pear-build --package=./package.json --win32-x64-app ./out/PearPass/PearPass.msix --target ../pearpass-app-desktop-%npm_package_version%",
-    "pear:build:linux:x64": "npx pear-build --package=./package.json --linux-x64-app ./out/linux-x64/PearPass.AppImage --target ../pearpass-app-desktop-$npm_package_version",
-    "pear:build:linux:arm64": "npx pear-build --package=./package.json --linux-arm64-app ./out/linux-arm64/PearPass.AppImage --target ../pearpass-app-desktop-$npm_package_version"
+    "pear:build:linux:x64": "npx pear-build --package=./package.json --linux-x64-app ./out/PearPass.AppImage --target ../pearpass-app-desktop-$npm_package_version",
+    "pear:build:linux:arm64": "npx pear-build --package=./package.json --linux-arm64-app ./out/PearPass.AppImage --target ../pearpass-app-desktop-$npm_package_version"
   },
   "devDependencies": {
     "@babel/core": "7.26.10",

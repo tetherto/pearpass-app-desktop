@@ -28,6 +28,17 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
+      - name: Build Prod App
+        run: |
+          npm run build:prod
+      - name: Prune dependencies
+        run: |
+          npm prune --omit=dev
+      - name: Setup Electron and Builder
+        run: |
+          npm install -g electron
+          npm install -g electron-builder
+          npm install -g pear-build
       - name: Build application
         env:
           PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
@@ -60,7 +71,7 @@ jobs:
           const { DefaultArtifactClient } = require('@actions/artifact');
 
           const arch = '${{ matrix.arch }}';
-          const file = `out/linux-${arch}/PearPass.AppImage`;
+          const file = 'out/PearPass.AppImage';
           const name = `PearPass-${arch}.AppImage`;
 
           if (!fs.existsSync(file)) {
