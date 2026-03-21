@@ -1,6 +1,10 @@
-const fs = require('fs')
 const { spawnSync } = require('child_process')
-const { readClipboardWithFallback, clearClipboardWithFallback } = require('./linuxClipboardFallback.cjs')
+const fs = require('fs')
+
+const {
+  readClipboardWithFallback,
+  clearClipboardWithFallback
+} = require('./linuxClipboardFallback.cjs')
 
 function removeFileIfExists(filePath) {
   try {
@@ -104,7 +108,6 @@ function clearClipboard() {
       if (!result.error && result.status === 0) {
         return
       }
-      console.warn(`[clipboardCleanupHelper] Clear failed with: ${command}. Error: ${result.error || result.status}`)
     }
 
     // Neither xsel nor xclip found as system commands — try bundled binary
@@ -135,14 +138,13 @@ async function runClipboardCleanup({
     const clipboardText = readClipboard()
 
     if (typeof clipboardText !== 'string') {
-      console.error(`[clipboardCleanupHelper] Clipboard check failed: content is not a string.`)
       return false
     }
 
     if (clipboardText === expectedText) {
       clearClipboard()
 
-      const postClearText = readClipboard()
+      readClipboard()
     } else {
     }
 

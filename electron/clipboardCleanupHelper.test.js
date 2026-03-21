@@ -84,9 +84,7 @@ describe('clipboardCleanupHelper', () => {
     const fs = getFs()
     const spawnSync = getSpawnSync()
 
-    fs.readFileSync
-      .mockReturnValueOnce('secret')
-      .mockReturnValueOnce('token-2')
+    fs.readFileSync.mockReturnValueOnce('secret').mockReturnValueOnce('token-2')
 
     const cleanupPromise = helper.runClipboardCleanup({
       secretPath: '/tmp/secret.txt',

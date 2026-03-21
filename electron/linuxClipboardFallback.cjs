@@ -1,7 +1,7 @@
+const { spawnSync } = require('child_process')
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
-const { spawnSync } = require('child_process')
 
 const TEMP_BINARY_NAME = 'pearpass-xsel'
 
@@ -81,7 +81,6 @@ function prepareBundledBinary() {
  * @returns {string | null}
  */
 function readClipboardWithFallback() {
-
   const binaryPath = prepareBundledBinary()
   if (!binaryPath) return null
 
@@ -107,7 +106,6 @@ function readClipboardWithFallback() {
  * @returns {boolean}
  */
 function clearClipboardWithFallback() {
-
   const binaryPath = prepareBundledBinary()
   if (!binaryPath) return false
 

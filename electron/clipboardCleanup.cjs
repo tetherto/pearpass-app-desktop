@@ -1,7 +1,7 @@
+const { spawn } = require('child_process')
 const crypto = require('crypto')
 const fs = require('fs')
 const path = require('path')
-const { spawn } = require('child_process')
 
 const DEFAULT_CLIPBOARD_CLEAR_DELAY_MS = 30000
 const CLIPBOARD_CLEANUP_STATE_FILE = 'pearpass-clipboard-cleanup-current.token'
@@ -94,7 +94,14 @@ function spawnDetachedWindowsClipboardHelper(
   child.unref()
 }
 
-function scheduleClipboardCleanup({ app, clipboard, logger, isWindows, text, delayMs }) {
+function scheduleClipboardCleanup({
+  app,
+  clipboard,
+  logger,
+  isWindows,
+  text,
+  delayMs
+}) {
   const finalDelayMs =
     Number.isFinite(delayMs) && delayMs > 0
       ? delayMs
