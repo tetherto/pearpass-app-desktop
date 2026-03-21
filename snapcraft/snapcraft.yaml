@@ -1,6 +1,6 @@
 name: pearpass
 base: core24
-version: "1.4.0"
+version: "1.5.0"
 title: PearPass
 summary: A secure, decentralized and fully local password manager
 description: A secure, decentralized and fully local password manager
@@ -29,7 +29,6 @@ apps:
       - opengl
       - network
       - network-observe
-      - system-files
       - dot-config-pear
       - shmem
 platforms:

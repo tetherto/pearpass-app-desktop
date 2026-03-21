@@ -34,6 +34,7 @@ let debugMode = false
 
 const pkg = require('../package.json')
 const runtimeConfig = require('./runtime-config.cjs')
+const { getSandboxSafePath } = require('./flatpak-paths.cjs')
 const {
   createMainProcessLogger
 } = require('../src/utils/createMainProcessLogger.cjs')
@@ -92,7 +93,7 @@ function getWorkletPath() {
 }
 
 function getStorageDir() {
-  return app.getPath('userData')
+  return getSandboxSafePath(app.getPath('userData'))
 }
 
 function getNativeBridgePath() {
@@ -182,7 +183,7 @@ async function startRuntime() {
   try {
     const pearStorageDir = await getPearRuntimeLegacyStorage(upgrade)
     if (pearStorageDir) {
-      storageDir = pearStorageDir
+      storageDir = getSandboxSafePath(pearStorageDir)
       logger.info('[MAIN]', 'Using pear legacy storage root:', storageDir)
     } else {
       const linkId = upgrade.replace(/^pear:\/\//, '')
@@ -486,7 +487,7 @@ function registerIPC() {
       try {
         const pearStorageDir = await getPearRuntimeLegacyStorage(upgrade)
         if (pearStorageDir) {
-          storage = pearStorageDir
+          storage = getSandboxSafePath(pearStorageDir)
         } else {
           const linkId = upgrade.replace(/^pear:\/\//, '')
           storage = path.join(storage, 'app-storage', 'by-dkey', linkId)
@@ -586,7 +587,7 @@ function registerIPC() {
 
 app.whenReady().then(async () => {
   app.setName('PearPass')
-  logger.setLogPath(app.getPath('userData'))
+  logger.setLogPath(getStorageDir())
   registerIPC()
   try {
     await startRuntime()

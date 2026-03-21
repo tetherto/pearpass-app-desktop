@@ -1,4 +1,4 @@
-Copyright 2025 Tether Operations Limited
+Copyright 2026 Tether Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
