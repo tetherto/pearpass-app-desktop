@@ -27,5 +27,8 @@
     ],
     "artifactName": "${productName}.${ext}"
   },
+  "toolsets": {
+    "appimage": "1.0.2"
+  },
   "afterPack": "scripts/afterPack.cjs"
 }

@@ -66,11 +66,7 @@ describe('clipboardCleanup', () => {
       'cmd.exe',
       expect.arrayContaining([
         '-File',
-        path.join(
-          process.cwd(),
-          'electron',
-          'clipboardCleanup.windows.ps1'
-        )
+        path.join(process.cwd(), 'electron', 'clipboardCleanup.windows.ps1')
       ]),
       expect.objectContaining({
         detached: true,
