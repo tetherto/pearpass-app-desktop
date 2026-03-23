@@ -11,6 +11,12 @@ global.Pear = {
   config: { tier: 'prod', key: 'some-key' }
 }
 
+window.electronAPI = {
+  checkUpdated: jest.fn(() => Promise.resolve(false)),
+  onRuntimeUpdated: jest.fn(() => () => {}),
+  restart: jest.fn()
+}
+
 jest.mock('../context/ModalContext', () => ({
   useModal: jest.fn()
 }))
@@ -27,19 +33,22 @@ describe('usePearUpdate', () => {
     Pear.updated.mockClear()
     Pear.config.tier = 'prod'
     Pear.config.key = 'some-key'
+    window.electronAPI.checkUpdated.mockClear()
+    window.electronAPI.onRuntimeUpdated.mockClear()
+    window.electronAPI.restart.mockClear()
+    window.electronAPI.checkUpdated.mockResolvedValue(false)
   })
 
-  it('subscribes to Pear updates', () => {
+  it('subscribes to electron runtime updates in prod mode', () => {
     renderHook(() => usePearUpdate())
-    expect(Pear.updates).toHaveBeenCalledTimes(1)
+    expect(window.electronAPI.onRuntimeUpdated).toHaveBeenCalledTimes(1)
   })
 
-  it('shows modal when update has non-ignored changes (prod)', async () => {
-    renderHook(() => usePearUpdate())
+  it('shows modal when checkUpdated returns true (prod)', async () => {
+    window.electronAPI.checkUpdated.mockResolvedValue(true)
 
-    const callback = Pear.updates.mock.calls[0][0]
     await act(async () => {
-      await callback({ diff: [{ key: '/app/file.js' }] })
+      renderHook(() => usePearUpdate())
     })
 
     expect(setModalMock).toHaveBeenCalledTimes(1)
@@ -47,15 +56,20 @@ describe('usePearUpdate', () => {
     expect(Pear.reload).not.toHaveBeenCalled()
   })
 
-  it('does not show modal for only ignored files', async () => {
-    renderHook(() => usePearUpdate())
-
-    const callback = Pear.updates.mock.calls[0][0]
-    await act(async () => {
-      await callback({ diff: [{ key: '/logs/log.txt' }] })
+  it('shows modal when onRuntimeUpdated fires (prod)', async () => {
+    let updateCallback
+    window.electronAPI.onRuntimeUpdated.mockImplementation((cb) => {
+      updateCallback = cb
+      return () => {}
     })
 
-    expect(setModalMock).not.toHaveBeenCalled()
+    renderHook(() => usePearUpdate())
+
+    await act(async () => {
+      updateCallback()
+    })
+
+    expect(setModalMock).toHaveBeenCalledTimes(1)
   })
 
   it('ignores updates in dev mode (no key)', async () => {
@@ -73,15 +87,16 @@ describe('usePearUpdate', () => {
   })
 
   it('triggers restart when update handler is called', async () => {
-    renderHook(() => usePearUpdate())
+    window.electronAPI.checkUpdated.mockResolvedValue(true)
 
-    const callback = Pear.updates.mock.calls[0][0]
     await act(async () => {
-      await callback({ diff: [{ key: '/app/file.js' }] })
+      renderHook(() => usePearUpdate())
     })
 
     const modalVNode = setModalMock.mock.calls[0][0]
-    modalVNode.props.onUpdate()
-    expect(Pear.restart).toHaveBeenCalledWith({ platform: false })
+    await act(async () => {
+      modalVNode.props.onUpdate()
+    })
+    expect(window.electronAPI.restart).toHaveBeenCalled()
   })
 })
