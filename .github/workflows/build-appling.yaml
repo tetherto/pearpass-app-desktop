@@ -124,7 +124,7 @@ jobs:
 
       - name: Build Flatpak bundle
         run: |
-          ./scripts/build-flatpak.sh --local ./dist/PearPass.AppImage --arch ${{ matrix.arch }}
+          ./scripts/build-flatpak.sh --local ./out/PearPass.AppImage --arch ${{ matrix.arch }}
 
       - name: Smoke test Flatpak bundle
         run: |
