@@ -12,7 +12,7 @@ import testData from '../../fixtures/test-data.js';
 import clipboard from 'clipboardy';
 import { qase } from 'playwright-qase-reporter';
 
-test.describe.only('Creating PassPhrase Item', () => {
+test.describe('Creating PassPhrase Item', () => {
   test.describe.configure({ mode: 'serial' })
 
   let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page

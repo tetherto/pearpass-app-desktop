@@ -9,6 +9,7 @@ import {
   DetailsPage
 } from '../../components/index.js';
 import testData from '../../fixtures/test-data.js';
+import { qase } from 'playwright-qase-reporter';
 
 test.describe('Creating Note Item', () => {
   test.describe.configure({ mode: 'serial' })
@@ -16,274 +17,200 @@ test.describe('Creating Note Item', () => {
   let loginPage, vaultSelectPage, createOrEditPage, sideMenuPage, mainPage, utilities, detailsPage, page
 
   test.beforeAll(async ({ app }) => {
-    page = app.page
-    loginPage = new LoginPage(page.locator('body'))
-    vaultSelectPage = new VaultSelectPage(page.locator('body'))
-    mainPage = new MainPage(page.locator('body'))
-    sideMenuPage = new SideMenuPage(page.locator('body'))
-    createOrEditPage = new CreateOrEditPage(page.locator('body'))
-    utilities = new Utilities(page.locator('body'))
-    detailsPage = new DetailsPage(page.locator('body'))
-  })
+    page = await app.getPage();
+    const root = page.locator('body');
+    loginPage = new LoginPage(root);
+    vaultSelectPage = new VaultSelectPage(root);
+    sideMenuPage = new SideMenuPage(root);
+    utilities = new Utilities(root);
+    mainPage = new MainPage(root);
+
+    await loginPage.loginToApplication(testData.credentials.validPassword);
+    await vaultSelectPage.selectVaultbyName(testData.vault.name);
+
+    await sideMenuPage.selectSideBarCategory('note')
+    await utilities.deleteAllElements()
+    await mainPage.clickCreateNewElementButton('Create a note')
+
+    await page.waitForTimeout(testData.timeouts.action);
+  });
 
   test.beforeEach(async ({ app }) => {
-    await loginPage.loginToApplication(testData.credentials.validPassword)
-    await vaultSelectPage.selectVaultbyName(testData.vault.name)
+    page = await app.getPage()
+    const root = page.locator('body')
+    loginPage = new LoginPage(root)
+    vaultSelectPage = new VaultSelectPage(root)
+    mainPage = new MainPage(root)
+    sideMenuPage = new SideMenuPage(root)
+    createOrEditPage = new CreateOrEditPage(root)
+    utilities = new Utilities(root)
+    detailsPage = new DetailsPage(root)
+
   })
 
-  test.afterAll(async ({ }) => {
+  test.afterAll(async () => {
     await utilities.deleteAllElements()
     await sideMenuPage.clickSidebarExitButton()
   })
 
-  test('Note item is created after fulfilling fields', async ({ page }) => {
-
-    /**
-     * @qase.id PAS-641
-     * @description "Note" item is created after fulfilling fields
-     */
-    await test.step('CREATE NOTE ELEMENT - initial empty element collection', async () => {
-      await sideMenuPage.selectSideBarCategory('note')
-      await utilities.deleteAllElements()
-      await mainPage.clickCreateNewElementButton('Create a note')
-
-      await createOrEditPage.fillCreateOrEditInput('title', 'Note Title')
-
-      await createOrEditPage.fillCreateOrEditTextArea('note', 'Test Note Text')
-
-      await createOrEditPage.clickOnCreateOrEditButton('save')
-      await page.waitForTimeout(testData.timeouts.action)
-
-    })
-
-    await test.step('OPEN ELEMENT DETAILS', async () => {
-      await mainPage.openElementDetails()
-    })
-
-    /**
-     * @qase.id PAS-642
-     * @description All fields' values after creating "Note" item correspond to entered fields' values
-     */
-    await test.step('VERIFY NOTE DETAILS', async () => {
-
-      await detailsPage.verifyTitle('Note Title');
-      await detailsPage.verifyNoteText('Test Note Text')
-    })
-
-    await test.step('EXIT TO LOGIN SCREEN', async () => {
-      await sideMenuPage.clickSidebarExitButton()
-    })
-
+  test('Creating the "Note" item', async ({ page }) => {
+    qase.id(2248);
+    await createOrEditPage.fillCreateOrEditInput('title', 'Note Title')
+    await createOrEditPage.fillCreateOrEditTextArea('note', 'Test Note Text')
+    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await page.waitForTimeout(testData.timeouts.action)
   })
 
-  test('After changing "Item" dropdown option user is moved to the selected "Item" edit screen', async ({ page }) => {
-
-    await test.step('VERIFY NOTE ELEMENT CREATED', async () => {
-      await mainPage.verifyElementTitle('Note Title')
-    })
-
-    await test.step('CLICK ON SIDEMENU "ADD FOLDER +" BUTTON', async () => {
-      await sideMenuPage.clickSidebarAddButton()
-    })
-
-    await test.step('FILL FOLDER TITLE INPUT', async () => {
-      await detailsPage.fillCreateNewFolderTitleInput('Test Folder')
-    })
-
-    await test.step('CLICK CREATE FOLDER BUTTON', async () => {
-      await detailsPage.clickCreateFolderButton()
-    })
-
-    await test.step('OPEN ELEMENT', async () => {
-      await mainPage.openElementDetails()
-    })
-
-    await test.step('EDIT ELEMENT', async () => {
-      await detailsPage.editElement()
-    })
-
-    await test.step('OPEN FOLDER DROPDOWN MENU, SELECT FOLDER AND SAVE', async () => {
-      await createOrEditPage.openDropdownMenu()
-      await createOrEditPage.selectFromDropdownMenu('Test Folder')
-      await createOrEditPage.clickOnCreateOrEditButton('save')
-    })
-
-    /**
-     * @qase.id PAS-645
-     * @description After changing "Item" dropdown option user is moved to the selected "Item" edit screen
-     */
-    await test.step('VERIFY THAT USER IS MOVED TO SELECTED ITEM EDIT SCREEN', async () => {
-      await detailsPage.verifyItemDetailsFolderName('Test Folder')
-    })
-
-    await test.step('VERIFY ELEMENT FOLDER NAME', async () => {
-      await mainPage.verifyElementFolderName('Test Folder')
-    })
-
-    /**
-     * @qase.id PAS-646
-     * @description Item is moved to the folder selected in "Folder" dropdown
-     */
-    await test.step('VERIFY ELEMENT IS MOVED TO THE FOLDER SELECTED FROM DROPDOWN', async () => {
-      await sideMenuPage.verifySideMenuFolderName('Test Folder')
-    })
-
-    await test.step('OPEN ELEMENT', async () => {
-      await mainPage.openElementDetails()
-    })
-
-    await test.step('EDIT ELEMENT', async () => {
-      await detailsPage.editElement()
-    })
-
-    await test.step('OPEN FOLDER DROPDOWN MENU, SELECT NO FOLDER AND SAVE', async () => {
-      await createOrEditPage.openDropdownMenu()
-      await createOrEditPage.selectFromDropdownMenu('No Folder')
-      await createOrEditPage.clickOnCreateOrEditButton('save')
-    })
-
-    await test.step('DELETE SIDEMANU FOLDER', async () => {
-      await sideMenuPage.deleteFolder('Test Folder')
-    })
-
-    await test.step('EXIT TO LOGIN SCREEN', async () => {
-      await sideMenuPage.clickSidebarExitButton()
-    })
-
+  test('Viewing created item. Verify item details', async ({ page }) => {
+    qase.id(2249);
+    await mainPage.openElementDetails()
+    await detailsPage.verifyTitle('Note Title');
+    await detailsPage.verifyNoteText('Test Note Text')
   })
 
-  test('Moving Element to Favorites folder', async ({ page }) => {
-
-    await test.step('VERIFY NOTE ELEMENT CREATED', async () => {
-      await mainPage.verifyElementTitle('Note Title')
-    })
-
-    await test.step('OPEN ELEMENT', async () => {
-      await mainPage.openElementDetails()
-    })
-
-    await test.step('CLICK FAVORITE (STAR) BUTTON FROM DETAILS PAGE', async () => {
-      await detailsPage.clickFavoriteButton()
-    })
-
-    await test.step('OPEN SIDEBAR FAVORITE FOLDER', async () => {
-      await sideMenuPage.openSideBarFolder('Favorites')
-    })
-
-    /**
-     * @qase.id PAS-648
-     * @description "Star" icon is added to "Item" icon within "Item view mode" and Home screen when marking item as favorite through "Favorite" icon
-     */
-    await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS VISIBLE - FAVORITE', async () => {
-      await expect(detailsPage.getFavoriteAvatar('NT')).toBeVisible()
-      await expect(mainPage.getElementFavoriteIcon('NT')).toBeVisible()
-    })
-
-    await test.step('OPEN ELEMENT', async () => {
-      await mainPage.openElementDetails()
-    })
-
-    await test.step('CLICK FAVORITE (STAR) BUTTON FROM DETAILS PAGE - UNFAVORITE - FAVORITE', async () => {
-      await detailsPage.clickFavoriteButton()
-    })
-
-    /**
-     * @qase.id PAS-649
-     * @description "Star" icon is removed from "Item" icon within "Item view mode" and Home screen when removing item from favorites through "More options"
-     */
-    await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS REMOVED - MORE OPTIONS', async () => {
-      await expect(detailsPage.getFavoriteAvatar('NT')).not.toBeVisible()
-      await expect(mainPage.getElementFavoriteIcon('NT')).not.toBeVisible()
-    })
-
-    await test.step('OPEN DETAILS THREE DOTS MENU AND CLICK ON MARK AS FAVORITE - MORE OPTIONS', async () => {
-      await detailsPage.openItemBarThreeDotsDropdownMenu()
-      await detailsPage.clickMarkAsFavoriteButton()
-    })
-
-    /**
-     * @qase.id PAS-647
-     * @description "Star" icon is added to "Item" icon within "Item view mode" and Home screen when marking item as favorite through "More options"
-     */
-    await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS VISIBLE - MORE OPTIONS', async () => {
-      await expect(detailsPage.getFavoriteAvatar('NT')).toBeVisible()
-      await expect(mainPage.getElementFavoriteIcon('NT')).toBeVisible()
-    })
-
-    await test.step('OPEN DETAILS THREE DOTS MENU AND CLICK ON REMOVE FROM FAVORITES - MORE OPTIONS', async () => {
-      await detailsPage.openItemBarThreeDotsDropdownMenu()
-      await detailsPage.clickRemoveFromFavoritesButton()
-    })
-
-    /**
-     * @qase.id PAS-650
-     * @description "Star" icon is removed from "Item" icon within "Item view mode" and Home screen when removing item from favorites through "Favorite" icon
-     */
-    await test.step('VERIFY DETAILS AND MAIN FAVORITE (STAR) ELEMENT IS REMOVED - FAVORITE', async () => {
-      await expect(detailsPage.getFavoriteAvatar('NT')).not.toBeVisible()
-      await expect(mainPage.getElementFavoriteIcon('NT')).not.toBeVisible()
-    })
-
-    // await test.step('EXIT TO LOGIN SCREEN', async () => {
-    //   await sideMenuPage.clickSidebarExitButton()
-    // })
-
+  test('Dropdown moves to selected item edit screen', async ({ page }) => {
+    qase.id(2250);
+    await mainPage.verifyElementTitle('Note Title')
+    await sideMenuPage.clickSidebarAddButton()
+    await detailsPage.fillCreateNewFolderTitleInput('Test Folder')
+    await detailsPage.clickCreateFolderButton()
+    await detailsPage.editElement()
+    await createOrEditPage.openDropdownMenu()
+    await createOrEditPage.selectFromDropdownMenu('Test Folder')
+    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await detailsPage.getItemDetailsFolderName('Test Folder')
+    await mainPage.verifyElementFolderName('Test Folder')
   })
 
-  //TODO: Un comment when Id is added
+  test('Item moved to folder (and cleanup)', async ({ page }) => {
+    qase.id(2251);
+    await sideMenuPage.verifySidebarFolderName('Test Folder')
+    await mainPage.openElementDetails()
+    await detailsPage.editElement()
+    await createOrEditPage.openDropdownMenu()
+    await createOrEditPage.selectFromDropdownMenu('No Folder')
+    await createOrEditPage.clickOnCreateOrEditButton('save')
 
-  // test('Adding Custom Field with Note option', async ({ page }) => {
+    await sideMenuPage.deleteFolder('Test Folder')
+  })
 
-  //   await test.step('VERIFY PASSPHRASE ELEMENT CREATED', async () => {
-  //     await mainPage.verifyElementTitle('PassPhrase Title')
-  //   })
+  test('Add via Favorite icon', async ({ page }) => {
+    qase.id(2252);
+    await sideMenuPage.selectSideBarCategory('all')
+    await mainPage.verifyElementTitle('Note Title')
+    await mainPage.openElementDetails()
+    await detailsPage.clickFavoriteButton()
+    await sideMenuPage.openSideBarFolder('Favorites')
+    await expect(detailsPage.getFavoriteAvatar('NT')).toBeVisible()
+    await expect(mainPage.getElementFavoriteIcon('NT')).toBeVisible()
+  })
 
-  //   await test.step('OPEN/EDITLOGIN ELEMENT', async () => {
-  //     await mainPage.openElementDetails()
-  //     await detailsPage.editElement()
-  //   })
+  test('Remove via Favorite icon', async ({ page }) => {
+    qase.id(2253);
+    await mainPage.openElementDetails()
+    await detailsPage.clickFavoriteButton()
+    await expect(detailsPage.getFavoriteAvatar('NT')).not.toBeVisible()
+    await expect(mainPage.getElementFavoriteIcon('NT')).not.toBeVisible()
+  })
 
-  //   /**
-  //    * @qase.id PAS-1007
-  //    * @description It is possible to add fields
-  //    */
-  //   await test.step('OPEN CREATE CUSTOM MENU', async () => {
-  //     await createOrEditPage.clickCreateCustomItem()
-  //   })
+  test('Add via More options', async ({ page }) => {
+    qase.id(2254);
+    await mainPage.openElementDetails()
+    await detailsPage.openItemBarThreeDotsDropdownMenu()
+    await detailsPage.clickMarkAsFavoriteButton()
+    await expect(detailsPage.getFavoriteAvatar('NT')).toBeVisible()
+    await expect(mainPage.getElementFavoriteIcon('NT')).toBeVisible()
+  })
 
-  //   await test.step('CLICK ON NOTE OPTION FROM CREATE CUSTOM MENU', async () => {
-  //     await createOrEditPage.clickCustomItemOptionNote();
-  //   })
+  test('Remove via More options', async ({ page }) => {
+    qase.id(2255);
+    await mainPage.openElementDetails()
+    await detailsPage.openItemBarThreeDotsDropdownMenu()
+    await detailsPage.clickRemoveFromFavoritesButton()
+    await expect(detailsPage.getFavoriteAvatar('NT')).not.toBeVisible()
+    await expect(mainPage.getElementFavoriteIcon('NT')).not.toBeVisible()
+  })
 
-  //   await test.step('VERIFY THERE IS ONE NEW CUSTOM NOTES ITEMS INSIDE PASSPHRASE ELEMENT', async () => {
-  //     await expect(createOrEditPage.customNoteInput).toHaveCount(1);
-  //   })
+  // test('Add Custom Note', async ({ page }) => {
+    // qase.id(2256);
+  //   await mainPage.verifyElementTitle('Note Title')
+  //   await mainPage.openElementDetails()
+  //   await detailsPage.editElement()
+  //   await createOrEditPage.clickCreateCustomItem()
+  //   await createOrEditPage.clickCustomItemOptionNote()
+  //   await expect(createOrEditPage.customNoteInput).toHaveCount(1)
+  //   await createOrEditPage.fillCustomNoteInput()
+  //   await createOrEditPage.clickOnCreateOrEditButton('save')
+  //   await page.waitForTimeout(testData.timeouts.action)
+  //   await mainPage.clickDetailsCloseButton()
+  // })
 
-  //   /**
-  //    * @qase.id PAS-1008
-  //    * @description It is possible to delete additional fields
-  //    */
-  //   await test.step('DELETE NEW CUSTOM NOTE ITEM', async () => {
-  //     await createOrEditPage.deleteCustomNote();
-  //   })
-
-  //   await test.step('VERIFY THERE IS NO CUSTOM NOTES ITEMS INSIDE PASSPHRASE ELEMENT', async () => {
-  //     await expect(createOrEditPage.customNoteInput).toHaveCount(0);
-  //   })
-
-  //   /**
-  //    * @qase.id PAS-1010
-  //    * @description It is possible to close the screen by clicking on the "Cross" icon
-  //    */
-  //   await test.step('CLICK CLOSE (X) BUTTON', async () => {
-  //     await createOrEditPage.clickElementItemCloseButton()
-  //   })
-
-  //   await test.step('EXIT TO LOGIN SCREEN', async () => {
-  //     await sideMenuPage.clickSidebarExitButton()
-  //   })
+  // test('Delete Note field', async ({ page }) => {
+    // qase.id(2257);
+  //   await mainPage.verifyElementTitle('Note Title')
+  //   await mainPage.openElementDetails()
+  //   await detailsPage.editElement()
+  //   await expect(createOrEditPage.customNoteInput).toHaveCount(2)
+  //   await createOrEditPage.deleteCustomNote()
+  //   await expect(createOrEditPage.customNoteInput).toHaveCount(1)
+  //   await createOrEditPage.clickOnCreateOrEditButton('save')
+  //   await page.waitForTimeout(testData.timeouts.action)
+  //   await mainPage.clickDetailsCloseButton()
 
   // })
-  
+
+  test('Close via Cross icon', async ({ page }) => {
+    qase.id(2258);
+    await mainPage.verifyElementTitle('Note Title')
+    await mainPage.openElementDetails()
+    await detailsPage.editElement()
+    await detailsPage.clickElementItemCloseButton()
+    await mainPage.verifyElementTitle('Note Title')
+
+  })
+
+  test('View uploaded file in Edit mode', async ({ page }) => {
+    qase.id(2259);
+    await mainPage.verifyElementTitle('Note Title')
+    await mainPage.openElementDetails()
+    await detailsPage.editElement()
+    await createOrEditPage.clickOnCreateOrEditButton('loadfile')
+    await createOrEditPage.uploadFile()
+    await createOrEditPage.verifyUploadedFileIsVisible()
+    await createOrEditPage.clickOnUploadedFile()
+    await createOrEditPage.verifyUploadedImageIsVisible()
+    await createOrEditPage.clickElementItemCloseButton()
+    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await page.waitForTimeout(testData.timeouts.action)
+    await mainPage.clickDetailsCloseButton()
+  })
+
+  // test('View uploaded file in View mode (and cleanup)', async ({ page }) => {
+    // qase.id(2260);
+  //   await mainPage.openElementDetails()
+  //   await detailsPage.verifyUploadedFileIsVisible()
+  //   await detailsPage.clickOnUploadedFile()
+  //   await detailsPage.verifyUploadedImageIsVisible()
+  //   await detailsPage.clickElementItemCloseButton()
+  //   await detailsPage.editElement()
+  //   await createOrEditPage.clickOnCreateOrEditButton('deleteattachment') // button-single-input
+  //   await createOrEditPage.verifyUploadedImageIsNotVisible()
+  //   await createOrEditPage.clickElementItemCloseButton()
+  //   await mainPage.clickDetailsCloseButton()
+  // })
+
+  test('Empty fields not displayed in view mode', async ({ page }) => {
+    qase.id(2261);
+    await mainPage.verifyElementTitle('Note Title')
+    await mainPage.openElementDetails()
+    await detailsPage.editElement()
+    await createOrEditPage.fillCreateOrEditTextArea('note', '')
+    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await mainPage.openElementDetails()
+    await detailsPage.verifyItemDetailsValueIsNotVisible('Add note')
+    
+    await mainPage.clickDetailsCloseButton()
+
+  })
 
 })

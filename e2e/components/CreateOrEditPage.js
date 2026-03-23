@@ -147,6 +147,18 @@ class CreateOrEditPage {
     return this.root.getByTestId(`createoredit-button-${name}`)
   }
 
+  get deleteFileButton() {
+    return this.root
+      .getByTestId('createoredit-attachment')
+      .getByRole('button', { name: "Delete File" });
+  }
+
+  async clickOnDeleteFileButton() {
+    const deleteButton = this.deleteFileButton
+    await expect(deleteButton).toBeVisible()
+    await deleteButton.click()
+  }
+
   get elementItemPassword() {
     return this.root.getByPlaceholder('Password')
   }
@@ -292,6 +304,7 @@ class CreateOrEditPage {
   async fillCreateOrEditTextArea(field, value) {
     const text_area = this.getCreateOrEditTextareaField(field)
     await text_area.waitFor({ state: 'visible' })
+    await text_area.clear()
     await text_area.type(value)
   }
 

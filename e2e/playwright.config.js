@@ -9,7 +9,7 @@ export default defineConfig({
   maxFailures: process.env.CI ? 5 : undefined,
   fullyParallel: false,
 
-  retries: 1,
+  retries: 0,
 
   use: {
     screenshot: 'only-on-failure',
