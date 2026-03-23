@@ -1,4 +1,4 @@
-name: Electron-builder Build
+name: Desktop Build
 
 on:
   push:
@@ -28,6 +28,17 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
+      - name: Build Prod App
+        run: |
+          npm run build:prod
+      - name: Prune dependencies
+        run: |
+          npm prune --omit=dev
+      - name: Setup Electron and Builder
+        run: |
+          npm install electron --no-save
+          npm install electron-builder --no-save
+          npm install pear-build --no-save
       - name: Build application
         env:
           PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
@@ -60,7 +71,7 @@ jobs:
           const { DefaultArtifactClient } = require('@actions/artifact');
 
           const arch = '${{ matrix.arch }}';
-          const file = `out/linux-${arch}/PearPass.AppImage`;
+          const file = 'out/PearPass.AppImage';
           const name = `PearPass-${arch}.AppImage`;
 
           if (!fs.existsSync(file)) {
@@ -160,6 +171,100 @@ jobs:
             artifact.uploadArtifact(`PearPass-${snapArch}.snap`, [snapPath], 'dist');
           }
         shell: node {0}
+
+  build-flatpak:
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        include:
+          - arch: x64
+            runs_on: ubuntu-24.04
+          - arch: arm64
+            runs_on: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runs_on }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Flatpak build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder jq ffmpeg xvfb xauth
+
+      - name: Install Flatpak runtime and SDK
+        run: |
+          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak install --user -y --noninteractive flathub org.gnome.Platform//49 org.gnome.Sdk//49
+
+      - name: Install dependencies
+        run: |
+          npm ci
+
+      - name: Build application
+        env:
+          PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
+        run: |
+          npm run dist:linux:${{ matrix.arch }}
+
+      - name: Build Flatpak bundle
+        run: |
+          ./scripts/build-flatpak.sh --local ./dist/PearPass.AppImage --arch ${{ matrix.arch }}
+
+      - name: Smoke test Flatpak bundle
+        run: |
+          set -euo pipefail
+          LOG_FILE="build/flatpak/smoke-${{ matrix.arch }}.log"
+
+          set +e
+          timeout 90s xvfb-run -a --server-args="-screen 0 1440x1024x24" \
+            flatpak-builder --run build/flatpak/build-dir flatpak/com.pears.pass.yaml \
+            sh -lc 'ELECTRON_ENABLE_LOGGING=1 /app/bin/pearpass --disable-gpu --disable-dev-shm-usage --enable-logging=stderr' \
+            >"$LOG_FILE" 2>&1
+          STATUS=$?
+          set -e
+
+          if [ "$STATUS" -ne 0 ] && [ "$STATUS" -ne 124 ]; then
+            cat "$LOG_FILE"
+            exit "$STATUS"
+          fi
+
+          if ! grep -Eq 'WORKLET_READY|STORAGE_PATH_SET|MASTER_VAULT_GET_STATUS|ENCRYPTION_GET_STATUS' "$LOG_FILE"; then
+            cat "$LOG_FILE"
+            echo 'Flatpak smoke test did not reach the expected startup markers.'
+            exit 1
+          fi
+
+      - name: Prepare Flatpak artifact metadata
+        id: flatpak-artifact
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          BUNDLE="build/flatpak/pearpass_${VERSION}_${{ matrix.arch }}.flatpak"
+          sha256sum "$BUNDLE" > "$BUNDLE.sha256"
+          echo "bundle=$BUNDLE" >> "$GITHUB_OUTPUT"
+          echo "checksum=$BUNDLE.sha256" >> "$GITHUB_OUTPUT"
+
+      - name: Upload Flatpak artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pearpass-flatpak-${{ matrix.arch }}
+          path: |
+            ${{ steps.flatpak-artifact.outputs.bundle }}
+            ${{ steps.flatpak-artifact.outputs.checksum }}
+          if-no-files-found: error
+          compression-level: 0
+
+      - name: Upload Flatpak smoke log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pearpass-flatpak-smoke-${{ matrix.arch }}
+          path: build/flatpak/smoke-${{ matrix.arch }}.log
+          if-no-files-found: warn
 
   build-macos:
     permissions:

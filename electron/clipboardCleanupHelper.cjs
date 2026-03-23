@@ -1,5 +1,10 @@
-const fs = require('fs')
 const { spawnSync } = require('child_process')
+const fs = require('fs')
+
+const {
+  readClipboardWithFallback,
+  clearClipboardWithFallback
+} = require('./linuxClipboardFallback.cjs')
 
 function removeFileIfExists(filePath) {
   try {
@@ -72,6 +77,10 @@ function readClipboard() {
       }
     }
 
+    // Neither xsel nor xclip found as system commands — try bundled binary
+    const fallbackResult = readClipboardWithFallback()
+    if (typeof fallbackResult === 'string') return fallbackResult
+
     logLinuxClipboardSkip()
     return null
   }
@@ -100,6 +109,9 @@ function clearClipboard() {
         return
       }
     }
+
+    // Neither xsel nor xclip found as system commands — try bundled binary
+    if (clearClipboardWithFallback()) return
 
     logLinuxClipboardSkip()
     return
@@ -131,6 +143,9 @@ async function runClipboardCleanup({
 
     if (clipboardText === expectedText) {
       clearClipboard()
+
+      readClipboard()
+    } else {
     }
 
     return true

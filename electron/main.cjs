@@ -7,12 +7,20 @@
 const fs = require('fs')
 const path = require('path')
 
-const { app, BrowserWindow, ipcMain, nativeImage, shell, clipboard } = require('electron')
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  nativeImage,
+  shell,
+  clipboard
+} = require('electron')
 const PearRuntime = require('pear-runtime')
-
 const getPearRuntimeLegacyStorage = require('pear-runtime-legacy-storage')
 const { isLinux, isWindows, isMac } = require('which-runtime')
+
 const { scheduleClipboardCleanup } = require('./clipboardCleanup.cjs')
+
 let debugMode = false
 
 ;(async () => {
@@ -26,6 +34,7 @@ let debugMode = false
 
 const pkg = require('../package.json')
 const runtimeConfig = require('./runtime-config.cjs')
+const { getSandboxSafePath } = require('./flatpak-paths.cjs')
 const {
   createMainProcessLogger
 } = require('../src/utils/createMainProcessLogger.cjs')
@@ -84,7 +93,7 @@ function getWorkletPath() {
 }
 
 function getStorageDir() {
-  return app.getPath('userData')
+  return getSandboxSafePath(app.getPath('userData'))
 }
 
 function getNativeBridgePath() {
@@ -174,7 +183,7 @@ async function startRuntime() {
   try {
     const pearStorageDir = await getPearRuntimeLegacyStorage(upgrade)
     if (pearStorageDir) {
-      storageDir = pearStorageDir
+      storageDir = getSandboxSafePath(pearStorageDir)
       logger.info('[MAIN]', 'Using pear legacy storage root:', storageDir)
     } else {
       const linkId = upgrade.replace(/^pear:\/\//, '')
@@ -202,7 +211,9 @@ async function startRuntime() {
   clearVaultStorageForDevReset(storageDir)
   const workletPath = getWorkletPath()
 
-  const { PearpassVaultClient } = await import('@tetherto/pearpass-lib-vault-core')
+  const { PearpassVaultClient } = await import(
+    '@tetherto/pearpass-lib-vault-core'
+  )
   const extension = isLinux ? '.AppImage' : isMac ? '.app' : '.msix'
 
   pearRuntime = new PearRuntime({
@@ -284,7 +295,9 @@ async function startWorkletOnly() {
   // bare-sidecar is a dependency of pear-runtime and will be hoisted into
   // this app's node_modules, so we can require it directly.
   const Sidecar = require('bare-sidecar')
-  const { PearpassVaultClient } = await import('@tetherto/pearpass-lib-vault-core')
+  const { PearpassVaultClient } = await import(
+    '@tetherto/pearpass-lib-vault-core'
+  )
 
   const workletPath = getWorkletPath()
   if (!fs.existsSync(workletPath)) {
@@ -474,7 +487,7 @@ function registerIPC() {
       try {
         const pearStorageDir = await getPearRuntimeLegacyStorage(upgrade)
         if (pearStorageDir) {
-          storage = pearStorageDir
+          storage = getSandboxSafePath(pearStorageDir)
         } else {
           const linkId = upgrade.replace(/^pear:\/\//, '')
           storage = path.join(storage, 'app-storage', 'by-dkey', linkId)
@@ -560,8 +573,8 @@ function registerIPC() {
     }
   })
 
-  ipcMain.handle('clipboard:clearAfter', async (_event, { text, delayMs }) => {
-    return scheduleClipboardCleanup({
+  ipcMain.handle('clipboard:clearAfter', async (_event, { text, delayMs }) =>
+    scheduleClipboardCleanup({
       app,
       clipboard,
       logger,
@@ -569,12 +582,12 @@ function registerIPC() {
       text,
       delayMs
     })
-  })
+  )
 }
 
 app.whenReady().then(async () => {
   app.setName('PearPass')
-  logger.setLogPath(app.getPath('userData'))
+  logger.setLogPath(getStorageDir())
   registerIPC()
   try {
     await startRuntime()

@@ -41,6 +41,7 @@ This document describes how the PearPass desktop app is built, packaged, and how
   - If `runtime-config.cjs.upgrade` is set: uses **pear-runtime** (P2P OTA), configures storage based on `pear-runtime-legacy-storage`, and calls `PearRuntime.run(workletPath)` to launch the vault worklet as a sidecar.
   - If no upgrade link is set: uses **bare-sidecar** only (`startWorkletOnly()`), spawns the worklet with `new Sidecar(workletPath)` and runs without P2P updates.
 - **Storage layout:** Tries to reuse existing Pear platform storage via `pear-runtime-legacy-storage`. If none is found, it falls back to `app.getPath('userData')/app-storage/by-dkey/<upgrade-key>`.
+- **Flatpak compatibility:** `electron/flatpak-paths.cjs` wraps both `app.getPath('userData')` and any legacy Pear storage path with `getSandboxSafePath()`. Inside Flatpak, host-mapped XDG paths under `~/.var/app/...` are remapped into `~/.config/...` compatibility paths so the vault worklet accepts them.
 - **Packaged app:** With `asar: false` all code and `node_modules` live under `Contents/Resources/app/` on macOS, so the worklet and renderer resolve modules from the real filesystem (no `app.asar` indirection).
 - **IPC:** Handles `get-app-path`, `runtime:getConfig`, `runtime:applyUpdate`, `runtime:restart`, `runtime:checkUpdated`, and `vault:invoke`. Vault methods are forwarded to `vaultClient`; Buffers are serialized as `{ __base64 }`. It also listens for `pearRuntime.updater` events and forwards `runtime:updating` / `runtime:updated` to the renderer to drive the OTA UI.
 
@@ -48,19 +49,19 @@ This document describes how the PearPass desktop app is built, packaged, and how
 
 ## 3. Worklet: dev vs packaged
 
-The vault worklet lives in `pearpass-lib-vault-core` (Git dependency) under `src/worklet/`. It is loaded in two different ways so it works in both dev and packaged app.
+The vault worklet lives in `@tetherto/pearpass-lib-vault-core` (Git dependency) under `src/worklet/`. It is loaded in two different ways so it works in both dev and packaged app.
 
 ### 3.1 Dev
 
 - **Path:** `getWorkletPath()` returns  
-  `app.getAppPath()/node_modules/pearpass-lib-vault-core/src/worklet/app.js`.
+  `app.getAppPath()/node_modules/@tetherto/pearpass-lib-vault-core/src/worklet/app.js`.
 - **Format:** ESM (`app.js`). The Bare loader in dev can run ESM and resolve Node built-ins to its own shims.
 - **No bundle:** Dependencies are required from the real `node_modules` tree.
 
 ### 3.2 Packaged
 
 - **Path:** `getWorkletPath()` returns  
-  `process.resourcesPath/app/node_modules/pearpass-lib-vault-core/src/worklet/app.cjs`.
+  `process.resourcesPath/app/node_modules/@tetherto/pearpass-lib-vault-core/src/worklet/app.cjs`.
 - **Format:** CommonJS bundle (`app.cjs`). The Bare runtime used in the packaged app loads the entry as CJS; giving it ESM `app.js` would throw “Cannot use import statement outside a module”.
 - **Bundle:** Produced by `scripts/build.worklet.mjs` (see below). Only the worklet **source** (relative imports) is bundled; all `node_modules` are external so Bare resolves them at runtime and native addons work.
 
@@ -69,8 +70,8 @@ The vault worklet lives in `pearpass-lib-vault-core` (Git dependency) under `src
 ## 4. Worklet build (scripts/build.worklet.mjs)
 
 - **Runs as part of `npm run build`** (before `tsc` and the renderer bundle).
-- **Input:** `node_modules/pearpass-lib-vault-core/src/worklet/app.js` (ESM).
-- **Output:** `node_modules/pearpass-lib-vault-core/src/worklet/app.cjs` (single CJS file).
+- **Input:** `node_modules/@tetherto/pearpass-lib-vault-core/src/worklet/app.js` (ESM).
+- **Output:** `node_modules/@tetherto/pearpass-lib-vault-core/src/worklet/app.cjs` (single CJS file).
 - **Behaviour (current esbuild config):**
   - `entryPoints`: the ESM worklet entry; `bundle: true`, `platform: 'node'`, `format: 'cjs'`, `target: 'node18'`.
   - **Externalize Node built-ins and native-heavy modules:** `fs`, `path`, `os`, `net`, `crypto`, `child_process`, `fs/promises`, `require-addon`, `fs-native-extensions`, `sodium-native` are marked as `external` so they resolve at runtime from `node_modules`.
@@ -125,15 +126,16 @@ The vault worklet lives in `pearpass-lib-vault-core` (Git dependency) under `src
 
 ## 8. Key files reference
 
-| Role | File |
-|------|------|
-| Main process | `electron/main.cjs` |
-| Preload | `electron/preload.cjs` |
-| Worklet entry (ESM) | `node_modules/pearpass-lib-vault-core/src/worklet/app.js` |
-| Worklet bundle (CJS, packaged) | `node_modules/pearpass-lib-vault-core/src/worklet/app.cjs` (generated) |
-| Worklet build script | `scripts/build.worklet.mjs` |
-| Renderer bundle | `scripts/bundle-renderer.mjs` → `dist/renderer.bundle.js` |
-| Build pipeline | `package.json` scripts: `build`, `dist:*`, `pear:build:*` |
+| Role                           | File                                                                             |
+| ------------------------------ | -------------------------------------------------------------------------------- |
+| Main process                   | `electron/main.cjs`                                                              |
+| Preload                        | `electron/preload.cjs`                                                           |
+| Flatpak path helper            | `electron/flatpak-paths.cjs`                                                     |
+| Worklet entry (ESM)            | `node_modules/@tetherto/pearpass-lib-vault-core/src/worklet/app.js`              |
+| Worklet bundle (CJS, packaged) | `node_modules/@tetherto/pearpass-lib-vault-core/src/worklet/app.cjs` (generated) |
+| Worklet build script           | `scripts/build.worklet.mjs`                                                      |
+| Renderer bundle                | `scripts/bundle-renderer.mjs` → `dist/renderer.bundle.js`                        |
+| Build pipeline                 | `package.json` scripts: `build`, `dist:*`, `pear:build:*`                        |
 
 ---
 
@@ -147,6 +149,9 @@ The vault worklet lives in `pearpass-lib-vault-core` (Git dependency) under `src
 
 - **“ADDON_NOT_FOUND” for a native addon**  
   The worklet bundle must not inline that package. Ensure the module is in the `external` list in `scripts/build.worklet.mjs` (so it is loaded from `node_modules` at runtime) and that the native binary is present in the packaged app.
+
+- **Flatpak build starts but vault/worklet storage init fails**  
+  Ensure `electron/main.cjs` still routes both `app.getPath('userData')` and `pear-runtime-legacy-storage` results through `getSandboxSafePath()` from `electron/flatpak-paths.cjs`. Flatpak commonly exposes XDG directories under `~/.var/app/...`, which the worklet rejects unless they are remapped to the approved `~/.config/...` compatibility location.
 
 - **OTA update appears stuck on Windows**  
   Confirm that the Pear drive for `by-arch/win32-x64/app/...` contains a valid `.msix` (if `PearRuntime` is using `MSIXManager.addPackage`) and that the filename matches the `name` passed to `PearRuntime` in `electron/main.cjs`.

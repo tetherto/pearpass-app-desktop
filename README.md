@@ -99,23 +99,23 @@ The "src" folder is for development and it's ignored in package.json
 
 The following sibling modules must be present in the workspace (they are not declared as npm dependencies):
 
-- [`tether-dev-docs`](../tether-dev-docs)
-- [`pear-apps-lib-feedback`](../pear-apps-lib-feedback)
-- [`pear-apps-lib-ui-react-hooks`](../pear-apps-lib-ui-react-hooks)
-- [`pear-apps-utils-avatar-initials`](../pear-apps-utils-avatar-initials)
-- [`pear-apps-utils-date`](../pear-apps-utils-date)
-- [`pear-apps-utils-generate-unique-id`](../pear-apps-utils-generate-unique-id)
-- [`pear-apps-utils-pattern-search`](../pear-apps-utils-pattern-search)
-- [`pear-apps-utils-qr`](../pear-apps-utils-qr)
-- [`pear-apps-utils-validator`](../pear-apps-utils-validator)
-- [`pearpass-lib-constants`](../pearpass-lib-constants)
-- [`pearpass-lib-data-export`](../pearpass-lib-data-export)
-- [`pearpass-lib-data-import`](../pearpass-lib-data-import)
-- [`pearpass-lib-ui-theme-provider`](../pearpass-lib-ui-theme-provider)
-- [`pearpass-lib-vault`](../pearpass-lib-vault)
-- [`pearpass-lib-vault-core`](../pearpass-lib-vault-core)
-- [`pearpass-utils-password-check`](../pearpass-utils-password-check)
-- [`pearpass-utils-password-generator`](../pearpass-utils-password-generator)
+- [`@tetherto/tether-dev-docs`](../tether-dev-docs)
+- [`@tetherto/pear-apps-lib-feedback`](../pear-apps-lib-feedback)
+- [`@tetherto/pear-apps-lib-ui-react-hooks`](../pear-apps-lib-ui-react-hooks)
+- [`@tetherto/pear-apps-utils-avatar-initials`](../pear-apps-utils-avatar-initials)
+- [`@tetherto/pear-apps-utils-date`](../pear-apps-utils-date)
+- [`@tetherto/pear-apps-utils-generate-unique-id`](../pear-apps-utils-generate-unique-id)
+- [`@tetherto/pear-apps-utils-pattern-search`](../pear-apps-utils-pattern-search)
+- [`@tetherto/pear-apps-utils-qr`](../pear-apps-utils-qr)
+- [`@tetherto/pear-apps-utils-validator`](../pear-apps-utils-validator)
+- [`@tetherto/pearpass-lib-constants`](../pearpass-lib-constants)
+- [`@tetherto/pearpass-lib-data-export`](../pearpass-lib-data-export)
+- [`@tetherto/pearpass-lib-data-import`](../pearpass-lib-data-import)
+- [`@tetherto/pearpass-lib-ui-theme-provider`](../pearpass-lib-ui-theme-provider)
+- [`@tetherto/pearpass-lib-vault`](../pearpass-lib-vault)
+- [`@tetherto/pearpass-lib-vault-core`](../pearpass-lib-vault-core)
+- [`@tetherto/pearpass-utils-password-check`](../pearpass-utils-password-check)
+- [`@tetherto/pearpass-utils-password-generator`](../pearpass-utils-password-generator)
 
 ## Dependencies
 
@@ -127,13 +127,13 @@ The following sibling modules must be present in the workspace (they are not dec
 
 ## Related Projects
 
-- [pearpass-app-mobile](https://github.com/tetherto/pearpass-app-mobile) - A mobile app for PearPass, a password manager
-- [pearpass-lib-ui-react-native-components](https://github.com/tetherto/pearpass-lib-ui-react-native-components) - A library of React Native UI components for PearPass
-- [pearpass-lib-ui-react-components](https://github.com/tetherto/pearpass-lib-ui-react-components) - A library of React UI components for PearPass
-- [pearpass-app-browser-extension](https://github.com/tetherto/pearpass-app-browser-extension) - A browser extension for PearPass, a password manager
-- [tether-dev-docs](https://github.com/tetherto/tether-dev-docs) - Documentations and guides for developers
-- [pearpass-lib-vault](https://github.com/tetherto/pearpass-lib-vault) - A library for managing password vaults
-- [pearpass-lib-vault-core](https://github.com/tetherto/pearpass-lib-vault-core) - A bare worker and a client for PearPass vaults
+- [@tetherto/pearpass-app-mobile](https://github.com/tetherto/pearpass-app-mobile) - A mobile app for PearPass, a password manager
+- [@tetherto/pearpass-lib-ui-react-native-components](https://github.com/tetherto/pearpass-lib-ui-react-native-components) - A library of React Native UI components for PearPass
+- [@tetherto/pearpass-lib-ui-react-components](https://github.com/tetherto/pearpass-lib-ui-react-components) - A library of React UI components for PearPass
+- [@tetherto/pearpass-app-browser-extension](https://github.com/tetherto/pearpass-app-browser-extension) - A browser extension for PearPass, a password manager
+- [@tetherto/tether-dev-docs](https://github.com/tetherto/tether-dev-docs) - Documentations and guides for developers
+- [@tetherto/pearpass-lib-vault](https://github.com/tetherto/pearpass-lib-vault) - A library for managing password vaults
+- [@tetherto/pearpass-lib-vault-core](https://github.com/tetherto/pearpass-lib-vault-core) - A bare worker and a client for PearPass vaults
 
 ## License
 
