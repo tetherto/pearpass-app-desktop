@@ -128,7 +128,7 @@ jobs:
         env:
           PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
-        run: npm exec --yes --package electron-builder -- electron-builder --linux snap --${{ matrix.arch }}
+        run: npm run dist:snap:${{ matrix.arch }}
 
       - name: "Install @actions/artifact module"
         id: install-actions-artifact-module
