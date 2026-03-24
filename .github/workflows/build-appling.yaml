@@ -97,7 +97,7 @@ jobs:
             # Native ARM runner — cross-compiling snaps on x64 is unsupported
             # because snapcraft --destructive-mode builds for the host arch.
             # See: https://github.com/electron-userland/electron-builder/issues/5626
-            runs_on: ubuntu-24.04-arm
+            runs_on: ubuntu-22.04-arm
             snap_arch: arm64
     runs-on: ${{ matrix.runs_on }}
     steps:

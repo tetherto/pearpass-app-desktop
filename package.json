@@ -47,6 +47,7 @@
       "artifactName": "${productName}.${ext}"
     },
     "snap": {
+      "base": "core22",
       "confinement": "classic",
       "grade": "stable",
       "summary": "A fully local, open-source password manager for privacy and control",
