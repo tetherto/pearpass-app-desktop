@@ -110,6 +110,7 @@ jobs:
       # See: https://www.electron.build/snap.html
       - name: Install Snapcraft
         run: |
+          sudo apt-get update
           sudo snap install snapcraft --classic
           sudo snap install core22
 
