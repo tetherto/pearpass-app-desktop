@@ -49,7 +49,7 @@
     "snap": {
       "confinement": "classic",
       "grade": "stable",
-      "summary": "A fully local, open-source password manager designed for complete privacy and control",
+      "summary": "A fully local, open-source password manager for privacy and control",
       "artifactName": "${productName}_${version}_${arch}.${ext}",
       "plugs": [
         "default",
