@@ -2,11 +2,20 @@
 
 jest.mock('fs', () => ({
   readFileSync: jest.fn(),
-  unlinkSync: jest.fn()
+  unlinkSync: jest.fn(),
+  existsSync: jest.fn(() => true),
+  promises: {
+    mkdir: jest.fn()
+  }
 }))
 
 jest.mock('child_process', () => ({
-  spawnSync: jest.fn()
+  spawnSync: jest.fn(() => ({ status: 0, stdout: '', error: null }))
+}))
+
+jest.mock('./linuxClipboardFallback.cjs', () => ({
+  readClipboardWithFallback: jest.fn(() => null),
+  clearClipboardWithFallback: jest.fn(() => false)
 }))
 
 const originalPlatform = process.platform

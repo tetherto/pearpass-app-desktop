@@ -52,14 +52,6 @@ jest.mock('../../lib-react-components', () => ({
   LockIcon: () => <span>LockIcon</span>
 }))
 
-jest.mock('./styles', () => ({
-  styles: {
-    nextCodeButton: {},
-    nextCodeButtonHover: {},
-    nextCodeButtonDisabled: {}
-  }
-}))
-
 jest.mock('../TimerBar', () => ({
   TimerBar: ({ timeRemaining }) => (
     <div data-testid="otp-progress-bar">{timeRemaining}s</div>

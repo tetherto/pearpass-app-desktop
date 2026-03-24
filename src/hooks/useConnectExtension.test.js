@@ -80,6 +80,13 @@ jest.mock('../utils/nativeMessagingSetup', () => ({
   cleanupNativeMessaging: jest.fn().mockResolvedValue(),
   killNativeMessagingHostProcesses: jest.fn().mockResolvedValue()
 }))
+jest.mock('../electron', () => ({
+  getElectronConfig: jest.fn().mockResolvedValue({
+    userDataPath: '/mock/user/data',
+    execPath: '/mock/exec/path',
+    bridgePath: '/mock/bridge/path'
+  })
+}))
 
 describe('useConnectExtension', () => {
   beforeEach(() => {

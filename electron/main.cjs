@@ -33,8 +33,8 @@ let debugMode = false
 })()
 
 const pkg = require('../package.json')
-const runtimeConfig = require('./runtime-config.cjs')
 const { getSandboxSafePath } = require('./flatpak-paths.cjs')
+const runtimeConfig = require('./runtime-config.cjs')
 const {
   createMainProcessLogger
 } = require('../src/utils/createMainProcessLogger.cjs')
@@ -136,10 +136,12 @@ const WORKLET_READY_TIMEOUT_MS = 15000
 const WORKLET_READY_SIGNAL = 'WORKLET_READY'
 
 function waitForWorkletReady(sidecar) {
-  return new Promise((resolve, _) => {
+  const ipcStream = sidecar?._process?.stdio?.[3]
+  if (ipcStream) return Promise.resolve()
+  return new Promise((resolve) => {
     const timeout = setTimeout(() => {
       cleanup()
-      resolve() // proceed anyway after timeout so app can try to work
+      resolve()
     }, WORKLET_READY_TIMEOUT_MS)
     let buffer = ''
     const onData = (d) => {

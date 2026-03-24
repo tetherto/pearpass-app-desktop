@@ -83,8 +83,19 @@ parse_args() {
     APPIMAGE_PATH="$(cd "$(dirname "$APPIMAGE_PATH")" && pwd)/$(basename "$APPIMAGE_PATH")"
 
     if [[ ! -f "$APPIMAGE_PATH" ]]; then
+        local fallback_out="$PROJECT_DIR/out/PearPass.AppImage"
+        local fallback_dist="$PROJECT_DIR/dist/PearPass.AppImage"
+        if [[ "$(basename "$APPIMAGE_PATH")" == "PearPass.AppImage" && -f "$fallback_out" ]]; then
+            APPIMAGE_PATH="$fallback_out"
+            log_info "Using detected AppImage: $APPIMAGE_PATH"
+        elif [[ "$(basename "$APPIMAGE_PATH")" == "PearPass.AppImage" && -f "$fallback_dist" ]]; then
+            APPIMAGE_PATH="$fallback_dist"
+            log_info "Using detected AppImage: $APPIMAGE_PATH"
+        else
         log_error "AppImage not found: $APPIMAGE_PATH"
+        log_error "Expected output is usually ./out/PearPass.AppImage after dist:linux build"
         exit 1
+        fi
     fi
 
     [[ -z "$ARCH" ]] && ARCH="$(detect_arch)"
@@ -178,4 +189,3 @@ build_flatpak
 cleanup
 
 log_ok "Done!"
-

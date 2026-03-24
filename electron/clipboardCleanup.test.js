@@ -65,12 +65,22 @@ describe('clipboardCleanup', () => {
     expect(spawn).toHaveBeenCalledWith(
       'cmd.exe',
       expect.arrayContaining([
+        '/c',
+        'start',
+        '""',
+        '/min',
+        'powershell.exe',
+        '-NoProfile',
+        '-WindowStyle',
+        'Hidden',
+        '-ExecutionPolicy',
+        'Bypass',
         '-File',
         path.join(process.cwd(), 'electron', 'clipboardCleanup.windows.ps1')
       ]),
       expect.objectContaining({
         detached: true,
-        stdio: 'ignore',
+        stdio: 'inherit',
         windowsHide: true
       })
     )

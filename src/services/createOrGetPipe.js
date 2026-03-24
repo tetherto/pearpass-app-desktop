@@ -4,10 +4,10 @@ import pearRun from 'pear-run'
 let pipe
 
 const WORKLET_PATH_DEV =
-  './node_modules/pearpass-lib-vault-core/src/worklet/app.cjs'
+  './node_modules/@tetherto/pearpass-lib-vault-core/src/worklet/app.cjs'
 const WORKLET_PATH_PROD =
   Pear.config.applink +
-  '/node_modules/pearpass-lib-vault-core/src/worklet/app.cjs'
+  '/node_modules/@tetherto/pearpass-lib-vault-core/src/worklet/app.cjs'
 
 /**
  * @returns {Pipe} The Pear worker pipe.
