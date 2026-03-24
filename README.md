@@ -70,6 +70,38 @@ Run unit tests with Jest:
 npm test
 ```
 
+## Usage Examples
+
+### Creating a Vault
+
+1. Launch PearPass with `pear run --dev .`
+2. Follow the onboarding prompts to create your first vault
+3. Set a master password — this encrypts all your data locally
+
+### Storing Credentials
+
+PearPass supports multiple record types:
+
+- **Login** — website URL, username, and password
+- **Credit Card** — card number, expiration, and CVV
+- **Identity** — name, address, phone number
+- **Secure Note** — free-form encrypted text
+- **Wi-Fi Password** — network credentials with QR code generation
+- **Custom Fields** — key-value pairs on any record
+
+### Importing from Another Password Manager
+
+1. Go to **Settings > Import**
+2. Select your previous manager (1Password, Bitwarden, KeePass, KeePassXC, LastPass, NordPass, or ProtonPass)
+3. Upload your exported file
+
+### Syncing Across Devices
+
+1. Go to **Settings > Syncing**
+2. Initiate pairing on your primary device
+3. Scan or enter the pairing key on the second device
+4. Data syncs peer-to-peer — no central server involved
+
 ## Staging to dev
 
 Ensure the app runs correctly using `npm run dev`.
