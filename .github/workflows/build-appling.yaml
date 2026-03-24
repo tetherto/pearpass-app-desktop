@@ -249,22 +249,22 @@ jobs:
           security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
           rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.provisionprofile
 
-  release:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    needs: [version, linux, macos]
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v5
-        with:
-          path: artifacts/
-          merge-multiple: true
+  # release:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+  #   needs: [version, linux, macos]
+  #   if: github.ref == 'refs/heads/main'
+  #   steps:
+  #     - name: Download artifacts
+  #       uses: actions/download-artifact@v5
+  #       with:
+  #         path: artifacts/
+  #         merge-multiple: true
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ needs.version.outputs.version }}
-          name: PearPass-Desktop-v${{ needs.version.outputs.version }}
-          files: artifacts/**
+  #     - name: Create Release
+  #       uses: softprops/action-gh-release@v2
+  #       with:
+  #         tag_name: v${{ needs.version.outputs.version }}
+  #         name: PearPass-Desktop-v${{ needs.version.outputs.version }}
+  #         files: artifacts/**
