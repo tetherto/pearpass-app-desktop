@@ -128,6 +128,7 @@ jobs:
         env:
           PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          SNAPCRAFT_BUILD_ENVIRONMENT: host
         run: npm run dist:snap:${{ matrix.arch }}
 
       - name: "Install @actions/artifact module"
