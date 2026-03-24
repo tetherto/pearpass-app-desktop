@@ -109,7 +109,7 @@ jobs:
       # when building snap targets (bypasses LXD/Multipass, builds on host).
       # See: https://www.electron.build/snap.html
       - name: Install Snapcraft
-        run: snap install snapcraft --classic
+        run: sudo snap install snapcraft --classic
 
       - name: Install dependencies
         run: npm install
