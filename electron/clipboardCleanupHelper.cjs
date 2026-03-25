@@ -1,10 +1,8 @@
 const { spawnSync } = require('child_process')
 const fs = require('fs')
 
-const {
-  readClipboardWithFallback,
-  clearClipboardWithFallback
-} = require('./linuxClipboardFallback.cjs')
+const linuxWaylandClipboard = require('./linuxWaylandClipboard.cjs')
+const linuxX11Clipboard = require('./linuxX11Clipboard.cjs')
 
 function removeFileIfExists(filePath) {
   try {
@@ -65,21 +63,12 @@ function readClipboard() {
   }
 
   if (process.platform === 'linux') {
-    const commands = [
-      ['xsel', ['--clipboard', '--output']],
-      ['xclip', ['-selection', 'clipboard', '-o']]
-    ]
+    const linuxClipboard = linuxWaylandClipboard.isWaylandSession()
+      ? linuxWaylandClipboard
+      : linuxX11Clipboard
 
-    for (const [command, args] of commands) {
-      const result = runClipboardCommand(command, args, undefined)
-      if (!result.error && result.status === 0) {
-        return result.stdout || ''
-      }
-    }
-
-    // Neither xsel nor xclip found as system commands — try bundled binary
-    const fallbackResult = readClipboardWithFallback()
-    if (typeof fallbackResult === 'string') return fallbackResult
+    const result = linuxClipboard.readClipboard()
+    if (typeof result === 'string') return result
 
     logLinuxClipboardSkip()
     return null
@@ -98,20 +87,11 @@ function clearClipboard() {
   }
 
   if (process.platform === 'linux') {
-    const commands = [
-      ['xsel', ['--clipboard', '--input']],
-      ['xclip', ['-selection', 'clipboard']]
-    ]
+    const linuxClipboard = linuxWaylandClipboard.isWaylandSession()
+      ? linuxWaylandClipboard
+      : linuxX11Clipboard
 
-    for (const [command, args] of commands) {
-      const result = runClipboardCommand(command, args, '')
-      if (!result.error && result.status === 0) {
-        return
-      }
-    }
-
-    // Neither xsel nor xclip found as system commands — try bundled binary
-    if (clearClipboardWithFallback()) return
+    if (linuxClipboard.clearClipboard()) return
 
     logLinuxClipboardSkip()
     return
@@ -143,9 +123,6 @@ async function runClipboardCleanup({
 
     if (clipboardText === expectedText) {
       clearClipboard()
-
-      readClipboard()
-    } else {
     }
 
     return true
