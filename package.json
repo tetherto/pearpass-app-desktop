@@ -147,6 +147,7 @@
     "dist:win:arm64": "electron-forge make --platform=win32 --arch=arm64 && npm run pear:build:win:arm64",
     "dist:linux:x64": "npx electron-builder --linux --x64 -c electron-builder.linux.json --publish never && npm run pear:build:linux:x64",
     "dist:linux:arm64": "npx electron-builder --linux --arm64 -c electron-builder.linux.json --publish never && npm run pear:build:linux:arm64",
+    "make": "npm run build:prod && npm run dist:win:x64 && npm run dist:win:arm64",
     "dist:snap:x64": "npm exec --yes --package electron-builder -- electron-builder --linux snap --x64",
     "dist:snap:arm64": "npm exec --yes --package electron-builder -- electron-builder --linux snap --arm64",
     "dist:snap:x64:dev": "npm run dist:prepare:dev && dist:snap:x64 && npm install",
