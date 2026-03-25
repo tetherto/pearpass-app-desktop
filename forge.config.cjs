@@ -101,15 +101,8 @@ module.exports = {
           const standardDir = path.join(__dirname, 'out', appName)
           fs.mkdirSync(standardDir, { recursive: true })
           const dest = path.join(standardDir, path.basename(artifact))
-          fs.renameSync(artifact, dest)
-          result.artifacts[result.artifacts.indexOf(artifact)] = dest
+          fs.copyFileSync(artifact, dest)
         }
-      }
-      if (isWindows) {
-        fs.rmSync(path.join(__dirname, 'out', 'make'), {
-          recursive: true,
-          force: true
-        })
       }
     }
   },
