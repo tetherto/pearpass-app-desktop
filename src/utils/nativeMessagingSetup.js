@@ -3,9 +3,19 @@ import fs from 'fs/promises'
 import os from 'os'
 import path from 'path'
 
-import { MANIFEST_NAME, EXTENSION_ID } from '@tetherto/pearpass-lib-constants'
+import {
+  MANIFEST_NAME,
+  EXTENSION_ID,
+  FIREFOX_EXTENSION_ID
+} from '@tetherto/pearpass-lib-constants'
 
 import { logger } from './logger'
+import flatpakPaths from '../../electron/flatpak-paths.cjs'
+
+const { isFlatpakRuntime, getHostHome } = flatpakPaths
+
+const FLATPAK_APP_ID = 'com.pears.pass'
+const FLATPAK_NATIVE_HOST_COMMAND = 'pearpass-native-host'
 
 const NATIVE_BRIDGE_PROCESS_IDENTIFIER = 'pearpass-lib-native-messaging-bridge'
 
@@ -68,7 +78,37 @@ export const generateNativeHostExecutable = async (
     const platform = os.platform()
     let content
 
-    if (platform === 'darwin' || platform === 'linux') {
+    if (platform === 'linux' && isFlatpakRuntime()) {
+      // Chrome runs outside the flatpak sandbox, so the wrapper must
+      // re-enter the sandbox via `flatpak run` before execing the bridge.
+      // The /app/* electronExecPath and bridgeScriptPath are only valid
+      // inside the sandbox and are resolved by the in-sandbox command.
+      //
+      // Diagnostics MUST go to stderr: Chrome's native-messaging protocol
+      // treats anything on stdout as a framed message and will drop the port
+      // ("Native host has exited") if we write plain text there.
+      content = `#!/bin/bash
+# PearPass Native Messaging Host (flatpak)
+# Chrome launches this on the host; re-enter the sandbox to run the bridge.
+set -u
+
+FLATPAK_BIN="$(command -v flatpak 2>/dev/null || true)"
+if [ -z "\${FLATPAK_BIN}" ]; then
+  for candidate in /usr/bin/flatpak /usr/local/bin/flatpak /var/lib/flatpak/exports/bin/flatpak; do
+    if [ -x "\${candidate}" ]; then
+      FLATPAK_BIN="\${candidate}"
+      break
+    fi
+  done
+fi
+if [ -z "\${FLATPAK_BIN}" ]; then
+  echo "pearpass-native-host: flatpak binary not found on PATH" >&2
+  exit 127
+fi
+
+exec "\${FLATPAK_BIN}" run --command=${FLATPAK_NATIVE_HOST_COMMAND} ${FLATPAK_APP_ID} "$@"
+`
+    } else if (platform === 'darwin' || platform === 'linux') {
       content = `#!/bin/bash
 # PearPass Native Messaging Host
 # Runs the native messaging bridge via Electron's embedded Node.js
@@ -121,7 +161,10 @@ set ELECTRON_RUN_AS_NODE=1
  */
 export const getNativeMessagingLocations = () => {
   const platform = os.platform()
-  const home = os.homedir()
+  // Under flatpak, os.homedir() is the per-app sandbox home; browsers on the
+  // host read manifests from the real host home. Use that path instead.
+  const home =
+    platform === 'linux' && isFlatpakRuntime() ? getHostHome() : os.homedir()
   const manifestFile = `${MANIFEST_NAME}.json`
   const browsers = []
 
@@ -199,18 +242,40 @@ export const getNativeMessagingLocations = () => {
             'NativeMessagingHosts',
             manifestFile
           )
+        },
+        {
+          name: 'Firefox',
+          isFirefox: true,
+          browserDir: path.join(
+            home,
+            'Library',
+            'Application Support',
+            'Mozilla'
+          ),
+          manifestPath: path.join(
+            home,
+            'Library',
+            'Application Support',
+            'Mozilla',
+            'NativeMessagingHosts',
+            manifestFile
+          )
         }
       )
       break
 
     case 'win32': {
-      const manifestPath = path.join(
+      const nativeMessagingDir = path.join(
         home,
         'AppData',
         'Local',
         'PearPass',
-        'NativeMessaging',
-        manifestFile
+        'NativeMessaging'
+      )
+      const manifestPath = path.join(nativeMessagingDir, manifestFile)
+      const firefoxManifestPath = path.join(
+        nativeMessagingDir,
+        `${MANIFEST_NAME}.firefox.json`
       )
       browsers.push(
         {
@@ -236,6 +301,13 @@ export const getNativeMessagingLocations = () => {
           browserDir: null,
           manifestPath,
           registryKey: `HKCU\\Software\\BraveSoftware\\Brave-Browser\\NativeMessagingHosts\\${MANIFEST_NAME}`
+        },
+        {
+          name: 'Firefox',
+          isFirefox: true,
+          browserDir: null,
+          manifestPath: firefoxManifestPath,
+          registryKey: `HKCU\\Software\\Mozilla\\NativeMessagingHosts\\${MANIFEST_NAME}`
         }
       )
       break
@@ -303,6 +375,32 @@ export const getNativeMessagingLocations = () => {
             'BraveSoftware',
             'Brave-Browser',
             'NativeMessagingHosts',
+            manifestFile
+          )
+        },
+        {
+          name: 'Brave (Snap)',
+          browserDir: path.join(home, 'snap', 'brave', 'current'),
+          manifestPath: path.join(
+            home,
+            'snap',
+            'brave',
+            'current',
+            '.config',
+            'BraveSoftware',
+            'Brave-Browser',
+            'NativeMessagingHosts',
+            manifestFile
+          )
+        },
+        {
+          name: 'Firefox',
+          isFirefox: true,
+          browserDir: path.join(home, '.mozilla'),
+          manifestPath: path.join(
+            home,
+            '.mozilla',
+            'native-messaging-hosts',
             manifestFile
           )
         }
@@ -460,13 +558,22 @@ export const setupNativeMessaging = async ({
 
     const extensionId = localStorage.getItem('EXTENSION_ID') || EXTENSION_ID
 
-    // Create native messaging manifest
-    const manifest = {
+    // Create Chromium native messaging manifest
+    const chromiumManifest = {
       name: MANIFEST_NAME,
       description: 'PearPass Native Messaging Host',
       path: executablePath,
       type: 'stdio',
       allowed_origins: [`chrome-extension://${extensionId}/`]
+    }
+
+    // Create Firefox native messaging manifest
+    const firefoxManifest = {
+      name: MANIFEST_NAME,
+      description: 'PearPass Native Messaging Host',
+      path: executablePath,
+      type: 'stdio',
+      allowed_extensions: [FIREFOX_EXTENSION_ID]
     }
 
     const { browsers } = getNativeMessagingLocations()
@@ -487,6 +594,7 @@ export const setupNativeMessaging = async ({
       }
 
       try {
+        const manifest = browser.isFirefox ? firefoxManifest : chromiumManifest
         await fs.mkdir(path.dirname(browser.manifestPath), { recursive: true })
         await fs.writeFile(
           browser.manifestPath,
