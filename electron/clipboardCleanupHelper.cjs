@@ -35,9 +35,16 @@ function clearCurrentTokenIfMatches(statePath, token) {
   }
 }
 
-function logLinuxClipboardSkip() {
+function describeLinuxSession() {
+  const waylandDisplay = process.env.WAYLAND_DISPLAY || ''
+  const sessionType = process.env.XDG_SESSION_TYPE || ''
+  const display = process.env.DISPLAY || ''
+  return `WAYLAND_DISPLAY=${waylandDisplay || '(unset)'} XDG_SESSION_TYPE=${sessionType || '(unset)'} DISPLAY=${display || '(unset)'}`
+}
+
+function logLinuxClipboardSkip(sessionLabel) {
   process.stderr.write(
-    'PearPass clipboard cleanup skipped: Linux clipboard command unavailable or failed.\n'
+    `PearPass clipboard cleanup skipped: ${sessionLabel} clipboard command unavailable or failed. (${describeLinuxSession()})\n`
   )
 }
 
@@ -63,14 +70,14 @@ function readClipboard() {
   }
 
   if (process.platform === 'linux') {
-    const linuxClipboard = linuxWaylandClipboard.isWaylandSession()
-      ? linuxWaylandClipboard
-      : linuxX11Clipboard
+    const isWayland = linuxWaylandClipboard.isWaylandSession()
+    const linuxClipboard = isWayland ? linuxWaylandClipboard : linuxX11Clipboard
+    const sessionLabel = isWayland ? 'Wayland' : 'X11'
 
     const result = linuxClipboard.readClipboard()
     if (typeof result === 'string') return result
 
-    logLinuxClipboardSkip()
+    logLinuxClipboardSkip(sessionLabel)
     return null
   }
 
@@ -87,13 +94,13 @@ function clearClipboard() {
   }
 
   if (process.platform === 'linux') {
-    const linuxClipboard = linuxWaylandClipboard.isWaylandSession()
-      ? linuxWaylandClipboard
-      : linuxX11Clipboard
+    const isWayland = linuxWaylandClipboard.isWaylandSession()
+    const linuxClipboard = isWayland ? linuxWaylandClipboard : linuxX11Clipboard
+    const sessionLabel = isWayland ? 'Wayland' : 'X11'
 
     if (linuxClipboard.clearClipboard()) return
 
-    logLinuxClipboardSkip()
+    logLinuxClipboardSkip(sessionLabel)
     return
   }
 

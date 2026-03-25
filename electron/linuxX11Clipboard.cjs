@@ -3,7 +3,7 @@ const { spawnSync } = require('child_process')
 const {
   readClipboardWithFallback,
   clearClipboardWithFallback
-} = require('./linuxClipboardFallback.cjs')
+} = require('./linuxX11ClipboardFallback.cjs')
 
 function runCommand(command, args, input) {
   return spawnSync(command, args, {

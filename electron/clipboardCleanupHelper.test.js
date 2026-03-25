@@ -13,9 +13,15 @@ jest.mock('child_process', () => ({
   spawnSync: jest.fn(() => ({ status: 0, stdout: '', error: null }))
 }))
 
-jest.mock('./linuxClipboardFallback.cjs', () => ({
-  readClipboardWithFallback: jest.fn(() => null),
-  clearClipboardWithFallback: jest.fn(() => false)
+jest.mock('./linuxWaylandClipboard.cjs', () => ({
+  isWaylandSession: jest.fn(() => false),
+  readClipboard: jest.fn(() => null),
+  clearClipboard: jest.fn(() => false)
+}))
+
+jest.mock('./linuxX11Clipboard.cjs', () => ({
+  readClipboard: jest.fn(() => null),
+  clearClipboard: jest.fn(() => false)
 }))
 
 const originalPlatform = process.platform
@@ -114,7 +120,7 @@ describe('clipboardCleanupHelper', () => {
     setPlatform('linux')
     const helper = loadHelper()
     const fs = getFs()
-    const spawnSync = getSpawnSync()
+    const linuxX11Clipboard = require('./linuxX11Clipboard.cjs')
     const stderrSpy = jest
       .spyOn(process.stderr, 'write')
       .mockImplementation(() => true)
@@ -123,10 +129,6 @@ describe('clipboardCleanupHelper', () => {
       .mockReturnValueOnce('secret')
       .mockReturnValueOnce('token-1')
       .mockReturnValueOnce('token-1')
-
-    spawnSync
-      .mockReturnValueOnce({ error: { code: 'ENOENT' } })
-      .mockReturnValueOnce({ error: { code: 'ENOENT' } })
 
     const cleanupPromise = helper.runClipboardCleanup({
       secretPath: '/tmp/secret.txt',
@@ -138,8 +140,9 @@ describe('clipboardCleanupHelper', () => {
     await jest.advanceTimersByTimeAsync(30000)
     await expect(cleanupPromise).resolves.toBe(false)
 
+    expect(linuxX11Clipboard.readClipboard).toHaveBeenCalled()
     expect(stderrSpy).toHaveBeenCalledWith(
-      'PearPass clipboard cleanup skipped: Linux clipboard command unavailable or failed.\n'
+      expect.stringContaining('PearPass clipboard cleanup skipped:')
     )
     expect(fs.unlinkSync).toHaveBeenCalledWith('/tmp/secret.txt')
     expect(fs.unlinkSync).toHaveBeenCalledWith('/tmp/state.token')
