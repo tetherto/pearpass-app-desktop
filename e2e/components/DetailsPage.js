@@ -8,7 +8,7 @@ class DetailsPage {
     // ==== LOCATORS ====
 
     get getItemDetailsCustomInput() {
-        return this.root.getByPlaceholder('Add note');
+        return this.root.getByPlaceholder('Add comment');
     }
 
     async verifyCustomNoteText(expectedText) {

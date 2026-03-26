@@ -76,7 +76,7 @@ test.describe('Creating Credit Card Item', async () => {
     await detailsPage.verifyItemDetailsValue('MM YY', '12 12')
     await detailsPage.verifyItemDetailsValue('123', '111')
     await detailsPage.verifyItemDetailsValue('1234', '5555')
-    await detailsPage.verifyItemDetailsValue('Add note', 'Credit Card Note')
+    await detailsPage.verifyItemDetailsValue('Add comment', 'Credit Card Note')
   })
 
   test('Password visibility icon displays/hides value', async ({ page }) => {

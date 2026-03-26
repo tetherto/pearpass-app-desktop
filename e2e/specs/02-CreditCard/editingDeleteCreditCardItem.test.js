@@ -104,7 +104,7 @@ test.describe('Editing/Deleting Credit Card Item', () => {
     await detailsPage.verifyItemDetailsValueIsNotVisible('MM YY');
     await detailsPage.verifyItemDetailsValueIsNotVisible('123');
     await detailsPage.verifyItemDetailsValueIsNotVisible('1234');
-    await detailsPage.verifyItemDetailsValueIsNotVisible('Add note');
+    await detailsPage.verifyItemDetailsValueIsNotVisible('Add comment');
     await mainPage.clickDetailsCloseButton();
   });
 

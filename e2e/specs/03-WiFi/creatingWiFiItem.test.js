@@ -65,7 +65,7 @@ test.describe('Creating WiFi Item', () => {
     await mainPage.openElementDetails()
     await detailsPage.verifyTitle('WiFi Title');
     await detailsPage.verifyItemDetailsValue('Password', 'WiFi Pass')
-    await detailsPage.verifyItemDetailsValue('Add note', 'WiFi Note')
+    await detailsPage.verifyItemDetailsValue('Add comment', 'WiFi Note')
   })
 
   test('Password visibility icon displays/hides value', async ({ page }) => {
@@ -184,7 +184,7 @@ test.describe('Creating WiFi Item', () => {
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await mainPage.openElementDetails()
     await detailsPage.verifyTitle('WiFi Title');
-    await detailsPage.verifyItemDetailsValueIsNotVisible('Add note')
+    await detailsPage.verifyItemDetailsValueIsNotVisible('Add comment')
     await mainPage.clickDetailsCloseButton()
   })
 })

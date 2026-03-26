@@ -90,7 +90,7 @@ test.describe('Editing/Deleting Note Item', () => {
   //   await detailsPage.verifyItemDetailsValue('https://', '');
   //   await detailsPage.verifyItemDetailsValueIsNotVisible('Email or username');
   //   await detailsPage.verifyItemDetailsValueIsNotVisible('Password');
-  //   await detailsPage.verifyItemDetailsValueIsNotVisible('Add note');
+  //   await detailsPage.verifyItemDetailsValueIsNotVisible('Add comment');
   //   await mainPage.clickDetailsCloseButton();
   // });
 

@@ -77,7 +77,7 @@ test.describe('Editing/Deleting Login Item', () => {
     await detailsPage.verifyItemDetailsValue('Email or username', 'Test User EDITED');
     await detailsPage.verifyItemDetailsValue('Password', 'Test Pass EDITED');
     await detailsPage.verifyItemDetailsValue('https://', 'https://www.website1.co');
-    await detailsPage.verifyItemDetailsValue('Add note', 'Test Note EDITED');
+    await detailsPage.verifyItemDetailsValue('Add comment', 'Test Note EDITED');
   });
 
   test('Verify that deleted "Website" and custom "Note" fields are not saved in the edited "Login" item', async () => {
@@ -103,7 +103,7 @@ test.describe('Editing/Deleting Login Item', () => {
     await detailsPage.verifyItemDetailsValue('https://', '');
     await detailsPage.verifyItemDetailsValueIsNotVisible('Email or username');
     await detailsPage.verifyItemDetailsValueIsNotVisible('Password');
-    await detailsPage.verifyItemDetailsValueIsNotVisible('Add note');
+    await detailsPage.verifyItemDetailsValueIsNotVisible('Add comment');
     await mainPage.clickDetailsCloseButton();
   });
 

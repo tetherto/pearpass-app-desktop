@@ -207,7 +207,7 @@ test.describe('Creating Note Item', () => {
     await createOrEditPage.fillCreateOrEditTextArea('note', '')
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await mainPage.openElementDetails()
-    await detailsPage.verifyItemDetailsValueIsNotVisible('Add note')
+    await detailsPage.verifyItemDetailsValueIsNotVisible('Add comment')
     
     await mainPage.clickDetailsCloseButton()
 

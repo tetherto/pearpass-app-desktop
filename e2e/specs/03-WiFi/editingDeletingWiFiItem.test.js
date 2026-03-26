@@ -72,7 +72,7 @@ test.describe('Editing/Deleting WiFi Item', () => {
     await mainPage.openElementDetails();
     await detailsPage.verifyTitle('WiFi Title Edited');
     await detailsPage.verifyItemDetailsValue('Password', 'WiFi Pass Edited')
-    await detailsPage.verifyItemDetailsValue('Add note', 'WiFi Note Edited')
+    await detailsPage.verifyItemDetailsValue('Add comment', 'WiFi Note Edited')
   })
 
   test('Verify that deleted custom "Note" fields are not saved in the edited "WiFi" item', async () => {
@@ -92,7 +92,7 @@ test.describe('Editing/Deleting WiFi Item', () => {
     await createOrEditPage.fillCreateOrEditInput('note', '')
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await mainPage.openElementDetails();
-    await detailsPage.verifyItemDetailsValueIsNotVisible('Add note');
+    await detailsPage.verifyItemDetailsValueIsNotVisible('Add comment');
     await mainPage.clickDetailsCloseButton();
   });
 

@@ -76,7 +76,7 @@ test.describe('Editing/Deleting Custom Item', () => {
     await mainPage.openElementDetails();
     await page.waitForTimeout(testData.timeouts.action);
     await mainPage.verifyElementTitle('EDITED Custom Field Title')
-    await detailsPage.verifyItemDetailsValue('Add note', 'Custom Note');
+    await detailsPage.verifyItemDetailsValue('Add comment', 'Custom Note');
     // Verify Note
   });
 
@@ -85,7 +85,7 @@ test.describe('Editing/Deleting Custom Item', () => {
     await detailsPage.editElement();
     await createOrEditPage.deleteCustomNote();
     await createOrEditPage.clickOnCreateOrEditButton('save');
-    await detailsPage.verifyItemDetailsValueIsNotVisible('Add note');
+    await detailsPage.verifyItemDetailsValueIsNotVisible('Add comment');
   }); 
 
   test('Verify that the "Custom Field" item is removed after deletion', async () => {

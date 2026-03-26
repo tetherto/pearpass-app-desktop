@@ -14,7 +14,7 @@ function sleep(ms) {
 async function connectWithRetries(wsEndpoint, maxRetries) {
   // Windows needs more retries with shorter delays
   // Mac works better with exponential backoff
-  const retries = maxRetries ?? (isWindows ? 15 : 5)
+  const retries = maxRetries ?? (isWindows ? 15 : 10)
   
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -33,7 +33,7 @@ async function connectWithRetries(wsEndpoint, maxRetries) {
   }
 }
 
-async function waitForPage(browser, maxRetries = 20) {
+async function waitForPage(browser, maxRetries = 60) {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const contexts = browser.contexts()
     for (const context of contexts) {
@@ -43,21 +43,8 @@ async function waitForPage(browser, maxRetries = 20) {
         console.log(`[Attempt ${attempt}] Available pages:`, pages.map((p) => p.url()))
       }
       
-      // Platform-specific page matching
-      let page
-      if (isWindows) {
-        // Windows: match localhost URL (app doesn't have index.html in URL)
-        page = pages.find((p) => {
-          const url = p.url()
-          return url.startsWith('http://localhost:') && 
-                 !url.includes('devtools') &&
-                 !url.startsWith('data:') &&
-                 !url.startsWith('about:')
-        })
-      } else {
-        // Mac: match index.html in URL
-        page = pages.find((p) => p.url().includes('index.html'))
-      }
+      // Electron loads index.html via file:// on all platforms
+      const page = pages.find((p) => p.url().includes('index.html'))
       
       if (page) {
         console.log('[Found] App page:', page.url())
@@ -85,12 +72,13 @@ async function launchApp(appDir) {
 
   console.log(`[Launch] Starting app on port ${port}, platform: ${os.platform()}`)
 
+  const electronBin = path.join(appDir, 'node_modules', '.bin', isWindows ? 'electron.cmd' : 'electron')
+
   let proc
   if (isWindows) {
-    // Windows: spawn cmd.exe directly to avoid shell:true issues
     proc = spawn(
-      'cmd.exe',
-      ['/c', 'pear', 'run', '-d', '.', `--remote-debugging-port=${port}`, '--no-sandbox'],
+      electronBin,
+      ['.', `--remote-debugging-port=${port}`, '--no-sandbox'],
       {
         cwd: appDir,
         stdio: 'inherit',
@@ -98,10 +86,10 @@ async function launchApp(appDir) {
       }
     )
   } else {
-    // Mac/Linux: use pear directly with detached process
+    // Mac/Linux: use detached process so we can kill the process group on teardown
     proc = spawn(
-      'pear',
-      ['run', '--dev', '.', `--remote-debugging-port=${port}`, '--no-sandbox'],
+      electronBin,
+      ['.', `--remote-debugging-port=${port}`, '--no-sandbox'],
       {
         cwd: appDir,
         stdio: 'inherit',
@@ -112,7 +100,8 @@ async function launchApp(appDir) {
   }
 
   // Give the app time to start before trying to connect
-  const initialDelay = isWindows ? 3000 : 1000
+  // Electron needs time for startRuntime() (P2P + worklet) before the window is created
+  const initialDelay = isWindows ? 5000 : 5000
   console.log(`[Launch] Waiting ${initialDelay}ms for app to initialize...`)
   await sleep(initialDelay)
 
