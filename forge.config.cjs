@@ -89,24 +89,16 @@ module.exports = {
     postMake: async (forgeConfig, results) => {
       for (const result of results) {
         if (result.platform !== 'win32') continue
-        for (const artifact of result.artifacts) {
+        for (let i = 0; i < result.artifacts.length; i++) {
+          const artifact = result.artifacts[i]
           if (!artifact.endsWith('.msix')) continue
-          const standardDir = path.join(
-            __dirname,
-            'out',
-            `${appName}-win32-${result.arch}`
-          )
-          fs.mkdirSync(standardDir, { recursive: true })
-          const dest = path.join(standardDir, path.basename(artifact))
-          fs.renameSync(artifact, dest)
-          result.artifacts[result.artifacts.indexOf(artifact)] = dest
+          const dir = path.dirname(artifact)
+          const ext = path.extname(artifact)
+          const base = path.basename(artifact, ext)
+          const renamed = path.join(dir, `${base}-${result.arch}${ext}`)
+          fs.renameSync(artifact, renamed)
+          result.artifacts[i] = renamed
         }
-      }
-      if (isWindows) {
-        fs.rmSync(path.join(__dirname, 'out', 'make'), {
-          recursive: true,
-          force: true
-        })
       }
     }
   },
