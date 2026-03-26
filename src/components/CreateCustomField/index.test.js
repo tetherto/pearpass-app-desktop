@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { render, fireEvent } from '@testing-library/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import { CreateCustomField } from './index'
 import '@testing-library/jest-dom'
@@ -42,7 +42,7 @@ describe('CreateCustomField component', () => {
 
     fireEvent.click(getByText('Create Custom'))
 
-    expect(getByText('Note')).toBeInTheDocument()
+    expect(getByText('Comment')).toBeInTheDocument()
   })
 
   test('calls onCreateCustom when an option is selected', () => {
@@ -53,7 +53,7 @@ describe('CreateCustomField component', () => {
     )
 
     fireEvent.click(getByText('Create Custom'))
-    fireEvent.click(getByText('Note'))
+    fireEvent.click(getByText('Comment'))
 
     expect(mockOnCreateCustom).toHaveBeenCalledWith('note')
   })
@@ -66,9 +66,9 @@ describe('CreateCustomField component', () => {
     )
 
     fireEvent.click(getByText('Create Custom'))
-    fireEvent.click(getByText('Note'))
+    fireEvent.click(getByText('Comment'))
 
-    expect(queryByText('Note')).not.toBeInTheDocument()
+    expect(queryByText('Comment')).not.toBeInTheDocument()
   })
 
   test('toggles dropdown visibility when clicked multiple times', () => {
@@ -79,9 +79,9 @@ describe('CreateCustomField component', () => {
     )
 
     fireEvent.click(getByText('Create Custom'))
-    expect(getByText('Note')).toBeInTheDocument()
+    expect(getByText('Comment')).toBeInTheDocument()
 
     fireEvent.click(getByText('Create Custom'))
-    expect(queryByText('Note')).not.toBeInTheDocument()
+    expect(queryByText('Comment')).not.toBeInTheDocument()
   })
 })

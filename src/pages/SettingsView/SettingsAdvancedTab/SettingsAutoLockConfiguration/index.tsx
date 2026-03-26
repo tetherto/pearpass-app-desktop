@@ -1,5 +1,5 @@
 import { html } from 'htm/react'
-import { AUTO_LOCK_TIMEOUT_OPTIONS, BE_AUTO_LOCK_ENABLED } from 'pearpass-lib-constants'
+import { AUTO_LOCK_TIMEOUT_OPTIONS, BE_AUTO_LOCK_ENABLED } from '@tetherto/pearpass-lib-constants'
 import { useState } from 'react'
 import styled from 'styled-components'
 import { PopupMenu } from '../../../../components/PopupMenu'

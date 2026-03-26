@@ -9,7 +9,7 @@ jest.mock('../../lib-react-components', () => ({
   XIcon: () => 'XIcon'
 }))
 
-jest.mock('pearpass-lib-ui-theme-provider', () => ({
+jest.mock('@tetherto/pearpass-lib-ui-theme-provider', () => ({
   colors: {
     black: {
       mode1: '#000000'

@@ -1,4 +1,4 @@
-import { colors } from 'pearpass-lib-ui-theme-provider'
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 export const RECORD_COLOR_BY_TYPE = {
   all: colors.primary400.dark,

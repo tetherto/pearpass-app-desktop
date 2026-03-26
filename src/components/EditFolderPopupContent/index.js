@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 
 import { useLingui } from '@lingui/react'
+import { useFolders } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { useFolders } from 'pearpass-lib-vault'
 
 import { MenuItem, MenuList } from './styles'
 import { ConfirmationModalContent } from '../../containers/Modal/ConfirmationModalContent'

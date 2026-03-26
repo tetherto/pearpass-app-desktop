@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { generateUniqueId } from 'pear-apps-utils-generate-unique-id'
+import { generateUniqueId } from '@tetherto/pear-apps-utils-generate-unique-id'
 
 /**
  * @param {{

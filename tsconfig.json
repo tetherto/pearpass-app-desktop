@@ -19,24 +19,25 @@
         "isolatedModules": true,
         "noEmit": false,
         "jsx": "react-jsx",
-        "outDir": "./dist",
+        "outDir": "build/dist",
         "rootDir": ".",
         "declaration": false,
         "sourceMap": true,
         "removeComments": false,
         "preserveConstEnums": true,
         "incremental": true,
-        "tsBuildInfoFile": "./dist/.tsbuildinfo"
+        "tsBuildInfoFile": "build/dist/.tsbuildinfo"
     },
     "include": [
         "src/types/**/*",
         "src/**/*",
         "app.tsx",
+        "app.electron.tsx",
         "styles.js"
     ],
     "exclude": [
         "node_modules",
-        "dist",
+        "build/dist",
         "packages"
     ]
 }

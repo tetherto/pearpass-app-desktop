@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
 import { html } from 'htm/react'
-import { colors } from 'pearpass-lib-ui-theme-provider'
 
 import {
   AddContainer,

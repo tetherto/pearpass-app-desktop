@@ -2,7 +2,7 @@ import React from 'react'
 import '@testing-library/jest-dom'
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import { DeleteVaultModalContent } from '../index'
 import { ModalProvider } from '../../../../context/ModalContext'
@@ -10,7 +10,7 @@ import { LoadingProvider } from '../../../../context/LoadingContext'
 
 let mockProtectedFlag = false
 
-jest.mock('pearpass-lib-constants', () => ({
+jest.mock('@tetherto/pearpass-lib-constants', () => ({
   get PROTECTED_VAULT_ENABLED() {
     return mockProtectedFlag
   }
@@ -20,8 +20,8 @@ jest.mock('@lingui/react', () => ({
   useLingui: () => ({ i18n: { _: (s: string) => s } })
 }))
 
-jest.mock('pearpass-lib-vault', () => {
-  const actual = jest.requireActual<typeof import('pearpass-lib-vault')>('pearpass-lib-vault')
+jest.mock('@tetherto/pearpass-lib-vault', () => {
+  const actual = jest.requireActual<typeof import('@tetherto/pearpass-lib-vault')>('@tetherto/pearpass-lib-vault')
 
   const mockLogIn = jest.fn()
   const mockAuthorise = jest.fn()
@@ -47,7 +47,7 @@ jest.mock('pearpass-lib-vault', () => {
   }
 })
 
-const { __testMocks } = require('pearpass-lib-vault')
+const { __testMocks } = require('@tetherto/pearpass-lib-vault')
 const { mockLogIn, mockAuthorise } = __testMocks
 
 jest.mock('../../../../utils/getDeviceName', () => ({

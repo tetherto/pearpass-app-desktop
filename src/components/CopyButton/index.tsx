@@ -1,5 +1,5 @@
 import React from 'react'
-import { useCopyToClipboard } from '../../hooks/useCopyToClipboard'
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard.electron'
 import { useToast } from '../../context/ToastContext'
 import { CopyIcon } from '../../lib-react-components'
 import { useTranslation } from '../../hooks/useTranslation'

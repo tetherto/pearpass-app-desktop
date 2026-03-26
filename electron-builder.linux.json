@@ -1,0 +1,38 @@
+{
+  "appId": "com.pears.pass",
+  "icon": "assets/linux/icon.png",
+  "asar": false,
+  "directories": {
+    "output": "out"
+  },
+  "files": [
+    "electron/**/*",
+    "dist/**/*",
+    "index.html",
+    "index.js",
+    "packages/**/*",
+    "assets/**/*",
+    "src/utils/**/*"
+  ],
+  "extraResources": [
+    {
+      "from": "assets",
+      "to": "assets"
+    },
+    {
+      "from": "resources/bin",
+      "to": "bin"
+    }
+  ],
+  "linux": {
+    "icon": "assets/linux/icon.png",
+    "target": [
+      "AppImage"
+    ],
+    "artifactName": "${productName}.${ext}"
+  },
+  "toolsets": {
+    "appimage": "1.0.2"
+  },
+  "afterPack": "scripts/afterPack.cjs"
+}

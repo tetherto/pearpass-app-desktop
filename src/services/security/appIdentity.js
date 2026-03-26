@@ -22,6 +22,18 @@ const PAIRING_CODE_TAG = Buffer.from('pearpass/pairingcode/v1', 'utf8')
 // Structure: { ed25519PublicKeyBytes, ed25519PrivateKeyBytes, x25519PublicKeyBytes, x25519PrivateKeyBytes, creationDate }
 let MEMORY_IDENTITY = null
 
+// Some bundlers/environments can fail to populate sodium-native's *BYTES
+// constants on first import. Provide safe fallbacks using the known sizes
+// from libsodium so Buffer.alloc(size) never sees `undefined`.
+const ED25519_SECRETKEY_BYTES =
+  sodium.crypto_sign_SECRETKEYBYTES || 64 /* crypto_sign_SECRETKEYBYTES */
+const ED25519_PUBLICKEY_BYTES =
+  sodium.crypto_sign_PUBLICKEYBYTES || 32 /* crypto_sign_PUBLICKEYBYTES */
+const X25519_SECRETKEY_BYTES =
+  sodium.crypto_box_SECRETKEYBYTES || 32 /* crypto_box_SECRETKEYBYTES */
+const X25519_PUBLICKEY_BYTES =
+  sodium.crypto_box_PUBLICKEYBYTES || 32 /* crypto_box_PUBLICKEYBYTES */
+
 /**
  * Normalize encryptionGet return shape to base64 string or null
  * Some client implementations return a string, others { data: string|null }.
@@ -53,7 +65,7 @@ const fromBase64 = (base64String) =>
 
 /**
  * Load or create the pairing secret used for pairing token derivation.
- * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
+ * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
  * @returns {Promise<string>} base64-encoded secret
  */
 const getOrCreatePairingSecret = async (client) => {
@@ -90,7 +102,7 @@ const getOrCreatePairingSecret = async (client) => {
 
 /**
  * Ensure encryption is initialized on the client.
- * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
+ * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
  */
 const ensureEncryptionInitialized = async (client) => {
   try {
@@ -131,23 +143,38 @@ const ensureEncryptionInitialized = async (client) => {
 
 /**
  * Generate new identity keys and persist them.
- * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
+ * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
  * @returns {Promise<{ ed25519PublicKey: string, x25519PublicKey: string, creationDate: string }>}
  */
 const generateAndPersistIdentity = async (client) => {
   // Ed25519 signing
-  const ed25519PrivateKeyBytes = new Uint8Array(
-    sodium.crypto_sign_SECRETKEYBYTES
-  )
-  const ed25519PublicKeyBytes = new Uint8Array(
-    sodium.crypto_sign_PUBLICKEYBYTES
-  )
-  sodium.crypto_sign_keypair(ed25519PublicKeyBytes, ed25519PrivateKeyBytes)
+  // sodium-native expects Node Buffers, not plain Uint8Array instances.
+  let ed25519PrivateKeyBytes = Buffer.alloc(ED25519_SECRETKEY_BYTES)
+  let ed25519PublicKeyBytes = Buffer.alloc(ED25519_PUBLICKEY_BYTES)
+  try {
+    // Preferred path when running against sodium-native in a Node-like env.
+    sodium.crypto_sign_keypair(ed25519PublicKeyBytes, ed25519PrivateKeyBytes)
+  } catch {
+    // Fallback: some sodium builds (or shims) expect plain Uint8Array
+    const edSk = new Uint8Array(ED25519_SECRETKEY_BYTES)
+    const edPk = new Uint8Array(ED25519_PUBLICKEY_BYTES)
+    sodium.crypto_sign_keypair(edPk, edSk)
+    ed25519PrivateKeyBytes = Buffer.from(edSk)
+    ed25519PublicKeyBytes = Buffer.from(edPk)
+  }
 
   // X25519 (Curve25519) for ECDH
-  const x25519PrivateKeyBytes = new Uint8Array(sodium.crypto_box_SECRETKEYBYTES)
-  const x25519PublicKeyBytes = new Uint8Array(sodium.crypto_box_PUBLICKEYBYTES)
-  sodium.crypto_box_keypair(x25519PublicKeyBytes, x25519PrivateKeyBytes)
+  let x25519PrivateKeyBytes = Buffer.alloc(X25519_SECRETKEY_BYTES)
+  let x25519PublicKeyBytes = Buffer.alloc(X25519_PUBLICKEY_BYTES)
+  try {
+    sodium.crypto_box_keypair(x25519PublicKeyBytes, x25519PrivateKeyBytes)
+  } catch {
+    const xSk = new Uint8Array(X25519_SECRETKEY_BYTES)
+    const xPk = new Uint8Array(X25519_PUBLICKEY_BYTES)
+    sodium.crypto_box_keypair(xPk, xSk)
+    x25519PrivateKeyBytes = Buffer.from(xSk)
+    x25519PublicKeyBytes = Buffer.from(xPk)
+  }
 
   // Persist (private and public concatenated; client encrypts in storage)
   const payloadEd25519 = Buffer.concat([
@@ -201,7 +228,7 @@ const generateAndPersistIdentity = async (client) => {
 
 /**
  * Create or load the long-term identity key-pairs.
- * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
+ * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
  * @returns {Promise<{ ed25519PublicKey: string, x25519PublicKey: string, creationDate: string }>} base64-encoded public keys and creation date
  */
 export const getOrCreateIdentity = async (client) => {
@@ -304,7 +331,7 @@ export const getFingerprint = (ed25519PublicKeyB64) => {
 
 /**
  * Derive the pairing token for the given identity from the stored pairing secret.
- * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
+ * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
  * @param {string} ed25519PublicKeyB64
  * @returns {Promise<string>}
  */
@@ -315,7 +342,7 @@ export const getPairingToken = async (client, ed25519PublicKeyB64) => {
 
 /**
  * Verify a pairing token against the expected value derived from the stored secret.
- * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
+ * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
  * @param {string} ed25519PublicKeyB64
  * @param {string} userProvidedToken
  * @returns {Promise<boolean>}
@@ -338,7 +365,7 @@ export const verifyPairingToken = async (
 /**
  * Reset the app identity by deleting existing keys and generating new ones
  * This will unpair any connected extensions
- * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
+ * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
  * @returns {Promise<{ ed25519PublicKey: string, x25519PublicKey: string, creationDate: string }>} new base64-encoded public keys and creation date
  */
 export const resetIdentity = async (client) => {
@@ -384,7 +411,7 @@ export const __getMemIdentity = () => MEMORY_IDENTITY
 
 /**
  * Store client (extension) Ed25519 public key with pairing state.
- * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
+ * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
  * @param {string} ed25519PublicKeyB64
  * @param {string} state - PAIRING_STATES.PENDING or PAIRING_STATES.CONFIRMED
  */
@@ -413,7 +440,7 @@ export const setClientIdentityPublicKey = async (
 
 /**
  * Helper to get parsed client data from vault
- * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
+ * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
  */
 const getClientData = async (client) => {
   const data = normalizeEncryptionGet(
@@ -429,7 +456,7 @@ const getClientData = async (client) => {
 
 /**
  * Load client (extension) Ed25519 public key from vault.
- * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
+ * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
  * @returns {Promise<string|null>}
  */
 export const getClientIdentityPublicKey = async (client) => {
@@ -446,7 +473,7 @@ export const getCachedClientIdentityPublicKey = () =>
 
 /**
  * Get the current pairing state.
- * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
+ * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
  * @returns {Promise<string|null>} - PAIRING_STATES.PENDING, PAIRING_STATES.CONFIRMED, or null
  */
 export const getClientPairingState = async (client) => {
@@ -456,7 +483,7 @@ export const getClientPairingState = async (client) => {
 
 /**
  * Confirm pairing after extension successfully encrypted its keypair.
- * @param {import('pearpass-lib-vault-core').PearpassVaultClient} client
+ * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
  * @param {string} clientEd25519PublicKeyB64
  */
 export const confirmClientPairing = async (

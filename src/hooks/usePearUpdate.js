@@ -10,11 +10,10 @@ import { useModal } from '../context/ModalContext'
 export const usePearUpdate = () => {
   const { setModal } = useModal()
   const modalShownRef = useRef(false)
+  const electronAPI = window.electronAPI
 
   const showUpdateRequiredModal = () => {
-    if (modalShownRef.current || !Pear.config.key) {
-      return
-    }
+    if (modalShownRef.current || !Pear.config.key) return
 
     setModal(
       html`<${UpdateRequiredModalContent} onUpdate=${handleUpdateApp} />`,
@@ -24,45 +23,47 @@ export const usePearUpdate = () => {
     modalShownRef.current = true
   }
 
-  const checkIfUpdated = async () => {
-    const update = await Pear.updated()
+  const onPearEvent = (name, listener) => {
+    if (!electronAPI) return () => {}
 
-    if (update) {
-      showUpdateRequiredModal()
-    }
-  }
-
-  const onPearUpdate = (update) => {
-    if (shouldIgnoreChanges(update?.diff)) {
-      return
+    if (name === 'updated') {
+      return electronAPI.onRuntimeUpdated(() => listener('updated'))
     }
 
-    // `key` is undefined in DEV mode.
-    if (!Pear.config.key) {
-      // Reload is necessary for hot-reload after TS compile.
-      Pear.reload()
-      return
-    }
-
-    showUpdateRequiredModal()
+    return () => {}
   }
 
   useEffect(() => {
-    checkIfUpdated()
+    // DEV: preserve hot-reload behaviour driven by Pear core.
+    const checkUpdated = async () => {
+      const isUpdated = await electronAPI.checkUpdated()
+      if (isUpdated) {
+        showUpdateRequiredModal()
+      }
+    }
+    checkUpdated()
+    if (!Pear.config.key) {
+      const onPearUpdate = () => {
+        Pear.reload()
+      }
+      Pear.updates(onPearUpdate)
+      return () => {
+        Pear.updates(() => {})
+      }
+    }
 
-    Pear.updates(onPearUpdate)
+    const offUpdated = onPearEvent('updated', async () => {
+      showUpdateRequiredModal()
+    })
+
+    return () => {
+      offUpdated?.()
+    }
   }, [])
 }
 
-function shouldIgnoreChanges(diff) {
-  return diff?.every(
-    ({ key: file }) =>
-      file.startsWith('/src') ||
-      file.startsWith('/logs') ||
-      file.includes('pearpass-native-messaging.sock')
-  )
-}
-
-function handleUpdateApp() {
-  Pear.restart({ platform: false })
+async function handleUpdateApp() {
+  const electronAPI = window.electronAPI
+  if (!electronAPI) return
+  electronAPI.restart()
 }

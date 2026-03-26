@@ -1,7 +1,7 @@
 import { useLingui } from '@lingui/react'
+import { formatDate } from '@tetherto/pear-apps-utils-date'
+import { useVault } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { formatDate } from 'pear-apps-utils-date'
-import { useVault } from 'pearpass-lib-vault'
 
 import { Description, content } from './styles'
 import { CardSingleSetting } from '../../../../components/CardSingleSetting'

@@ -8,7 +8,7 @@ jest.mock('../context/ModalContext', () => ({
   useModal: jest.fn()
 }))
 
-jest.mock('pear-apps-utils-generate-unique-id', () => ({
+jest.mock('@tetherto/pear-apps-utils-generate-unique-id', () => ({
   generateUniqueId: jest.fn(() => 'mocked-unique-id')
 }))
 

@@ -1,4 +1,4 @@
-import { useUserData, useVaults } from 'pearpass-lib-vault'
+import { useUserData, useVaults } from '@tetherto/pearpass-lib-vault'
 
 import { AlertBox } from '../../../components/AlertBox'
 import { NAVIGATION_ROUTES } from '../../../constants/navigation'
@@ -7,7 +7,6 @@ import { useRouter } from '../../../context/RouterContext'
 import { useTranslation } from '../../../hooks/useTranslation'
 
 export const CardUnlockPearPass = () => {
-  // @ts-ignore TODO: ignore for now, next PR will fix properly
   const { t } = useTranslation()
   const { currentPage, navigate } = useRouter()
   const { initVaults } = useVaults()
@@ -34,7 +33,7 @@ export const CardUnlockPearPass = () => {
           ? error
           : remainingAttempts !== undefined
             ? t(
-              `Incorrect password. You have ${remainingAttempts} attempts before the app locks for 5 minutes.`
+              `Incorrect password. You have ${remainingAttempts} ${remainingAttempts === 1 ? 'attempt' : 'attempts'} before the app will be temporarily locked`
             )
             : t('Invalid password')
     })

@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { render } from '@testing-library/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
-import { colors } from 'pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import { Toasts } from './index'
 import '@testing-library/jest-dom'

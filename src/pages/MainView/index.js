@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
+import { useRecords } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { useRecords } from 'pearpass-lib-vault'
 
 import { ContentWrapper, SearchContainer, Wrapper } from './styles'
 import { ButtonPlusCreateNew } from '../../components/ButtonPlusCreateNew'
@@ -9,12 +9,17 @@ import { CreateNewCategoryPopupContent } from '../../components/CreateNewCategor
 import { EmptyCollectionView } from '../../components/EmptyCollectionView'
 import { InputSearch } from '../../components/InputSearch'
 import { PopupMenu } from '../../components/PopupMenu'
+import { BrowserExtensionDialogV2 } from '../../containers/Modal/BrowserExtensionDialogV2'
 import { RecordListView } from '../../containers/RecordListView'
 import { BannerProvider } from '../../context/BannerContext'
 import { useGlobalLoading } from '../../context/LoadingContext'
+import { useModal } from '../../context/ModalContext'
 import { useRouter } from '../../context/RouterContext'
 import { useCreateOrEditRecord } from '../../hooks/useCreateOrEditRecord'
 import { useRecordMenuItems } from '../../hooks/useRecordMenuItems'
+import { isNativeMessagingIPCRunning } from '../../services/nativeMessagingIPCServer'
+import { getNativeMessagingEnabled } from '../../services/nativeMessagingPreferences'
+import { isV2 } from '../../utils/designVersion'
 import { isFavorite } from '../../utils/isFavorite'
 
 const SORT_BY_TYPE = {
@@ -37,6 +42,18 @@ export const MainView = () => {
   const [selectedRecords, setSelectedRecords] = useState([])
   const { popupItems } = useRecordMenuItems()
   const { data: routerData } = useRouter()
+  const { setModal } = useModal()
+
+  useEffect(() => {
+    if (!isV2()) return
+
+    const enabled = getNativeMessagingEnabled()
+    const isRunning = isNativeMessagingIPCRunning()
+
+    if (!enabled || !isRunning) {
+      setModal(html`<${BrowserExtensionDialogV2} />`)
+    }
+  }, [])
 
   const [searchValue, setSearchValue] = useState('')
   const [sortType, setSortType] = useState('recent')
@@ -76,8 +93,10 @@ export const MainView = () => {
     setIsOpen(false)
   }
 
+  const BannerWrapper = isV2() ? React.Fragment : BannerProvider
+
   return html`
-    <${BannerProvider}>
+    <${BannerWrapper}>
       <${Wrapper}>
         <${SearchContainer}>
           <${InputSearch}
@@ -106,14 +125,8 @@ export const MainView = () => {
           <//>
         <//>
 
-        ${!isLoading &&
-        (!records?.length
-          ? html` <${EmptyCollectionView}
-              selectedFolder=${selectedFolder}
-              isFavoritesView=${isFavoritesView}
-              isSearchActive=${!!searchValue}
-            />`
-          : html` <${ContentWrapper}>
+        ${records?.length
+          ? html` <${ContentWrapper}>
               <${RecordListView}
                 records=${records}
                 selectedRecords=${selectedRecords}
@@ -121,7 +134,13 @@ export const MainView = () => {
                 sortType=${sortType}
                 setSortType=${setSortType}
               />
-            <//>`)}
+            <//>`
+          : !isLoading &&
+            html` <${EmptyCollectionView}
+              selectedFolder=${selectedFolder}
+              isFavoritesView=${isFavoritesView}
+              isSearchActive=${!!searchValue}
+            />`}
       <//>
     <//>
   `

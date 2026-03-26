@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/app.runner.js';
+import { test, expect } from '../fixtures/app.runner.js'
 
 class MainPage {
   constructor(root) {
@@ -33,7 +33,14 @@ class MainPage {
   }
 
   get elementFolder() {
-    return this.root.getByTestId('recordList-record-container').locator('p').first()
+    return this.root
+      .getByTestId('recordList-record-container')
+      .locator('p')
+      .first()
+  }
+
+  getElementFavoriteIcon(initials) {
+    return this.root.getByTestId(`avatar-favorite-${initials}`).last()
   }
 
   getElementFavoriteIcon(initials) {
@@ -263,6 +270,19 @@ class MainPage {
     await this.root.getByText('Yes').click();
   }
 
+  async verifyElementByPosition(position, element_name) {
+    await expect(this.getElementByPosition(position)).toHaveText(element_name)
+  }
+
+  async clickElementByPosition(position, element_name) {
+    const element = this.getElementByPosition1(position)
+    await expect(element).toContainText(element_name)
+    await element.click()
+  }
+
+  async clickYesButton() {
+    await this.root.getByText('Yes').click()
+  }
 }
 
 module.exports = { MainPage }

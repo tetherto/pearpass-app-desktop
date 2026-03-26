@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { vaultGetFile } from 'pearpass-lib-vault'
+import { vaultGetFile } from '@tetherto/pearpass-lib-vault'
 
 import { logger } from '../utils/logger'
 

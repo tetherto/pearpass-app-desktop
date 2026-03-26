@@ -1,13 +1,13 @@
 import { useState } from 'react'
 
-import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { Validator } from 'pear-apps-utils-validator'
-import { useUserData } from 'pearpass-lib-vault'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { Validator } from '@tetherto/pear-apps-utils-validator'
+import { useUserData } from '@tetherto/pearpass-lib-vault'
 import {
   stringToBuffer,
   clearBuffer
-} from 'pearpass-lib-vault/src/utils/buffer'
+} from '@tetherto/pearpass-lib-vault/src/utils/buffer'
+import { html } from 'htm/react'
 
 import { ButtonWrapper, CardContainer, CardTitle, Title } from './styles.js'
 import { useGlobalLoading } from '../../context/LoadingContext.js'

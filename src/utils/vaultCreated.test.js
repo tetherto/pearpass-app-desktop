@@ -6,7 +6,7 @@ jest.mock('@lingui/react', () => ({
   })
 }))
 
-jest.mock('pear-apps-utils-date', () => ({
+jest.mock('@tetherto/pear-apps-utils-date', () => ({
   formatDate: () => 'formatted-date'
 }))
 

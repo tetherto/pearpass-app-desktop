@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { render } from '@testing-library/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import { RecordAvatar } from './index'
 import '@testing-library/jest-dom'
@@ -12,8 +12,8 @@ jest.mock('../../lib-react-components', () => ({
 }))
 
 const mockUseFavicon = jest.fn()
-jest.mock('pearpass-lib-vault', () => ({
-  ...jest.requireActual('pearpass-lib-vault'),
+jest.mock('@tetherto/pearpass-lib-vault', () => ({
+  ...jest.requireActual('@tetherto/pearpass-lib-vault'),
   useFavicon: (params) => mockUseFavicon(params)
 }))
 

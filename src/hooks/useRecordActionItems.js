@@ -1,6 +1,6 @@
 import { useLingui } from '@lingui/react'
+import { useRecords } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { useRecords } from 'pearpass-lib-vault'
 
 import { ConfirmationModalContent } from '../containers/Modal/ConfirmationModalContent'
 import { MoveFolderModalContent } from '../containers/Modal/MoveFolderModalContent'

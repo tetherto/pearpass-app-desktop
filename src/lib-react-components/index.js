@@ -84,3 +84,5 @@ export { AutoFillIcon } from './icons/AutoFillIcon'
 export { SecurityIcon } from './icons/SecurityIcon'
 export { SyncingIcon } from './icons/SyncingIcon'
 export { VaultIcon } from './icons/VaultIcon'
+
+export { AuthenticatorIllustration } from './illustrations/AuthenticatorIllustration'

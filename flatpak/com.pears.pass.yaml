@@ -1,0 +1,64 @@
+app-id: com.pears.pass
+runtime: org.gnome.Platform
+runtime-version: '49'
+sdk: org.gnome.Sdk
+command: pearpass
+
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=x11
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  - --filesystem=home
+  - --filesystem=xdg-config/pear:create
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.freedesktop.secrets
+
+modules:
+  - name: pearpass
+    buildsystem: simple
+    build-commands:
+      # ── Extract AppImage ──────────────────────────────────────────────
+      - chmod +x PearPass.AppImage
+      - ./PearPass.AppImage --appimage-extract
+
+      # ── Install extracted AppImage payload ────────────────────────────
+      - mkdir -p /app/lib/pearpass
+      - cp -a squashfs-root/. /app/lib/pearpass/
+
+      # ── Install wrapper script ────────────────────────────────────────
+      - mkdir -p /app/bin
+      - |
+        cat > /app/bin/pearpass <<'WRAPPER'
+        #!/bin/sh
+        APP_ROOT="/app/lib/pearpass"
+        export ELECTRON_OZONE_PLATFORM_HINT="${ELECTRON_OZONE_PLATFORM_HINT:-auto}"
+        export LD_LIBRARY_PATH="$APP_ROOT${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+        cd "$APP_ROOT"
+        exec "$APP_ROOT/pearpass-app-desktop" \
+          --no-sandbox \
+          --enable-features=UseOzonePlatform \
+          --ozone-platform-hint=auto \
+          "$@"
+        WRAPPER
+      - chmod +x /app/bin/pearpass
+
+      # ── Desktop integration ───────────────────────────────────────────
+      - install -Dm644 com.pears.pass.desktop /app/share/applications/com.pears.pass.desktop
+      - install -Dm644 com.pears.pass.metainfo.xml /app/share/metainfo/com.pears.pass.metainfo.xml
+
+      # ── Install icon (pre-resized to 512x512 by build script) ────────
+      - install -Dm644 icon-512.png /app/share/icons/hicolor/512x512/apps/com.pears.pass.png
+
+    sources:
+      - type: file
+        path: appimage/PearPass.AppImage
+      - type: file
+        path: com.pears.pass.desktop
+      - type: file
+        path: com.pears.pass.metainfo.xml
+      - type: file
+        path: icon-512.png
+

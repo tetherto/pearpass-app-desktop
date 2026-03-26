@@ -1,4 +1,4 @@
-import { parseDataToCsvText } from 'pearpass-lib-data-export'
+import { parseDataToCsvText } from '@tetherto/pearpass-lib-data-export'
 
 import { downloadFile } from './downloadFile'
 import { downloadZip } from './downloadZip'
@@ -6,7 +6,7 @@ import { downloadZip } from './downloadZip'
 export const handleExportCSVPerVault = async (data) => {
   const vaultsToExport = await parseDataToCsvText(data)
 
-  if (vaultsToExport.length === 1) {
+  if (vaultsToExport?.length === 1) {
     downloadFile(
       {
         filename: vaultsToExport[0].filename,
@@ -14,7 +14,7 @@ export const handleExportCSVPerVault = async (data) => {
       },
       'csv'
     )
-  } else if (vaultsToExport.length > 1) {
+  } else if (vaultsToExport?.length > 1) {
     await downloadZip(vaultsToExport)
   }
 }

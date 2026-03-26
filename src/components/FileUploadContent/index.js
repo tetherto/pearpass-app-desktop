@@ -1,7 +1,10 @@
 import { useRef, useState } from 'react'
 
+import {
+  MAX_FILE_SIZE_MB,
+  MAX_FILE_SIZE_BYTES
+} from '@tetherto/pearpass-lib-constants'
 import { html } from 'htm/react'
-import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from 'pearpass-lib-constants'
 
 import { ContentWrapper, FileSizeWarning, HiddenInput } from './styles'
 import { useTranslation } from '../../hooks/useTranslation'

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 
+import { useFolders } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { useFolders } from 'pearpass-lib-vault'
 
 import { CreateFolderModalContent } from '../../containers/Modal/CreateFolderModalContent'
 import { useModal } from '../../context/ModalContext'

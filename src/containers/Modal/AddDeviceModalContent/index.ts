@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react'
 import type { ClipboardEvent } from 'react'
 
 import { html } from 'htm/react'
-import { generateQRCodeSVG } from 'pear-apps-utils-qr'
-import { colors } from 'pearpass-lib-ui-theme-provider'
+import { generateQRCodeSVG } from '@tetherto/pear-apps-utils-qr'
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
 import {
   authoriseCurrentProtectedVault,
   useInvite,
   useVault,
   usePair
-} from 'pearpass-lib-vault'
+} from '@tetherto/pearpass-lib-vault'
 import { InputFieldWrapper } from './styles'
 import { PasteIconWrapper } from './styles'
 import {
@@ -35,7 +35,7 @@ import { FormModalHeaderWrapper } from '../../../components/FormModalHeaderWrapp
 import { useModal } from '../../../context/ModalContext'
 import { useRouter } from '../../../context/RouterContext'
 import { useToast } from '../../../context/ToastContext'
-import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard'
+import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard.electron'
 import { useAutoLockPreferences } from '../../../hooks/useAutoLockPreferences'
 import { useGlobalLoading } from '../../../context/LoadingContext'
 import { useTranslation } from '../../../hooks/useTranslation'

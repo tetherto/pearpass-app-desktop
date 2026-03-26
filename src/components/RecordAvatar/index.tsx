@@ -1,5 +1,5 @@
 import React from 'react'
-import { colors } from 'pearpass-lib-ui-theme-provider'
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import {
   AvatarAlt,
@@ -10,7 +10,7 @@ import {
   SelectedAvatarContainer
 } from './styles'
 import { CheckIcon, StarIcon } from '../../lib-react-components'
-import { useFavicon } from 'pearpass-lib-vault'
+import { useFavicon } from '@tetherto/pearpass-lib-vault'
 
 interface Props {
   websiteDomain: string

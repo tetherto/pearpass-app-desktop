@@ -3,13 +3,14 @@ import { useState } from 'react'
 import { html } from 'htm/react'
 
 import { CopyIcon } from '../lib-react-components'
-import { useCopyToClipboard } from './useCopyToClipboard'
+import { useCopyToClipboard } from './useCopyToClipboard.electron'
 import { useTranslation } from './useTranslation'
 import { COPY_FEEDBACK_DISPLAY_TIME } from '../constants/timeConstants'
 import { ExtensionPairingModalContent } from '../containers/Modal/ExtensionPairingModalContent'
 import { useGlobalLoading } from '../context/LoadingContext.js'
 import { useModal } from '../context/ModalContext'
 import { useToast } from '../context/ToastContext'
+import { getElectronConfig } from '../electron'
 import { createOrGetPearpassClient } from '../services/createOrGetPearpassClient'
 import {
   isNativeMessagingIPCRunning,
@@ -48,7 +49,12 @@ export const useConnectExtension = () => {
 
   const handleSetupExtension = async () => {
     // Setup native messaging for the extension
-    const result = await setupNativeMessaging()
+    const config = await getElectronConfig()
+    const result = await setupNativeMessaging({
+      userDataPath: config.userDataPath,
+      execPath: config.execPath,
+      bridgePath: config.bridgePath
+    })
 
     if (result.success) {
       // Kill any existing native host so Chrome respawns it and re-reads the manifest

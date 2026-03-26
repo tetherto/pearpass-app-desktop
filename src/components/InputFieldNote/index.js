@@ -19,13 +19,14 @@ import { CommonFileIcon, InputField } from '../../lib-react-components'
  *  testId?: string
  * }} props
  */
+// UI displays this as "Comment"
 export const InputFieldNote = (props) => {
   const { i18n } = useLingui()
 
   return html`<${InputField}
     testId=${props.testId}
-    label=${i18n._('Note')}
-    placeholder=${i18n._('Add note')}
+    label=${i18n._('Comment')}
+    placeholder=${i18n._('Add comment')}
     variant="outline"
     icon=${CommonFileIcon}
     ...${props}

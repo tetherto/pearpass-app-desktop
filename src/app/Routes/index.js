@@ -1,14 +1,20 @@
+import { AUTHENTICATOR_ENABLED } from '@tetherto/pearpass-lib-constants'
+import { OtpRefreshProvider } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
 
 import { LayoutWithSidebar } from '../../containers/LayoutWithSidebar'
 import { RecordDetails } from '../../containers/RecordDetails'
 import { useRouter } from '../../context/RouterContext'
+import { AuthenticatorView } from '../../pages/AuthenticatorView'
 import { InitialPage } from '../../pages/InitialPage'
 import { Intro } from '../../pages/Intro'
+import { IntroV2 } from '../../pages/Intro/IntroV2'
 import { LoadingPage } from '../../pages/LoadingPage'
+import { LoadingPageV2 } from '../../pages/LoadingPage/LoadingPageV2'
 import { MainView } from '../../pages/MainView'
 import { SettingsView } from '../../pages/SettingsView'
 import { WelcomePage } from '../../pages/WelcomePage'
+import { isV2 } from '../../utils/designVersion'
 
 /**
  * @param {Object} props
@@ -26,6 +32,9 @@ export const Routes = ({
 
   // Show InitialPage during initial splash
   if (isSplashScreenShown) {
+    if (isV2()) {
+      return html` <${LoadingPageV2} progress=${0} /> `
+    }
     return html` <${InitialPage} /> `
   }
 
@@ -35,6 +44,9 @@ export const Routes = ({
   }
 
   if (currentPage === 'intro') {
+    if (isV2()) {
+      return html` <${IntroV2} /> `
+    }
     return html` <${Intro} /> `
   }
 
@@ -47,11 +59,18 @@ export const Routes = ({
   }
 
   if (currentPage === 'vault') {
+    const isAuthenticator =
+      AUTHENTICATOR_ENABLED && data?.recordType === 'authenticator'
+
     return html`
-      <${LayoutWithSidebar}
-        mainView=${html`<${MainView} />`}
-        sideView=${getSideView(currentPage, data)}
-      />
+      <${OtpRefreshProvider}>
+        <${LayoutWithSidebar}
+          mainView=${isAuthenticator
+            ? html`<${AuthenticatorView} />`
+            : html`<${MainView} />`}
+          sideView=${getSideView(currentPage, data)}
+        />
+      <//>
     `
   }
 }

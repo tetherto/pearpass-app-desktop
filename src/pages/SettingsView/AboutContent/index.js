@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 
-import { html } from 'htm/react'
 import {
   sendGoogleFormFeedback,
   sendSlackFeedback
-} from 'pear-apps-lib-feedback'
-import { PRIVACY_POLICY, TERMS_OF_USE } from 'pearpass-lib-constants'
-import { colors } from 'pearpass-lib-ui-theme-provider'
+} from '@tetherto/pear-apps-lib-feedback'
+import { PRIVACY_POLICY, TERMS_OF_USE } from '@tetherto/pearpass-lib-constants'
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { html } from 'htm/react'
 
 import { CardSingleSetting } from '../../../components/CardSingleSetting'
 import {
@@ -34,6 +34,7 @@ export const AboutContent = () => {
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [currentVersion, setCurrentVersion] = useState('')
+  const electronAPI = window.electronAPI
   useGlobalLoading({ isLoading })
 
   const handleReportProblem = async () => {
@@ -111,16 +112,18 @@ export const AboutContent = () => {
   }
 
   useEffect(() => {
-    fetch('/package.json')
-      .then((r) => r.json())
-      .then((pkg) => setCurrentVersion(pkg.version))
-      .catch((error) =>
-        logger.error(
-          'useGetMultipleFiles',
-          'Error fetching package.json:',
-          error
+    if (electronAPI && typeof electronAPI.getAppVersion === 'function') {
+      electronAPI
+        .getConfig()
+        .then((cfg) => {
+          if (cfg && typeof cfg.version === 'string') {
+            setCurrentVersion(cfg.version)
+          }
+        })
+        .catch((error) =>
+          logger.error('AboutContent', 'Error getting runtime config:', error)
         )
-      )
+    }
   }, [])
 
   return html`

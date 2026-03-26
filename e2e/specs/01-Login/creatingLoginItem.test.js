@@ -231,6 +231,10 @@ test.describe('Creating Login Item', () => {
 
     await mainPage.clickDetailsCloseButton()
 
+    await test.step('CLOSE DETAILS', async () => {
+      await mainPage.clickDetailsCloseButton()
+    })
+
   })
 
 })

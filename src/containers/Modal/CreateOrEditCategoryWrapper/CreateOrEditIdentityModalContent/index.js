@@ -1,9 +1,13 @@
 import { useLingui } from '@lingui/react'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { Validator } from '@tetherto/pear-apps-utils-validator'
+import { DATE_FORMAT } from '@tetherto/pearpass-lib-constants'
+import {
+  RECORD_TYPES,
+  useCreateRecord,
+  useRecords
+} from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { Validator } from 'pear-apps-utils-validator'
-import { DATE_FORMAT } from 'pearpass-lib-constants'
-import { RECORD_TYPES, useCreateRecord, useRecords } from 'pearpass-lib-vault'
 
 import { CreateCustomField } from '../../../../components/CreateCustomField'
 import { FolderDropdown } from '../../../../components/FolderDropdown'
@@ -139,7 +143,7 @@ export const CreateOrEditIdentityModalContent = ({
     note: Validator.string(),
     customFields: Validator.array().items(
       Validator.object({
-        note: Validator.string().required(i18n._('Note is required'))
+        note: Validator.string().required(i18n._('Comment is required'))
       })
     ),
     folder: Validator.string(),

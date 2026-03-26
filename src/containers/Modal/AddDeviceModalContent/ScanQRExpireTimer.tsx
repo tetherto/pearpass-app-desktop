@@ -1,6 +1,6 @@
 import { html } from 'htm/react'
 
-import { useCountDown } from 'pear-apps-lib-ui-react-hooks'
+import { useCountDown } from '@tetherto/pear-apps-lib-ui-react-hooks'
 
 import { ExpireTime } from './styles'
 

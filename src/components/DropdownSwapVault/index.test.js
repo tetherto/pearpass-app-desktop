@@ -1,12 +1,12 @@
 import React from 'react'
 
 import { render, fireEvent } from '@testing-library/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import { DropdownSwapVault } from './index'
 import '@testing-library/jest-dom'
 
-jest.mock('pearpass-lib-vault', () => ({
+jest.mock('@tetherto/pearpass-lib-vault', () => ({
   useVault: () => ({
     refetch: jest.fn(),
     isVaultProtected: jest.fn()

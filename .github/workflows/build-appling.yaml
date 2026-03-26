@@ -1,148 +1,301 @@
-name: Build Appling
-
-permissions:
-  contents: read
-  packages: read
-  actions: write
+name: Desktop Build
 
 on:
   push:
-    branches:
-      - main
-      - dev
-      - staging
+    branches: [main, dev, staging]
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Version tag'
+        description: "Version tag"
         required: true
         type: string
 
 jobs:
-  version:
-    runs-on: ubuntu-22.04
-    if: github.repository_owner == 'tetherto'
-    outputs:
-      version: ${{ steps.meta.outputs.VERSION }}
-    strategy:
-      matrix:
-        arch:
-          - x64
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Read & validate version
-        id: meta
-        run: |
-          set -euo pipefail
-          VERSION=$(jq -r '.version' package.json)
-          echo "VERSION=$VERSION"
-          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "❌ Error: package.json version ('$VERSION') is not semantic versioning (MAJOR.MINOR.PATCH)."
-            exit 1
-          fi
-          TAG="v$VERSION"
-          echo "TAG=$TAG"
-          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
-
-  linux:
-    needs: [version]
+  build-linux:
+    permissions:
+      contents: write
     strategy:
       matrix:
         include:
-        - arch: x64
-          runs_on: ubuntu-22.04
-        - arch: arm64
-          runs_on: ubuntu-22.04-arm
-          
-    runs-on: ${{ matrix.runs_on }}      
-    defaults:
-      run:
-        working-directory: ./appling
-    env:
-      APP_FILE: ${{ github.ref == 'refs/heads/main' && 'app' || github.ref == 'refs/heads/staging' && 'app.staging' || 'app.dev' }}.cjs
+          - arch: x64
+            runs_on: ubuntu-latest
+          - arch: arm64
+            runs_on: ubuntu-latest
+    runs-on: ${{ matrix.runs_on }}
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@tetherto'
-
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y curl ca-certificates build-essential git libgtk-4-dev pkg-config fuse file
-          # sudo apt-get install -y clang pkg-config libgtk-4-dev clang-tools fuse file
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh 20
-          npm install --global bare-build
           npm install
-
-      - name: Build Linux AppImage
+      - name: Build Prod App
         run: |
-          bare-build --host=linux-${{ matrix.arch }} --package --icon lib/icons/linux/icon.png ${{ env.APP_FILE }}
-      
-      - name: Find & rename AppImage file
-        id: find_file
+          npm run build:prod
+      - name: Prune dependencies
         run: |
-          set -euo pipefail
-          APPIMAGE_PATH=$(find "$GITHUB_WORKSPACE" -name "*.AppImage" -type f | head -n 1)
-          echo "Original AppImage: $APPIMAGE_PATH"
+          npm prune --omit=dev
+      - name: Setup Electron and Builder
+        run: |
+          npm install electron --no-save
+          npm install electron-builder --no-save
+          npm install pear-build --no-save
+      - name: Build application
+        env:
+          PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          npm run dist:linux:${{ matrix.arch }}
 
-          NEW_NAME="PearPass-Desktop-Linux-${{ matrix.arch }}-v${{ needs.version.outputs.version }}.AppImage"
-          NEW_PATH="$GITHUB_WORKSPACE/$NEW_NAME"
+      - name: "Install @actions/artifact module"
+        id: install-actions-artifact-module
+        run: |
+          npm install @actions/artifact@2.3.2 --global
+          echo "NODE_PATH=$(npm root --quiet -g)" >> $GITHUB_ENV
 
-          mv "$APPIMAGE_PATH" "$NEW_PATH"
-          echo "Renamed AppImage to: $NEW_PATH"
-
-          echo "APPIMAGE_PATH=$NEW_PATH" >> "$GITHUB_OUTPUT"
-
-          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_OUTPUT
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ steps.find_file.outputs.APPIMAGE_PATH != '' }}
+      - name: "Extract Actions runtime variables"
+        id: extract-runtime-environment-variables
+        uses: actions/github-script@v7
+        env:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: PearPass-Desktop-Linux-${{ matrix.arch }}-v${{ needs.version.outputs.version }}.AppImage
-          path: "${{ steps.find_file.outputs.APPIMAGE_PATH }}"
+          script: |
+            core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
 
-  macos:
-    runs-on: macos-14
-    needs: [version]
+      - name: "Upload AppImage artifact"
+        id: upload-artifacts
+        run: |
+          const fs = require('fs');
+          const path = require('path');
+          const { DefaultArtifactClient } = require('@actions/artifact');
+
+          const arch = '${{ matrix.arch }}';
+          const file = 'out/PearPass.AppImage';
+          const name = `PearPass-${arch}.AppImage`;
+
+          if (!fs.existsSync(file)) {
+            throw new Error(`Expected AppImage not found at ${file}`);
+          }
+
+          const artifact = new DefaultArtifactClient();
+          console.log(`Uploading Linux ${arch} AppImage: ${name} from ${file}`);
+          artifact.uploadArtifact(name, [file], path.dirname(file));
+        shell: node {0}
+
+  build-snap:
+    permissions:
+      contents: write # to upload artifacts
     strategy:
       matrix:
-        arch:
-          - x64
-          - arm64
-    defaults:
-      run:
-        working-directory: ./appling
-    env:
-      # Apple code signing identity - used for app, installer, and DMG signing
-      APPLE_SIGNING_IDENTITY: "959D2C8BB8323AEF9C2367ACA2F854AE4D7DE458"
-      APP_FILE: ${{ github.ref == 'refs/heads/main' && 'app' || github.ref == 'refs/heads/staging' && 'app.staging' || 'app.dev' }}.cjs
+        include:
+          - arch: x64
+            runs_on: ubuntu-latest
+            # electron-builder uses Debian arch names for snap artifacts
+            snap_arch: amd64
+          - arch: arm64
+            # Native ARM runner — cross-compiling snaps on x64 is unsupported
+            # because snapcraft --destructive-mode builds for the host arch.
+            # See: https://github.com/electron-userland/electron-builder/issues/5626
+            runs_on: ubuntu-22.04-arm
+            snap_arch: arm64
+    runs-on: ${{ matrix.runs_on }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+
+      # snapd is pre-installed on ubuntu runners, but snapcraft is not.
+      # electron-builder invokes `snapcraft snap --destructive-mode` internally
+      # when building snap targets (bypasses LXD/Multipass, builds on host).
+      # See: https://www.electron.build/snap.html
+      - name: Install Snapcraft
+        run: |
+          sudo apt-get update
+          sudo snap install snapcraft --classic
+          sudo snap install core22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Prod App
+        run: npm run build:prod
+
+      - name: Prune dependencies
+        run: npm prune --omit=dev
+
+      - name: Setup Electron and Builder
+        run: |
+          npm install electron --no-save
+
+      - name: Build snap
+        env:
+          PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          SNAPCRAFT_BUILD_ENVIRONMENT: host
+        run: npm run dist:snap:${{ matrix.arch }}
+
+      - name: "Install @actions/artifact module"
+        id: install-actions-artifact-module
+        run: |
+          npm install @actions/artifact@2.3.2 --global
+          echo "NODE_PATH=$(npm root --quiet -g)" >> $GITHUB_ENV
+
+      - name: "Extract Actions runtime variables"
+        id: extract-runtime-environment-variables
+        uses: actions/github-script@v7
+        env:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
+
+      - name: "Upload snap artifact"
+        id: upload-artifacts
+        run: |
+          const fs = require('fs');
+          const path = require('path');
+          const { DefaultArtifactClient } = require('@actions/artifact');
+
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const productName = pkg.productName;
+          const version = pkg.version;
+          const snapArch = '${{ matrix.snap_arch }}';
+
+          // electron-builder outputs snap to dist/ using the artifactName pattern
+          // configured in package.json: ${productName}_${version}_${arch}.${ext}
+          const snapName = `${productName}_${version}_${snapArch}.snap`;
+          const snapPath = path.join('dist', snapName);
+
+          if (!fs.existsSync(snapPath)) {
+            // Fallback: find any .snap file in dist/
+            const distFiles = fs.readdirSync('dist');
+            const snapFile = distFiles.find(f => f.endsWith('.snap'));
+            if (!snapFile) {
+              throw new Error(`No .snap file found in dist/. Files: ${distFiles.join(', ')}`);
+            }
+            const fallbackPath = path.join('dist', snapFile);
+            const artifact = new DefaultArtifactClient();
+            console.log(`Uploading snap (fallback): ${snapFile} from ${fallbackPath}`);
+            artifact.uploadArtifact(`PearPass-${snapArch}.snap`, [fallbackPath], 'dist');
+          } else {
+            const artifact = new DefaultArtifactClient();
+            console.log(`Uploading snap: ${snapName} from ${snapPath}`);
+            artifact.uploadArtifact(`PearPass-${snapArch}.snap`, [snapPath], 'dist');
+          }
+        shell: node {0}
+
+  build-flatpak:
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        include:
+          - arch: x64
+            runs_on: ubuntu-24.04
+          - arch: arm64
+            runs_on: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runs_on }}
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@tetherto'
+          node-version: 22
+          cache: npm
+
+      - name: Install Flatpak build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder jq ffmpeg xvfb xauth
+
+      - name: Install Flatpak runtime and SDK
+        run: |
+          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak install --user -y --noninteractive flathub org.gnome.Platform//49 org.gnome.Sdk//49
 
       - name: Install dependencies
         run: |
-          npm install --global bare-build
-          npm install
+          npm ci
 
-      - name: Audit dependencies
+      - name: Build application
+        env:
+          PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
         run: |
-          npm audit --production --audit-level=high || echo "::warning::npm audit found vulnerabilities"
+          npm run dist:linux:${{ matrix.arch }}
 
+      - name: Build Flatpak bundle
+        run: |
+          ./scripts/build-flatpak.sh --local ./out/PearPass.AppImage --arch ${{ matrix.arch }}
+
+      - name: Smoke test Flatpak bundle
+        run: |
+          set -euo pipefail
+          LOG_FILE="build/flatpak/smoke-${{ matrix.arch }}.log"
+
+          set +e
+          timeout 90s xvfb-run -a --server-args="-screen 0 1440x1024x24" \
+            flatpak-builder --run build/flatpak/build-dir flatpak/com.pears.pass.yaml \
+            sh -lc 'ELECTRON_ENABLE_LOGGING=1 /app/bin/pearpass --disable-gpu --disable-dev-shm-usage --enable-logging=stderr' \
+            >"$LOG_FILE" 2>&1
+          STATUS=$?
+          set -e
+
+          if [ "$STATUS" -ne 0 ] && [ "$STATUS" -ne 124 ]; then
+            cat "$LOG_FILE"
+            exit "$STATUS"
+          fi
+
+          if ! grep -Eq 'WORKLET_READY|STORAGE_PATH_SET|MASTER_VAULT_GET_STATUS|ENCRYPTION_GET_STATUS' "$LOG_FILE"; then
+            cat "$LOG_FILE"
+            echo 'Flatpak smoke test did not reach the expected startup markers.'
+            exit 1
+          fi
+
+      - name: Prepare Flatpak artifact metadata
+        id: flatpak-artifact
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          BUNDLE="build/flatpak/pearpass_${VERSION}_${{ matrix.arch }}.flatpak"
+          sha256sum "$BUNDLE" > "$BUNDLE.sha256"
+          echo "bundle=$BUNDLE" >> "$GITHUB_OUTPUT"
+          echo "checksum=$BUNDLE.sha256" >> "$GITHUB_OUTPUT"
+
+      - name: Upload Flatpak artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pearpass-flatpak-${{ matrix.arch }}
+          path: |
+            ${{ steps.flatpak-artifact.outputs.bundle }}
+            ${{ steps.flatpak-artifact.outputs.checksum }}
+          if-no-files-found: error
+          compression-level: 0
+
+      - name: Upload Flatpak smoke log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pearpass-flatpak-smoke-${{ matrix.arch }}
+          path: build/flatpak/smoke-${{ matrix.arch }}.log
+          if-no-files-found: warn
+
+  build-macos:
+    permissions:
+      contents: write # to upload artifacts
+    strategy:
+      matrix:
+        include:
+          - arch: arm64
+            runs_on: macos-latest
+            dmg_suffix: "-arm64"
+          - arch: x64
+            runs_on: macos-latest
+            dmg_suffix: ""
+    runs-on: ${{ matrix.runs_on }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
       - name: Install the Apple certificate and provisioning profile
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
@@ -173,103 +326,89 @@ jobs:
           security list-keychain -d user -s $KEYCHAIN_PATH
 
           # add notarytool credentials
-          xcrun notarytool store-credentials "pearpass" --key "$APIKEY_PATH" --key-id S3AG2UXSC5 --issuer 2067dae8-140d-4016-9a2b-d6ea80a20708
+          xcrun notarytool store-credentials "notary" --key "$APIKEY_PATH" --key-id S3AG2UXSC5 --issuer 2067dae8-140d-4016-9a2b-d6ea80a20708
 
           # apply provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-
-      - name: Build macOS app
+      - name: Install dependencies
         run: |
-          bare-build \
-            --identifier "com.pears.pass" \
-            --host=darwin-${{ matrix.arch }} \
-            --icon lib/icons/darwin/icon.png \
-            --sign \
-            --identity "$APPLE_SIGNING_IDENTITY" \
-            --application-identity "$APPLE_SIGNING_IDENTITY" \
-            --installer-identity "$APPLE_SIGNING_IDENTITY" \
-            --keychain "pearpass" \
-            --entitlements entitlements.plist \
-            --hardened-runtime \
-            ${{ env.APP_FILE }}
-
-      - name: Find App file
-        id: find_file
+          npm install
+      - name: Build Prod App
         run: |
-          set -euo pipefail
-          APP_PATH=$(find "$GITHUB_WORKSPACE" -name "*.app" -type d | head -n 1)
-          echo "Found app at: $APP_PATH"
-          echo "APP_PATH=$APP_PATH" >> "$GITHUB_OUTPUT"
-
-          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_OUTPUT
-
-      - name: Create DMG
-        id: create_dmg
-        if: ${{ steps.find_file.outputs.APP_PATH != '' }}
+          npm run build:prod
+      - name: Prune dependencies
         run: |
-          set -euo pipefail
-          npm install --global create-dmg
-
-          APP_PATH="${{ steps.find_file.outputs.APP_PATH }}"
-          VERSION="${{ needs.version.outputs.version }}"
-          ARCH="${{ matrix.arch }}"
-
-          create-dmg --identity="$APPLE_SIGNING_IDENTITY" --no-version-in-filename "$APP_PATH"
-
-          # Find the DMG that was just created in the current working directory (./appling)
-          RAW_DMG=$(ls ./*.dmg | head -n 1)
-          echo "Raw DMG from create-dmg: $RAW_DMG"
-
-          DMG_NAME="PearPass-Desktop-MacOS-${ARCH}-v${VERSION}.dmg"
-          mv "$RAW_DMG" "$DMG_NAME"
-
-          DMG_PATH="$PWD/$DMG_NAME"
-          echo "Renamed DMG to: $DMG_PATH"
-          echo "DMG_PATH=$DMG_PATH" >> "$GITHUB_OUTPUT"
-
-
-      - name: Notarize DMG
-        if: ${{ steps.create_dmg.outputs.DMG_PATH != '' }}
+          npm prune --omit=dev
+      - name: Setup Electron and Builder
         run: |
-          xcrun notarytool submit "${{ steps.create_dmg.outputs.DMG_PATH }}" --keychain-profile "pearpass" --wait
-
-      - name: Staple DMG
-        if: ${{ steps.create_dmg.outputs.DMG_PATH != '' }}
+          npm install -g electron
+          npm install -g electron-builder@23.6.0
+          npm install -g pear-build
+          npm install @electron/notarize --no-save
+      - name: Build application
+        env:
+          MAC_CODESIGN_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+          CSC_NAME: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+          PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
         run: |
-          xcrun stapler staple "${{ steps.create_dmg.outputs.DMG_PATH }}"
-          xcrun stapler validate "${{ steps.create_dmg.outputs.DMG_PATH }}"
+          npm run dist:mac:${{ matrix.arch }}
 
-      - uses: actions/upload-artifact@v4
-        if: ${{ steps.create_dmg.outputs.DMG_PATH != '' }}
+      - name: "Install @actions/artifact module"
+        id: install-actions-artifact-module
+        run: |
+          npm install @actions/artifact@2.3.2 --global
+          echo "NODE_PATH=$(npm root --quiet -g)" >> $GITHUB_ENV
+
+      - name: "Extract Actions runtime variables"
+        id: extract-runtime-environment-variables
+        uses: actions/github-script@v7
+        env:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: PearPass-Desktop-MacOS-${{ matrix.arch }}-v${{ needs.version.outputs.version }}.dmg
-          path: ${{ steps.create_dmg.outputs.DMG_PATH }}
+          script: |
+            core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
 
-      - name: Clean up keychain and provisioning profile
-        if: ${{ always() }}
+      - name: "Upload macOS DMG artifact"
+        id: upload-artifacts
         run: |
-          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.provisionprofile
+          const fs = require('fs');
+          const path = require('path');
+          const { DefaultArtifactClient } = require('@actions/artifact');
 
-  release:
-    runs-on: ubuntu-latest
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const productName = pkg.productName;
+          const version = pkg.version;
+
+          const dmgName = `${productName}-${version}${{ matrix.dmg_suffix }}.dmg`;
+          const dmgPath = path.join('out', dmgName);
+
+          if (!fs.existsSync(dmgPath)) {
+            throw new Error(`Expected DMG not found at ${dmgPath}`);
+          }
+
+          const artifact = new DefaultArtifactClient();
+          console.log(`Uploading macOS ${{ matrix.arch }} DMG: ${dmgName} from ${dmgPath}`);
+          artifact.uploadArtifact(dmgName, [dmgPath], 'out');
+        shell: node {0}
+
+  build-win32:
     permissions:
-      contents: write
-      actions: read
-    needs: [version, linux, macos]
-    if: github.ref == 'refs/heads/main'
+      contents: write # to upload artifacts
+    runs-on: windows-latest # self-hosted signer
+    env:
+      HUSKY: 0
+    outputs:
+      artifact-links: ${{ steps.build.outputs.artifact-links }}
     steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - uses: holepunchto/make-pear-app@main
+        id: build
         with:
-          path: artifacts/
-          merge-multiple: true
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ needs.version.outputs.version }}
-          name: PearPass-Desktop-v${{ needs.version.outputs.version }}
-          files: artifacts/**
+          channel: "stable"
+          macos_notarization_method: "appstore_connect"
+          windows_subject: ${{ secrets.WIN_SUBJECT }}
+          windows_thumbprint: ${{ secrets.WIN_THUMBPRINT }}

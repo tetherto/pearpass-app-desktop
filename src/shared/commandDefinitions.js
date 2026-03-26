@@ -70,7 +70,13 @@ const COMMAND_DEFINITIONS = [
   { id: 1035, name: 'getAutoLockSettings' },
   { id: 1036, name: 'setAutoLockTimeout' },
   { id: 1037, name: 'setAutoLockEnabled' },
-  { id: 1038, name: 'resetTimer' }
+  { id: 1038, name: 'resetTimer' },
+
+  // OTP commands
+  { id: 1040, name: 'generateOtpCodesByIds' },
+  { id: 1041, name: 'generateHotpNext' },
+  { id: 1042, name: 'addOtpToRecord' },
+  { id: 1043, name: 'removeOtpFromRecord' }
 ]
 
 /** @type {string[]} */

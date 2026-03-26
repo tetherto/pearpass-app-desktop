@@ -57,6 +57,23 @@ export const RecordName = styled.div`
   }
 `
 
+export const RecordRightSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+`
+
+export const OtpCodeText = styled.span`
+  font-family: 'Inter';
+  font-variant-numeric: tabular-nums;
+  font-size: 18px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.white.mode1};
+  white-space: nowrap;
+`
+
 export const RecordActions = styled.div`
   display: flex;
   align-items: center;

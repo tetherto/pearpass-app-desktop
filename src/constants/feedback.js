@@ -17,16 +17,19 @@ import {
   GOOGLE_FORM_MAPPING_DEVICE_MODEL,
   GOOGLE_FORM_MAPPING_MESSAGE,
   GOOGLE_FORM_MAPPING_APP_VERSION
-} from 'pearpass-lib-constants'
-const isDev = !Pear.config.key
+} from '@tetherto/pearpass-lib-constants'
 
-export const SLACK_WEBHOOK_URL_PATH = isDev
+import { isDev } from '../utils/envGetter'
+
+export const SLACK_WEBHOOK_URL_PATH = isDev()
   ? _TEST_SLACK_WEBHOOK_URL_PATH
   : _SLACK_WEBHOOK_URL_PATH
 
-export const GOOGLE_FORM_KEY = isDev ? _TEST_GOOGLE_FORM_KEY : _GOOGLE_FORM_KEY
+export const GOOGLE_FORM_KEY = isDev()
+  ? _TEST_GOOGLE_FORM_KEY
+  : _GOOGLE_FORM_KEY
 
-export const GOOGLE_FORM_MAPPING = isDev
+export const GOOGLE_FORM_MAPPING = isDev()
   ? {
       timestamp: TEST_GOOGLE_FORM_MAPPING_TIMESTAMP,
       topic: TEST_GOOGLE_FORM_MAPPING_TOPIC,

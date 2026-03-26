@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
 import { html } from 'htm/react'
-import { colors } from 'pearpass-lib-ui-theme-provider'
 
 import { AboutContent } from './AboutContent'
 import { AppearanceContent } from './AppearanceContent'
@@ -56,13 +56,13 @@ const renderActiveContent = (activeTab) => {
 
 export const SettingsView = () => {
   const { t } = useTranslation()
-  const { navigate } = useRouter()
+  const { navigate, data } = useRouter()
 
   const handleGoBack = () => {
     navigate('vault', { recordType: 'all' })
   }
 
-  const [activeTab, setActiveTab] = useState('security')
+  const [activeTab, setActiveTab] = useState(data?.initialTab || 'security')
 
   return html`
     <${Wrapper}>

@@ -2,7 +2,7 @@ import React from 'react'
 
 import '@testing-library/jest-dom'
 import { render, fireEvent, act } from '@testing-library/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import { AboutContent } from './index'
 
@@ -41,7 +41,7 @@ jest.mock('../../../utils/isOnline', () => ({
 const mockSendSlackFeedback = jest.fn()
 const mockSendGoogleFormFeedback = jest.fn()
 
-jest.mock('pear-apps-lib-feedback', () => ({
+jest.mock('@tetherto/pear-apps-lib-feedback', () => ({
   sendGoogleFormFeedback: (...args) => mockSendGoogleFormFeedback(...args),
   sendSlackFeedback: (...args) => mockSendSlackFeedback(...args)
 }))

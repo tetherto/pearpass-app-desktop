@@ -1,4 +1,4 @@
-import { test, expect } from '../../fixtures/app.runner.js';
+import { test, expect } from '../../fixtures/app.runner.js'
 import {
   LoginPage,
   VaultSelectPage,
@@ -47,7 +47,7 @@ test.describe('Creating WiFi Item', () => {
     detailsPage = new DetailsPage(root)
   })
 
-  test.afterAll(async ({ }) => {
+  test.afterAll(async ({}) => {
     await utilities.deleteAllElements()
     await sideMenuPage.clickSidebarExitButton()
   })
@@ -187,5 +187,4 @@ test.describe('Creating WiFi Item', () => {
     await detailsPage.verifyItemDetailsValueIsNotVisible('Add note')
     await mainPage.clickDetailsCloseButton()
   })
-
 })

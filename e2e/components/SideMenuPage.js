@@ -48,7 +48,6 @@ class SideMenuPage {
     await this.sidebarSettingsButton.click()
   }
 
-
   async selectSideBarCategory(name) {
     const category = this.getSidebarCategory(name)
     await expect(category).toBeVisible()
@@ -70,9 +69,7 @@ class SideMenuPage {
     const deleteButton = folder
       .locator('..')
       .getByText('Delete', { exact: true })
-
     await deleteButton.click()
-
     await expect(this.confirmButton).toBeVisible()
     await this.confirmButton.click()
   }

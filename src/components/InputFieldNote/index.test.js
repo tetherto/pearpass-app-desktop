@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { render, screen, fireEvent } from '@testing-library/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import { InputFieldNote } from './index'
 import '@testing-library/jest-dom'
@@ -66,7 +66,7 @@ describe('InputFieldNote', () => {
       </ThemeProvider>
     )
 
-    const input = screen.getByPlaceholderText('Add note')
+    const input = screen.getByPlaceholderText('Add comment')
     fireEvent.change(input, { target: { value: 'New note' } })
 
     expect(handleChange).toHaveBeenCalled()
@@ -79,7 +79,9 @@ describe('InputFieldNote', () => {
       </ThemeProvider>
     )
 
-    expect(screen.getByPlaceholderText('Add note')).toHaveAttribute('readonly')
+    expect(screen.getByPlaceholderText('Add comment')).toHaveAttribute(
+      'readonly'
+    )
   })
 
   test('renders with custom variant', () => {

@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { render, screen, fireEvent } from '@testing-library/react'
-import { ThemeProvider } from 'pearpass-lib-ui-theme-provider'
-import { useVault } from 'pearpass-lib-vault'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { useVault } from '@tetherto/pearpass-lib-vault'
 
 import { SettingsVaultsTab } from './index'
 import { useModal } from '../../../context/ModalContext'
@@ -17,7 +17,7 @@ jest.mock('@lingui/react', () => ({
   I18nProvider: ({ children }) => children
 }))
 
-jest.mock('pearpass-lib-vault', () => ({
+jest.mock('@tetherto/pearpass-lib-vault', () => ({
   useVault: jest.fn()
 }))
 

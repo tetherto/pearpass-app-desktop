@@ -1,7 +1,7 @@
 import { applyAutoLockEnabled, applyAutoLockTimeout } from './autoLock.js'
 import { LOCAL_STORAGE_KEYS } from '../constants/localStorage'
 
-jest.mock('pearpass-lib-constants', () => ({
+jest.mock('@tetherto/pearpass-lib-constants', () => ({
   AUTO_LOCK_ENABLED: true
 }))
 
@@ -73,7 +73,7 @@ describe('auto lock local state helpers', () => {
       const dispatchSpy = jest.spyOn(window, 'dispatchEvent')
 
       jest.isolateModules(() => {
-        jest.doMock('pearpass-lib-constants', () => ({
+        jest.doMock('@tetherto/pearpass-lib-constants', () => ({
           AUTO_LOCK_ENABLED: false
         }))
         const {

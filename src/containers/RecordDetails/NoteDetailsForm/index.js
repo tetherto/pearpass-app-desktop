@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 
 import { useLingui } from '@lingui/react'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
 
 import { CopyButton } from '../../../components/CopyButton'
 import { FormGroup } from '../../../components/FormGroup'
@@ -65,7 +65,7 @@ export const NoteDetailsForm = ({ initialRecord, selectedFolder }) => {
         html`
           <${TextArea}
             ...${register('note')}
-            placeholder=${i18n._('Write a note...')}
+            placeholder=${i18n._('Write a comment...')}
             isDisabled
             additionalItems=${html`<${CopyButton} value=${values.note} />`}
           />

@@ -2,9 +2,9 @@ import os from 'os'
 
 import { useEffect, useState } from 'react'
 
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { usePair, useUserData, useVault } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { colors } from 'pearpass-lib-ui-theme-provider'
-import { usePair, useVault } from 'pearpass-lib-vault'
 
 import {
   Header,
@@ -34,6 +34,7 @@ import {
 export const CardLoadVault = () => {
   const { t } = useTranslation()
   const { navigate } = useRouter()
+  const { hasPasswordSet } = useUserData()
   const { pasteFromClipboard } = usePasteFromClipboard()
   const [inviteCode, setInviteCodeId] = useState('')
 
@@ -86,7 +87,11 @@ export const CardLoadVault = () => {
   }
 
   const handleGoBack = () => {
-    navigate('welcome', { state: NAVIGATION_ROUTES.VAULTS })
+    navigate('welcome', {
+      state: hasPasswordSet
+        ? NAVIGATION_ROUTES.VAULTS
+        : NAVIGATION_ROUTES.CREATE_MASTER_PASSWORD
+    })
   }
 
   const handlePastedText = (pastedText) => {

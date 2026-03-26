@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 
 import { useLingui } from '@lingui/react'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { Validator } from '@tetherto/pear-apps-utils-validator'
 import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { Validator } from 'pear-apps-utils-validator'
 
 import { Description, Header, Title, UnlockVaultContainer } from './styles'
 import { FormModalHeaderWrapper } from '../../../components/FormModalHeaderWrapper'

@@ -1,0 +1,37 @@
+{
+  "appId": "com.pears.pass",
+  "icon": "assets/darwin/icon.png",
+  "asar": false,
+  "directories": {
+    "output": "out"
+  },
+  "files": [
+    "electron/**/*",
+    "dist/**/*",
+    "index.html",
+    "index.js",
+    "packages/**/*",
+    "assets/**/*",
+    "src/utils/**/*"
+  ],
+  "extraResources": [
+    {
+      "from": "assets",
+      "to": "assets"
+    },
+    {
+      "from": "resources/bin",
+      "to": "bin"
+    }
+  ],
+  "mac": {
+    "category": "public.app-category.utilities",
+    "icon": "assets/darwin/icon.png",
+    "target": "dmg",
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false
+  },
+  "afterSign": "scripts/notarize.cjs",
+  "afterPack": "scripts/afterPack.cjs",
+  "dmg": {}
+}

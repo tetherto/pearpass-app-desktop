@@ -1,10 +1,10 @@
 import { useState } from 'react'
 
 import { useLingui } from '@lingui/react'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { Validator } from '@tetherto/pear-apps-utils-validator'
+import { useVault } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { Validator } from 'pear-apps-utils-validator'
-import { useVault } from 'pearpass-lib-vault'
 
 import { ButtonWrapper, CardContainer, CardTitle, Title } from './styles'
 import { useGlobalLoading } from '../../../context/LoadingContext'

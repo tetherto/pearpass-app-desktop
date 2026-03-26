@@ -54,7 +54,7 @@ export const FileDropArea = ({ label, onFileDrop, accepts }) => {
     <${HiddenInput}
       ref=${fileInputRef}
       type="file"
-      accepts=${accepts}
+      accept=${accepts}
       onChange=${handleFileChange}
     />
   <//>`

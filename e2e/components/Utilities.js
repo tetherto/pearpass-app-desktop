@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/app.runner.js';
+import { test, expect } from '../fixtures/app.runner.js'
 
 class Utilities {
   constructor(root) {
@@ -25,7 +25,17 @@ class Utilities {
   }
 
   get collectionEmptySubText() {
-    return this.root.getByText('Create a new element or pass to another collection')
+    return this.root.getByText(
+      'Create a new element or pass to another collection'
+    )
+  }
+
+  get listItemThreeDots() {
+    return this.root.getByTestId('list-item-threedots').first()
+  }
+
+  get listItemThreeDotsMenuDeleteItem() {
+    return this.root.getByTestId('recordaction-item-delete').first()
   }
 
   get detailsHeader() {
@@ -72,6 +82,32 @@ class Utilities {
     await this.root.page().keyboard.press(`${modifier}+v`)
   }
 
+  //     await expect(this.collectionEmptyText).toBeVisible({ timeout: 5000 }).catch(() => { });
+  //   }
+  // }
+
+  // async deleteAllElements() {
+  //   while (!(await this.collectionEmptyText.isVisible())) {
+  //     await this.element.first().click();
+  //     await this.itemBarThreeDots.click();
+  //     await this.deleteElementButton.click();
+  //     await this.root.getByText('Yes').click();
+
+  //     await expect(this.collectionEmptyText).toBeVisible({ timeout: 5000 }).catch(() => { });
+  //   }
+  // }
+
+  async pasteFromClipboard(locator, text) {
+    // Write text to clipboard
+    await this.root.page().evaluate(async (t) => {
+      await navigator.clipboard.writeText(t)
+    }, text)
+
+    // Click and paste
+    await locator.click()
+    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
+    await this.root.page().keyboard.press(`${modifier}+v`)
+  }
 }
 
 module.exports = { Utilities }

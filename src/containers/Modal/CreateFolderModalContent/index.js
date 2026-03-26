@@ -1,10 +1,10 @@
 import React from 'react'
 
 import { useLingui } from '@lingui/react'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { Validator } from '@tetherto/pear-apps-utils-validator'
+import { useCreateFolder, useFolders } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { Validator } from 'pear-apps-utils-validator'
-import { useCreateFolder, useFolders } from 'pearpass-lib-vault'
 
 import { HeaderWrapper } from './styles'
 import { useGlobalLoading } from '../../../context/LoadingContext'
@@ -91,6 +91,7 @@ export const CreateFolderModalContent = ({ onCreate, initialValues }) => {
         `}
       >
         <${InputField}
+          data-testid="input-folder-name"
           label=${i18n._('Title')}
           placeholder=${i18n._('Insert folder name')}
           variant="outline"

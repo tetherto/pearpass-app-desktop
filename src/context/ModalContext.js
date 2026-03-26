@@ -7,8 +7,8 @@ import {
   useMemo
 } from 'react'
 
+import { generateUniqueId } from '@tetherto/pear-apps-utils-generate-unique-id'
 import { html } from 'htm/react'
-import { generateUniqueId } from 'pear-apps-utils-generate-unique-id'
 
 import { Overlay } from '../components/Overlay'
 import { BASE_TRANSITION_DURATION } from '../constants/transitions'

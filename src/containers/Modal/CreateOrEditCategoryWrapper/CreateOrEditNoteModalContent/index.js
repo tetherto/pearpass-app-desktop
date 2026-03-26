@@ -1,8 +1,12 @@
 import { useLingui } from '@lingui/react'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { Validator } from '@tetherto/pear-apps-utils-validator'
+import {
+  RECORD_TYPES,
+  useCreateRecord,
+  useRecords
+} from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { Validator } from 'pear-apps-utils-validator'
-import { RECORD_TYPES, useCreateRecord, useRecords } from 'pearpass-lib-vault'
 
 import { CreateCustomField } from '../../../../components/CreateCustomField'
 import { FolderDropdown } from '../../../../components/FolderDropdown'
@@ -94,7 +98,7 @@ export const CreateOrEditNoteModalContent = ({
     note: Validator.string(),
     customFields: Validator.array().items(
       Validator.object({
-        note: Validator.string().required(i18n._('Note is required'))
+        note: Validator.string().required(i18n._('Comment is required'))
       })
     ),
     folder: Validator.string(),
@@ -233,7 +237,7 @@ export const CreateOrEditNoteModalContent = ({
             testId="createoredit-textarea-note"
             dataId="note-content-textarea"
             ...${register('note')}
-            placeholder=${i18n._('Write a note...')}
+            placeholder=${i18n._('Write a comment...')}
           />
         <//>
 

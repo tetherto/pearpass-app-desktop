@@ -1,15 +1,16 @@
 import React, { useEffect } from 'react'
 
 import { useLingui } from '@lingui/react'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { isBefore, subtractDateUnits } from '@tetherto/pear-apps-utils-date'
 import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { isBefore, subtractDateUnits } from 'pear-apps-utils-date'
 
 import { AlertBox } from '../../../components/AlertBox'
 import { CopyButton } from '../../../components/CopyButton'
 import { FormGroup } from '../../../components/FormGroup'
 import { FormWrapper } from '../../../components/FormWrapper'
 import { InputFieldNote } from '../../../components/InputFieldNote'
+import { OtpCodeField } from '../../../components/OtpCodeField'
 import { WebsiteButton } from '../../../components/WebsiteButton'
 import { ATTACHMENTS_FIELD_KEY } from '../../../constants/formFields'
 import { useGetMultipleFiles } from '../../../hooks/useGetMultipleFiles'
@@ -146,6 +147,16 @@ export const LoginRecordDetailsForm = ({ initialRecord, selectedFolder }) => {
             variant="outline"
             icon=${KeyIcon}
             isDisabled
+          />
+        <//>
+      `}
+      ${!!initialRecord?.otpPublic &&
+      html`
+        <${FormGroup}>
+          <${OtpCodeField}
+            key=${initialRecord.id}
+            recordId=${initialRecord.id}
+            otpPublic=${initialRecord.otpPublic}
           />
         <//>
       `}

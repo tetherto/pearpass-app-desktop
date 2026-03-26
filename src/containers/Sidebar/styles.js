@@ -1,5 +1,7 @@
 import styled from 'styled-components'
 
+import { isV2 } from '../../utils/designVersion'
+
 export const SidebarWrapper = styled.div`
   display: flex;
   gap: 20px;
@@ -42,6 +44,24 @@ export const sideBarContent = styled.div`
   gap: 20px;
   min-height: 0;
   overflow: hidden;
+  ${isV2() &&
+  `
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 4px;
+    
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    padding-bottom: 20px;
+  `}
 `
 
 export const SidebarNestedFoldersContainer = styled.div`
@@ -49,15 +69,21 @@ export const SidebarNestedFoldersContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 6px;
-  flex: 1;
-  min-height: 0;
+  ${isV2() ? 'flex-shrink: 0;' : 'flex: 1; min-height: 0;'}
 `
 
 export const FoldersWrapper = styled.div`
-  overflow-y: auto;
+  overflow-y: ${isV2() ? 'visible' : 'auto'};
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  ${isV2() ? 'flex-shrink: 0;' : 'min-height: 0;'}
+`
+
+export const SidebarAuthenticatorSection = styled.div`
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid ${({ theme }) => theme.colors.grey300.mode1};
+  flex-shrink: 0;
 `
 
 export const SidebarSettings = styled.div`

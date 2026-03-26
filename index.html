@@ -1,8 +1,13 @@
 <!doctype html>
 <html>
-  <body style="max-width: 100%; min-width: 1080px; min-height: 900px; overflow: auto;"></body>
-    <div id="bar"><pear-ctrl></pear-ctrl></div>
+  <body style="max-width: 100%; min-width: 1080px; min-height: 900px; overflow: auto;">
     <div id="root"></div>
-    <script type="module" src="./dist/app.js"></script>
+    <link rel="stylesheet" href="./dist/renderer.bundle.css" />
+    <!-- Must run before bundle: pear-ref and similar expect global.Pear at load time -->
+    <script>
+      window.global = window.global || window;
+      window.Pear = window.Pear || { config: { storage: '', key: null, applink: '' }, constructor: {} };
+    </script>
+    <script src="./dist/renderer.bundle.js"></script>
   </body>
 </html>

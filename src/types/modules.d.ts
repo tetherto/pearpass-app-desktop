@@ -2,13 +2,13 @@
 
 /* eslint-disable */
 
-declare module 'pearpass-lib-ui-theme-provider' {
+declare module '@tetherto/pearpass-lib-ui-theme-provider' {
   export const ThemeProvider: any
   export const colors: any
   export const themes: any
 }
 
-declare module 'pearpass-lib-vault' {
+declare module '@tetherto/pearpass-lib-vault' {
   export interface Vault {
     id: string
     name: string
@@ -68,10 +68,43 @@ declare module 'pearpass-lib-vault' {
   }): UseVaultResult
   export const useVaults: any
   export const useVault: any
+  export const useCreateVault: any
   export const useInvite: any
   export const usePair: any
   export const authoriseCurrentProtectedVault: any
   export const RECORD_TYPES: any
+  export const OTP_TYPE: { TOTP: 'TOTP'; HOTP: 'HOTP' }
+
+  export function useOtp(params: {
+    recordId: string
+    otpPublic: any
+  }): {
+    code: string | null
+    timeRemaining: number | null
+    type: string | null
+    period: number | null
+    generateNext: (() => Promise<void>) | null
+    isLoading: boolean
+  }
+
+  export const OtpRefreshProvider: any
+  export function useOtpRefresh(): (() => void) | null
+
+  export function useTimerAnimation(
+    timeRemaining: number | null,
+    period: number,
+    animated?: boolean
+  ): {
+    noTransition: boolean
+    expiring: boolean
+    targetTime: number
+  }
+
+  export function formatOtpCode(code: string | null): string
+  export function createAlignedInterval(callback: () => void): () => void
+  export function isExpiring(timeRemaining: number | null): boolean
+  export const EXPIRY_THRESHOLD_SECONDS: number
+
   const otherExports: any
   export default otherExports
 
@@ -135,32 +168,32 @@ declare module 'pearpass-lib-vault' {
   }
 }
 
-declare module 'pear-apps-lib-ui-react-hooks' {
+declare module '@tetherto/pear-apps-lib-ui-react-hooks' {
   export const useCountDown: any
   export const useForm: any
 }
 
-declare module 'pear-apps-utils-qr' {
+declare module '@tetherto/pear-apps-utils-qr' {
   export const generateQRCodeSVG: any
 }
 
-declare module 'pear-apps-utils-validator' {
+declare module '@tetherto/pear-apps-utils-validator' {
   export const Validator: any
 }
 
-declare module 'pearpass-lib-vault/src/utils/buffer' {
+declare module '@tetherto/pearpass-lib-vault/src/utils/buffer' {
   export const clearBuffer: (buffer: any) => void
   export const stringToBuffer: (value: string) => any
 }
 
-declare module 'pearpass-lib-constants' {
+declare module '@tetherto/pearpass-lib-constants' {
   export const PROTECTED_VAULT_ENABLED: boolean
   export const BE_AUTO_LOCK_ENABLED: boolean
   export const DEFAULT_AUTO_LOCK_TIMEOUT: number
   export const AUTO_LOCK_TIMEOUT_OPTIONS: Record<string, { label: string, value: number }>
   export const AUTO_LOCK_ENABLED: boolean
   export const DELETE_VAULT_ENABLED: boolean
+  export const DESIGN_VERSION: number
   export const NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION: string
   export const NATIVE_MESSAGING_BRIDGE_PEAR_LINK_STAGING: string
 }
-

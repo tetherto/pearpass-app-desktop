@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6"
+  IgnorableNamespaces="rescap desktop6"
+>
+  <Identity 
+  Name="PearPass" 
+  Version="1.6.0.0" 
+  Publisher="CN=&quot;Tether Operations, SA de CV&quot;, O=&quot;Tether Operations, SA de CV&quot;, L=San Salvador, C=SV, SERIALNUMBER=2025120324, OID.2.5.4.15=Private Organization, OID.1.3.6.1.4.1.311.60.2.1.3=SV" 
+  ProcessorArchitecture="x64" 
+  />
+  <Properties>
+    <DisplayName>PearPass</DisplayName>
+    <PublisherDisplayName>PearPass</PublisherDisplayName>
+    <Description>PearPass password manager</Description>
+    <!-- Icon lives under the MSIX assets/ folder -->
+    <Logo>assets\PearPass.png</Logo>
+  </Properties>
+  <Resources>
+    <Resource Language="en-US" />
+  </Resources>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19045.0" MaxVersionTested="10.0.19045.0" />
+  </Dependencies>
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+    <!-- Required when disabling virtualization flags on desktop -->
+    <rescap:Capability Name="unvirtualizedResources" />
+  </Capabilities>
+  <Applications>
+    <Application Id="App" Executable="app\PearPass.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="PearPass"
+        Description="PearPass password manager"
+        Square150x150Logo="assets\PearPass.png"
+        Square44x44Logo="assets\PearPass.png"
+        BackgroundColor="transparent" />
+    </Application>
+  </Applications>
+</Package>
+

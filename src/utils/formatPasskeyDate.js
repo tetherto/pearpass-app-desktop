@@ -1,4 +1,4 @@
-import { formatDate } from 'pear-apps-utils-date'
+import { formatDate } from '@tetherto/pear-apps-utils-date'
 
 /**
  * Formats a passkey creation timestamp to "Created on dd/mm/yy, HH:mm" format

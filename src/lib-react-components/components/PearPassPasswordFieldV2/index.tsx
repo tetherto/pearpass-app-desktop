@@ -13,7 +13,7 @@ import {
 import { EyeClosedIcon } from '../../icons/EyeClosedIcon'
 import { EyeIcon } from '../../icons/EyeIcon'
 import { NoticeText } from '../NoticeText'
-import { colors } from 'pearpass-lib-ui-theme-provider'
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
 import { PearPassPasswordFieldV2Props } from './types'
 
 export const PearPassPasswordFieldV2 = ({
@@ -22,7 +22,7 @@ export const PearPassPasswordFieldV2 = ({
   onChange,
   isDisabled,
   error,
-  testId = 'pearpass-password-field-v2'
+  testId = '@tetherto/pearpass-password-field-v2'
 }: PearPassPasswordFieldV2Props) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
