@@ -1,10 +1,17 @@
 import { spawn } from 'node:child_process';
+import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
 
 import { test as base, expect, chromium } from '@playwright/test';
 
 const isWindows = os.platform() === 'win32';
+
+/** Real Electron binary path (avoids Windows spawn EINVAL from .cmd without shell). */
+function resolveElectronBinary(appDir) {
+  const require = createRequire(path.join(appDir, 'package.json'))
+  return require('electron')
+}
 
 
 function sleep(ms) {
@@ -72,7 +79,7 @@ async function launchApp(appDir) {
 
   console.log(`[Launch] Starting app on port ${port}, platform: ${os.platform()}`)
 
-  const electronBin = path.join(appDir, 'node_modules', '.bin', isWindows ? 'electron.cmd' : 'electron')
+  const electronBin = resolveElectronBinary(appDir)
 
   let proc
   if (isWindows) {

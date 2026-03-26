@@ -1,4 +1,7 @@
 import { defineConfig } from '@playwright/test';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export default defineConfig({
   timeout: 5 * 60 * 1000,
@@ -28,7 +31,7 @@ export default defineConfig({
         debug: false,
         testops: {
           api: {
-            token: '93d463e7ca693a401ff7bff5a12125fdba52d70540585ff1a562ac0ecacb1235',
+            token: process.env.API_TOKEN,
           },
           project: 'PAS',
           uploadAttachments: true,

@@ -10,7 +10,7 @@ import {
   SettingsPage
 } from '../../components/index.js';
 import testData from '../../fixtures/test-data.js';
-import { qase } from 'playwright-qase-reporter';
+// import { qase } from 'playwright-qase-reporter';
 
 test.describe('Settings test', () => {
   test.describe.configure({ mode: 'serial' })
@@ -44,12 +44,13 @@ test.describe('Settings test', () => {
   })
 
   test.afterAll(async () => {
+    if (!utilities || !sideMenuPage) return
     await utilities.deleteAllElements()
     await sideMenuPage.clickSidebarExitButton()
   })
 
   test('Verify Security Settings', async ({ page }) => {
-    qase.id(2605);
+    // qase.id(2605);
     await sideMenuPage.clickSidebarSettingsButton()
     await settingsPage.clickSettingsNavigation('security')
     await settingsPage.verifySettingsCardIsVisible('master-password')
@@ -86,14 +87,14 @@ test.describe('Settings test', () => {
   })
 
   test('Verify Syncing Settings', async ({ page }) => {
-    qase.id(2606);
+    // qase.id(2606);
     await settingsPage.clickSettingsNavigation('syncing')
     await settingsPage.verifySettingsCardIsVisible('blind-peering')
     await settingsPage.verifySettingsCardIsVisible('browser-extension')
   })
 
   test('Verify Vault Settings', async ({ page }) => {
-    qase.id(2607);
+    // qase.id(2607);
     await settingsPage.clickSettingsNavigation('vault')
 
     await settingsPage.verifySettingsCardIsVisible('your-vault')
@@ -103,13 +104,13 @@ test.describe('Settings test', () => {
   })
 
   test('Verify Appearance Settings', async ({ page }) => {
-    qase.id(2608);
+    // qase.id(2608);
     await settingsPage.clickSettingsNavigation('appearance')
     await settingsPage.verifySettingsCardIsVisible('language')
   })
 
   test('Verify About Settings', async ({ page }) => {
-    qase.id(2609);
+    // qase.id(2609);
     await settingsPage.clickSettingsNavigation('about')
 
       await settingsPage.verifySettingsCardIsVisible('report')

@@ -2,3 +2,4 @@ test-artifacts/
 node_modules/
 playwright-report/
 .DS_Store
+.env
