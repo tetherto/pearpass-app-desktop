@@ -67,7 +67,10 @@ module.exports = {
   ],
 
   hooks: {
-    preMake: async () => {
+    preMake: async (_config, options) => {
+      const targetArch = options?.arch || process.arch
+      const msixArch = targetArch === 'arm64' ? 'arm64' : 'x64'
+
       const pkgJson = JSON.parse(
         fs.readFileSync(path.resolve('package.json'), 'utf8')
       )
@@ -80,10 +83,15 @@ module.exports = {
       const manifest = fs.readFileSync(manifestPath, 'utf8')
       fs.writeFileSync(
         manifestPath,
-        manifest.replace(
-          /Version="\d+\.\d+\.\d+\.\d+"/,
-          `Version="${msixVersion}"`
-        )
+        manifest
+          .replace(
+            /Version="\d+\.\d+\.\d+\.\d+"/,
+            `Version="${msixVersion}"`
+          )
+          .replace(
+            /ProcessorArchitecture="\w+"/,
+            `ProcessorArchitecture="${msixArch}"`
+          )
       )
     },
     postMake: async (forgeConfig, results) => {
