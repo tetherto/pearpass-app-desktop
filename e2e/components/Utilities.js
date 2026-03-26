@@ -12,7 +12,7 @@ class Utilities {
   }
 
   get itemBarThreeDots() {
-    return this.root.getByTestId('button-round-icon').first() //button-round-icon
+    return this.root.getByTestId('button-round-icon').first()
   }
 
   get deleteElementButton() {
@@ -31,8 +31,6 @@ class Utilities {
   get detailsHeader() {
     return this.root.getByTestId('details-header')
   }
-
-  // details-header
 
   // ==== ACTIONS ====
 

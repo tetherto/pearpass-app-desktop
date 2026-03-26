@@ -5,3 +5,4 @@ export { DetailsPage } from './DetailsPage.js';
 export { MainPage } from './MainPage.js';
 export { SideMenuPage } from './SideMenuPage.js';
 export { Utilities } from './Utilities.js';
+export { SettingsPage } from './SettingsPage.js';

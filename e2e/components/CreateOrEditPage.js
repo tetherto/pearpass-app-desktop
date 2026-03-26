@@ -120,12 +120,27 @@ class CreateOrEditPage {
   }
 
   get customNoteInput() {
+    return this.root.getByTestId('customfields-input-note-0').last()
+  }
+
+  // get customNoteInput_first() {
+  //   return this.root.getByTestId('customfields-input-note-0').first()
+  // }
+
+  get customNoteInput_first() {
     return this.root.getByTestId('customfields-input-note-0')
   }
 
   // TODO: need to change customfields-input-note-0 to createoredit-input-note-0
   async fillCustomNoteInput() {
     const input = this.customNoteInput
+    await input.waitFor({ state: 'visible' })
+    await input.fill('')
+    await input.fill('Custom Note')
+  }
+
+  async fillCustomNoteInput_first() {
+    const input = this.customNoteInput_first
     await input.waitFor({ state: 'visible' })
     await input.fill('')
     await input.fill('Custom Note')

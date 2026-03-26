@@ -11,21 +11,10 @@ class DetailsPage {
         return this.root.getByPlaceholder('Add note');
     }
 
-    // async verifyCustomNoteText(expectedText) {
-    //     const input = page.getByPlaceholder('Add comment');
-    //     await expect(input).toHaveValue('Test Note');
-    // }
-
     async verifyCustomNoteText(expectedText) {
         await expect(this.getItemDetailsCustomInput).toBeVisible()
         await expect(this.getItemDetailsCustomInput).toHaveValue(expectedText)
     }
-
-    // async verifyCustomNoteText(note_text) {
-    //     const noteTextDetail = this.getItemDetailsCustomInput
-    //     await expect(noteTextDetail).toBeVisible();
-    //     await expect(noteTextDetail).toHaveText(note_text);
-    // }
 
     get getItemDetailsTitle() {
         return this.root.locator('[data-testid^="details-title"]');
@@ -209,17 +198,6 @@ class DetailsPage {
         await expect(yesButton).toBeVisible()
         await yesButton.click()
     }
-
-    // async deleteElementFromDetails() {
-    //     while (!(await this.collectionEmptyText.isVisible())) {
-    //         await this.element.first().click();
-    //         await this.itemBarThreeDots.click();
-    //         await this.deleteElementButton.click();
-    //         await this.root.getByText('Yes').click();
-
-    //         await expect(this.collectionEmptyText).toBeVisible({ timeout: 5000 }).catch(() => { });
-    //     }
-    // }
 
     async clickShowHidePasswordButton() {
         await expect(this.elementItemPasswordShowHide).toBeVisible();

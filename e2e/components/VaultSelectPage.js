@@ -11,10 +11,6 @@ class VaultSelectPage {
     return this.root.getByTestId('vault-title')
   }
 
-  // vaultItem(name) {
-  //   return this.root.locator(`[data-testid="vault-item-${name}"]`)
-  // }
-
   getVaultItem(name) {
     return this.root.getByTestId(`vault-item-${name}`)
   }
@@ -44,7 +40,6 @@ class VaultSelectPage {
   }
 
   async selectVaultbyName(vaultName) {
-    // await expect(this.title).toHaveText('Open an existing vault or create a new one.') // Select a vault, create a new one or load another one
     const vault = this.getVaultItem(vaultName)
     await expect(vault).toBeVisible()
     await vault.click()

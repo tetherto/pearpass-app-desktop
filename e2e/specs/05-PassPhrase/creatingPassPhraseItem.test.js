@@ -149,7 +149,7 @@ test.describe('Creating PassPhrase Item', () => {
 
   
   // test('Add Custom Note', async ({ page }) => {
-    // qase.id(2217);
+  //   qase.id(2217);
   //   await mainPage.verifyElementTitle('PassPhrase Title')
   //   await mainPage.openElementDetails()
   //   await detailsPage.editElement()
@@ -163,13 +163,13 @@ test.describe('Creating PassPhrase Item', () => {
   // })
 
   // test('Delete Note field', async ({ page }) => {
-    // qase.id(2218);
+  //   qase.id(2218);
   //   await mainPage.verifyElementTitle('PassPhrase Title')
   //   await mainPage.openElementDetails()
   //   await detailsPage.editElement()
-  //   await expect(createOrEditPage.customNoteInput).toHaveCount(2)
+  //   await expect(createOrEditPage.customNoteInput_first).toHaveCount(2)
   //   await createOrEditPage.deleteCustomNote()
-  //   await expect(createOrEditPage.customNoteInput).toHaveCount(1)
+  //   await expect(createOrEditPage.customNoteInput_first).toHaveCount(1)
   //   await createOrEditPage.clickOnCreateOrEditButton('save')
   //   await page.waitForTimeout(testData.timeouts.action)
   //   await mainPage.clickDetailsCloseButton()
