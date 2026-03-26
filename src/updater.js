@@ -42,7 +42,7 @@ async function startUpdater() {
   })()
 
   const { upgrade: upgradeFromPkg, version, productName } = await pkg
-  const upgrade = process?.env?.PEARPASS_UPGRADE_LINK || upgradeFromPkg
+  const upgrade = upgradeFromPkg
   const app = getApp()
 
   const dir =
