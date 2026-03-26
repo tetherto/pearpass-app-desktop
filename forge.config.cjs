@@ -95,9 +95,7 @@ module.exports = {
           // ./out/PearPass (directory name must match appName)
           const standardDir = path.join(__dirname, 'out', appName)
           fs.mkdirSync(standardDir, { recursive: true })
-          const ext = path.extname(artifact)
-          const base = path.basename(artifact, ext)
-          const dest = path.join(standardDir, `${base}-${result.arch}${ext}`)
+          const dest = path.join(standardDir, path.basename(artifact))
           fs.copyFileSync(artifact, dest)
         }
       }
