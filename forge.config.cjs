@@ -91,13 +91,22 @@ module.exports = {
         if (result.platform !== 'win32') continue
         for (const artifact of result.artifacts) {
           if (!artifact.endsWith('.msix')) continue
-          // Place Windows artifact in a stable path for pear-build:
-          // ./out/PearPass (directory name must match appName)
-          const standardDir = path.join(__dirname, 'out', appName)
+          const standardDir = path.join(
+            __dirname,
+            'out',
+            `${appName}-win32-${result.arch}`
+          )
           fs.mkdirSync(standardDir, { recursive: true })
           const dest = path.join(standardDir, path.basename(artifact))
-          fs.copyFileSync(artifact, dest)
+          fs.renameSync(artifact, dest)
+          result.artifacts[result.artifacts.indexOf(artifact)] = dest
         }
+      }
+      if (isWindows) {
+        fs.rmSync(path.join(__dirname, 'out', 'make'), {
+          recursive: true,
+          force: true
+        })
       }
     }
   },
