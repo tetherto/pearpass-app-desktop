@@ -520,7 +520,9 @@ function registerIPC() {
       version: runtimeConfig.version,
       applink: runtimeConfig.upgrade || '',
       userDataPath: getStorageDir(),
-      execPath: process.execPath,
+      execPath: isWindows && process.windowsStore
+        ? path.join(process.env.LOCALAPPDATA, 'Microsoft', 'WindowsApps', path.basename(process.execPath))
+        : process.execPath,
       bridgePath: getNativeBridgePath()
     }
   })
