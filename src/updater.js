@@ -48,10 +48,10 @@ async function startUpdater() {
   const dir =
     Pear?.config?.storage ||
     (IS_MAC
-      ? path.join(os.homedir(), 'Library', 'Application Support', 'pear')
+      ? path.join(os.homedir(), 'Library', 'Application Support', 'PearPass')
       : IS_LINUX
-        ? path.join(os.homedir(), '.config', 'pear')
-        : path.join(os.homedir(), 'AppData', 'Roaming', 'pear'))
+        ? path.join(os.homedir(), '.config', 'PearPass')
+        : path.join(os.homedir(), 'AppData', 'Roaming', 'PearPass'))
 
   const extension = IS_MAC ? '.app' : IS_LINUX ? '.AppImage' : '.msix'
   const name = productName + extension

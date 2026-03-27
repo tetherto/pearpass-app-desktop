@@ -1,7 +1,7 @@
 import FramedStream from 'framed-stream'
 import PearRuntimeUpdater from 'pear-runtime-updater'
 
-import { DEBUG_MODE } from '../../src/constants/appConstants'
+const DEBUG_MODE = false
 
 const pipe = new FramedStream(Pear.worker.pipe())
 
