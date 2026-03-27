@@ -3,6 +3,7 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
   xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6"
   IgnorableNamespaces="rescap desktop6"
@@ -40,11 +41,11 @@
         Square44x44Logo="assets\PearPass.png"
         BackgroundColor="transparent" />
       <Extensions>
-        <desktop:Extension Category="windows.appExecutionAlias" Executable="app\PearPass.exe" EntryPoint="Windows.FullTrustApplication">
-          <desktop:AppExecutionAlias>
+        <uap3:Extension Category="windows.appExecutionAlias" Executable="app\PearPass.exe" EntryPoint="Windows.FullTrustApplication">
+          <uap3:AppExecutionAlias>
             <desktop:ExecutionAlias Alias="PearPass.exe" />
-          </desktop:AppExecutionAlias>
-        </desktop:Extension>
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
       </Extensions>
     </Application>
   </Applications>
