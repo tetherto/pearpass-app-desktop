@@ -1,6 +1,6 @@
 {
   "name": "pearpass-app-desktop",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "upgrade": "pear://r9s8cr544s61t5ati3kde3fh3g5g5ksqhjwytqmcht65fhdzm9iy",
   "productName": "PearPass",
   "pear": {
@@ -13,7 +13,7 @@
       "/workers/updater/index.js"
     ],
     "gui": {
-      "backgroundColor": "#1F2430", 
+      "backgroundColor": "#1F2430",
       "height": "1024",
       "width": "1440"
     },
