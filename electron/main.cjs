@@ -275,7 +275,7 @@ async function startRuntime() {
     logger.error('MAIN', '[worklet process error]', err)
   })
   await waitForWorkletReady(workletSidecar)
-  console.info(WORKLET_READY_SIGNAL)
+
   vaultClient = new PearpassVaultClient(workletSidecar, storageDir, {
     debugMode
   })
