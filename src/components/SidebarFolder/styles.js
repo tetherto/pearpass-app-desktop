@@ -12,6 +12,7 @@ export const NestedItem = styled.div`
   gap: 7px;
   cursor: pointer;
   flex: 1;
+  min-width: 0;
 `
 
 export const NestedFolder = styled.div.withConfig({
@@ -23,6 +24,7 @@ export const NestedFolder = styled.div.withConfig({
     isActive ? theme.colors.primary400.mode1 : undefined};
   align-items: center;
   gap: 10px;
+  min-width: 0;
 `
 
 export const AddIconWrapper = styled.div`
@@ -32,4 +34,8 @@ export const AddIconWrapper = styled.div`
 export const FolderName = styled.span`
   flex: 1;
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 `

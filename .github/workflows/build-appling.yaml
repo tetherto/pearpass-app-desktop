@@ -207,8 +207,8 @@ jobs:
 
       - name: Install Flatpak build dependencies
         run: |
-          apt-get update
-          apt-get install -y flatpak flatpak-builder jq ffmpeg xvfb xauth
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder jq ffmpeg xvfb xauth
 
       - name: Install Flatpak runtime and SDK
         run: |

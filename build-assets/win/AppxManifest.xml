@@ -20,6 +20,8 @@
     <Description>PearPass password manager</Description>
     <!-- Icon lives under the MSIX assets/ folder -->
     <Logo>assets\PearPass.png</Logo>
+    <desktop6:FileSystemWriteVirtualization>disabled</desktop6:FileSystemWriteVirtualization>
+    <desktop6:RegistryWriteVirtualization>disabled</desktop6:RegistryWriteVirtualization>
   </Properties>
   <Resources>
     <Resource Language="en-US" />

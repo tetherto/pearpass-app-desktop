@@ -79,8 +79,11 @@ parse_args() {
         usage
     fi
 
-    # Resolve to absolute path
-    APPIMAGE_PATH="$(cd "$(dirname "$APPIMAGE_PATH")" && pwd)/$(basename "$APPIMAGE_PATH")"
+    # Resolve to absolute path without requiring the parent directory to exist.
+    case "$APPIMAGE_PATH" in
+        /*) ;;
+        *) APPIMAGE_PATH="$PWD/$APPIMAGE_PATH" ;;
+    esac
 
     if [[ ! -f "$APPIMAGE_PATH" ]]; then
         local fallback_out="$PROJECT_DIR/out/PearPass.AppImage"
@@ -92,9 +95,9 @@ parse_args() {
             APPIMAGE_PATH="$fallback_dist"
             log_info "Using detected AppImage: $APPIMAGE_PATH"
         else
-        log_error "AppImage not found: $APPIMAGE_PATH"
-        log_error "Expected output is usually ./out/PearPass.AppImage after dist:linux build"
-        exit 1
+            log_error "AppImage not found: $APPIMAGE_PATH"
+            log_error "Expected output is usually ./out/PearPass.AppImage after dist:linux build"
+            exit 1
         fi
     fi
 

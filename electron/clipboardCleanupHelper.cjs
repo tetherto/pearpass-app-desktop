@@ -1,10 +1,8 @@
 const { spawnSync } = require('child_process')
 const fs = require('fs')
 
-const {
-  readClipboardWithFallback,
-  clearClipboardWithFallback
-} = require('./linuxClipboardFallback.cjs')
+const linuxWaylandClipboard = require('./linuxWaylandClipboard.cjs')
+const linuxX11Clipboard = require('./linuxX11Clipboard.cjs')
 
 function removeFileIfExists(filePath) {
   try {
@@ -37,9 +35,16 @@ function clearCurrentTokenIfMatches(statePath, token) {
   }
 }
 
-function logLinuxClipboardSkip() {
+function describeLinuxSession() {
+  const waylandDisplay = process.env.WAYLAND_DISPLAY || ''
+  const sessionType = process.env.XDG_SESSION_TYPE || ''
+  const display = process.env.DISPLAY || ''
+  return `WAYLAND_DISPLAY=${waylandDisplay || '(unset)'} XDG_SESSION_TYPE=${sessionType || '(unset)'} DISPLAY=${display || '(unset)'}`
+}
+
+function logLinuxClipboardSkip(sessionLabel) {
   process.stderr.write(
-    'PearPass clipboard cleanup skipped: Linux clipboard command unavailable or failed.\n'
+    `PearPass clipboard cleanup skipped: ${sessionLabel} clipboard command unavailable or failed. (${describeLinuxSession()})\n`
   )
 }
 
@@ -65,23 +70,14 @@ function readClipboard() {
   }
 
   if (process.platform === 'linux') {
-    const commands = [
-      ['xsel', ['--clipboard', '--output']],
-      ['xclip', ['-selection', 'clipboard', '-o']]
-    ]
+    const isWayland = linuxWaylandClipboard.isWaylandSession()
+    const linuxClipboard = isWayland ? linuxWaylandClipboard : linuxX11Clipboard
+    const sessionLabel = isWayland ? 'Wayland' : 'X11'
 
-    for (const [command, args] of commands) {
-      const result = runClipboardCommand(command, args, undefined)
-      if (!result.error && result.status === 0) {
-        return result.stdout || ''
-      }
-    }
+    const result = linuxClipboard.readClipboard()
+    if (typeof result === 'string') return result
 
-    // Neither xsel nor xclip found as system commands — try bundled binary
-    const fallbackResult = readClipboardWithFallback()
-    if (typeof fallbackResult === 'string') return fallbackResult
-
-    logLinuxClipboardSkip()
+    logLinuxClipboardSkip(sessionLabel)
     return null
   }
 
@@ -98,22 +94,13 @@ function clearClipboard() {
   }
 
   if (process.platform === 'linux') {
-    const commands = [
-      ['xsel', ['--clipboard', '--input']],
-      ['xclip', ['-selection', 'clipboard']]
-    ]
+    const isWayland = linuxWaylandClipboard.isWaylandSession()
+    const linuxClipboard = isWayland ? linuxWaylandClipboard : linuxX11Clipboard
+    const sessionLabel = isWayland ? 'Wayland' : 'X11'
 
-    for (const [command, args] of commands) {
-      const result = runClipboardCommand(command, args, '')
-      if (!result.error && result.status === 0) {
-        return
-      }
-    }
+    if (linuxClipboard.clearClipboard()) return
 
-    // Neither xsel nor xclip found as system commands — try bundled binary
-    if (clearClipboardWithFallback()) return
-
-    logLinuxClipboardSkip()
+    logLinuxClipboardSkip(sessionLabel)
     return
   }
 
@@ -143,9 +130,6 @@ async function runClipboardCleanup({
 
     if (clipboardText === expectedText) {
       clearClipboard()
-
-      readClipboard()
-    } else {
     }
 
     return true
