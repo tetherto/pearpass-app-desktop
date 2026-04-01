@@ -6,6 +6,7 @@
   "author": "PearPass",
   "main": "electron/main.cjs",
   "upgrade": "pear://r9s8cr544s61t5ati3kde3fh3g5g5ksqhjwytqmcht65fhdzm9iy",
+  "legacyChannelLink": "pear://tywsat7gz8m65ejx4zjn3773pbdc4j8m66tukis8dgzekraymtzo",
   "build": {
     "appId": "com.pears.pass",
     "icon": "assets/darwin/icon.png",

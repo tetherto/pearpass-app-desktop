@@ -108,6 +108,18 @@ module.exports = {
           result.artifacts[i] = renamed
         }
       }
+    },
+    readPackageJson: async (forgeConfig, packageJson) => {
+      if (process.env.PEARPASS_UPGRADE_LINK) {
+        packageJson.upgrade = process.env.PEARPASS_UPGRADE_LINK
+      }
+      if (process.env.PEARPASS_LEGACY_CHANNEL_LINK) {
+        packageJson.legacyChannelLink = process.env.PEARPASS_LEGACY_CHANNEL_LINK
+      }
+      if (process.env.BUILD_VERSION) {
+        packageJson.version = process.env.BUILD_VERSION
+      }
+      return packageJson
     }
   },
 
