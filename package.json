@@ -80,7 +80,6 @@
     "bare-pack": "1.4.8",
     "cmake-pear": "2.0.0",
     "concurrently": "9.2.1",
-    "create-dmg": "^8.1.0",
     "eslint": "^9.39.3",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-eslint-plugin": "6.4.0",
@@ -118,6 +117,8 @@
     "hyperdrive": "^13.3.2",
     "jszip": "3.10.1",
     "mirror-drive": "^1.14.1",
+    "os": "^0.1.2",
+    "path": "^0.12.7",
     "pear-apps-lib-feedback": "git+https://github.com/tetherto/pear-apps-lib-feedback.git",
     "pear-apps-lib-ui-react-hooks": "git+https://github.com/tetherto/pear-apps-lib-ui-react-hooks.git",
     "pear-apps-utils-avatar-initials": "git+https://github.com/tetherto/pear-apps-utils-avatar-initials.git",
@@ -142,6 +143,9 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "styled-components": "6.1.19"
+  },
+  "optionalDependencies": {
+    "create-dmg": "^8.1.0"
   },
   "overrides": {
     "@xmldom/xmldom": "^0.8.10",
