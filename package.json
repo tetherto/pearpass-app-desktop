@@ -5,7 +5,8 @@
   "description": "PearPass password manager",
   "author": "PearPass",
   "main": "electron/main.cjs",
-  "upgrade": "pear://9hpqa7h94mf69uhpf4zec1gutxkx1q1f59riz8i6cpanw76d8eiy",
+  "upgrade": "pear://r9s8cr544s61t5ati3kde3fh3g5g5ksqhjwytqmcht65fhdzm9iy",
+  "legacyChannelLink": "pear://tywsat7gz8m65ejx4zjn3773pbdc4j8m66tukis8dgzekraymtzo",
   "build": {
     "appId": "com.pears.pass",
     "icon": "assets/darwin/icon.png",
@@ -234,6 +235,7 @@
     "@tetherto/pearpass-lib-vault-core": "git+https://github.com/tetherto/pearpass-lib-vault-core.git",
     "@tetherto/pearpass-utils-password-check": "git+https://github.com/tetherto/pearpass-utils-password-check.git",
     "@tetherto/pearpass-utils-password-generator": "git+https://github.com/tetherto/pearpass-utils-password-generator.git",
+    "autopass": "~3.3.0",
     "bare-os": "3.6.2",
     "bare-subprocess": "5.2.1",
     "buffer": "6.0.3",

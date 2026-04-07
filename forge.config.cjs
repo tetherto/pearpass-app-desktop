@@ -67,7 +67,10 @@ module.exports = {
   ],
 
   hooks: {
-    preMake: async () => {
+    preMake: async (_config, options) => {
+      const targetArch = options?.arch || process.arch
+      const msixArch = targetArch === 'arm64' ? 'arm64' : 'x64'
+
       const pkgJson = JSON.parse(
         fs.readFileSync(path.resolve('package.json'), 'utf8')
       )
@@ -80,25 +83,43 @@ module.exports = {
       const manifest = fs.readFileSync(manifestPath, 'utf8')
       fs.writeFileSync(
         manifestPath,
-        manifest.replace(
-          /Version="\d+\.\d+\.\d+\.\d+"/,
-          `Version="${msixVersion}"`
-        )
+        manifest
+          .replace(
+            /Version="\d+\.\d+\.\d+\.\d+"/,
+            `Version="${msixVersion}"`
+          )
+          .replace(
+            /ProcessorArchitecture="\w+"/,
+            `ProcessorArchitecture="${msixArch}"`
+          )
       )
     },
     postMake: async (forgeConfig, results) => {
       for (const result of results) {
         if (result.platform !== 'win32') continue
-        for (const artifact of result.artifacts) {
+        for (let i = 0; i < result.artifacts.length; i++) {
+          const artifact = result.artifacts[i]
           if (!artifact.endsWith('.msix')) continue
-          // Place Windows artifact in a stable path for pear-build:
-          // ./out/PearPass (directory name must match appName)
-          const standardDir = path.join(__dirname, 'out', appName)
-          fs.mkdirSync(standardDir, { recursive: true })
-          const dest = path.join(standardDir, path.basename(artifact))
-          fs.copyFileSync(artifact, dest)
+          const dir = path.dirname(artifact)
+          const ext = path.extname(artifact)
+          const base = path.basename(artifact, ext)
+          const renamed = path.join(dir, `${base}-${result.arch}${ext}`)
+          fs.renameSync(artifact, renamed)
+          result.artifacts[i] = renamed
         }
       }
+    },
+    readPackageJson: async (forgeConfig, packageJson) => {
+      if (process.env.PEARPASS_UPGRADE_LINK) {
+        packageJson.upgrade = process.env.PEARPASS_UPGRADE_LINK
+      }
+      if (process.env.PEARPASS_LEGACY_CHANNEL_LINK) {
+        packageJson.legacyChannelLink = process.env.PEARPASS_LEGACY_CHANNEL_LINK
+      }
+      if (process.env.BUILD_VERSION) {
+        packageJson.version = process.env.BUILD_VERSION
+      }
+      return packageJson
     }
   },
 

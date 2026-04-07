@@ -24,9 +24,9 @@ function readDesignVersion() {
     return 1
   }
 }
-
 module.exports = {
-  upgrade: process.env.PEARPASS_UPGRADE_LINK || pkg.upgrade || null,
+  upgrade: pkg.upgrade || null,
   version: pkg.version ?? 0,
+  legacyChannelLink: pkg.legacyChannelLink || null,
   designVersion: readDesignVersion()
 }
