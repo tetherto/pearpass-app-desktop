@@ -1,7 +1,7 @@
 {
   "name": "pearpass-app-desktop",
   "version": "1.5.1",
-  "upgrade": "pear://bkakt7bf5tb9jc57k5u7jq9pw31ahd6bsegb5mrz837frrbgwxxy",
+  "upgrade": "pear://dbkezmhetxwo95ab1kcojfraw1eryzf7kex5cahykf6b9c3amd6o",
   "productName": "PearPass",
   "pear": {
     "name": "pearpass-app-desktop",
