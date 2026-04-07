@@ -31,6 +31,8 @@ function getApp() {
 }
 
 async function startUpdater() {
+  if (IS_LINUX && !process.env.APPIMAGE) return
+
   const pkg = (() => {
     try {
       if (typeof Pear?.get === 'function') {
