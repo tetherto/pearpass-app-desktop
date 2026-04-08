@@ -54,14 +54,14 @@ test.describe('Creating Custom Item', () => {
   })
 
   test('Creating the "Custom" item', async ({ page }) => {
-    qase.id(2246);
+    qase.id(2546);
     await createOrEditPage.fillCreateOrEditInput('title', 'Custom Field Title')
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await page.waitForTimeout(testData.timeouts.action)
   })
 
   test('Viewing created item. Verify item details', async ({ page }) => {
-    qase.id(2247);
+    qase.id(2547);
     await mainPage.openElementDetails()
     await detailsPage.verifyTitle('Custom Field Title')
   })

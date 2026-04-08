@@ -62,7 +62,7 @@ test.describe('Editing/Deleting PassPhrase Item', () => {
   });
 
   test('Verify that edited "PassPhrase" item fields are saved correctly', async () => {
-    qase.id(2200);
+    qase.id(2658);
     await mainPage.openElementDetails();
     await detailsPage.editElement();
     await createOrEditPage.fillCreateOrEditInput('title', 'PassPhrase Title Edited')
