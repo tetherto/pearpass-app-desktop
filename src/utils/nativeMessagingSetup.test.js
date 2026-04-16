@@ -15,7 +15,7 @@ import {
 // Mock dependencies
 jest.mock('@tetherto/pearpass-lib-constants', () => ({
   MANIFEST_NAME: 'com.pearpass.native_messaging',
-  EXTENSION_ID: 'mock-extension-id'
+  CHROMIUM_EXTENSION_ID: 'mock-extension-id'
 }))
 jest.mock('os')
 jest.mock('fs/promises')

@@ -5,7 +5,7 @@ import path from 'path'
 
 import {
   MANIFEST_NAME,
-  EXTENSION_ID,
+  CHROMIUM_EXTENSION_ID,
   FIREFOX_EXTENSION_ID
 } from '@tetherto/pearpass-lib-constants'
 
@@ -556,7 +556,8 @@ export const setupNativeMessaging = async ({
       throw new Error(execResult.message)
     }
 
-    const extensionId = localStorage.getItem('EXTENSION_ID') || EXTENSION_ID
+    const extensionId =
+      localStorage.getItem('CHROMIUM_EXTENSION_ID') || CHROMIUM_EXTENSION_ID
 
     // Create Chromium native messaging manifest
     const chromiumManifest = {
