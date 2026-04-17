@@ -137,7 +137,7 @@
     "postinstall": "node scripts/patch-electron-dock-name.mjs",
     "watch:packages": "nodemon --watch packages --ext js,json --exec \"echo 'Packages changed'\"",
     "electron": "electron .",
-    "dev": "concurrently -n \"TypeScript,Bundle,Electron\" -c \"blue,cyan,green\" \"node node_modules/typescript/bin/tsc --watch\" \"node scripts/bundle-renderer.mjs --watch\" \"wait-on dist/renderer.bundle.js && electron .\"",
+    "dev": "concurrently -n \"TypeScript,Bundle,Bridge,Electron\" -c \"blue,cyan,magenta,green\" \"node node_modules/typescript/bin/tsc --watch\" \"node scripts/bundle-renderer.mjs --watch\" \"node scripts/bundle-bridge.mjs --watch\" \"wait-on dist/renderer.bundle.js && electron .\"",
     "dev:reset": "PEARPASS_DEV_RESET=1 npm run dev",
     "dist:prepare:dev": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save",
     "dist:mac:arm64": "npx electron-builder --mac --arm64 -c electron-builder.mac.json --publish never",

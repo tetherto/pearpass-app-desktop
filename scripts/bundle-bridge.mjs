@@ -9,8 +9,9 @@ import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.join(__dirname, '..')
+const watch = process.argv.includes('--watch')
 
-esbuild.build({
+const ctx = await esbuild.context({
   entryPoints: [
     path.join(
       root,
@@ -37,4 +38,12 @@ esbuild.build({
     'pear-ipc'
   ],
   logLevel: 'info'
-}).catch(() => process.exit(1))
+})
+
+if (watch) {
+  await ctx.watch()
+  console.log('Watching for changes...')
+} else {
+  await ctx.rebuild()
+  ctx.dispose()
+}
