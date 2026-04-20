@@ -185,7 +185,6 @@ export const CardCreateMasterPasswordV2 = () => {
               description={t(
                 "Don't forget your Master password. It's the only way to access your vault. We can't help recover it. Back it up securely."
               )}
-              icon={<ReportProblemRound width={16} height={16} />}
             />
           )}
         </div>
