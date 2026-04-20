@@ -32,7 +32,7 @@ PearPass is a distributed password manager powered by Pear Runtime. It allows se
 node --version
 ```
 
-- **Pear**: Ensure you have Pear installed mode details can be found [here](https://docs.pears.com/guides)
+- **Pear**: Ensure you have Pear installed. More details can be found at [pears.com](https://pears.com/).
 
 
 Clone the repository
