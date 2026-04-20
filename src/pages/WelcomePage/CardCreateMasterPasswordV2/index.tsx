@@ -15,8 +15,7 @@ import { AlertMessage, Button, Form, Link, PasswordField, Text, Title } from '@t
 import type { PasswordIndicatorVariant } from '@tetherto/pearpass-lib-ui-kit'
 import {
   KeyboardArrowRightFilled,
-  InfoOutlined,
-  ReportProblemRound
+  InfoOutlined
 } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { useTheme } from '@tetherto/pearpass-lib-ui-kit'
 
