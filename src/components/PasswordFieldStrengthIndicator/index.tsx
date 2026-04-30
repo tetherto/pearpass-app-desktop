@@ -43,8 +43,8 @@ export const PasswordFieldStrengthIndicator = ({
 
   return (
     <PasswordField
-      label={t(`${label}`)}
-      placeholder={t(`${placeholder}`)}
+      label={t(label)}
+      placeholder={t(placeholder)}
       value={passwordField.value}
       onChange={(e) => {
         passwordField.onChange(e.target.value)

@@ -28,8 +28,9 @@ jest.mock('../../utils/getPasswordStrengthInfo', () => ({
 
 jest.mock('../../constants/password', () => ({
   STRENGTH_MAP: {
-    weak: 'weak',
-    strong: 'strong'
+    error: 'vulnerable',
+    warning: 'decent',
+    success: 'strong'
   }
 }))
 
@@ -120,19 +121,17 @@ describe('PasswordFieldStrengthIndicator', () => {
   })
 
   test('computes password strength and maps indicator', () => {
-    const {
-      getPasswordStrength
-    } = require('../../utils/getPasswordStrengthInfo')
+    const { getPasswordStrength } = require('../../utils/getPasswordStrengthInfo')
+    const { PasswordField } = require('@tetherto/pearpass-lib-ui-kit')
 
-    getPasswordStrength.mockReturnValue({
-      strengthType: 'strong'
-    })
+    getPasswordStrength.mockReturnValue({ strengthType: 'success' })
 
     render(<PasswordFieldStrengthIndicator {...baseProps} />)
 
-    expect(getPasswordStrength).toHaveBeenCalledWith(
-      '123456',
-      PassType.Password
+    expect(getPasswordStrength).toHaveBeenCalledWith('123456', PassType.Password)
+    expect(PasswordField).toHaveBeenLastCalledWith(
+      expect.objectContaining({ passwordIndicator: 'strong' }),
+      undefined
     )
   })
 

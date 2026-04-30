@@ -28,6 +28,7 @@ import { useTranslation } from '../../../../hooks/useTranslation'
 import { useCreateOrEditRecord } from '../../../../hooks/useCreateOrEditRecord'
 import { PasswordFieldStrengthIndicator } from '../../../../components/PasswordFieldStrengthIndicator'
 import { PassType } from '../../../../shared/types'
+import { FolderDropdownV2 } from '../../../../components/FolderDropdown/FolderDropdownV2'
 
 export type CreateOrEditWifiModalContentV2Props = {
   initialRecord?: {
@@ -95,7 +96,7 @@ export const CreateOrEditWifiModalContentV2 = ({
     folder: Validator.string()
   })
 
-  const { register, handleSubmit, registerArray, setValue } = useForm({
+  const { register, handleSubmit, registerArray, setValue, values } = useForm({
     initialValues: {
       title: initialRecord?.data?.title ?? '',
       password: initialRecord?.data?.password ?? '',
@@ -232,6 +233,13 @@ export const CreateOrEditWifiModalContentV2 = ({
             {t('Additional')}
           </Text>
         </div>
+
+        <FolderDropdownV2
+          selectedFolder={values?.folder}
+          onFolderSelect={(name) =>
+            setValue('folder', name === values.folder ? '' : name)
+          }
+        />
 
         <InputField
           label={t('Comment')}

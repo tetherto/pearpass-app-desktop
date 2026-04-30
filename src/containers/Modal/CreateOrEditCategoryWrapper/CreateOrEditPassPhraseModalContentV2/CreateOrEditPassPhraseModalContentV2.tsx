@@ -26,6 +26,7 @@ import { useGlobalLoading } from '../../../../context/LoadingContext'
 import { useModal } from '../../../../context/ModalContext'
 import { useToast } from '../../../../context/ToastContext'
 import { useTranslation } from '../../../../hooks/useTranslation'
+import { FolderDropdownV2 } from '../../../../components/FolderDropdown/FolderDropdownV2'
 
 export type CreateOrEditPassPhraseModalContentV2Props = {
   initialRecord?: {
@@ -97,7 +98,7 @@ export const CreateOrEditPassPhraseModalContentV2 = ({
     folder: Validator.string()
   })
 
-  const { register, handleSubmit, registerArray, setValue } = useForm({
+  const { register, handleSubmit, registerArray, setValue, values } = useForm({
     initialValues: {
       title: initialRecord?.data?.title ?? '',
       passPhrase: initialRecord?.data?.passPhrase ?? '',
@@ -224,6 +225,13 @@ export const CreateOrEditPassPhraseModalContentV2 = ({
             {t('Additional')}
           </Text>
         </div>
+
+        <FolderDropdownV2
+          selectedFolder={values?.folder}
+          onFolderSelect={(name) =>
+            setValue('folder', name === values.folder ? '' : name)
+          }
+        />
 
         <MultiSlotInput testID="createoredit-passphrase-comments-slot-v2">
           <InputField

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 
 import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import { Validator } from '@tetherto/pear-apps-utils-validator'
@@ -7,28 +7,21 @@ import { AUTHENTICATOR_ENABLED } from '@tetherto/pearpass-lib-constants'
 import {
   AttachmentField as UiKitAttachmentField,
   Button,
-  ContextMenu,
   Dialog,
   Form,
   InputField,
   MultiSlotInput,
-  NavbarListItem,
   PasswordField,
-  SelectField,
   Text,
   useTheme,
 } from '@tetherto/pearpass-lib-ui-kit'
 import { RECORD_TYPES } from '@tetherto/pearpass-lib-vault'
 import {
   useCreateRecord,
-  useFolders,
   useRecords
 } from '@tetherto/pearpass-lib-vault'
 import {
   Add,
-  CreateNewFolder,
-  Folder,
-  KeyboardArrowBottom,
   SyncLock,
   TrashOutlined,
   UploadFileFilled
@@ -46,9 +39,8 @@ import { addHttps } from '../../../../utils/addHttps'
 import { formatPasskeyDate } from '../../../../utils/formatPasskeyDate'
 import { getFilteredAttachmentsById } from '../../../../utils/getFilteredAttachmentsById'
 import { handleFileSelect } from '../../../../utils/handleFileSelect'
-import { sortByName } from '../../../../utils/sortByName'
-import { CreateFolderModalContentV2 } from '../../CreateFolderModalContentV2/CreateFolderModalContentV2'
 import { UploadFilesModalContentV2 } from '../../UploadFilesModalContentV2'
+import { FolderDropdownV2 } from '../../../../components/FolderDropdown/FolderDropdownV2'
 import { PassType } from '../../../../shared/types'
 import { PasswordFieldStrengthIndicator } from '../../../../components/PasswordFieldStrengthIndicator'
 
@@ -106,16 +98,6 @@ export const CreateOrEditLoginModalContentV2 = ({
       setToast({ message: t('Record updated successfully') })
     }
   })
-
-  const { data: folders } = useFolders()
-
-  const folderOptions = useMemo(() => {
-    return sortByName(
-      Object.values(
-        (folders?.customFolders ?? {}) as Record<string, { name: string }>
-      )
-    ).map((f) => f.name)
-  }, [folders])
 
   const onError = (error: { message: string }) => {
     setToast({ message: error.message })
@@ -242,21 +224,6 @@ export const CreateOrEditLoginModalContentV2 = ({
     )
   }
 
-  const handleFolderSelect = (folder?: { name?: string }) => {
-    if (!folder) return
-    setValue('folder', folder.name === values.folder ? '' : (folder.name ?? ''))
-  }
-
-  const handleCreateFolder = () => {
-    setModal(
-      html`<${CreateFolderModalContentV2}
-        onClose=${closeModal}
-        onCreate=${(folderName: string) =>
-          handleFolderSelect({ name: folderName })}
-      />`
-    )
-  }
-
   const isEdit = !!initialRecord
 
   const titleField = register('title')
@@ -264,41 +231,6 @@ export const CreateOrEditLoginModalContentV2 = ({
   const passwordField = register('password')
   const otpSecretField = register('otpSecret')
   const noteField = register('note')
-
-  const folderSelectorContent = (
-    <>
-      {folderOptions.map((name) => (
-        <NavbarListItem
-          key={name}
-          icon={
-            <Folder
-              width={16}
-              height={16}
-              color={theme.colors.colorTextPrimary}
-            />
-          }
-          iconSize={16}
-          label={name}
-          selected={values?.folder === name}
-          onClick={() => handleFolderSelect({ name })}
-          testID={`createoredit-folder-option-v2-${name}`}
-        />
-      ))}
-      <NavbarListItem
-        icon={
-          <CreateNewFolder
-            width={16}
-            height={16}
-            color={theme.colors.colorTextPrimary}
-          />
-        }
-        iconSize={16}
-        label={t('Add New Folder')}
-        onClick={handleCreateFolder}
-        testID='createoredit-folder-create-v2'
-      />
-    </>
-  )
 
   return (
     <Dialog
@@ -475,30 +407,18 @@ export const CreateOrEditLoginModalContentV2 = ({
           })}
         </MultiSlotInput>
 
-        <ContextMenu
-          fullWidth
-          trigger={
-            <MultiSlotInput testID='createoredit-folder-slot-v2'>
-              <SelectField
-                label={t('Folder')}
-                value={values?.folder ?? ''}
-                placeholder={t('Choose Folder')}
-                testID='createoredit-select-folder-v2'
-                rightSlot={
-                  <KeyboardArrowBottom color={theme.colors.colorTextPrimary} />
-                }
-              />
-            </MultiSlotInput>
-          }
-        >
-          {folderSelectorContent}
-        </ContextMenu>
-
         <div style={styles.sectionLabel}>
           <Text variant='caption' color={theme.colors.colorTextSecondary}>
             {t('Additional')}
           </Text>
         </div>
+
+        <FolderDropdownV2
+          selectedFolder={values?.folder}
+          onFolderSelect={(name) =>
+            setValue('folder', name === values.folder ? '' : name)
+          }
+        />
 
         <MultiSlotInput testID='createoredit-comment-slot-v2'>
           <InputField
@@ -528,47 +448,47 @@ export const CreateOrEditLoginModalContentV2 = ({
         >
           {values.attachments.length > 0
             ? values.attachments.map(
-                (
-                  attachment: {
-                    id?: string
-                    tempId?: string
-                    name: string
-                  },
-                  index: number
-                ) => (
-                  <UiKitAttachmentField
-                    key={attachment.id || attachment.tempId}
-                    label={t('Attachment')}
-                    value={attachment.name}
-                    testID={`createoredit-attachment-v2-${index}`}
-                    rightSlot={
-                      <Button
-                        variant='tertiary'
-                        size='small'
-                        type='button'
-                        aria-label={t('Delete File')}
-                        iconBefore={
-                          <TrashOutlined
-                            width={16}
-                            height={16}
-                            color={theme.colors.colorTextPrimary}
-                          />
-                        }
-                        onClick={() =>
-                          setValue(
-                            ATTACHMENTS_FIELD_KEY,
-                            getFilteredAttachmentsById(
-                              values.attachments,
-                              attachment
-                            )
+              (
+                attachment: {
+                  id?: string
+                  tempId?: string
+                  name: string
+                },
+                index: number
+              ) => (
+                <UiKitAttachmentField
+                  key={attachment.id || attachment.tempId}
+                  label={t('Attachment')}
+                  value={attachment.name}
+                  testID={`createoredit-attachment-v2-${index}`}
+                  rightSlot={
+                    <Button
+                      variant='tertiary'
+                      size='small'
+                      type='button'
+                      aria-label={t('Delete File')}
+                      iconBefore={
+                        <TrashOutlined
+                          width={16}
+                          height={16}
+                          color={theme.colors.colorTextPrimary}
+                        />
+                      }
+                      onClick={() =>
+                        setValue(
+                          ATTACHMENTS_FIELD_KEY,
+                          getFilteredAttachmentsById(
+                            values.attachments,
+                            attachment
                           )
-                        }
-                        data-testid={`createoredit-button-deleteattachment-v2-${index}`}
-                      />
-                    }
-                  />
-                )
+                        )
+                      }
+                      data-testid={`createoredit-button-deleteattachment-v2-${index}`}
+                    />
+                  }
+                />
               )
+            )
             : null}
           <UiKitAttachmentField
             label={t('Attachment')}

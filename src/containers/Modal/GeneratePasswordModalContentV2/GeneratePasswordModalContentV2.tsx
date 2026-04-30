@@ -18,7 +18,6 @@ import {
   Text,
   Title,
   ToggleSwitch,
-  rawTokens,
   useTheme
 } from '@tetherto/pearpass-lib-ui-kit'
 import type { PasswordIndicatorVariant } from '@tetherto/pearpass-lib-ui-kit'
@@ -60,14 +59,6 @@ export type GeneratePasswordModalContentV2Props = {
   onPasswordInsert?: (pass: string, type: PassType) => void
 }
 
-const passwordDisplayStyles: Record<string, string | number> = {
-    fontFamily: rawTokens.fontDisplay,
-    fontSize: rawTokens.fontSize28,
-    fontWeight: rawTokens.weightRegular,
-    lineHeight: 1,
-    letterSpacing: 0,
-  } 
-
 const renderHighlightedPassword = (
   text: string,
   primaryColor: string,
@@ -80,33 +71,21 @@ const renderHighlightedPassword = (
 
     if (/^\d+$/.test(part)) {
       return (
-        <Text
-          key={`${part}-${index}`}
-          color={primaryColor}
-          style={passwordDisplayStyles}
-        >
+        <span key={`${part}-${index}`} style={{ color: primaryColor }}>
           {part}
-        </Text>
+        </span>
       )
     }
 
     if (/[^a-zA-Z\d\s]/.test(part)) {
       return (
-        <Text
-          key={`${part}-${index}`}
-          color={secondaryColor}
-          style={passwordDisplayStyles}
-        >
+        <span key={`${part}-${index}`} style={{ color: secondaryColor }}>
           {part}
-        </Text>
+        </span>
       )
     }
 
-    return (
-      <Text key={`${part}-${index}`} style={passwordDisplayStyles}>
-        {part}
-      </Text>
-    )
+    return <span key={`${part}-${index}`}>{part}</span>
   })
 }
 
@@ -215,7 +194,9 @@ export const GeneratePasswordModalContentV2 = ({
     if (onPasswordInsert) {
       onPasswordInsert(
         generatedValue,
-        selectedOption === PASSWORD_OPTIONS.passphrase ? PassType.PassPhrase : PassType.Password
+        selectedOption === PASSWORD_OPTIONS.passphrase
+          ? PassType.PassPhrase
+          : PassType.Password
       )
       closeModal()
       return
@@ -224,7 +205,11 @@ export const GeneratePasswordModalContentV2 = ({
     closeModal()
   }
 
-  const passphraseRules: { key: 'all' | keyof PassphraseRules; label: string; value: boolean }[] = [
+  const passphraseRules: {
+    key: 'all' | keyof PassphraseRules
+    label: string
+    value: boolean
+  }[] = [
     { key: 'all', label: t('Select all'), value: isAllPassphraseRulesSelected },
     {
       key: 'capitalLetters',
@@ -247,28 +232,30 @@ export const GeneratePasswordModalContentV2 = ({
     <Dialog
       title={t('New Password Item')}
       onClose={closeModal}
-      testID="generatepassword-dialog-v2"
-      closeButtonTestID="generatepassword-close-v2"
+      testID='generatepassword-dialog-v2'
+      closeButtonTestID='generatepassword-close-v2'
       footer={
         <>
           <Button
-            variant="secondary"
-            size="small"
-            type="button"
+            variant='secondary'
+            size='small'
+            type='button'
             onClick={closeModal}
-            data-testid="generatepassword-button-discard-v2"
+            data-testid='generatepassword-button-discard-v2'
           >
             {t('Discard')}
           </Button>
           <Button
-            variant="primary"
-            size="small"
-            type="button"
+            variant='primary'
+            size='small'
+            type='button'
             iconBefore={
-              onPasswordInsert ? undefined : <ContentCopy width={16} height={16} />
+              onPasswordInsert ? undefined : (
+                <ContentCopy width={16} height={16} />
+              )
             }
             onClick={handlePrimaryAction}
-            data-testid="generatepassword-button-primary-v2"
+            data-testid='generatepassword-button-primary-v2'
           >
             {onPasswordInsert ? t('Use Password') : t('Copy Password')}
           </Button>
@@ -277,13 +264,13 @@ export const GeneratePasswordModalContentV2 = ({
     >
       <div style={styles.body}>
         <div style={styles.section}>
-          <Text variant="caption" color={theme.colors.colorTextSecondary}>
+          <Text variant='caption' color={theme.colors.colorTextSecondary}>
             {t('Generated Password')}
           </Text>
 
           <div style={styles.groupedCard}>
             <div style={styles.generatedPasswordBlock}>
-              <Title as="h3">
+              <Title as='h3'>
                 {renderHighlightedPassword(
                   generatedValue,
                   theme.colors.colorPrimary,
@@ -326,9 +313,7 @@ export const GeneratePasswordModalContentV2 = ({
                       description: option.description
                     }
                   ]}
-                  value={
-                    selectedOption === option.key ? option.key : undefined
-                  }
+                  value={selectedOption === option.key ? option.key : undefined}
                   onChange={() => setSelectedOption(option.key)}
                 />
               </div>
@@ -337,14 +322,14 @@ export const GeneratePasswordModalContentV2 = ({
         </div>
 
         <div style={styles.section}>
-          <Text variant="caption" color={theme.colors.colorTextSecondary}>
+          <Text variant='caption' color={theme.colors.colorTextSecondary}>
             {t('Password Length')}
           </Text>
 
           <div style={styles.singleRowCard}>
             <div style={styles.sliderRow}>
               <div style={styles.sliderLabel}>
-                <Text variant="bodyEmphasized">
+                <Text variant='bodyEmphasized'>
                   {selectedOption === PASSWORD_OPTIONS.passphrase
                     ? `${selectedRules.passphrase.words} ${t('Words')}`
                     : `${selectedRules.password.characters} ${t('Chars')}`}
@@ -379,47 +364,45 @@ export const GeneratePasswordModalContentV2 = ({
         </div>
 
         <div style={styles.section}>
-          <Text variant="caption" color={theme.colors.colorTextSecondary}>
+          <Text variant='caption' color={theme.colors.colorTextSecondary}>
             {t('Password settings')}
           </Text>
 
           <div style={styles.groupedCard}>
-            {selectedOption === PASSWORD_OPTIONS.passphrase
-              ? passphraseRules.map((rule, index, rules) => (
-                  <div
-                    key={rule.key}
-                    style={{
-                      ...styles.settingRow,
-                      ...(index < rules.length - 1
-                        ? styles.optionRowDivider
-                        : {})
-                    }}
-                  >
-                    <Text variant="bodyEmphasized">{rule.label}</Text>
-                    <ToggleSwitch
-                      checked={rule.value}
-                      onChange={() => handlePassphraseToggle(rule.key)}
-                      aria-label={rule.label}
-                    />
-                  </div>
-                ))
-              : (
-                <div style={styles.settingRow}>
-                  <Text variant="bodyEmphasized">
-                    {t('Special character (!&*)')}
-                  </Text>
+            {selectedOption === PASSWORD_OPTIONS.passphrase ? (
+              passphraseRules.map((rule, index, rules) => (
+                <div
+                  key={rule.key}
+                  style={{
+                    ...styles.settingRow,
+                    ...(index < rules.length - 1 ? styles.optionRowDivider : {})
+                  }}
+                >
+                  <Text variant='bodyEmphasized'>{rule.label}</Text>
                   <ToggleSwitch
-                    checked={selectedRules.password.specialCharacters}
-                    onChange={() =>
-                      handlePasswordRuleChange(
-                        'specialCharacters',
-                        !selectedRules.password.specialCharacters
-                      )
-                    }
-                    aria-label={t('Special character toggle')}
+                    checked={rule.value}
+                    onChange={() => handlePassphraseToggle(rule.key)}
+                    aria-label={rule.label}
                   />
                 </div>
-              )}
+              ))
+            ) : (
+              <div style={styles.settingRow}>
+                <Text variant='bodyEmphasized'>
+                  {t('Special character (!&*)')}
+                </Text>
+                <ToggleSwitch
+                  checked={selectedRules.password.specialCharacters}
+                  onChange={() =>
+                    handlePasswordRuleChange(
+                      'specialCharacters',
+                      !selectedRules.password.specialCharacters
+                    )
+                  }
+                  aria-label={t('Special character toggle')}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
