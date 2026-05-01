@@ -41,7 +41,7 @@ export const useCreateOrEditRecord = () => {
    *   initialRecord?: unknown,
    *   selectedFolder?: string,
    *   isFavorite?: boolean,
-   *   setValue?: (value: string) => void
+   *   setValue?: (value: string, type: import('../shared/types').PassType) => void
    * }} options
    */
   const handleCreateOrEditRecord = (options) => {

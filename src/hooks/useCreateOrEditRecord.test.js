@@ -46,6 +46,10 @@ jest.mock('@tetherto/pear-apps-utils-generate-unique-id', () => ({
   generateUniqueId: jest.fn(() => 'mocked-unique-id')
 }))
 
+jest.mock('../utils/designVersion', () => ({
+  isV2: () => true
+}))
+
 describe('useCreateOrEditRecord', () => {
   const setModalMock = jest.fn()
 

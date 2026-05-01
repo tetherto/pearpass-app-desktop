@@ -233,7 +233,7 @@ export const SidebarV2 = () => {
             <div style={styles.vaultNameRow}>
               <div style={styles.vaultNameText}>
                 <Text variant="labelEmphasized">
-                  {vaultData?.name ?? t('Personal Vault')}
+                  {vaultData?.name ?? t('Personal')}
                 </Text>
               </div>
               <ExpandMore width={16} height={16} style={chevronStyle} />

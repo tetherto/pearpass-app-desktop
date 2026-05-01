@@ -44,5 +44,10 @@ export const createStyles = (
   },
   optionSectionWithBorder: {
     borderTop: `1px solid ${colors.colorBorderPrimary}`
+  },
+  copyIconWrapper:{
+    display: "flex",
+    justifyContent: 'space-between',
+    alignItems: "center"
   }
 })

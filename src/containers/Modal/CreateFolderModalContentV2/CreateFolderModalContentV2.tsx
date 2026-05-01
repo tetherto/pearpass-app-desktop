@@ -32,8 +32,8 @@ export const CreateFolderModalContentV2 = ({
   const [isRenameLoading, setIsRenameLoading] = useState(false)
 
   const { isLoading: isCreateLoading, createFolder } = useCreateFolder({
-    onCompleted: (folderData: { name: string }) => {
-      onCreate?.(folderData.name)
+    onCompleted: (folderData: { folder: string }) => {
+      onCreate?.(folderData.folder)
       onClose()
     }
   })

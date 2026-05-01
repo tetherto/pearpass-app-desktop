@@ -37,12 +37,7 @@ import { useRouter } from '../../../context/RouterContext'
 import { useTranslation } from '../../../hooks/useTranslation'
 import { getDeviceName } from '../../../utils/getDeviceName'
 import { logger } from '../../../utils/logger'
-
-const STRENGTH_MAP: Record<string, PasswordIndicatorVariant> = {
-  error: 'vulnerable',
-  warning: 'decent',
-  success: 'strong'
-}
+import { STRENGTH_MAP } from '../../../constants/password'
 
 export const CardCreateMasterPasswordV2 = () => {
   const { t } = useTranslation()
@@ -125,7 +120,7 @@ export const CardCreateMasterPasswordV2 = () => {
       await createMasterPassword(createBuffer)
       await logIn({ password: loginBuffer })
       await initVaults({ password: loginBuffer })
-      await createVault({ name: t('Personal vault') })
+      await createVault({ name: t('Personal') })
       await addDevice(getDeviceName())
       navigate('vault', { recordType: 'all' })
       setIsLoading(false)
@@ -169,7 +164,7 @@ export const CardCreateMasterPasswordV2 = () => {
                 </div>
                 <Text as="span" variant="caption">
                   {t(
-                    "Strong passwords are usually at least 8 characters long, hard to guess, use a mix of letters, numbers, and symbols, and aren't based on personal information."
+                    "Strong passwords are usually at least 8 characters long, hard to guess, use a mix of uppercase and lowercase letters, numbers, and symbols, and aren’t based on personal information."
                   )}
                 </Text>
               </div>

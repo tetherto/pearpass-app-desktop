@@ -12,4 +12,9 @@ type VaultRecord = {
     folder?: string | null
 }
 
+export enum PassType {
+  Password = 'password',
+  PassPhrase = 'passPhrase'
+}
+
 export type { VaultRecord }

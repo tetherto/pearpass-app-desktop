@@ -207,6 +207,7 @@ export const RecordListViewV2 = ({
                             onSelect={() => handleRecordPress(record)}
                             onClick={() => handleRecordPress(record)}
                             testID={`record-list-item-${record.id}`}
+                            isCheckboxSelectable={false}
                             style={
                               styles.recordRow as React.ComponentProps<
                                 typeof ListItem

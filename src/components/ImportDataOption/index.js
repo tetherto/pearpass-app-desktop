@@ -8,14 +8,11 @@ import { useModal } from '../../context/ModalContext'
  * @param {Object} props
  * @param {string} props.title
  * @param {string[]} props.accepts
- * @param {React.ElementType} props.icon
  * * @param {(files: FileList) => void} [props.onFilesSelected]
  */
 export const ImportDataOption = ({
   title,
   accepts,
-  icon,
-  imgSrc,
   onFilesSelected,
   testId
 }) => {
@@ -33,9 +30,6 @@ export const ImportDataOption = ({
   }
 
   return html` <${Container} data-testid=${testId} onClick=${handleClick}>
-    ${icon
-      ? html`<${icon} size="25" />`
-      : html`<img src=${imgSrc} width="25" height="25" />`}
     <${Title}>${title}<//>
     <${AcceptedTypes}>${accepts.join(', ')}<//>
   <//>`

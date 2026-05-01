@@ -23,7 +23,7 @@ const LockCountdown = ({
   style
 }: LockCountdownProps) => {
   const timeRemaining = useCountDown({ initialSeconds, onFinish })
-
+  
   return (
     <span data-testid="locked-screen-countdown-v2" style={style}>
       {timeRemaining}
@@ -48,7 +48,7 @@ export const LockedScreenV2 = (): React.ReactElement => {
       setMasterPasswordStatus(status)
       setIsLoading(false)
     })()
-  }, [refreshMasterPasswordStatus])
+  }, [])
 
   const onFinish = useCallback(async () => {
     const status = await refreshMasterPasswordStatus()

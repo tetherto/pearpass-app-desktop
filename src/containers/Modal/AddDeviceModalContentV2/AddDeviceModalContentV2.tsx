@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { generateQRCodeSVG } from '@tetherto/pear-apps-utils-qr'
 import {
+  AlertMessage,
   Button,
   Dialog,
   RingSpinner,
@@ -9,7 +10,7 @@ import {
   useTheme
 } from '@tetherto/pearpass-lib-ui-kit'
 import { ContentCopy } from '@tetherto/pearpass-lib-ui-kit/icons'
-import { useInvite } from '@tetherto/pearpass-lib-vault'
+import { useInvite, useVault } from '@tetherto/pearpass-lib-vault'
 
 import { createStyles } from './AddDeviceModalContentV2.styles'
 import { useModal } from '../../../context/ModalContext'
@@ -27,6 +28,7 @@ export const AddDeviceModalContentV2 = () => {
   const { colors } = theme
   const [qrSvg, setQrSvg] = useState('')
   const { createInvite, deleteInvite, data } = useInvite()
+  const { data: vault } = useVault()
   const { setShouldBypassAutoLock } = useAutoLockPreferences()
   const { copyToClipboard, isCopied } = useCopyToClipboard()
 
@@ -71,7 +73,7 @@ export const AddDeviceModalContentV2 = () => {
 
   return (
     <Dialog
-      title={t('Share Personal Vault')}
+      title={t('Share {name}', { name: vault?.name ?? '' })}
       onClose={closeModal}
       testID="add-device-dialog-v2"
       closeButtonTestID="add-device-close-v2"
@@ -123,6 +125,15 @@ export const AddDeviceModalContentV2 = () => {
             </Button>
           </div>
         </div>
+        <AlertMessage
+          variant="info"
+          size="small"
+          title=""
+          description={t(
+            'Keep your vault private. Only pair with your own trusted devices. Pairing grants full access to your PearPass data.'
+          )}
+          testID="pairing-disclaimer"
+        />
       </div>
     </Dialog>
   )

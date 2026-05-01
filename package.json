@@ -1,7 +1,7 @@
 {
   "name": "pearpass-app-desktop",
   "productName": "PearPass",
-  "version": "1.6.0",
+  "version": "2.0.0",
   "description": "PearPass password manager",
   "author": "PearPass",
   "main": "electron/main.cjs",

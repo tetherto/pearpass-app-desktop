@@ -24,10 +24,10 @@ import { isOnline } from '../../../../utils/isOnline'
 import { logger } from '../../../../utils/logger'
 import { createStyles } from './styles'
 
-const OFFLINE_TIMEOUT = 'OFFLINE_TIMEOUT'
 const OFFLINE_TIMEOUT_MS = 10000
 const OFFLINE_TIMEOUT_MESSAGE =
   'You are offline, please check your internet connection'
+const TIMED_OUT = Symbol('feedback_timed_out')
 
 const TEST_IDS = {
   root: 'settings-card-report',
@@ -75,29 +75,41 @@ export const ReportAProblemContent = ({ currentVersion = '' }: ReportAProblemCon
         appVersion: currentVersion || undefined
       }
 
-      const sendFeedbackWithTimeout = async () => {
-        await sendSlackFeedback({
-          webhookUrPath: SLACK_WEBHOOK_URL_PATH,
-          ...payload
-        })
-
-        await sendGoogleFormFeedback({
-          formKey: GOOGLE_FORM_KEY,
-          mapping: GOOGLE_FORM_MAPPING,
-          ...payload
-        })
+      const sendFeedback = async (): Promise<boolean> => {
+        const [slackOk, googleOk] = await Promise.all([
+          sendSlackFeedback({
+            webhookUrPath: SLACK_WEBHOOK_URL_PATH,
+            ...payload
+          }),
+          sendGoogleFormFeedback({
+            formKey: GOOGLE_FORM_KEY,
+            mapping: GOOGLE_FORM_MAPPING,
+            ...payload
+          })
+        ])
+        return slackOk !== false && googleOk !== false
       }
 
-      await Promise.race([
-        sendFeedbackWithTimeout(),
-        new Promise<never>((_, reject) => {
-          setTimeout(() => {
-            if (!isOnline()) {
-              reject(new Error(OFFLINE_TIMEOUT))
-            }
-          }, OFFLINE_TIMEOUT_MS)
+      const result = await Promise.race<boolean | typeof TIMED_OUT>([
+        sendFeedback(),
+        new Promise<typeof TIMED_OUT>((resolve) => {
+          setTimeout(() => resolve(TIMED_OUT), OFFLINE_TIMEOUT_MS)
         })
       ])
+
+      if (result === TIMED_OUT) {
+        setToast({
+          message: t(OFFLINE_TIMEOUT_MESSAGE)
+        })
+        return
+      }
+
+      if (!result) {
+        setToast({
+          message: t('Something went wrong, please try again')
+        })
+        return
+      }
 
       setMessage('')
 
@@ -105,15 +117,9 @@ export const ReportAProblemContent = ({ currentVersion = '' }: ReportAProblemCon
         message: t('Feedback sent')
       })
     } catch (error) {
-      if (error instanceof Error && error.message === OFFLINE_TIMEOUT) {
-        setToast({
-          message: t(OFFLINE_TIMEOUT_MESSAGE)
-        })
-      } else {
-        setToast({
-          message: t('Something went wrong, please try again')
-        })
-      }
+      setToast({
+        message: t('Something went wrong, please try again')
+      })
 
       logger.error('ReportAProblemContent', 'Error sending feedback:', error)
     } finally {

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import { Validator } from '@tetherto/pear-apps-utils-validator'
@@ -26,6 +26,9 @@ import { useModal } from '../../../../context/ModalContext'
 import { useToast } from '../../../../context/ToastContext'
 import { useTranslation } from '../../../../hooks/useTranslation'
 import { useCreateOrEditRecord } from '../../../../hooks/useCreateOrEditRecord'
+import { PasswordFieldStrengthIndicator } from '../../../../components/PasswordFieldStrengthIndicator'
+import { PassType } from '../../../../shared/types'
+import { FolderDropdownV2 } from '../../../../components/FolderDropdown/FolderDropdownV2'
 
 export type CreateOrEditWifiModalContentV2Props = {
   initialRecord?: {
@@ -54,6 +57,8 @@ export const CreateOrEditWifiModalContentV2 = ({
   const { t } = useTranslation()
   const { closeModal } = useModal()
   const { handleCreateOrEditRecord } = useCreateOrEditRecord()
+  const [passwordType, setPasswordType] = useState<PassType>(PassType.Password)
+
   const { setToast } = useToast()
   const { theme } = useTheme()
   const styles = createStyles()
@@ -91,7 +96,7 @@ export const CreateOrEditWifiModalContentV2 = ({
     folder: Validator.string()
   })
 
-  const { register, handleSubmit, registerArray, setValue } = useForm({
+  const { register, handleSubmit, registerArray, setValue, values } = useForm({
     initialValues: {
       title: initialRecord?.data?.title ?? '',
       password: initialRecord?.data?.password ?? '',
@@ -163,7 +168,7 @@ export const CreateOrEditWifiModalContentV2 = ({
             variant="primary"
             size="small"
             type="button"
-            disabled={isLoading}
+            disabled={isLoading || (!isEdit && (!values.title?.trim() || !values.password?.trim()))}
             isLoading={isLoading}
             onClick={() => handleSubmit(onSubmit)()}
             data-testid="createoredit-wifi-button-save-v2"
@@ -195,7 +200,10 @@ export const CreateOrEditWifiModalContentV2 = ({
               onClick={() =>
                 handleCreateOrEditRecord({
                   recordType: 'password',
-                  setValue: (value: string) => setValue('password', value)
+                  setValue: (value: string, type: PassType) => {
+                    setValue('password', value)
+                    setPasswordType(type === PassType.PassPhrase ? PassType.PassPhrase : PassType.Password)
+                  }
                 })
               }
               data-testid="createoredit-wifi-button-generatepassword-v2"
@@ -212,13 +220,11 @@ export const CreateOrEditWifiModalContentV2 = ({
             error={titleField.error || undefined}
             testID="createoredit-wifi-input-name-v2"
           />
-          <PasswordField
-            label={t('Password')}
-            placeholder={t('Enter Password')}
-            value={passwordField.value}
-            onChange={(e) => passwordField.onChange(e.target.value)}
-            error={passwordField.error || undefined}
+          <PasswordFieldStrengthIndicator
             testID="createoredit-wifi-input-password-v2"
+            passwordField={passwordField}
+            passwordType={passwordType}
+            setPasswordType={setPasswordType}
           />
         </MultiSlotInput>
 
@@ -227,6 +233,13 @@ export const CreateOrEditWifiModalContentV2 = ({
             {t('Additional')}
           </Text>
         </div>
+
+        <FolderDropdownV2
+          selectedFolder={values?.folder}
+          onFolderSelect={(name) =>
+            setValue('folder', name === values.folder ? '' : name)
+          }
+        />
 
         <InputField
           label={t('Comment')}

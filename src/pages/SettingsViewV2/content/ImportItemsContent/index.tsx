@@ -49,7 +49,6 @@ type ImportOption = {
   description: string
   testId?: string
   accepts: string[]
-  imgSrc: string
   supportLink?: string
   learnMoreUrl?: string
 }
@@ -98,7 +97,6 @@ export const ImportItemsContent = () => {
       ),
       testId: 'settings-import-1password',
       accepts: ['.csv'],
-      imgSrc: 'assets/images/1password.png',
       supportLink: 'https://support.1password.com/export'
     },
     {
@@ -109,7 +107,6 @@ export const ImportItemsContent = () => {
       ),
       testId: 'settings-import-bitwarden',
       accepts: ['.json', '.csv'],
-      imgSrc: 'assets/images/BitWarden.png',
       supportLink: 'https://bitwarden.com/help/export-your-data/'
     },
     {
@@ -120,7 +117,6 @@ export const ImportItemsContent = () => {
       ),
       testId: 'settings-import-keepass',
       accepts: ['.kdbx', '.csv', '.xml'],
-      imgSrc: 'assets/images/KeePass.png',
       supportLink: 'https://keepass.info/help/base/importexport.html'
     },
     {
@@ -131,7 +127,6 @@ export const ImportItemsContent = () => {
       ),
       testId: 'settings-import-keepassxc',
       accepts: ['.csv', '.xml'],
-      imgSrc: 'assets/images/KeePassXC.png',
       supportLink:
         'https://keepassxc.org/docs/KeePassXC_UserGuide#_exporting_databases'
     },
@@ -143,7 +138,6 @@ export const ImportItemsContent = () => {
       ),
       testId: 'settings-import-lastpass',
       accepts: ['.csv'],
-      imgSrc: 'assets/images/LastPass.png',
       supportLink:
         'https://support.lastpass.com/s/document-item?language=en_US&bundleId=lastpass&topicId=LastPass/export-web-vault.html&_LANG=enus'
     },
@@ -155,7 +149,6 @@ export const ImportItemsContent = () => {
       ),
       testId: 'settings-import-nordpass',
       accepts: ['.csv'],
-      imgSrc: 'assets/images/NordPass.png',
       supportLink:
         'https://support.nordpass.com/hc/en-us/articles/360007646477-How-to-export-passwords-from-NordPass'
     },
@@ -167,29 +160,26 @@ export const ImportItemsContent = () => {
       ),
       testId: 'settings-import-protonpass',
       accepts: ['.csv', '.json'],
-      imgSrc: 'assets/images/ProtonPass.png',
       supportLink: 'https://proton.me/support/pass-export'
     },
     {
-      title: 'Encrypted file',
+      title: 'PearPass Encrypted File',
       type: ImportOptionType.Encrypted,
       description: t(
         'Upload a PearPass-encrypted JSON export file. You will need the password used to encrypt the file.'
       ),
       accepts: ['.json'],
-      imgSrc: 'assets/images/pearpass_logo.png',
       supportLink:
         'https://docs.pass.pears.com/how-to-guides/how-to-export-your-vault/'
     },
     {
-      title: 'Unencrypted file',
+      title: 'PearPass Unencrypted File',
       type: ImportOptionType.Unencrypted,
       description: t(
         'Upload an unencrypted PearPass export file in JSON or CSV format.'
       ),
       testId: 'settings-import-unencrypted',
       accepts: ['.json', '.csv'],
-      imgSrc: 'assets/images/pearpass_logo.png',
       supportLink:
         'https://docs.pass.pears.com/how-to-guides/how-to-export-your-vault/'
     }
@@ -499,15 +489,6 @@ export const ImportItemsContent = () => {
                       option.accepts.join(', ').toUpperCase()
                     }
                     testID={option.testId}
-                    icon={
-                      <img
-                        src={option.imgSrc}
-                        width={32}
-                        height={32}
-                        alt={option.title}
-                        style={{ borderRadius: 8, objectFit: 'contain' }}
-                      />
-                    }
                     rightElement={
                       <KeyboardArrowRightFilled
                         width={16}
@@ -589,8 +570,6 @@ export const ImportItemsContent = () => {
           ) : (
             <div style={styles.uploadArea}>
               <UploadField
-                image={selectedOption.imgSrc}
-                imageAlt={selectedOption.title}
                 acceptedFormats={selectedOption.accepts}
                 files={files}
                 onFilesChange={handleFilesChange}

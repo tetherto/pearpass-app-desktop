@@ -6,6 +6,7 @@ import {
   AttachmentField,
   InputField,
   MultiSlotInput,
+  PasswordField,
   Text
 } from '@tetherto/pearpass-lib-ui-kit'
 import { html } from 'htm/react'
@@ -289,13 +290,8 @@ export const IdentityDetailsFormV2 = ({
   )
   const hasAttachments = attachmentSources.length > 0
 
-  const commentValues: string[] = [
-    ...(values.note?.length ? [values.note] : []),
-    ...((values.customFields ?? []) as CustomField[])
-      .map((field) => field.note ?? '')
-      .filter(Boolean)
-  ]
-  const hasComments = commentValues.length > 0
+  const hasNote = !!values.note?.length
+  const hasCustomFields = !!values.customFields?.length
 
   const handleAttachmentPress = (attachment: Attachment) => {
     if (!attachment?.buffer || !attachment?.name) return
@@ -702,26 +698,42 @@ export const IdentityDetailsFormV2 = ({
           </MultiSlotInput>
         </div>
       )}
-
-      {hasComments && (
+      {(hasNote || hasCustomFields) && (
         <div style={styles.section}>
           <Text variant="caption">{t('Additional')}</Text>
 
-          <MultiSlotInput testID="comments-multi-slot-input">
-            {commentValues.map((comment, index) => (
+          {hasNote && (
+            <MultiSlotInput testID="comments-multi-slot-input">
               <InputField
-                key={`comment-${index}`}
                 label={t('Comment')}
-                value={comment}
                 placeholder={t('Enter Comment')}
                 readOnly
                 copyable
                 onCopy={copyToClipboard}
                 isGrouped
-                testID={`comments-multi-slot-input-slot-${index}`}
+                testID="comments-multi-slot-input-slot-0"
+                {...toReadOnlyFieldProps(register('note'))}
               />
-            ))}
-          </MultiSlotInput>
+            </MultiSlotInput>
+          )}
+
+          {hasCustomFields && (
+            <MultiSlotInput testID="hidden-messages-multi-slot-input">
+              {(values.customFields as CustomField[]).map((field, index) => (
+                <PasswordField
+                  key={`${field.type}-${index}`}
+                  label={t('Hidden Message')}
+                  value={field.note ?? ''}
+                  placeholder={t('Enter Hidden Message')}
+                  readOnly
+                  copyable
+                  onCopy={copyToClipboard}
+                  isGrouped
+                  testID={`hidden-messages-multi-slot-input-slot-${index}`}
+                />
+              ))}
+            </MultiSlotInput>
+          )}
         </div>
       )}
     </div>

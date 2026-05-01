@@ -10,7 +10,8 @@ import {
   FieldError,
   InputField,
   Radio,
-  useTheme
+  useTheme,
+  Text
 } from '@tetherto/pearpass-lib-ui-kit'
 import {
   ContentCopy,
@@ -165,6 +166,26 @@ export const PassPhraseV2 = ({
       <div style={styles.groupContainer}>
         {!isCreateOrEdit ? (
           <div style={styles.optionSection}>
+            <div style={styles.copyIconWrapper}>
+              <Text variant='caption'>{t(`Recovery Phrase`)}</Text>
+              <Button
+                variant="tertiary"
+                size="small"
+                type="button"
+                aria-label={t('Copy recovery phrase')}
+                iconBefore={
+                  <ContentCopy
+                    width={16}
+                    height={16}
+                    color={theme.colors.colorTextPrimary}
+                  />
+                }
+                onClick={() => {
+                  copyToClipboard(value)
+                }}
+              />
+
+            </div>
             <div style={styles.grid}>
               {detailWords.map((word, inputIndex) => (
                 <div
