@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
   BLIND_PEER_TYPE,
+  BLIND_PEERS_LEARN_MORE,
   BLIND_PEERS_LIMIT
 } from '@tetherto/pearpass-lib-constants'
 import {
@@ -355,9 +356,25 @@ export const BlindPeersContent = () => {
       <PageHeader
         as="h1"
         title={t('Blind Peering')}
-        subtitle={t(
-          'Sync your encrypted vault with other devices to improve availability and reliability. Peers only see encrypted data - they can’t access or read anything'
-        )}
+        subtitle={
+          <>
+            {t(
+              'Sync your encrypted vault with other devices to improve availability and reliability. Peers only see encrypted data - they can’t access or read anything.'
+            )}
+            <br />
+            <a
+              href={BLIND_PEERS_LEARN_MORE}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: colors.colorPrimary,
+                textDecoration: 'underline'
+              }}
+            >
+              {t('Learn more about Blind Peering.')}
+            </a>
+          </>
+        }
       />
 
       <div style={styles.settingCard}>

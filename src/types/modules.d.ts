@@ -320,6 +320,7 @@ declare module '@tetherto/pearpass-lib-constants' {
   export const PEARPASS_WEBSITE: string
   export const PRIVACY_POLICY: string
   export const TERMS_OF_USE: string
+  export const BLIND_PEERS_LEARN_MORE: string
   export const DEFAULT_SELECTED_TYPE: number
   export const PASSPHRASE_WORD_COUNTS: {
     STANDARD_12: number
