@@ -86,8 +86,9 @@ export const RecordListViewV2 = ({
         )
         return
       }
+      const isAlreadyOpen = routeData?.recordId === record.id
       navigate(currentPage, {
-        recordId: record.id,
+        recordId: isAlreadyOpen ? '' : record.id,
         recordType: routeData?.recordType
       })
     },
@@ -96,6 +97,7 @@ export const RecordListViewV2 = ({
       setSelectedRecords,
       navigate,
       currentPage,
+      routeData?.recordId,
       routeData?.recordType
     ]
   )
