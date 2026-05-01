@@ -179,7 +179,13 @@ export const MainViewV2 = () => {
         />
       )}
 
-      {!hasRecords && !hasSearch && !isLoading && <EmptyCollectionViewV2 />}
+      {!hasRecords && !hasSearch && !isLoading && (
+        <EmptyCollectionViewV2
+          recordType={routerData?.recordType ?? 'all'}
+          selectedFolder={selectedFolder}
+          isFavoritesView={isFavoritesView}
+        />
+      )}
 
       {!hasRecords && hasSearch && !isLoading && <EmptyResultsViewV2 />}
     </div>
