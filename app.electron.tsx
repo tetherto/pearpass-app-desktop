@@ -2,6 +2,7 @@
  * Electron-only entry for the renderer bundle (nodeIntegration: true).
  */
 import { i18n } from '@lingui/core'
+import { compileMessage } from '@lingui/message-utils/compileMessage'
 import { I18nProvider } from '@lingui/react'
 import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 import {
@@ -29,6 +30,7 @@ import { AutoLockProvider } from './src/hooks/useAutoLockPreferences'
 import { DEBUG_MODE } from './src/constants/appConstants'
 
 setFontsAndResetCSS()
+i18n.setMessagesCompiler(compileMessage)
 i18n.load('en', messages)
 i18n.activate('en')
 
