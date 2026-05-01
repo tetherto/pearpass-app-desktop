@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   BLIND_PEER_TYPE,
@@ -18,6 +18,7 @@ import { Add, Close } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { useBlindMirrors } from '@tetherto/pearpass-lib-vault'
 import { useLoadingContext } from '../../../../context/LoadingContext'
 import { useToast } from '../../../../context/ToastContext'
+import { useUnsavedChanges } from '../../../../context/UnsavedChangesContext'
 import { useTranslation } from '../../../../hooks/useTranslation'
 import { createStyles } from './styles'
 
@@ -101,15 +102,17 @@ export const BlindPeersContent = () => {
       callback: () => Promise<void>
       errorMessage: string
       successMessage?: string
-    }) => {
+    }): Promise<boolean> => {
       try {
         setIsLoading(true)
         await callback()
         if (successMessage) {
           setToast({ message: successMessage })
         }
+        return true
       } catch {
         setToast({ message: errorMessage })
+        return false
       } finally {
         setIsLoading(false)
       }
@@ -122,23 +125,23 @@ export const BlindPeersContent = () => {
       isEditMode?: boolean
       blindPeerType: string
       blindPeers?: string[]
-    }) => {
+    }): Promise<boolean> => {
       if (data.blindPeerType === BLIND_PEER_TYPE.PERSONAL) {
         if (!data.blindPeers?.length) {
-          return
+          return false
         }
         if (data.isEditMode) {
-          await handleBlindMirrorsRequest({
+          const removed = await handleBlindMirrorsRequest({
             callback: removeAllBlindMirrors,
             errorMessage: t('Error removing existing Blind Peers')
           })
+          if (!removed) return false
         }
-        await handleBlindMirrorsRequest({
+        return await handleBlindMirrorsRequest({
           callback: () => addBlindMirrors(data.blindPeers!),
           errorMessage: t('Error adding Blind Peers'),
           successMessage: t('Manual Blind Peers enabled successfully')
         })
-        return
       }
 
       if (data.blindPeerType === BLIND_PEER_TYPE.DEFAULT) {
@@ -147,17 +150,20 @@ export const BlindPeersContent = () => {
           blindMirrorsData.length > 0 &&
           !blindMirrorsData[0].isDefault
         ) {
-          await handleBlindMirrorsRequest({
+          const removed = await handleBlindMirrorsRequest({
             callback: removeAllBlindMirrors,
             errorMessage: t('Error removing existing Blind Peers')
           })
+          if (!removed) return false
         }
-        await handleBlindMirrorsRequest({
+        return await handleBlindMirrorsRequest({
           callback: addDefaultBlindMirrors,
           errorMessage: t('Error adding Blind Peers'),
           successMessage: t('Automatic Blind Peers enabled successfully')
         })
       }
+
+      return false
     },
     [
       addBlindMirrors,
@@ -284,10 +290,10 @@ export const BlindPeersContent = () => {
     return !isDirty
   }, [hasMirrors, isDirty, isDraft, isSaving, peerType, trimmedPeerKeys.length])
 
-  const handleConfirm = useCallback(async () => {
+  const handleConfirm = useCallback(async (): Promise<boolean> => {
     if (peerType === BLIND_PEER_TYPE.PERSONAL && trimmedPeerKeys.length === 0) {
       setToast({ message: t('Add at least one blind peer code') })
-      return
+      return false
     }
     if (
       peerType === BLIND_PEER_TYPE.PERSONAL &&
@@ -298,12 +304,13 @@ export const BlindPeersContent = () => {
           count: BLIND_PEERS_LIMIT
         })
       })
-      return
+      return false
     }
     setIsSaving(true)
+    let succeeded = false
     try {
       const isEditMode = blindMirrorsData.length > 0
-      await applyPeerConfig({
+      succeeded = await applyPeerConfig({
         blindPeerType: peerType,
         blindPeers:
           peerType === BLIND_PEER_TYPE.PERSONAL
@@ -314,8 +321,11 @@ export const BlindPeersContent = () => {
       await Promise.resolve(getBlindMirrors())
     } finally {
       setIsSaving(false)
-      setIsDraft(false)
+      if (succeeded) {
+        setIsDraft(false)
+      }
     }
+    return succeeded
   }, [
     applyPeerConfig,
     blindMirrorsData.length,
@@ -327,6 +337,30 @@ export const BlindPeersContent = () => {
   ])
 
   const toggleChecked = hasMirrors || isDraft || isSaving
+
+  const hasUnsavedChanges = useMemo(
+    () => (isDraft || isDirty) && !saveDisabled,
+    [isDirty, isDraft, saveDisabled]
+  )
+
+  const { setGuard } = useUnsavedChanges()
+  const handleConfirmRef = useRef(handleConfirm)
+  useEffect(() => {
+    handleConfirmRef.current = handleConfirm
+  }, [handleConfirm])
+
+  useEffect(() => {
+    setGuard({
+      hasUnsavedChanges,
+      description: t(
+        'You have unsaved changes to your Blind Peering settings. Would you like to save them before leaving?'
+      ),
+      save: () => handleConfirmRef.current()
+    })
+    return () => {
+      setGuard(null)
+    }
+  }, [hasUnsavedChanges, setGuard, t])
 
   const automaticRadioOptions = useMemo(
     () => [
