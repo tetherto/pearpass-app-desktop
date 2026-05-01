@@ -87,8 +87,8 @@ export const RecordDetailsV2 = () => {
   }
 
   useEffect(() => {
-    if (!record) handleCollapse()
-  }, [record])
+    if (routerData.recordId && !record) handleCollapse()
+  }, [record, routerData.recordId])
 
   if (!record) return null
 

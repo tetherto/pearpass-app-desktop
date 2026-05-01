@@ -76,20 +76,10 @@ export const Routes = ({
           mainView=${isAuthenticator
             ? html`<${AuthenticatorView} />`
             : html`<${VersionBasedMainView} />`}
-          sideView=${getSideView(currentPage, data)}
+          sideView=${html`<${RecordDetails} />`}
+          isSideViewOpen=${!!data?.recordId}
         />
       <//>
     `
-  }
-}
-
-/**
- * @param {string} currentPage
- * @param {import('../../context/RouterContext').RouterData} data
- * @returns {import('react').ReactNode}
- */
-function getSideView(currentPage, data) {
-  if (currentPage === 'vault' && data?.recordId) {
-    return html` <${RecordDetails} /> `
   }
 }

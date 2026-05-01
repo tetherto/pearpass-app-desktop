@@ -16,13 +16,14 @@ import { SidebarV2 } from '../Sidebar/SidebarV2'
  * @typedef LayoutWithSidebarProps
  * @property {import('react').ReactNode} mainView
  * @property {import('react').ReactNode} sideView
+ * @property {boolean} isSideViewOpen
  */
 
 /**
  * @param {LayoutWithSidebarProps} props
  */
 
-export const LayoutWithSidebar = ({ mainView, sideView }) => {
+export const LayoutWithSidebar = ({ mainView, sideView, isSideViewOpen }) => {
   const { theme } = useTheme()
   const isV2Design = isV2()
   const VersionBasedContentWrapper = isV2Design
@@ -30,10 +31,17 @@ export const LayoutWithSidebar = ({ mainView, sideView }) => {
     : ContentWrapper
 
   const v2SideViewStyle = {
-    flex: 1,
-    overflowY: 'auto',
+    flexBasis: 0,
+    flexShrink: 1,
+    flexGrow: isSideViewOpen ? 1 : 0,
+    minWidth: 0,
+    overflowX: 'hidden',
+    overflowY: isSideViewOpen ? 'auto' : 'hidden',
     backgroundColor: theme.colors.colorSurfacePrimary,
-    borderLeft: `1px solid ${theme.colors.colorBorderPrimary}`
+    borderLeftWidth: isSideViewOpen ? 1 : 0,
+    borderLeftStyle: 'solid',
+    borderLeftColor: theme.colors.colorBorderPrimary,
+    transition: 'flex-grow 150ms ease, border-left-width 150ms ease'
   }
 
   return html`
@@ -44,10 +52,11 @@ export const LayoutWithSidebar = ({ mainView, sideView }) => {
 
       <${VersionBasedContentWrapper}> ${mainView} <//>
 
-      ${sideView &&
-      (isV2Design
-        ? html`<div style=${v2SideViewStyle}>${sideView}</div>`
-        : html`<${SideViewWrapper}>${sideView}<//>`)}
+      ${isV2Design
+        ? sideView && html`<div style=${v2SideViewStyle}>${sideView}</div>`
+        : isSideViewOpen && sideView
+          ? html`<${SideViewWrapper}>${sideView}<//>`
+          : null}
     <//>
   `
 }
