@@ -159,14 +159,14 @@ export const ExportItemsContent = () => {
       value: ExportFormat.JSON,
       label: t('JSON (Recommended)'),
       description: t(
-        'JSON preserves all data, including custom fields, attachments, and metadata, ensuring a complete export'
+        'JSON preserves all data, including custom fields and metadata, ensuring a complete export'
       )
     },
     {
       value: ExportFormat.CSV,
       label: t('CSV'),
       description: t(
-        'CSV exports basic item data for spreadsheets, without custom fields, attachments, or metadata.'
+        'CSV exports basic item data for spreadsheets, without custom fields or metadata.'
       )
     }
   ]
