@@ -232,7 +232,7 @@ export const SidebarV2 = () => {
           >
             <div style={styles.vaultNameRow}>
               <div style={styles.vaultNameText}>
-                <Text variant="labelEmphasized" numberOfLines={1}>
+                <Text variant="labelEmphasized">
                   {vaultData?.name ?? t('Personal Vault')}
                 </Text>
               </div>

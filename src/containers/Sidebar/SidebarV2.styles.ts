@@ -78,7 +78,8 @@ export const createStyles = (colors: ThemeColors, isCollapsed: boolean) => ({
     minWidth: 0,
     overflow: 'hidden' as const,
     textOverflow: 'ellipsis' as const,
-    whiteSpace: 'nowrap' as const
+    whiteSpace: 'nowrap' as const,
+    color: colors.colorTextPrimary
   },
 
   chevron: {
