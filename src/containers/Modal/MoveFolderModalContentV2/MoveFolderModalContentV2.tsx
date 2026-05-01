@@ -98,17 +98,20 @@ export const MoveFolderModalContentV2 = ({
     ]
   }, [folders, iconColor, t])
 
-  const recordIdsKey = records.map((r) => r.id).sort().join(',')
-  const customFoldersListKey = Object.keys(
-    (folders?.customFolders ?? {}) as Record<string, unknown>
-  )
-    .sort()
-    .join(',')
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+  // Preselect the chip the records currently sit at
+  const defaultSelectedId = useMemo<string | null>(() => {
+    if (records.length === 0) return null
+    const firstFolder = records[0].folder
+    if (!records.every((r) => r.folder === firstFolder)) return null
+    if (!firstFolder) return CHIP_ID_ALL
+    return folders?.customFolders?.[firstFolder] ? firstFolder : null
+  }, [records, folders])
+
+  const [selectedId, setSelectedId] = useState<string | null>(defaultSelectedId)
 
   useEffect(() => {
-    setSelectedId(null)
-  }, [recordIdsKey, customFoldersListKey])
+    setSelectedId(defaultSelectedId)
+  }, [defaultSelectedId])
 
   const atDestination =
     !!selectedId &&
