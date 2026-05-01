@@ -83,16 +83,16 @@ export const DeleteFolderModalContentV2 = ({
             value: DeleteOption.DeleteFolder,
             label: t('Delete Folder'),
             description: t(
-              'Only the folder will be removed. Your items will be moved to the All Folder list.'
+              'Only the folder will be removed.\nYour items will be moved to the All Folder list.'
             )
           }
         ]
       : []),
     {
       value: DeleteOption.DeleteFolderAndItems,
-      label: t('Delete folder and items'),
+      label: t('Delete Folder and Items'),
       description: t(
-        'This will permanently remove the folder and all {count} items inside. This action cannot be undone.',
+        'This will permanently remove the folder and all {count} items inside.\nThis action cannot be undone.',
         { count }
       )
     }

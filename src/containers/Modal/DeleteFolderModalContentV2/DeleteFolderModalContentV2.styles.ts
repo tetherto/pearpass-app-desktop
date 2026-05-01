@@ -4,6 +4,7 @@ export const createStyles = () => ({
   body: {
     display: 'flex' as const,
     flexDirection: 'column' as const,
-    gap: `${rawTokens.spacing16}px`
+    gap: `${rawTokens.spacing16}px`,
+    whiteSpace: 'pre-line' as const
   }
 })
