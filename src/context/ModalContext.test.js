@@ -8,9 +8,10 @@ import '@testing-library/jest-dom'
 
 const CLOSE_DURATION = BASE_TRANSITION_DURATION + STACK_CLEANUP_BUFFER
 
-jest.mock('@tetherto/pear-apps-utils-generate-unique-id', () => ({
-  generateUniqueId: jest.fn(() => 'unique-id')
-}))
+jest.mock('@tetherto/pear-apps-utils-generate-unique-id', () => {
+  let n = 0
+  return { generateUniqueId: jest.fn(() => `id-${n++}`) }
+})
 
 jest.mock('../components/Overlay', () => ({
   Overlay: ({ onClick, type, isOpen }) => (
@@ -48,6 +49,21 @@ const TestComponent = () => {
       </button>
       <button onClick={closeModal}>Close Modal</button>
       <div data-testid="is-open">{isOpen.toString()}</div>
+    </div>
+  )
+}
+
+const StackedModalsTestComponent = () => {
+  const { setModal, closeModal } = useModal()
+  return (
+    <div>
+      <button onClick={() => setModal(<div data-testid="modal-A">A</div>)}>
+        open A
+      </button>
+      <button onClick={() => setModal(<div data-testid="modal-B">B</div>)}>
+        open B
+      </button>
+      <button onClick={closeModal}>close</button>
     </div>
   )
 }
@@ -149,6 +165,72 @@ describe('ModalProvider', () => {
     })
 
     expect(screen.queryByTestId('modal-content')).not.toBeInTheDocument()
+  })
+
+  test('removes wrapper from stack after close, not just content', () => {
+    render(
+      <ModalProvider>
+        <TestComponent />
+      </ModalProvider>
+    )
+
+    fireEvent.click(screen.getByText('Open Modal'))
+    expect(screen.getAllByTestId('modal-wrapper').length).toBe(1)
+
+    fireEvent.click(screen.getByText('Close Modal'))
+    act(() => {
+      jest.advanceTimersByTime(CLOSE_DURATION)
+    })
+
+    expect(screen.queryAllByTestId('modal-wrapper').length).toBe(0)
+  })
+
+  test('closes stacked modals sequentially', () => {
+    render(
+      <ModalProvider>
+        <StackedModalsTestComponent />
+      </ModalProvider>
+    )
+
+    fireEvent.click(screen.getByText('open A'))
+    fireEvent.click(screen.getByText('open B'))
+    expect(screen.getAllByTestId('modal-wrapper').length).toBe(2)
+
+    fireEvent.click(screen.getByText('close'))
+    act(() => {
+      jest.advanceTimersByTime(CLOSE_DURATION)
+    })
+    expect(screen.queryByTestId('modal-B')).not.toBeInTheDocument()
+    expect(screen.getByTestId('modal-A')).toBeInTheDocument()
+    expect(screen.getAllByTestId('modal-wrapper').length).toBe(1)
+
+    fireEvent.click(screen.getByText('close'))
+    act(() => {
+      jest.advanceTimersByTime(CLOSE_DURATION)
+    })
+    expect(screen.queryByTestId('modal-A')).not.toBeInTheDocument()
+    expect(screen.queryAllByTestId('modal-wrapper').length).toBe(0)
+  })
+
+  test('rapid double-close targets the modal beneath one mid-transition', () => {
+    render(
+      <ModalProvider>
+        <StackedModalsTestComponent />
+      </ModalProvider>
+    )
+
+    fireEvent.click(screen.getByText('open A'))
+    fireEvent.click(screen.getByText('open B'))
+    fireEvent.click(screen.getByText('close'))
+    fireEvent.click(screen.getByText('close'))
+
+    act(() => {
+      jest.advanceTimersByTime(CLOSE_DURATION)
+    })
+
+    expect(screen.queryByTestId('modal-A')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('modal-B')).not.toBeInTheDocument()
+    expect(screen.queryAllByTestId('modal-wrapper').length).toBe(0)
   })
 
   test('renders sideDrawer modal correctly', () => {

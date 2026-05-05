@@ -4,7 +4,8 @@ import {
   useContext,
   useEffect,
   useCallback,
-  useMemo
+  useMemo,
+  useRef
 } from 'react'
 
 import { generateUniqueId } from '@tetherto/pear-apps-utils-generate-unique-id'
@@ -15,8 +16,7 @@ import { BASE_TRANSITION_DURATION } from '../constants/transitions'
 import { ModalWrapper } from '../containers/Modal'
 import { SideDrawer } from '../containers/Modal/SideDrawer'
 
-// Safety pad past the overlay's `transitionend` so we unmount strictly after
-// the fade completes. Mirrors `SAFETY_BUFFER` in `useAnimatedVisibility.js`.
+// Pad past the overlay fade so unmount lands after `transitionend`.
 export const STACK_CLEANUP_BUFFER = 100
 
 const ModalContext = createContext()
@@ -38,10 +38,11 @@ const DEFAULT_MODAL_PARAMS = {
  */
 export const ModalProvider = ({ children }) => {
   const [modalStack, setModalStack] = useState([])
+  // Ids that already have a removal timer pending, to avoid duplicates.
+  const scheduledIdsRef = useRef(new Set())
 
   const isOpen = !!modalStack.length
 
-  // Use useCallback to create stable function references
   const setModal = useCallback((content, params) => {
     setModalStack((prevState) => {
       if (params?.replace) {
@@ -68,25 +69,36 @@ export const ModalProvider = ({ children }) => {
   }, [])
 
   const closeModal = useCallback(() => {
-    let closingId = null
-
     setModalStack((prevState) => {
-      if (prevState.length === 0) return prevState
-      const topIdx = prevState.length - 1
-      const top = prevState[topIdx]
-      if (!top.isOpen) return prevState
-
-      closingId = top.id
-      return [...prevState.slice(0, topIdx), { ...top, isOpen: false }]
+      // Skip entries already closing so a rapid second close hits the modal
+      // beneath one mid-transition.
+      for (let i = prevState.length - 1; i >= 0; i--) {
+        if (prevState[i].isOpen) {
+          const next = [...prevState]
+          next[i] = { ...next[i], isOpen: false }
+          return next
+        }
+      }
+      return prevState
     })
-
-    if (!closingId) return
-
-    const idToRemove = closingId
-    setTimeout(() => {
-      setModalStack((prevState) => prevState.filter((m) => m.id !== idToRemove))
-    }, BASE_TRANSITION_DURATION + STACK_CLEANUP_BUFFER)
   }, [])
+
+  // Drops closing entries after their fade. Runs as an effect because the
+  // state closeModal flips isn't visible until the next render.
+  useEffect(() => {
+    const closingEntries = modalStack.filter(
+      (m) => !m.isOpen && !scheduledIdsRef.current.has(m.id)
+    )
+    if (closingEntries.length === 0) return
+
+    closingEntries.forEach(({ id }) => {
+      scheduledIdsRef.current.add(id)
+      setTimeout(() => {
+        setModalStack((prev) => prev.filter((m) => m.id !== id))
+        scheduledIdsRef.current.delete(id)
+      }, BASE_TRANSITION_DURATION + STACK_CLEANUP_BUFFER)
+    })
+  }, [modalStack])
 
   useEffect(() => {
     const handleKeydown = (event) => {
@@ -105,7 +117,6 @@ export const ModalProvider = ({ children }) => {
     }
   }, [isOpen])
 
-  // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(
     () => ({ isOpen, setModal, closeModal }),
     [isOpen, setModal, closeModal]
