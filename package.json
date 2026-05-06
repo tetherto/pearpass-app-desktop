@@ -172,7 +172,7 @@
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.2.0",
-    "@tetherto/tether-dev-docs": "git+https://github.com/tetherto/tether-dev-docs.git",
+    "@tetherto/tether-dev-docs": "git+https://github.com/tetherto/tether-dev-docs.git#c9faaf1afe7ccdd7638cfb74aecbb3dc8c4a00af",
     "@types/node": "25.4.0",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
@@ -265,6 +265,6 @@
     "@xmldom/xmldom": "^0.8.10",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "electron-windows-msix": "git+https://github.com/chetasr/electron-windows-msix.git"
+    "electron-windows-msix": "git+https://github.com/chetasr/electron-windows-msix.git#b53dcd40a570937a362e19e25c2bf39d5889c003"
   }
 }
