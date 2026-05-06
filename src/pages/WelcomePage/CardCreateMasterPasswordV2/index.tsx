@@ -15,8 +15,7 @@ import { AlertMessage, Button, Form, Link, PasswordField, Text, Title } from '@t
 import type { PasswordIndicatorVariant } from '@tetherto/pearpass-lib-ui-kit'
 import {
   KeyboardArrowRightFilled,
-  InfoOutlined,
-  ReportProblemRound
+  InfoOutlined
 } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { useTheme } from '@tetherto/pearpass-lib-ui-kit'
 
@@ -185,7 +184,6 @@ export const CardCreateMasterPasswordV2 = () => {
               description={t(
                 "Don't forget your Master password. It's the only way to access your vault. We can't help recover it. Back it up securely."
               )}
-              icon={<ReportProblemRound width={16} height={16} />}
             />
           )}
         </div>
