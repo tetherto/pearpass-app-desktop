@@ -510,6 +510,7 @@ function registerIPC() {
       key: runtimeConfig.upgrade || null,
       upgrade: runtimeConfig.upgrade,
       version: runtimeConfig.version,
+      productName: runtimeConfig.productName,
       applink: runtimeConfig.upgrade || '',
       userDataPath: getStorageDir(),
       execPath:
@@ -588,7 +589,7 @@ function registerIPC() {
 }
 
 app.whenReady().then(async () => {
-  app.setName('PearPass')
+  app.setName(pkg.productName)
   logger.setLogPath(getStorageDir())
   registerIPC()
   try {

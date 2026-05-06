@@ -7,6 +7,8 @@ const path = require('path')
 
 const { ipcRenderer } = require('electron')
 
+const pkg = require('../package.json')
+
 const appPath = ipcRenderer.sendSync('get-app-path')
 
 // Required by fs-native-extensions (pulled in via pear-ipc): binding.js uses __filename
@@ -20,6 +22,7 @@ global.__filename = path.join(fsNativeExtDir, 'binding.js')
 global.global = global
 
 window.electronAPI = {
+  productName: pkg.productName,
   getAppVersion: () => ipcRenderer.invoke('app:getVersion'),
   getConfig: () => ipcRenderer.invoke('runtime:getConfig'),
   onRuntimeUpdating: (cb) => {
