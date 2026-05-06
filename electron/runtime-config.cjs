@@ -27,6 +27,7 @@ function readDesignVersion() {
 module.exports = {
   upgrade: pkg.upgrade || null,
   version: pkg.version ?? 0,
+  productName: pkg.productName ?? pkg.name ?? 'PearPass',
   legacyChannelLink: pkg.legacyChannelLink || null,
   designVersion: readDesignVersion()
 }

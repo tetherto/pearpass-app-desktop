@@ -24,7 +24,7 @@ export const InitialPageWrapper = ({ children, isAuthScreen = false }) => html`
     <${PageContent} isAuthScreen=${isAuthScreen}>
       <${LogoContainer}>
         <${LogoLock} width="42" height="57" />
-        <${PearPass}>PearPass<//>
+        <${PearPass}>${window.electronAPI?.productName ?? 'PearPass'}<//>
       <//>
 
       <${ContentWrapper}> ${children} <//>
