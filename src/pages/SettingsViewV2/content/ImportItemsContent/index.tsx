@@ -4,9 +4,10 @@ import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import { Validator } from '@tetherto/pear-apps-utils-validator'
 import { MAX_IMPORT_RECORDS } from '@tetherto/pearpass-lib-constants'
 import {
-  decryptKeePassKdbx,
   parse1PasswordData,
   parseBitwardenData,
+  decryptBitwardenJson,
+  decryptKeePassKdbx,
   parseKeePassData,
   parseLastPassData,
   parseNordPassData,
@@ -33,6 +34,7 @@ import {
   decryptExportData,
   useCreateRecord
 } from '@tetherto/pearpass-lib-vault'
+import { pearpassVaultClient } from '@tetherto/pearpass-lib-vault/src/instances'
 
 import { useGlobalLoading } from '../../../../context/LoadingContext'
 import { useToast } from '../../../../context/ToastContext'
@@ -40,6 +42,7 @@ import { useTranslation } from '../../../../hooks/useTranslation'
 import { logger } from '../../../../utils/logger'
 import { readFileContent } from '../../../SettingsView/ImportTab/utils/readFileContent'
 import { createStyles } from './styles'
+import { detectIsEncrypted } from './utils'
 
 type ImportState = 'default' | 'upload' | 'inputPassword'
 
@@ -271,6 +274,22 @@ export const ImportItemsContent = () => {
         const encryptedData = JSON.parse(fileContent as string)
         dataToProcess = await decryptExportData(encryptedData, password)
       }
+
+      if (resolvedType === ImportOptionType.Bitwarden && isEncrypted) {
+        if (!password) {
+          throw new Error('Password is required for encrypted files')
+        }
+        dataToProcess = await decryptBitwardenJson(
+          fileContent as string,
+          password,
+          {
+            decryptViaWorklet:
+              pearpassVaultClient.decryptBitwardenExport.bind(
+                pearpassVaultClient
+              )
+          }
+        )
+      }
     } catch {
       throw new Error(
         'Failed to decrypt file. Please check your password and try again.'
@@ -378,25 +397,13 @@ export const ImportItemsContent = () => {
         return
       }
 
-      if (selectedOption.type === ImportOptionType.Encrypted) {
-        const fileContent = await readFileContent(file)
-        setSelectedFileInfo({
-          fileContent,
-          fileType,
-          filename,
-          size: file.size,
-          isEncrypted: true
-        })
-        return
-      }
-
       const fileContent = await readFileContent(file)
       setSelectedFileInfo({
         fileContent,
         fileType,
         filename,
         size: file.size,
-        isEncrypted: false
+        isEncrypted: detectIsEncrypted(fileType, fileContent)
       })
     } catch (error) {
       setToast({ message: t('Failed to read file') })

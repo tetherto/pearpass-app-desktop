@@ -112,7 +112,8 @@ const VAULT_METHODS = [
   'addOtpToRecord',
   'removeOtpFromRecord',
   'fetchFavicon',
-  'decryptExportData'
+  'decryptExportData',
+  'decryptBitwardenExport'
 ]
 
 /**
