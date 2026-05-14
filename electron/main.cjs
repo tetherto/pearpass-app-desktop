@@ -467,6 +467,20 @@ async function startWorkletOnly() {
   })
 }
 
+// Open a URL in the system browser only for http(s). Blocks file:, javascript:, mailto:, and other non-browser schemes.
+async function openExternalIfAllowed(url) {
+  try {
+    const u = new URL(url)
+    if (u.protocol === 'https:' || u.protocol === 'http:') {
+      await shell.openExternal(url)
+      return { ok: true }
+    }
+    return { ok: false, error: 'Protocol not supported' }
+  } catch {
+    return { ok: false, error: 'Invalid URL' }
+  }
+}
+
 function createWindow() {
   const isV2 = runtimeConfig.designVersion === 2
   // Resolve app icon per-platform
@@ -527,7 +541,7 @@ function createWindow() {
 
   // Open external links in the default browser instead of the Electron window
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url)
+    void openExternalIfAllowed(url)
     return { action: 'deny' }
   })
 
@@ -535,7 +549,7 @@ function createWindow() {
     const appUrl = mainWindow.webContents.getURL()
     if (url !== appUrl) {
       event.preventDefault()
-      shell.openExternal(url)
+      void openExternalIfAllowed(url)
     }
   })
 
@@ -632,9 +646,9 @@ function registerIPC() {
     async () => !!(pearRuntime && pearRuntime.updated)
   )
 
-  ipcMain.handle('shell:openExternal', async (_event, url) => {
-    await shell.openExternal(url)
-  })
+  ipcMain.handle('shell:openExternal', async (_event, url) =>
+    openExternalIfAllowed(url)
+  )
 
   ipcMain.handle('vault:invoke', async (_event, { method, args }) => {
     if (!vaultClient) {
