@@ -1,6 +1,13 @@
 import { ImportOptionType } from './types'
 
 /**
+ * Bitwarden's `KdfType` enum:
+ *   0 = PBKDF2-SHA256 (fast)
+ *   1 = Argon2id      (deliberately slow — can take minutes on lower-end devices)
+ */
+const BITWARDEN_KDF_ARGON2 = 1
+
+/**
  * Safely parses file content as a JSON object.
  *
  * Returns the parsed object, or `null` when the content is not a string,
@@ -52,3 +59,18 @@ export const detectIsEncrypted = (
 
   return parsedJson.encrypted === true
 }
+
+/**
+ * Whether a password-protected Bitwarden export uses Argon2id as its KDF.
+ *
+ * Bitwarden's Argon2 defaults (64 MiB memory, 3 iterations, parallelism 4) are
+ * deliberately memory-hard and can take **minutes** to derive a key on lower-
+ * end devices, vs. effectively instant for PBKDF2. We surface a heads-up on
+ * the password screen so the user doesn't think the app has hung.
+ *
+ * Returns false for any non-Bitwarden export, for unencrypted JSON, or when
+ * the KDF metadata is missing.
+ */
+export const isArgon2BitwardenExport = (
+  parsedJson: Record<string, unknown> | null
+): boolean => parsedJson?.kdfType === BITWARDEN_KDF_ARGON2

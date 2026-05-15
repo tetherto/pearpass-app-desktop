@@ -16,6 +16,7 @@ import {
 } from '@tetherto/pearpass-lib-data-import'
 import type { UploadedFile } from '@tetherto/pearpass-lib-ui-kit'
 import {
+  AlertMessage,
   Button,
   Link,
   ListItem,
@@ -44,7 +45,11 @@ import { readFileContent } from '../../../SettingsView/ImportTab/utils/readFileC
 import { createStyles } from './styles'
 import { ImportOptionType } from './types'
 import type { FileInfo, ImportOption, ImportState } from './types'
-import { detectIsEncrypted, parseJsonContent } from './utils'
+import {
+  detectIsEncrypted,
+  isArgon2BitwardenExport,
+  parseJsonContent
+} from './utils'
 
 const isAllowedType = (fileType: string, accepts: string[]) =>
   accepts.some((accept) => {
@@ -575,6 +580,17 @@ export const ImportItemsContent = () => {
                   'The uploaded file is encrypted. Enter the password to continue.'
                 )}
               </Text>
+              {isArgon2BitwardenExport(selectedFileInfo?.parsedJson ?? null) && (
+                <AlertMessage
+                  variant="warning"
+                  size="small"
+                  title={t('Decryption may take a few minutes')}
+                  description={t(
+                    "This file uses Argon2 encryption, it will take some time to decrypt it. Keep the app open, we'll let you know when it's done."
+                  )}
+                  testID="import-argon2-warning"
+                />
+              )}
             </div>
           ) : (
             <div style={styles.uploadArea}>

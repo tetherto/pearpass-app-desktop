@@ -1,5 +1,9 @@
 import { ImportOptionType } from './types'
-import { detectIsEncrypted, parseJsonContent } from './utils'
+import {
+  detectIsEncrypted,
+  isArgon2BitwardenExport,
+  parseJsonContent
+} from './utils'
 
 describe('parseJsonContent', () => {
   it('parses a valid JSON object', () => {
@@ -93,5 +97,41 @@ describe('detectIsEncrypted', () => {
         })
       ).toBe(false)
     })
+  })
+})
+
+describe('isArgon2BitwardenExport', () => {
+  it('returns true for Bitwarden Argon2id exports (kdfType === 1)', () => {
+    expect(
+      isArgon2BitwardenExport({
+        encrypted: true,
+        passwordProtected: true,
+        kdfType: 1,
+        kdfIterations: 3,
+        kdfMemory: 64,
+        kdfParallelism: 4
+      })
+    ).toBe(true)
+  })
+
+  it('returns false for Bitwarden PBKDF2 exports (kdfType === 0)', () => {
+    expect(
+      isArgon2BitwardenExport({
+        encrypted: true,
+        passwordProtected: true,
+        kdfType: 0,
+        kdfIterations: 600000
+      })
+    ).toBe(false)
+  })
+
+  it('returns false when kdfType is missing', () => {
+    expect(
+      isArgon2BitwardenExport({ encrypted: true, passwordProtected: true })
+    ).toBe(false)
+  })
+
+  it('returns false when parsedJson is null', () => {
+    expect(isArgon2BitwardenExport(null)).toBe(false)
   })
 })
