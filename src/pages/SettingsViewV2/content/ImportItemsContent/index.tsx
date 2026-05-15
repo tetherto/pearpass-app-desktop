@@ -42,39 +42,9 @@ import { useTranslation } from '../../../../hooks/useTranslation'
 import { logger } from '../../../../utils/logger'
 import { readFileContent } from '../../../SettingsView/ImportTab/utils/readFileContent'
 import { createStyles } from './styles'
-import { detectIsEncrypted } from './utils'
-
-type ImportState = 'default' | 'upload' | 'inputPassword'
-
-type ImportOption = {
-  title: string
-  type: ImportOptionType
-  description: string
-  testId?: string
-  accepts: string[]
-  supportLink?: string
-  learnMoreUrl?: string
-}
-
-type FileInfo = {
-  fileContent: string | ArrayBuffer
-  fileType: string
-  filename: string
-  size: number
-  isEncrypted: boolean
-}
-
-enum ImportOptionType {
-  OnePassword = '1password',
-  Bitwarden = 'bitwarden',
-  KeePass = 'keepass',
-  KeePassKDBX = 'keepass-kdbx',
-  LastPass = 'lastpass',
-  NordPass = 'nordpass',
-  ProtonPass = 'protonpass',
-  Unencrypted = 'unencrypted',
-  Encrypted = 'encrypted'
-}
+import { ImportOptionType } from './types'
+import type { FileInfo, ImportOption, ImportState } from './types'
+import { detectIsEncrypted, parseJsonContent } from './utils'
 
 const isAllowedType = (fileType: string, accepts: string[]) =>
   accepts.some((accept) => {
@@ -241,12 +211,14 @@ export const ImportItemsContent = () => {
     type,
     fileContent,
     fileType,
+    parsedJson,
     password,
     isEncrypted
   }: {
     type: ImportOptionType
     fileContent: string | ArrayBuffer
     fileType: string
+    parsedJson: Record<string, unknown> | null
     password?: string | null
     isEncrypted?: boolean
   }) => {
@@ -261,7 +233,7 @@ export const ImportItemsContent = () => {
         fileType === 'kdbx'
       ) {
         if (!password) {
-          throw new Error('Password is required for encrypted files')
+          throw new Error(t('Password is required for encrypted files'))
         }
         dataToProcess = await decryptKeePassKdbx(fileContent, password)
         resolvedType = ImportOptionType.KeePassKDBX
@@ -269,15 +241,17 @@ export const ImportItemsContent = () => {
 
       if (resolvedType === ImportOptionType.Encrypted && isEncrypted) {
         if (!password) {
-          throw new Error('Password is required for encrypted files')
+          throw new Error(t('Password is required for encrypted files'))
         }
-        const encryptedData = JSON.parse(fileContent as string)
-        dataToProcess = await decryptExportData(encryptedData, password)
+        if (!parsedJson) {
+          throw new Error(t('Failed to parse file. Please ensure it is valid.'))
+        }
+        dataToProcess = await decryptExportData(parsedJson, password)
       }
 
       if (resolvedType === ImportOptionType.Bitwarden && isEncrypted) {
         if (!password) {
-          throw new Error('Password is required for encrypted files')
+          throw new Error(t('Password is required for encrypted files'))
         }
         dataToProcess = await decryptBitwardenJson(
           fileContent as string,
@@ -290,10 +264,36 @@ export const ImportItemsContent = () => {
           }
         )
       }
-    } catch {
-      throw new Error(
-        'Failed to decrypt file. Please check your password and try again.'
+    } catch (error) {
+      logger.error(
+        'ImportItemsContent',
+        'Failed to decrypt import file:',
+        error
       )
+
+      // Only a wrong-password failure is recoverable by re-entering the
+      // password. The decrypt helpers signal this with "Incorrect password"
+      // (Bitwarden / KeePass KDBX), an "InvalidKey" error, or "invalid
+      // password" (PearPass export worklet). Everything else — malformed file,
+      // unsupported KDF, a missing-flag/structural error, or a worklet/IPC
+      // failure — is surfaced as-is so it is not misattributed to a bad
+      // password.
+      const message = error instanceof Error ? error.message : ''
+      if (/incorrect password|invalid password|invalid key/i.test(message)) {
+        throw new Error(
+          t(
+            'Failed to decrypt file. Please check your password and try again.'
+          )
+        )
+      }
+
+      throw error instanceof Error
+        ? error
+        : new Error(
+            t(
+              'Failed to decrypt file. Please check your password and try again.'
+            )
+          )
     }
 
     try {
@@ -392,18 +392,21 @@ export const ImportItemsContent = () => {
           fileType,
           filename,
           size: file.size,
-          isEncrypted: true
+          isEncrypted: true,
+          parsedJson: null
         })
         return
       }
 
       const fileContent = await readFileContent(file)
+      const parsedJson = parseJsonContent(fileContent)
       setSelectedFileInfo({
         fileContent,
         fileType,
         filename,
         size: file.size,
-        isEncrypted: detectIsEncrypted(fileType, fileContent)
+        isEncrypted: detectIsEncrypted(selectedOption.type, fileType, parsedJson),
+        parsedJson
       })
     } catch (error) {
       setToast({ message: t('Failed to read file') })
@@ -422,6 +425,7 @@ export const ImportItemsContent = () => {
         type: selectedOption.type,
         fileContent: selectedFileInfo.fileContent,
         fileType: selectedFileInfo.fileType,
+        parsedJson: selectedFileInfo.parsedJson,
         password: formValues?.password ?? null,
         isEncrypted: selectedFileInfo.isEncrypted
       })

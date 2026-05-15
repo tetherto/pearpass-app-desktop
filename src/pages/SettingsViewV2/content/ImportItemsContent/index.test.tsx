@@ -3,8 +3,14 @@
 import React from 'react'
 
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import {
+  decryptBitwardenJson,
+  parseBitwardenData
+} from '@tetherto/pearpass-lib-data-import'
+
+import { readFileContent } from '../../../SettingsView/ImportTab/utils/readFileContent'
 import { ImportItemsContent } from './index'
 ;(globalThis as { React?: typeof React }).React = React
 
@@ -32,12 +38,19 @@ jest.mock('@tetherto/pearpass-lib-vault', () => ({
   decryptExportData: jest.fn()
 }))
 
+jest.mock('@tetherto/pearpass-lib-vault/src/instances', () => ({
+  pearpassVaultClient: {
+    decryptBitwardenExport: jest.fn()
+  }
+}))
+
 jest.mock('@tetherto/pearpass-lib-constants', () => ({
   MAX_IMPORT_RECORDS: 1000
 }))
 
 jest.mock('@tetherto/pearpass-lib-data-import', () => ({
   decryptKeePassKdbx: jest.fn(),
+  decryptBitwardenJson: jest.fn(),
   parse1PasswordData: jest.fn(),
   parseBitwardenData: jest.fn(),
   parseKeePassData: jest.fn(),
@@ -101,8 +114,23 @@ jest.mock('@tetherto/pearpass-lib-ui-kit', () => ({
       <span>{props.subtitle}</span>
     </button>
   ),
-  UploadField: (props: { testID?: string }) => (
-    <div data-testid={props.testID}>upload-field</div>
+  UploadField: (props: {
+    testID?: string
+    onFilesChange?: (files: { file: { name: string; size: number } }[]) => void
+  }) => (
+    <div data-testid={props.testID}>
+      <button
+        type="button"
+        data-testid="mock-upload-trigger"
+        onClick={() =>
+          props.onFilesChange?.([
+            { file: { name: 'bitwarden-export.json', size: 2048 } }
+          ])
+        }
+      >
+        upload-field
+      </button>
+    </div>
   ),
   PasswordField: (props: {
     testID?: string
@@ -137,6 +165,10 @@ jest.mock('@tetherto/pearpass-lib-ui-kit/icons', () => ({
   KeyboardArrowRightFilled: () => null
 }))
 
+const mockReadFileContent = jest.mocked(readFileContent)
+const mockDecryptBitwardenJson = jest.mocked(decryptBitwardenJson)
+const mockParseBitwardenData = jest.mocked(parseBitwardenData)
+
 describe('ImportItemsContent', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -169,5 +201,87 @@ describe('ImportItemsContent', () => {
     expect(
       screen.getByRole('heading', { name: 'Import Items' })
     ).toBeInTheDocument()
+  })
+
+  it('gates an encrypted Bitwarden JSON on the password screen and decrypts it', async () => {
+    const encryptedBitwardenJson = JSON.stringify({
+      encrypted: true,
+      passwordProtected: true,
+      kdfType: 0,
+      kdfIterations: 600000,
+      salt: 'salt',
+      data: 'cipher-text'
+    })
+    mockReadFileContent.mockResolvedValue(encryptedBitwardenJson)
+    mockDecryptBitwardenJson.mockResolvedValue({ items: [], folders: [] })
+    mockParseBitwardenData.mockResolvedValue([{ type: 'login' }])
+
+    render(<ImportItemsContent />)
+
+    fireEvent.click(screen.getByTestId('settings-import-bitwarden'))
+    fireEvent.click(screen.getByTestId('mock-upload-trigger'))
+
+    // The export is password-protected, so the Import button advances to the
+    // password screen rather than importing directly.
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Import' })).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Import' }))
+
+    const passwordField = await screen.findByTestId(
+      'import-file-password-field'
+    )
+    fireEvent.change(passwordField, { target: { value: 'my-file-password' } })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+
+    await waitFor(() => {
+      expect(mockDecryptBitwardenJson).toHaveBeenCalledTimes(1)
+    })
+    expect(mockDecryptBitwardenJson).toHaveBeenCalledWith(
+      encryptedBitwardenJson,
+      'my-file-password',
+      expect.objectContaining({ decryptViaWorklet: expect.any(Function) })
+    )
+    expect(mockParseBitwardenData).toHaveBeenCalledWith(
+      { items: [], folders: [] },
+      'json'
+    )
+    expect(mockSetToast).toHaveBeenCalledWith({
+      message: 'Data imported successfully'
+    })
+  })
+
+  it('does not prompt for a password for an account-restricted Bitwarden export', async () => {
+    // Account-restricted exports set `encrypted: true` only — they are parsed
+    // directly instead of being gated on a password screen that can never
+    // succeed.
+    const accountRestrictedJson = JSON.stringify({
+      encrypted: true,
+      data: 'account-key-cipher'
+    })
+    mockReadFileContent.mockResolvedValue(accountRestrictedJson)
+    mockParseBitwardenData.mockResolvedValue([{ type: 'login' }])
+
+    render(<ImportItemsContent />)
+
+    fireEvent.click(screen.getByTestId('settings-import-bitwarden'))
+    fireEvent.click(screen.getByTestId('mock-upload-trigger'))
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Import' })).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Import' }))
+
+    await waitFor(() => {
+      expect(mockParseBitwardenData).toHaveBeenCalledWith(
+        accountRestrictedJson,
+        'json'
+      )
+    })
+    expect(mockDecryptBitwardenJson).not.toHaveBeenCalled()
+    expect(
+      screen.queryByTestId('import-file-password-field')
+    ).not.toBeInTheDocument()
   })
 })
