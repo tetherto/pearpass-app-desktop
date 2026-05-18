@@ -12,12 +12,11 @@ import {
 
 import { logger } from './logger'
 import flatpakPaths from '../../electron/flatpak-paths.cjs'
+import nativeHostWrapper from '../../electron/nativeHostWrapper.cjs'
 
 const { isFlatpakRuntime, isSnapRuntime, getHostHome, getSnapRealHome } =
   flatpakPaths
-
-const FLATPAK_APP_ID = 'com.pears.pass'
-const FLATPAK_NATIVE_HOST_COMMAND = 'pearpass-native-host'
+const { buildWrapperContent } = nativeHostWrapper
 
 const NATIVE_BRIDGE_PROCESS_IDENTIFIER = 'pearpass-lib-native-messaging-bridge'
 
@@ -78,57 +77,12 @@ export const generateNativeHostExecutable = async (
 ) => {
   try {
     const platform = os.platform()
-    let content
-
-    if (platform === 'linux' && isFlatpakRuntime()) {
-      // Chrome runs outside the flatpak sandbox, so the wrapper must
-      // re-enter the sandbox via `flatpak run` before execing the bridge.
-      // The /app/* electronExecPath and bridgeScriptPath are only valid
-      // inside the sandbox and are resolved by the in-sandbox command.
-      //
-      // Diagnostics MUST go to stderr: Chrome's native-messaging protocol
-      // treats anything on stdout as a framed message and will drop the port
-      // ("Native host has exited") if we write plain text there.
-      content = `#!/bin/bash
-# PearPass Native Messaging Host (flatpak)
-# Chrome launches this on the host; re-enter the sandbox to run the bridge.
-set -u
-
-FLATPAK_BIN="$(command -v flatpak 2>/dev/null || true)"
-if [ -z "\${FLATPAK_BIN}" ]; then
-  for candidate in /usr/bin/flatpak /usr/local/bin/flatpak /var/lib/flatpak/exports/bin/flatpak; do
-    if [ -x "\${candidate}" ]; then
-      FLATPAK_BIN="\${candidate}"
-      break
-    fi
-  done
-fi
-if [ -z "\${FLATPAK_BIN}" ]; then
-  echo "pearpass-native-host: flatpak binary not found on PATH" >&2
-  exit 127
-fi
-
-exec "\${FLATPAK_BIN}" run --command=${FLATPAK_NATIVE_HOST_COMMAND} ${FLATPAK_APP_ID} "$@"
-`
-    } else if (platform === 'darwin' || platform === 'linux') {
-      content = `#!/bin/bash
-# PearPass Native Messaging Host
-# Runs the native messaging bridge via Electron's embedded Node.js
-
-export ELECTRON_RUN_AS_NODE=1
-exec "${electronExecPath}" "${bridgeScriptPath}"
-`
-    } else if (platform === 'win32') {
-      content = `@echo off
-REM PearPass Native Messaging Host
-REM Runs the native messaging bridge via Electron's embedded Node.js
-
-set ELECTRON_RUN_AS_NODE=1
-"${electronExecPath}" "${bridgeScriptPath}"
-`
-    } else {
-      throw new Error(`Unsupported platform: ${platform}`)
-    }
+    const content = buildWrapperContent({
+      platform,
+      isFlatpak: isFlatpakRuntime(),
+      electronExecPath,
+      bridgeScriptPath
+    })
 
     await fs.writeFile(executablePath, content, 'utf8')
     if (platform !== 'win32') {
