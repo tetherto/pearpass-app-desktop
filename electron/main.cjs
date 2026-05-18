@@ -5,6 +5,7 @@
  * and registers secure IPC handlers so the renderer can use runtime and vault services.
  */
 const fs = require('fs')
+const os = require('os')
 const path = require('path')
 
 const {
@@ -38,6 +39,7 @@ const {
   isFlatpakRuntime,
   isSnapRuntime
 } = require('./flatpak-paths.cjs')
+const { refreshNativeHostWrapperIfPresent } = require('./nativeHostWrapper.cjs')
 const runtimeConfig = require('./runtime-config.cjs')
 const devicePreferences = require('../src/utils/devicePreferences.cjs')
 const {
@@ -193,6 +195,55 @@ function getNativeBridgePath() {
   }
 
   return path.join(app.getAppPath(), bundleFile)
+}
+
+function getRuntimeExecPath() {
+  return isWindows && process.windowsStore
+    ? path.join(
+        process.env.LOCALAPPDATA,
+        'Microsoft',
+        'WindowsApps',
+        path.basename(process.execPath)
+      )
+    : process.execPath
+}
+
+// AppImage mounts at a fresh /tmp/.mount_PearPa<random>/ each launch, so the
+// execPath/bridgePath baked into the wrapper at pair time go stale. Rewrite.
+async function refreshNativeHostWrapper() {
+  // Snap mounts the app at a stable path, so wrapper paths don't drift.
+  if (isSnapRuntime()) return
+
+  const platform = os.platform()
+  const executablePath = path.join(
+    getStorageDir(),
+    'native-messaging',
+    platform === 'win32'
+      ? 'pearpass-native-host.cmd'
+      : 'pearpass-native-host.sh'
+  )
+
+  try {
+    const result = await refreshNativeHostWrapperIfPresent({
+      executablePath,
+      electronExecPath: getRuntimeExecPath(),
+      bridgeScriptPath: getNativeBridgePath(),
+      platform,
+      isFlatpak: isFlatpakRuntime()
+    })
+    if (result.refreshed) {
+      logger.info(
+        '[MAIN]',
+        `Refreshed native messaging wrapper at ${executablePath}`
+      )
+    }
+  } catch (err) {
+    logger.warn(
+      '[MAIN]',
+      'Failed to refresh native messaging wrapper:',
+      (err && err.message) || err
+    )
+  }
 }
 
 /**
@@ -595,15 +646,7 @@ function registerIPC() {
       productName: runtimeConfig.productName,
       applink: runtimeConfig.upgrade || '',
       userDataPath: getStorageDir(),
-      execPath:
-        isWindows && process.windowsStore
-          ? path.join(
-              process.env.LOCALAPPDATA,
-              'Microsoft',
-              'WindowsApps',
-              path.basename(process.execPath)
-            )
-          : process.execPath,
+      execPath: getRuntimeExecPath(),
       bridgePath: getNativeBridgePath()
     }
   })
@@ -734,6 +777,7 @@ app.whenReady().then(async () => {
     logger.setLogPath(getStorageDir())
   }
   registerIPC()
+  await refreshNativeHostWrapper()
   try {
     await startRuntime()
   } catch (err) {
