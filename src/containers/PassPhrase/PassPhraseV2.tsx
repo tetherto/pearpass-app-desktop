@@ -110,19 +110,18 @@ export const PassPhraseV2 = ({
   }, [value])
 
   useEffect(() => {
-    if (isCreateOrEdit || !value?.trim()) {
+    if (isCreateOrEdit || !passphraseWords.length) {
       setQrSvg('')
       return
     }
-    const words = parsePassphraseText(value)
-    if (!words.length) {
-      setQrSvg('')
-      return
-    }
-    generateQRCodeSVG(words.join(' '), { type: 'svg', margin: 4, errorCorrectionLevel: 'L' })
+    generateQRCodeSVG(passphraseWords.join(' '), {
+      type: 'svg',
+      margin: 4,
+      errorCorrectionLevel: 'L'
+    })
       .then(setQrSvg)
       .catch(() => setQrSvg(''))
-  }, [value, isCreateOrEdit])
+  }, [passphraseWords, isCreateOrEdit])
 
   const handlePasteFromClipboard = async () => {
     const pastedText = await pasteFromClipboard()
