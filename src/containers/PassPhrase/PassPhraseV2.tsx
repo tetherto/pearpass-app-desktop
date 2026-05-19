@@ -21,6 +21,7 @@ import {
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard.electron'
 import { usePasteFromClipboard } from '../../hooks/usePasteFromClipboard'
 import { useToast } from '../../context/ToastContext'
+import { generateQRCodeSVG } from '@tetherto/pear-apps-utils-qr'
 import { useTranslation } from '../../hooks/useTranslation'
 import { createStyles } from './PassPhraseV2.styles'
 
@@ -89,6 +90,7 @@ export const PassPhraseV2 = ({
     getSelectedTypeForWords(initialWords.length)
   )
   const [passphraseWords, setPassphraseWords] = useState<string[]>(initialWords)
+  const [qrSvg, setQrSvg] = useState('')
 
   const detectAndUpdateSettings = (words: string[]) => {
     setSelectedType(getSelectedTypeForWords(words.length))
@@ -106,6 +108,21 @@ export const PassPhraseV2 = ({
     detectAndUpdateSettings(words)
     lastCommittedValueRef.current = value
   }, [value])
+
+  useEffect(() => {
+    if (isCreateOrEdit || !value?.trim()) {
+      setQrSvg('')
+      return
+    }
+    const words = parsePassphraseText(value)
+    if (!words.length) {
+      setQrSvg('')
+      return
+    }
+    generateQRCodeSVG(words.join(' '), { type: 'svg', margin: 4, errorCorrectionLevel: 'L' })
+      .then(setQrSvg)
+      .catch(() => setQrSvg(''))
+  }, [value, isCreateOrEdit])
 
   const handlePasteFromClipboard = async () => {
     const pastedText = await pasteFromClipboard()
@@ -202,6 +219,7 @@ export const PassPhraseV2 = ({
                 </div>
               ))}
             </div>
+            {qrSvg && <div data-testid="passphrase-qrcode-v2" style={{ width: 188, height: 188, margin: '12px auto' }} dangerouslySetInnerHTML={{ __html: qrSvg }} />}
           </div>
         ) : (
           optionsToRender.map((wordCount: number, index: number) => {
