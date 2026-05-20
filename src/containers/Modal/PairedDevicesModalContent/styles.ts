@@ -1,6 +1,8 @@
 import type { ThemeColors } from '@tetherto/pearpass-lib-ui-kit'
 import { rawTokens } from '@tetherto/pearpass-lib-ui-kit'
 
+export const DEVICE_ACTIONS_MENU_WIDTH = 220
+
 export const createStyles = (colors: ThemeColors) => ({
   list: {
     display: 'flex' as const,

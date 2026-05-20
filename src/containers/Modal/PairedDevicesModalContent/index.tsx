@@ -3,23 +3,29 @@ import React, { useMemo } from 'react'
 import { formatDate } from '@tetherto/pear-apps-utils-date'
 import {
   Button,
+  ContextMenu,
   Dialog,
   ListItem,
+  NavbarListItem,
   Text,
   useTheme
 } from '@tetherto/pearpass-lib-ui-kit'
 import {
   Devices,
+  DoNotDisturb,
   LaptopMac,
   LaptopWindows,
+  MoreVert,
   PhoneIphone,
   Tablet
 } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { useVault } from '@tetherto/pearpass-lib-vault'
 
-import { createStyles } from './styles'
+import { createStyles, DEVICE_ACTIONS_MENU_WIDTH } from './styles'
 import { useModal } from '../../../context/ModalContext'
 import { useTranslation } from '../../../hooks/useTranslation'
+import { getDeviceName } from '../../../utils/getDeviceName'
+import { RevokeAccessModalContentV2 } from '../RevokeAccessModalContentV2'
 
 const getDeviceDisplayName = (
   deviceName: string | undefined,
@@ -56,18 +62,39 @@ const getDeviceIcon = (deviceName?: string) => {
   return Devices
 }
 
+type Device = {
+  id?: string
+  name?: string
+  createdAt?: string | number | Date
+}
+
 export const PairedDevicesModalContent = () => {
   const { t } = useTranslation()
-  const { closeModal } = useModal()
+  const { closeModal, setModal } = useModal()
   const { theme } = useTheme()
   const styles = createStyles(theme.colors)
 
   const { data: vaultData } = useVault()
+  const vaultId = (vaultData as { id?: string } | undefined)?.id ?? ''
 
-  const devices = useMemo(
-    () => (Array.isArray(vaultData?.devices) ? vaultData.devices : []),
+  const devices = useMemo<Device[]>(
+    () =>
+      Array.isArray(vaultData?.devices) ? (vaultData.devices as Device[]) : [],
     [vaultData]
   )
+
+  const currentDeviceName = useMemo(() => getDeviceName(), [])
+
+  const openRevokeModal = (device: Device, displayName: string) => {
+    if (!device.id || !vaultId) return
+    setModal(
+      <RevokeAccessModalContentV2
+        vaultId={vaultId}
+        targetDeviceId={device.id}
+        deviceName={displayName}
+      />
+    )
+  }
 
   return (
     <Dialog
@@ -98,8 +125,9 @@ export const PairedDevicesModalContent = () => {
             const deviceName = getDeviceDisplayName(device.name, t)
             const DeviceIcon = getDeviceIcon(device.name)
             const createdAt = device.createdAt
-              ? formatDate(device.createdAt, 'dd-mmm-yyyy', ' ')
+              ? formatDate(new Date(device.createdAt), 'dd-mmm-yyyy', ' ')
               : null
+            const isCurrentDevice = device.name === currentDeviceName
 
             return (
               <ListItem
@@ -118,6 +146,41 @@ export const PairedDevicesModalContent = () => {
                   createdAt ? `${t('Paired on')} ${createdAt}` : undefined
                 }
                 testID={`see-devices-item-${device.id ?? index}`}
+                rightElement={
+                  isCurrentDevice || !device.id ? undefined : (
+                    <ContextMenu
+                      menuWidth={DEVICE_ACTIONS_MENU_WIDTH}
+                      testID={`see-devices-row-menu-${device.id}`}
+                      trigger={
+                        <Button
+                          variant="tertiary"
+                          size="small"
+                          aria-label={t('Device actions')}
+                          iconBefore={
+                            <MoreVert
+                              width={16}
+                              height={16}
+                              color={theme.colors.colorTextPrimary}
+                            />
+                          }
+                        />
+                      }
+                    >
+                      <NavbarListItem
+                        size="small"
+                        variant="destructive"
+                        icon={
+                          <DoNotDisturb
+                            color={theme.colors.colorSurfaceDestructiveElevated}
+                          />
+                        }
+                        label={t('Revoke Access')}
+                        testID={`see-devices-row-revoke-${device.id}`}
+                        onClick={() => openRevokeModal(device, deviceName)}
+                      />
+                    </ContextMenu>
+                  )
+                }
               />
             )
           })}

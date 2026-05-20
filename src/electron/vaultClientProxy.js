@@ -82,6 +82,7 @@ const VAULT_METHODS = [
   'activeVaultClose',
   'activeVaultAdd',
   'activeVaultRemove',
+  'activeVaultRemoveWriter',
   'activeVaultList',
   'activeVaultGet',
   'activeVaultCreateInvite',
