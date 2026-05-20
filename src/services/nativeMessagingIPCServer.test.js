@@ -161,6 +161,7 @@ jest.mock('./handlers/VaultHandlers', () => ({
     this.generateHotpNext = jest.fn().mockResolvedValue({ code: '123456' })
     this.addOtpToRecord = jest.fn().mockResolvedValue({ success: true })
     this.removeOtpFromRecord = jest.fn().mockResolvedValue({ success: true })
+    this.findOtpDuplicates = jest.fn().mockResolvedValue({ duplicates: [] })
   })
 }))
 

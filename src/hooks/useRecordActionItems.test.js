@@ -250,10 +250,15 @@ describe('useRecordActionItems', () => {
   test('handles edit action — uses OTP type when recordType is otp', () => {
     const otpLoginRecord = { id: '123', type: 'login', isFavorite: false }
 
+    useRouter.mockReturnValue({
+      data: { recordType: 'otp' },
+      navigate: mockNavigate,
+      currentPage: 'somePage'
+    })
+
     const { result } = renderHook(() =>
       useRecordActionItems({
         record: otpLoginRecord,
-        recordType: 'otp',
         onSelect: mockOnSelect,
         onClose: mockOnClose
       })
