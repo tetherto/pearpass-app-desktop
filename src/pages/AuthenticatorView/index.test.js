@@ -6,6 +6,11 @@ import { fireEvent, render, screen } from '@testing-library/react'
 let mockSearchValue = ''
 let mockRecords = []
 
+jest.mock('@tetherto/pearpass-lib-constants', () => ({
+  DESKTOP_DESIGN_VERSION: 2,
+  DESKTOP_2FA_IMPORTS_ENABLED: true
+}))
+
 jest.mock('@tetherto/pearpass-lib-vault', () => ({
   useRecords: () => ({
     data: mockRecords,
