@@ -1,10 +1,8 @@
 import { html } from 'htm/react'
 
 import { CreateOrEditCategoryWrapper } from '../containers/Modal/CreateOrEditCategoryWrapper'
-import { GeneratePasswordModalContentV2 } from '../containers/Modal/GeneratePasswordModalContentV2/GeneratePasswordModalContentV2'
-import { GeneratePasswordSideDrawerContent } from '../containers/Modal/GeneratePasswordSideDrawerContent'
+import { GeneratePasswordModalContent } from '../containers/Modal/GeneratePasswordModalContent/GeneratePasswordModalContent'
 import { useModal } from '../context/ModalContext'
-import { isV2 } from '../utils/designVersion'
 
 export const useCreateOrEditRecord = () => {
   const { setModal } = useModal()
@@ -23,16 +21,8 @@ export const useCreateOrEditRecord = () => {
     />
   `
 
-  const getSideDrawerContentByRecordType = ({ recordType, setValue }) => {
-    if (recordType === 'password') {
-      return html`<${GeneratePasswordSideDrawerContent}
-        onPasswordInsert=${setValue}
-      />`
-    }
-  }
-
   const getGeneratePasswordV2Content = ({ setValue }) => html`
-    <${GeneratePasswordModalContentV2} onPasswordInsert=${setValue} />
+    <${GeneratePasswordModalContent} onPasswordInsert=${setValue} />
   `
 
   /**
@@ -49,15 +39,7 @@ export const useCreateOrEditRecord = () => {
       options
 
     if (recordType === 'password') {
-      if (isV2()) {
-        setModal(getGeneratePasswordV2Content({ setValue }))
-        return
-      }
-
-      setModal(getSideDrawerContentByRecordType({ recordType, setValue }), {
-        modalType: 'sideDrawer'
-      })
-
+      setModal(getGeneratePasswordV2Content({ setValue }))
       return
     }
 

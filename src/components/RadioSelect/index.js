@@ -1,7 +1,6 @@
 import { html } from 'htm/react'
 
 import { RadioOption, RadioSelectWrapper, Title } from './styles'
-import { ButtonRadio } from '../../lib-react-components'
 
 /**
  * @param {{
@@ -22,7 +21,6 @@ export const RadioSelect = ({
   onChange,
   optionStyle,
   titleStyle,
-  buttonType = 'button',
   disabled = false
 }) => {
   const handleChange = (value) => {
@@ -43,9 +41,10 @@ export const RadioSelect = ({
               ? 'active'
               : 'inactive'}"
           >
-            <${ButtonRadio}
-              type=${buttonType}
-              isActive=${selectedOption === option.value}
+            <input
+              type="radio"
+              checked=${selectedOption === option.value}
+              onChange=${() => {}}
               disabled=${disabled}
             />
             ${option.label}

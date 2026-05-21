@@ -1,0 +1,1 @@
+export { EmptyCollectionView } from './EmptyCollectionView'

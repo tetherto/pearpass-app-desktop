@@ -16,16 +16,15 @@ import { RECORD_TYPES } from '@tetherto/pearpass-lib-vault'
 
 import {
   AppHeaderAddItemTrigger,
-  AppHeaderV2
-} from '../../components/AppHeaderV2'
+  AppHeader
+} from '../../components/AppHeader'
 import { useModal } from '../../context/ModalContext'
 import { useRouter } from '../../context/RouterContext'
 import { useAppHeaderContext } from '../../context/AppHeaderContext'
 import { useCreateOrEditRecord } from '../../hooks/useCreateOrEditRecord'
 import { useTranslation } from '../../hooks/useTranslation'
-import { isV2 } from '../../utils/designVersion'
 import { isFavorite } from '../../utils/isFavorite'
-import { ImportItemOrVaultModalContentV2 } from '../Modal/ImportItemOrVaultModalContentV2'
+import { ImportItemOrVaultModalContent } from '../Modal/ImportItemOrVaultModalContent'
 
 export const AppHeaderContainer = () => {
   const { currentPage, data: routerData } = useRouter()
@@ -39,10 +38,6 @@ export const AppHeaderContainer = () => {
   const { handleCreateOrEditRecord } = useCreateOrEditRecord()
   const { theme } = useTheme()
   const { t } = useTranslation()
-
-  if (!isV2()) {
-    return null
-  }
 
   if (currentPage !== 'vault') {
     return null
@@ -69,7 +64,7 @@ export const AppHeaderContainer = () => {
   ]
 
   const handleImportClick = () => {
-    setModal(<ImportItemOrVaultModalContentV2 />)
+    setModal(<ImportItemOrVaultModalContent />)
   }
 
   const addItemControl = (
@@ -100,7 +95,7 @@ export const AppHeaderContainer = () => {
   )
 
   return (
-    <AppHeaderV2
+    <AppHeader
       searchValue={searchValue}
       onSearchChange={(val) => setSearchValue(val)}
       onImportClick={handleImportClick}

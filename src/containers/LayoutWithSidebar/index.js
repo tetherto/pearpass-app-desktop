@@ -1,16 +1,8 @@
 import { useTheme } from '@tetherto/pearpass-lib-ui-kit'
 import { html } from 'htm/react'
 
-import {
-  ContentWrapper,
-  ContentWrapperV2,
-  LayoutWrapper,
-  SideBarWrapper,
-  SideViewWrapper
-} from './styles'
-import { isV2 } from '../../utils/designVersion'
-import { Sidebar } from '../Sidebar'
-import { SidebarV2 } from '../Sidebar/SidebarV2'
+import { ContentWrapper, LayoutWrapper, SideBarWrapper } from './styles'
+import { Sidebar } from '../Sidebar/Sidebar'
 
 /**
  * @typedef LayoutWithSidebarProps
@@ -25,12 +17,8 @@ import { SidebarV2 } from '../Sidebar/SidebarV2'
 
 export const LayoutWithSidebar = ({ mainView, sideView, isSideViewOpen }) => {
   const { theme } = useTheme()
-  const isV2Design = isV2()
-  const VersionBasedContentWrapper = isV2Design
-    ? ContentWrapperV2
-    : ContentWrapper
 
-  const v2SideViewStyle = {
+  const sideViewStyle = {
     flexBasis: 0,
     flexShrink: isSideViewOpen ? 0 : 1,
     flexGrow: isSideViewOpen ? 1 : 0,
@@ -45,28 +33,23 @@ export const LayoutWithSidebar = ({ mainView, sideView, isSideViewOpen }) => {
       'flex-grow 150ms ease, border-left-width 150ms ease, min-width 150ms ease'
   }
 
-  const v2MainViewStyle =
-    isV2Design && isSideViewOpen
-      ? {
-          flex: '0 1 350px',
-          minWidth: '300px',
-          transition: 'flex 150ms ease'
-        }
-      : {}
+  const mainViewStyle = isSideViewOpen
+    ? {
+        flex: '0 1 350px',
+        minWidth: '300px',
+        transition: 'flex 150ms ease'
+      }
+    : {}
 
   return html`
     <${LayoutWrapper}>
       <${SideBarWrapper}>
-        ${isV2Design ? html`<${SidebarV2} />` : html`<${Sidebar} />`}
+        <${Sidebar} />
       <//>
 
-      <${VersionBasedContentWrapper} style=${v2MainViewStyle}> ${mainView} <//>
+      <${ContentWrapper} style=${mainViewStyle}> ${mainView} <//>
 
-      ${isV2Design
-        ? sideView && html`<div style=${v2SideViewStyle}>${sideView}</div>`
-        : isSideViewOpen && sideView
-          ? html`<${SideViewWrapper}>${sideView}<//>`
-          : null}
+      ${sideView && html`<div style=${sideViewStyle}>${sideView}</div>`}
     <//>
   `
 }

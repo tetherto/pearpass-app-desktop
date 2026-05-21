@@ -10,9 +10,9 @@ import '@testing-library/jest-dom'
 const mockSetModal = jest.fn()
 
 jest.mock(
-  '../../containers/Modal/CreateFolderModalContentV2/CreateFolderModalContentV2',
+  '../../containers/Modal/CreateFolderModalContent/CreateFolderModalContent',
   () => ({
-    CreateFolderModalContentV2: function MockCreateFolderModalContentV2() {
+    CreateFolderModalContent: function MockCreateFolderModalContent() {
       return null
     }
   })

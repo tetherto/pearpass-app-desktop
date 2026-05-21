@@ -15,17 +15,11 @@ import {
   HeaderRight,
   Wrapper
 } from './styles'
-import { CreateVaultModalContent } from '../../containers/Modal/CreateVaultModalContent'
-import { CreateOrEditVaultModalContentV2 } from '../../containers/Modal/CreateOrEditVaultModalContentV2/CreateOrEditVaultModalContentV2'
+import { CreateOrEditVaultModalContent } from '../../containers/Modal/CreateOrEditVaultModalContent/CreateOrEditVaultModalContent'
 import { VaultPasswordFormModalContent } from '../../containers/Modal/VaultPasswordFormModalContent'
 import { useModal } from '../../context/ModalContext'
 import { useTranslation } from '../../hooks/useTranslation'
-import { isV2 } from '../../utils/designVersion'
-import {
-  LockCircleIcon,
-  LockIcon,
-  SmallArrowIcon
-} from '../../lib-react-components'
+import { ExpandMore, LockFilled, LockOutlined } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { logger } from '../../utils/logger'
 
 interface DropdownSwapVaultProps {
@@ -123,13 +117,8 @@ export const DropdownSwapVault = ({ vaults, selectedVault }: DropdownSwapVaultPr
 
   const handleCreateNewVault = () => {
     setIsOpen(false)
-
-    const CreateContent = isV2()
-      ? CreateOrEditVaultModalContentV2
-      : CreateVaultModalContent
-
     setModal(
-      html`<${CreateContent} onClose=${closeModal} onSuccess=${closeModal} />`
+      html`<${CreateOrEditVaultModalContent} onClose=${closeModal} onSuccess=${closeModal} />`
     )
   }
 
@@ -145,12 +134,12 @@ export const DropdownSwapVault = ({ vaults, selectedVault }: DropdownSwapVaultPr
         onClick={() => setIsOpen(!isOpen)}
       >
         <HeaderLeft>
-          <LockCircleIcon size="24" color={colors.primary400.mode1} />
+          <LockFilled width="24" height="24" fill={colors.primary400.mode1} />
           <HeaderLabel>{selectedVault?.name}</HeaderLabel>
         </HeaderLeft>
 
         <HeaderRight isOpen={isOpen}>
-          <SmallArrowIcon size="20" color={colors.primary400.mode1} />
+          <ExpandMore width="20" height="20" fill={colors.primary400.mode1} />
         </HeaderRight>
       </HeaderContainer>
 
@@ -165,7 +154,7 @@ export const DropdownSwapVault = ({ vaults, selectedVault }: DropdownSwapVaultPr
           >
             <DropdownItemLabel>{vault.name}</DropdownItemLabel>
             {protectedVaultById[vault.id] ? (
-              <LockIcon size="25" color={colors.white.mode1} />
+              <LockOutlined width="25" height="25" fill={colors.white.mode1} />
             ) : null}
           </DropdownItem>
         ))}

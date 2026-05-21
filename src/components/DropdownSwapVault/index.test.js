@@ -6,9 +6,9 @@ import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 import '@testing-library/jest-dom'
 
 jest.mock(
-  '../../containers/Modal/CreateOrEditVaultModalContentV2/CreateOrEditVaultModalContentV2',
+  '../../containers/Modal/CreateOrEditVaultModalContent/CreateOrEditVaultModalContent',
   () => ({
-    CreateOrEditVaultModalContentV2: () => null
+    CreateOrEditVaultModalContent: () => null
   })
 )
 

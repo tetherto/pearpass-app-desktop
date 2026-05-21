@@ -15,17 +15,14 @@ import { TitleBar } from '../../components/TitleBar'
 import { AppHeaderContainer } from '../../containers/AppHeaderContainer'
 import { useRouter } from '../../context/RouterContext'
 import { usePearUpdate } from '../../hooks/usePearUpdate'
-import { useSimulatedLoading } from '../../hooks/useSimulatedLoading'
 import { useVaultAccessRevoked } from '../../hooks/useVaultAccessRevoked'
 import { useVaultSwitch } from '../../hooks/useVaultSwitch'
-import { isV2 } from '../../utils/designVersion'
 import { Routes } from '../Routes'
 
 export const App = () => {
   const { theme } = useTheme()
   const { currentPage, navigate } = useRouter()
   usePearUpdate()
-  const isSimulatedLoading = useSimulatedLoading()
   const [isLoadingPageComplete, setIsLoadingPageComplete] = useState(false)
 
   useInactivity()
@@ -82,36 +79,24 @@ export const App = () => {
     setIsLoadingPageComplete(true)
   }, [])
 
-  const showLoadingPage = isV2()
-    ? isDataLoading || !isLoadingPageComplete
-    : !isSimulatedLoading && (isDataLoading || !isLoadingPageComplete)
+  const showLoadingPage = isDataLoading || !isLoadingPageComplete
 
-  if (isV2()) {
-    const useLogoTitleBar = appConfig.headerWithLogo.includes(currentPage)
-    return html`
-      <${WindowBackground} $backgroundColor=${theme.colors.colorBackground}>
-        ${useLogoTitleBar
-          ? html`<${TitleBar} />`
-          : html`<${AppHeaderContainer} />`}
-        <${ContentFrame}
-          $backgroundColor=${theme.colors.colorBackground}
-          $borderColor=${theme.colors.colorBorderPrimary}
-        >
-          <${Routes}
-            isSplashScreenShown=${false}
-            isDataLoading=${showLoadingPage}
-            onLoadingComplete=${handleLoadingComplete}
-          />
-        <//>
-      <//>
-    `
-  }
-
+  const useLogoTitleBar = appConfig.headerWithLogo.includes(currentPage)
   return html`
-    <${Routes}
-      isSplashScreenShown=${isSimulatedLoading}
-      isDataLoading=${showLoadingPage}
-      onLoadingComplete=${handleLoadingComplete}
-    />
+    <${WindowBackground} $backgroundColor=${theme.colors.colorBackground}>
+      ${useLogoTitleBar
+        ? html`<${TitleBar} />`
+        : html`<${AppHeaderContainer} />`}
+      <${ContentFrame}
+        $backgroundColor=${theme.colors.colorBackground}
+        $borderColor=${theme.colors.colorBorderPrimary}
+      >
+        <${Routes}
+          isSplashScreenShown=${false}
+          isDataLoading=${showLoadingPage}
+          onLoadingComplete=${handleLoadingComplete}
+        />
+      <//>
+    <//>
   `
 }

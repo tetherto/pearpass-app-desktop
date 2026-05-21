@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 
-import { CopyIcon } from '../lib-react-components'
+import { ContentCopy } from '@tetherto/pearpass-lib-ui-kit/icons'
+
 import { useCopyToClipboard } from './useCopyToClipboard.electron'
 import { useTranslation } from './useTranslation'
-import { COPY_FEEDBACK_DISPLAY_TIME } from '../constants/timeConstants'
-import { ExtensionPairingModalContent } from '../containers/Modal/ExtensionPairingModalContent'
-import { ExtensionPairingModalContentV2 } from '../containers/Modal/ExtensionPairingModalContent/ExtensionPairingModalContentV2'
+import { ExtensionPairingModalContent } from '../containers/Modal/ExtensionPairingModalContent/ExtensionPairingModalContent'
 import { useGlobalLoading } from '../context/LoadingContext.js'
 import { useModal } from '../context/ModalContext'
 import { useToast } from '../context/ToastContext'
@@ -27,7 +26,6 @@ import {
   resetIdentity
 } from '../services/security/appIdentity'
 import { clearAllSessions } from '../services/security/sessionStore.js'
-import { isV2 } from '../utils/designVersion'
 import {
   setupNativeMessaging,
   killNativeMessagingHostProcesses,
@@ -40,7 +38,7 @@ export const useConnectExtension = () => {
   const { t } = useTranslation()
 
   const { copyToClipboard } = useCopyToClipboard({
-    onCopy: () => setToast({ message: t('Copied!'), icon: CopyIcon })
+    onCopy: () => setToast({ message: t('Copied!'), icon: ContentCopy })
   })
 
   const [isBrowserExtensionEnabled, setIsBrowserExtensionEnabled] = useState(
@@ -97,12 +95,10 @@ export const useConnectExtension = () => {
   const [isExtensionConnectionLoading, setIsExtensionConnectionLoading] =
     useState(false)
   useGlobalLoading({ isLoading: isExtensionConnectionLoading })
-  const [copyFeedback, setCopyFeedback] = useState('')
 
   const resetState = () => {
     setIsBrowserExtensionEnabled(false)
     setIsExtensionConnectionLoading(false)
-    setCopyFeedback('')
   }
 
   const loadPairingInfo = async (reset = false) => {
@@ -127,12 +123,6 @@ export const useConnectExtension = () => {
       tokenCreationDate: id.creationDate
     }
 
-    if (reset) {
-      // Show feedback when new token is generated
-      setCopyFeedback(t('New pairing token generated!'))
-      setTimeout(() => setCopyFeedback(''), COPY_FEEDBACK_DISPLAY_TIME)
-    }
-
     return result
   }
 
@@ -141,24 +131,13 @@ export const useConnectExtension = () => {
       setIsExtensionConnectionLoading(true)
       return handleSetupExtension()
         .then(loadPairingInfo)
-        .then(({ pairingToken, fingerprint, tokenCreationDate }) => {
+        .then(({ pairingToken }) => {
           setModal(
-            isV2() ? (
-              <ExtensionPairingModalContentV2
-                onCopy={() => copyToClipboard(pairingToken)}
-                pairingToken={pairingToken}
-                loadingPairing={isExtensionConnectionLoading}
-              />
-            ) : (
-              <ExtensionPairingModalContent
-                onCopy={() => copyToClipboard(pairingToken)}
-                pairingToken={pairingToken}
-                loadingPairing={isExtensionConnectionLoading}
-                copyFeedback={copyFeedback}
-                tokenCreationDate={tokenCreationDate}
-                fingerprint={fingerprint}
-              />
-            ),
+            <ExtensionPairingModalContent
+              onCopy={() => copyToClipboard(pairingToken)}
+              pairingToken={pairingToken}
+              loadingPairing={isExtensionConnectionLoading}
+            />,
             { replace: true }
           )
         })

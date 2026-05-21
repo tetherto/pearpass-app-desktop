@@ -1,7 +1,7 @@
+import { Close } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { html } from 'htm/react'
 
 import { Header, HeaderChildrenWrapper } from './styles'
-import { ButtonRoundIcon, XIcon } from '../../../lib-react-components'
 
 /**
  * @param {{
@@ -21,11 +21,21 @@ export const ModalHeader = ({
     <${HeaderChildrenWrapper}> ${children} <//>
 
     ${showCloseButton &&
-    html`<${ButtonRoundIcon}
+    html`<button
       onClick=${onClose}
-      startIcon=${XIcon}
-      testId="modalheader-button-close"
-      dataId=${closeButtonDataId}
-    />`}
+      data-testid="modalheader-button-close"
+      data-id=${closeButtonDataId}
+      style=${{
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        padding: '4px',
+        display: 'flex',
+        alignItems: 'center',
+        borderRadius: '50%'
+      }}
+    >
+      <${Close} width="20" height="20" />
+    </button>`}
   <//>
 `

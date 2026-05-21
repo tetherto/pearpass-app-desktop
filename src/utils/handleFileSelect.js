@@ -1,7 +1,7 @@
 import { generateUniqueId } from '@tetherto/pear-apps-utils-generate-unique-id'
 
 import { logger } from './logger'
-import { readFileContent } from '../pages/SettingsView/ImportTab/utils/readFileContent'
+import { readFileContent } from '../pages/SettingsView/utils/readFileContent'
 
 /**
  * @param {Object} params

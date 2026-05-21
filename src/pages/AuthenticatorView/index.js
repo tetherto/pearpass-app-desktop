@@ -39,18 +39,18 @@ import { SORT_BY_TYPE, SORT_KEYS } from '../../constants/sortOptions'
 import {
   ILLUSTRATION_HEIGHT,
   createStyles as createEmptyStateStyles
-} from '../../containers/EmptyCollectionViewV2/EmptyCollectionViewV2.styles'
-import { EmptyResultsViewV2 } from '../../containers/EmptyResultsViewV2'
-import { DeleteRecordsModalContentV2 } from '../../containers/Modal/DeleteRecordsModalContentV2'
-import { MoveFolderModalContentV2 } from '../../containers/Modal/MoveFolderModalContentV2/MoveFolderModalContentV2'
+} from '../../containers/EmptyCollectionView/EmptyCollectionView.styles'
+import { EmptyResultsView } from '../../containers/EmptyResultsView'
+import { DeleteRecordsModalContent } from '../../containers/Modal/DeleteRecordsModalContent'
+import { MoveFolderModalContent } from '../../containers/Modal/MoveFolderModalContent/MoveFolderModalContent'
 import { MultiSelectActionsBar } from '../../containers/MultiSelectActionsBar'
-import { createStyles as createListStyles } from '../../containers/RecordListView/RecordListViewV2.styles'
+import { createStyles as createListStyles } from '../../containers/RecordListView/RecordListView.styles'
 import { useAppHeaderContext } from '../../context/AppHeaderContext'
 import { useModal } from '../../context/ModalContext'
 import { useRouter } from '../../context/RouterContext'
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard.electron'
 import { useCreateOrEditRecord } from '../../hooks/useCreateOrEditRecord'
-import { SettingsItemKey } from '../../pages/SettingsViewV2/SettingsViewV2'
+import { SettingsItemKey } from '../../pages/SettingsView/SettingsView'
 import { ItemCardIllustration } from '../../svgs/ItemCardIllustration'
 import { getRecordSubtitle } from '../../utils/getRecordSubtitle'
 
@@ -159,7 +159,7 @@ export const AuthenticatorView = () => {
   const handleMove = () => {
     if (!selectedCount) return
     setModal(
-      html`<${MoveFolderModalContentV2}
+      html`<${MoveFolderModalContent}
         records=${selectedRecordObjects}
         onCompleted=${exitMultiSelect}
       />`
@@ -169,7 +169,7 @@ export const AuthenticatorView = () => {
   const handleDelete = () => {
     if (!selectedCount) return
     setModal(
-      html`<${DeleteRecordsModalContentV2}
+      html`<${DeleteRecordsModalContent}
         records=${selectedRecordObjects}
         onCompleted=${exitMultiSelect}
       />`
@@ -323,7 +323,7 @@ export const AuthenticatorView = () => {
         onDelete=${handleDelete}
       />`}
       ${otpRecords.length === 0 && !!searchValue
-        ? html`<${EmptyResultsViewV2} />`
+        ? html`<${EmptyResultsView} />`
         : otpRecords.length === 0
           ? html`
               <div

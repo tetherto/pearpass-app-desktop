@@ -4,10 +4,8 @@ import { useEffect, useRef } from 'react'
 
 import { html } from 'htm/react'
 
-import { UpdateRequiredModalContent } from '../containers/Modal/UpdateRequiredModalContent'
-import { UpdateRequiredModalContentV2 } from '../containers/Modal/UpdateRequiredModalContentV2/UpdateRequiredModalContentV2'
+import { UpdateRequiredModalContent } from '../containers/Modal/UpdateRequiredModalContent/UpdateRequiredModalContent'
 import { useModal } from '../context/ModalContext'
-import { isV2 } from '../utils/designVersion'
 
 export const usePearUpdate = () => {
   const { setModal } = useModal()
@@ -18,9 +16,7 @@ export const usePearUpdate = () => {
     if (modalShownRef.current || !Pear.config.key) return
 
     setModal(
-      isV2()
-        ? html`<${UpdateRequiredModalContentV2} onUpdate=${handleUpdateApp} />`
-        : html`<${UpdateRequiredModalContent} onUpdate=${handleUpdateApp} />`,
+      html`<${UpdateRequiredModalContent} onUpdate=${handleUpdateApp} />`,
       { closable: false }
     )
 

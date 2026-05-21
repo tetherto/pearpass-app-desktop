@@ -5,13 +5,10 @@ import { RECORD_TYPES, useRecords } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
 
 import { useCreateOrEditRecord } from './useCreateOrEditRecord'
-import { ConfirmationModalContent } from '../containers/Modal/ConfirmationModalContent'
-import { DeleteRecordsModalContentV2 } from '../containers/Modal/DeleteRecordsModalContentV2'
-import { MoveFolderModalContent } from '../containers/Modal/MoveFolderModalContent'
-import { MoveFolderModalContentV2 } from '../containers/Modal/MoveFolderModalContentV2/MoveFolderModalContentV2'
+import { DeleteRecordsModalContent } from '../containers/Modal/DeleteRecordsModalContent'
+import { MoveFolderModalContent } from '../containers/Modal/MoveFolderModalContent/MoveFolderModalContent'
 import { useModal } from '../context/ModalContext'
 import { useRouter } from '../context/RouterContext'
-import { isV2 } from '../utils/designVersion'
 
 /**
  * @param {{
@@ -36,37 +33,14 @@ export const useRecordActionItems = ({
   onClose
 } = {}) => {
   const { i18n } = useLingui()
-  const { setModal, closeModal } = useModal()
-  const { data: routerData, navigate, currentPage } = useRouter()
+  const { setModal } = useModal()
+  const { data: routerData } = useRouter()
 
-  const { deleteRecords, updateFavoriteState } = useRecords()
+  const { updateFavoriteState } = useRecords()
   const { handleCreateOrEditRecord } = useCreateOrEditRecord()
 
-  const handleDeleteConfirm = () => {
-    if (routerData?.recordId === record?.id) {
-      navigate(currentPage, { ...routerData, recordId: undefined })
-    }
-
-    deleteRecords([record?.id])
-
-    closeModal?.()
-  }
-
   const handleDelete = () => {
-    if (isV2()) {
-      setModal(<DeleteRecordsModalContentV2 records={[record]} />)
-    } else {
-      setModal(
-        <ConfirmationModalContent
-          title={i18n._('Are you sure to delete this item?')}
-          text={i18n._('This is permanent and cannot be undone')}
-          primaryLabel={i18n._('No')}
-          secondaryLabel={i18n._('Yes')}
-          secondaryAction={handleDeleteConfirm}
-          primaryAction={closeModal}
-        />
-      )
-    }
+    setModal(<DeleteRecordsModalContent records={[record]} />)
     onClose?.()
   }
 
@@ -95,18 +69,11 @@ export const useRecordActionItems = ({
   }
 
   const handleMoveClick = () => {
-    const VersionBasedMoveFolderModalContent = isV2()
-      ? MoveFolderModalContentV2
-      : MoveFolderModalContent
-
-    setModal(html`
-      <${VersionBasedMoveFolderModalContent} records=${[record]} />
-    `)
-
+    setModal(html`<${MoveFolderModalContent} records=${[record]} />`)
     onClose?.()
   }
 
-  const v2Actions = [
+  const defaultActions = [
     { name: i18n._('Select element'), type: 'select', click: handleSelect },
     { name: i18n._('Edit'), type: 'edit', click: handleEdit },
     {
@@ -123,25 +90,6 @@ export const useRecordActionItems = ({
     },
     { name: i18n._('Delete Item'), type: 'delete', click: handleDelete }
   ]
-
-  const v1Actions = [
-    { name: i18n._('Select element'), type: 'select', click: handleSelect },
-    {
-      name: i18n._(
-        record?.isFavorite ? 'Remove from Favorites' : 'Mark as favorite'
-      ),
-      type: 'favorite',
-      click: handleFavoriteToggle
-    },
-    {
-      name: i18n._('Move to another folder'),
-      type: 'move',
-      click: handleMoveClick
-    },
-    { name: i18n._('Delete element'), type: 'delete', click: handleDelete }
-  ]
-
-  const defaultActions = isV2() ? v2Actions : v1Actions
 
   const filteredActions = excludeTypes.length
     ? defaultActions.filter((action) => !excludeTypes.includes(action.type))

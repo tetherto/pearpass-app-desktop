@@ -3,6 +3,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import { Validator } from '@tetherto/pear-apps-utils-validator'
 import { PROTECTED_VAULT_ENABLED } from '@tetherto/pearpass-lib-constants'
+import { Button, InputField } from '@tetherto/pearpass-lib-ui-kit'
 import { useVault } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
 
@@ -10,12 +11,6 @@ import { RadioSelect } from '../../../components/RadioSelect'
 import { useLoadingContext } from '../../../context/LoadingContext'
 import { useModal } from '../../../context/ModalContext'
 import { useTranslation } from '../../../hooks/useTranslation'
-import {
-  ButtonPrimary,
-  ButtonSecondary,
-  PearPassInputField,
-  PearPassPasswordField
-} from '../../../lib-react-components'
 import { logger } from '../../../utils/logger'
 import { ModalContent } from '../ModalContent'
 import {
@@ -180,7 +175,7 @@ export const ModifyVaultModalContent = ({ vaultId, vaultName }) => {
         html`
           <${InputWrapper}>
             <${InputLabel}> ${t('Insert vault name')} <//>
-            <${PearPassInputField} ...${register('name')} />
+            <${InputField} ...${register('name')} />
           <//>
         `}
         ${isProtected &&
@@ -188,25 +183,27 @@ export const ModifyVaultModalContent = ({ vaultId, vaultName }) => {
         html`
           <${InputWrapper}>
             <${InputLabel}> ${t('Insert old password')} <//>
-            <${PearPassPasswordField} ...${register('currentPassword')} />
+            <${InputField} type="password" ...${register('currentPassword')} />
           <//>
         `}
         ${selectedOption === UPDATE_MODE.PASSWORD &&
         html`
           <${InputWrapper}>
             <${InputLabel}> ${t('Create new password')} <//>
-            <${PearPassPasswordField} ...${register('newPassword')} />
+            <${InputField} type="password" ...${register('newPassword')} />
           <//>
           <${InputWrapper}>
             <${InputLabel}> ${t('Repeat new password')} <//>
-            <${PearPassPasswordField} ...${register('repeatPassword')} />
+            <${InputField} type="password" ...${register('repeatPassword')} />
           <//>
         `}
         <${ModalActions}>
-          <${ButtonPrimary} onClick=${handleSubmit(onSubmit)}>
+          <${Button} variant="primary" onClick=${handleSubmit(onSubmit)}>
             ${t('Continue')}
           <//>
-          <${ButtonSecondary} onClick=${closeModal}> ${t('Cancel')} <//>
+          <${Button} variant="secondary" onClick=${closeModal}>
+            ${t('Cancel')}
+          <//>
         <//>
       <//>
     <//>

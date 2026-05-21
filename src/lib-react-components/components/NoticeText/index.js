@@ -1,9 +1,11 @@
+import {
+  Check,
+  ErrorFilled,
+  ReportProblem
+} from '@tetherto/pearpass-lib-ui-kit/icons'
 import { html } from 'htm/react'
 
 import { NoticeTextComponent, NoticeTextWrapper } from './styles'
-import { ErrorIcon } from '../../icons/ErrorIcon'
-import { OkayIcon } from '../../icons/OkayIcon'
-import { YellowErrorIcon } from '../../icons/YellowErrorIcon'
 
 /**
  * @param {{
@@ -16,19 +18,21 @@ export const NoticeText = ({ text, type = 'success', testId }) => {
   const getIconByType = () => {
     switch (type) {
       case 'success':
-        return OkayIcon
+        return Check
       case 'error':
-        return ErrorIcon
+        return ErrorFilled
       case 'warning':
-        return YellowErrorIcon
+        return ReportProblem
       default:
         return null
     }
   }
 
+  const Icon = getIconByType()
+
   return html`
     <${NoticeTextWrapper}>
-      <${getIconByType()} size="10px" />
+      ${Icon && html`<${Icon} width="10" height="10" />`}
       <${NoticeTextComponent} data-testid=${testId} type=${type}> ${text} <//>
     <//>
   `

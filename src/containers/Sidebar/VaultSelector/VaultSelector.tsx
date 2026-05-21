@@ -32,9 +32,9 @@ import { useLoadingContext } from '../../../context/LoadingContext'
 import { useModal } from '../../../context/ModalContext'
 import { useTranslation } from '../../../hooks/useTranslation'
 import { sortByName } from '../../../utils/sortByName'
-import { AddDeviceModalContentV2 } from '../../Modal/AddDeviceModalContentV2/AddDeviceModalContentV2'
-import { CreateOrEditVaultModalContentV2 } from '../../Modal/CreateOrEditVaultModalContentV2/CreateOrEditVaultModalContentV2'
-import { DeleteVaultModalContentV2 } from '../../Modal/DeleteVaultModalContentV2'
+import { AddDeviceModalContent } from '../../Modal/AddDeviceModalContent/AddDeviceModalContent'
+import { CreateOrEditVaultModalContent } from '../../Modal/CreateOrEditVaultModalContent/CreateOrEditVaultModalContent'
+import { DeleteVaultModalContent } from '../../Modal/DeleteVaultModalContent'
 import { ModifyVaultModalContent } from '../../Modal/ModifyVaultModalContent'
 import { PairedDevicesModalContent } from '../../Modal/PairedDevicesModalContent'
 import { useVaultSwitch } from '../../../hooks/useVaultSwitch'
@@ -75,12 +75,12 @@ export const VaultSelector = ({ onClose }: VaultSelectorProps = {}) => {
         setIsLoading(false)
       }
     }
-    setModal(<AddDeviceModalContentV2 />)
+    setModal(<AddDeviceModalContent />)
   }
 
   const handleCreate = () => {
     setModal(
-      <CreateOrEditVaultModalContentV2
+      <CreateOrEditVaultModalContent
         onClose={closeModal}
         onSuccess={() => {
           closeModal()
@@ -103,7 +103,7 @@ export const VaultSelector = ({ onClose }: VaultSelectorProps = {}) => {
 
   const handleRename = (vault: Vault) => {
     setModal(
-      <CreateOrEditVaultModalContentV2
+      <CreateOrEditVaultModalContent
         vault={vault}
         onClose={closeModal}
         onSuccess={closeModal}
@@ -121,7 +121,7 @@ export const VaultSelector = ({ onClose }: VaultSelectorProps = {}) => {
 
   const handleDelete = (vault: Vault) => {
     setModal(
-      <DeleteVaultModalContentV2 vaultId={vault.id} vaultName={vault.name} />
+      <DeleteVaultModalContent vaultId={vault.id} vaultName={vault.name} />
     )
   }
 

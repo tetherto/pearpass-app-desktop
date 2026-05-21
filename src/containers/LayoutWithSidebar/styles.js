@@ -11,16 +11,6 @@ export const SideBarWrapper = styled.div`
 `
 
 export const ContentWrapper = styled.div`
-  position: relative;
-  flex: 1;
-  padding: 29px 15px 0;
-  display: flex;
-  align-items: center;
-  align-self: stretch;
-  background: ${({ theme }) => theme.colors.grey400.mode1};
-`
-
-export const ContentWrapperV2 = styled.div`
   flex: 1;
   min-width: 0;
   display: flex;

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard.electron'
 import { useToast } from '../../context/ToastContext'
-import { CopyIcon } from '../../lib-react-components'
+import { ContentCopy } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { useTranslation } from '../../hooks/useTranslation'
 
 interface CopyButtonProps {
@@ -24,7 +24,7 @@ const CopyButton = ({
     onCopy: () => {
       setToast({
         message: t('Copied to clipboard'),
-        icon: CopyIcon
+        icon: ContentCopy
       })
     }
   })
@@ -50,7 +50,7 @@ const CopyButton = ({
       }}
       data-testid={testId}
     >
-      <CopyIcon size="24" color={color} />
+      <ContentCopy width="24" height="24" fill={color} />
       {text && (
         <span
           style={{

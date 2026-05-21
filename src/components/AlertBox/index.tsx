@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react'
 import { IconWrapper, Container, Message } from './styles'
-import { ErrorIcon, YellowErrorIcon } from '../../lib-react-components'
+import { ErrorFilled, ReportProblem } from '@tetherto/pearpass-lib-ui-kit/icons'
 
 
 export enum AlertBoxType {
@@ -42,7 +42,7 @@ export const AlertBox = ({ message, type = AlertBoxType.WARNING, testId }: Props
       data-testid={testId}
     >
       <IconWrapper>
-        {type === AlertBoxType.WARNING ? <YellowErrorIcon size="18" /> : <ErrorIcon size="18" />}
+        {type === AlertBoxType.WARNING ? <ReportProblem width="18" height="18" /> : <ErrorFilled width="18" height="18" />}
       </IconWrapper>
 
       <Message ref={messageRef}>{message}</Message>

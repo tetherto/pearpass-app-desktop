@@ -52,10 +52,10 @@ jest.mock('../../components/CreateNewCategoryPopupContent', () => ({
   )
 }))
 
-jest.mock('../../components/AppHeaderV2', () => {
+jest.mock('../../components/AppHeader', () => {
   const React = require('react')
   return {
-    AppHeaderV2: jest.fn((props) =>
+    AppHeader: jest.fn((props) =>
       React.createElement(
         'div',
         { 'data-testid': 'app-header-v2-mock' },
@@ -85,12 +85,12 @@ jest.mock('../../components/AppHeaderV2', () => {
   }
 })
 
-jest.mock('../Modal/ImportItemOrVaultModalContentV2', () => ({
-  ImportItemOrVaultModalContentV2: () => null
+jest.mock('../Modal/ImportItemOrVaultModalContent', () => ({
+  ImportItemOrVaultModalContent: () => null
 }))
 
 import { AppHeaderContainer } from './AppHeaderContainer'
-import { AppHeaderV2 } from '../../components/AppHeaderV2'
+import { AppHeader } from '../../components/AppHeader'
 import { AppHeaderContextProvider } from '../../context/AppHeaderContext'
 import { useRouter } from '../../context/RouterContext'
 import { useCreateOrEditRecord } from '../../hooks/useCreateOrEditRecord'
@@ -128,7 +128,7 @@ describe('AppHeaderContainer', () => {
     const { container } = renderWithHeaderContext(<AppHeaderContainer />)
 
     expect(container.firstChild).toBeNull()
-    expect(AppHeaderV2).not.toHaveBeenCalled()
+    expect(AppHeader).not.toHaveBeenCalled()
   })
 
   it('returns null when current page is not vault', () => {
@@ -141,10 +141,10 @@ describe('AppHeaderContainer', () => {
     const { container } = renderWithHeaderContext(<AppHeaderContainer />)
 
     expect(container.firstChild).toBeNull()
-    expect(AppHeaderV2).not.toHaveBeenCalled()
+    expect(AppHeader).not.toHaveBeenCalled()
   })
 
-  it('renders AppHeaderV2 on authenticator vault when AUTHENTICATOR_ENABLED', () => {
+  it('renders AppHeader on authenticator vault when AUTHENTICATOR_ENABLED', () => {
     mockAuthenticatorEnabled = true
     useRouter.mockReturnValue({
       currentPage: 'vault',
@@ -155,14 +155,14 @@ describe('AppHeaderContainer', () => {
     renderWithHeaderContext(<AppHeaderContainer />)
 
     expect(screen.getByTestId('app-header-v2-mock')).toBeInTheDocument()
-    expect(AppHeaderV2).toHaveBeenCalled()
+    expect(AppHeader).toHaveBeenCalled()
   })
 
-  it('renders AppHeaderV2 on vault when v2 and not blocked', () => {
+  it('renders AppHeader on vault when v2 and not blocked', () => {
     renderWithHeaderContext(<AppHeaderContainer />)
 
     expect(screen.getByTestId('app-header-v2-mock')).toBeInTheDocument()
-    expect(AppHeaderV2).toHaveBeenCalled()
+    expect(AppHeader).toHaveBeenCalled()
   })
 
   it('opens import modal on import', () => {

@@ -18,8 +18,8 @@ jest.mock('sodium-native', () => ({
   crypto_secretbox_MACBYTES: 16
 }))
 jest.mock(
-  '../containers/Modal/ExtensionPairingModalContent/ExtensionPairingModalContentV2',
-  () => ({ ExtensionPairingModalContentV2: () => null })
+  '../containers/Modal/ExtensionPairingModalContent/ExtensionPairingModalContent',
+  () => ({ ExtensionPairingModalContent: () => null })
 )
 jest.mock('../containers/Modal/ExtensionPairingModalContent', () => ({
   ExtensionPairingModalContent: () => null

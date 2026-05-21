@@ -3,7 +3,6 @@ import { html } from 'htm/react'
 import styled from 'styled-components'
 
 import { PearpassLogo } from '../../svgs/PearpassLogo'
-import { isV2 } from '../../utils/designVersion'
 
 const BarInner = styled.div`
   position: relative;
@@ -25,7 +24,6 @@ const Brand = styled.div`
 `
 
 export const TitleBar = () => {
-  if (!isV2()) return null
   if (process.platform !== 'darwin') return null
 
   const { theme } = useTheme()

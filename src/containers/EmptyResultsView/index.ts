@@ -1,0 +1,1 @@
+export { EmptyResultsView } from './EmptyResultsView'

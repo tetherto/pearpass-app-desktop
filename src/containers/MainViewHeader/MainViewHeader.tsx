@@ -20,8 +20,8 @@ import { SORT_KEYS, type SortKey } from '../../constants/sortOptions'
 import { useRouter } from '../../context/RouterContext'
 import {
   ALL_ITEMS_TYPE,
-  useRecordMenuItemsV2
-} from '../../hooks/useRecordMenuItemsV2'
+  useRecordMenuItems
+} from '../../hooks/useRecordMenuItems'
 import { useTranslation } from '../../hooks/useTranslation'
 import { isFavorite } from '../../utils/isFavorite'
 
@@ -41,7 +41,7 @@ export const MainViewHeader = ({
   const { t } = useTranslation()
   const { theme } = useTheme()
   const { data: routerData } = useRouter()
-  const { categoriesItems } = useRecordMenuItemsV2()
+  const { categoriesItems } = useRecordMenuItems()
   const styles = createStyles(theme.colors)
   const [isSortOpen, setIsSortOpen] = useState(false)
 

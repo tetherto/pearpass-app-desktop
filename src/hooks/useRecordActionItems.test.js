@@ -10,14 +10,14 @@ const mockUpdateFavoriteState = jest.fn()
 const mockHandleCreateOrEditRecord = jest.fn()
 
 jest.mock(
-  '../containers/Modal/MoveFolderModalContentV2/MoveFolderModalContentV2',
+  '../containers/Modal/MoveFolderModalContent/MoveFolderModalContent',
   () => ({
-    MoveFolderModalContentV2: () => null
+    MoveFolderModalContent: () => null
   })
 )
 
-jest.mock('../containers/Modal/DeleteRecordsModalContentV2', () => ({
-  DeleteRecordsModalContentV2: () => null
+jest.mock('../containers/Modal/DeleteRecordsModalContent', () => ({
+  DeleteRecordsModalContent: () => null
 }))
 
 jest.mock('../utils/designVersion', () => ({
@@ -25,9 +25,9 @@ jest.mock('../utils/designVersion', () => ({
 }))
 
 jest.mock(
-  '../containers/Modal/CreateFolderModalContentV2/CreateFolderModalContentV2',
+  '../containers/Modal/CreateFolderModalContent/CreateFolderModalContent',
   () => ({
-    CreateFolderModalContentV2: function MockCreateFolderModalContentV2() {
+    CreateFolderModalContent: function MockCreateFolderModalContent() {
       return null
     }
   })

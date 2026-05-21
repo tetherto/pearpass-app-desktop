@@ -15,9 +15,9 @@ jest.mock('../../hooks/useTranslation', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
-jest.mock('../../hooks/useRecordMenuItemsV2', () => ({
+jest.mock('../../hooks/useRecordMenuItems', () => ({
   ALL_ITEMS_TYPE: 'all',
-  useRecordMenuItemsV2: () => ({
+  useRecordMenuItems: () => ({
     categoriesItems: [
       { type: 'all', label: 'All Items' },
       { type: 'login', label: 'Logins' }

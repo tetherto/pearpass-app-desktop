@@ -179,7 +179,7 @@ jest.mock('../../components/TimerCircle', () => ({
 }))
 
 jest.mock(
-  '../../containers/EmptyCollectionViewV2/EmptyCollectionViewV2.styles',
+  '../../containers/EmptyCollectionView/EmptyCollectionView.styles',
   () => ({
     ILLUSTRATION_HEIGHT: 100,
     createStyles: () => ({
@@ -194,7 +194,7 @@ jest.mock(
   })
 )
 
-jest.mock('../../containers/RecordListView/RecordListViewV2.styles', () => ({
+jest.mock('../../containers/RecordListView/RecordListView.styles', () => ({
   createStyles: () => ({
     wrapper: {},
     scrollArea: {},
@@ -208,28 +208,28 @@ jest.mock('../../containers/RecordListView/RecordListViewV2.styles', () => ({
   })
 }))
 
-jest.mock('../../containers/EmptyResultsViewV2', () => ({
-  EmptyResultsViewV2: () => (
+jest.mock('../../containers/EmptyResultsView', () => ({
+  EmptyResultsView: () => (
     <div data-testid="empty-results-v2">No result found.</div>
   )
 }))
 
 jest.mock(
-  '../../containers/Modal/MoveFolderModalContentV2/MoveFolderModalContentV2',
+  '../../containers/Modal/MoveFolderModalContent/MoveFolderModalContent',
   () => ({
-    MoveFolderModalContentV2: () => null
+    MoveFolderModalContent: () => null
   })
 )
 
-jest.mock('../../containers/Modal/DeleteRecordsModalContentV2', () => ({
-  DeleteRecordsModalContentV2: () => null
+jest.mock('../../containers/Modal/DeleteRecordsModalContent', () => ({
+  DeleteRecordsModalContent: () => null
 }))
 
 jest.mock('../../containers/MultiSelectActionsBar', () => ({
   MultiSelectActionsBar: () => <div data-testid="multi-select-actions-bar" />
 }))
 
-jest.mock('../../pages/SettingsViewV2/SettingsViewV2', () => ({
+jest.mock('../../pages/SettingsView/SettingsView', () => ({
   SettingsItemKey: { ImportItems: 'ImportItems' }
 }))
 
@@ -262,7 +262,7 @@ describe('AuthenticatorView', () => {
     ).toBeInTheDocument()
   })
 
-  test('renders EmptyResultsViewV2 when search has no results', () => {
+  test('renders EmptyResultsView when search has no results', () => {
     mockSearchValue = 'no-match'
 
     render(<AuthenticatorView />)

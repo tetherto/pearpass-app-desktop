@@ -1,0 +1,1 @@
+export { DeleteRecordsModalContent } from './DeleteRecordsModalContent'

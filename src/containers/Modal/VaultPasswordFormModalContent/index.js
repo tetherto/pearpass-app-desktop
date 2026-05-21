@@ -3,16 +3,13 @@ import { useMemo } from 'react'
 import { useLingui } from '@lingui/react'
 import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import { Validator } from '@tetherto/pear-apps-utils-validator'
+import { Button, InputField } from '@tetherto/pearpass-lib-ui-kit'
 import { html } from 'htm/react'
 
 import { Description, Header, Title, UnlockVaultContainer } from './styles'
 import { FormModalHeaderWrapper } from '../../../components/FormModalHeaderWrapper'
 import { useLoadingContext } from '../../../context/LoadingContext'
 import { useModal } from '../../../context/ModalContext'
-import {
-  ButtonPrimary,
-  PearPassPasswordField
-} from '../../../lib-react-components'
 import { logger } from '../../../utils/logger'
 import { ModalContent } from '../ModalContent'
 
@@ -87,9 +84,9 @@ export const VaultPasswordFormModalContent = ({ vault, onSubmit }) => {
     `}
   >
     <${UnlockVaultContainer} onSubmit=${handleSubmit(submit)}>
-      <${PearPassPasswordField} ...${register('password')} />
+      <${InputField} type="password" ...${register('password')} />
 
-      <${ButtonPrimary} type="submit"> ${i18n._('Unlock Vault')} <//>
+      <${Button} variant="primary" type="submit"> ${i18n._('Unlock Vault')} <//>
     <//>
   <//>`
 }
