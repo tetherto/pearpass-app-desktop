@@ -2,5 +2,31 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "tags": [
     "-lintignore"
+  ],
+  "entry": [
+    "app.electron.tsx",
+    "electron/main.cjs",
+    "electron/preload.cjs",
+    "electron/clipboardCleanupHelper.cjs",
+    "appling/app.cjs",
+    "appling/app.dev.cjs",
+    "appling/app.staging.cjs",
+    "scripts/*.{mjs,cjs}",
+    "forge.config.cjs",
+    "lingui.config.js",
+    "babel.config.cjs",
+    "babel.strict-dom.cjs",
+    "e2e/playwright.config.js",
+    "e2e/**/*.{js,ts}"
+  ],
+  "project": [
+    "src/**/*.{ts,tsx,js,jsx}",
+    "electron/**/*.{cjs,js}",
+    "appling/**/*.cjs"
+  ],
+  "ignore": [
+    "dist/**",
+    "build/**",
+    ".tmp/**"
   ]
 }

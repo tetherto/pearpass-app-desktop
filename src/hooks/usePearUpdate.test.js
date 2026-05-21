@@ -3,7 +3,6 @@ import { act, renderHook, waitFor } from '@testing-library/react'
 import { usePearUpdate } from './usePearUpdate'
 import { UpdateRequiredModalContent } from '../containers/Modal/UpdateRequiredModalContent/UpdateRequiredModalContent'
 import { useModal } from '../context/ModalContext'
-import { isV2 } from '../utils/designVersion'
 
 global.Pear = {
   updates: jest.fn(),
@@ -23,10 +22,6 @@ jest.mock('../context/ModalContext', () => ({
   useModal: jest.fn()
 }))
 
-jest.mock('../utils/designVersion', () => ({
-  isV2: jest.fn()
-}))
-
 jest.mock(
   '../containers/Modal/UpdateRequiredModalContent/UpdateRequiredModalContent',
   () => ({
@@ -42,7 +37,6 @@ describe('usePearUpdate', () => {
   beforeEach(() => {
     setModalMock = jest.fn()
     useModal.mockReturnValue({ setModal: setModalMock })
-    isV2.mockReturnValue(true)
     Pear.updates.mockClear()
     Pear.restart.mockClear()
     Pear.reload.mockClear()
@@ -122,28 +116,7 @@ describe('usePearUpdate', () => {
     expect(window.electronAPI.restart).toHaveBeenCalled()
   })
 
-  it('uses UpdateRequiredModalContent when isV2() is true', async () => {
-    isV2.mockReturnValue(true)
-    window.electronAPI.checkUpdated.mockResolvedValue(true)
-    let updateCallback
-    window.electronAPI.onRuntimeUpdated.mockImplementation((cb) => {
-      updateCallback = cb
-      return () => {}
-    })
-    await act(async () => {
-      renderHook(() => usePearUpdate())
-    })
-    await act(async () => {
-      updateCallback()
-    })
-
-    expect(setModalMock).toHaveBeenCalledTimes(1)
-    const modalElement = setModalMock.mock.calls[0][0]
-    expect(modalElement.type).toBe(UpdateRequiredModalContent)
-  })
-
-  it('uses UpdateRequiredModalContent when isV2() is false', async () => {
-    isV2.mockReturnValue(false)
+  it('uses UpdateRequiredModalContent for the update modal', async () => {
     window.electronAPI.checkUpdated.mockResolvedValue(true)
     let updateCallback
     window.electronAPI.onRuntimeUpdated.mockImplementation((cb) => {

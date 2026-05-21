@@ -1,1 +1,0 @@
-export const COPY_FEEDBACK_DISPLAY_TIME = 2000

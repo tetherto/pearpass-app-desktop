@@ -24,10 +24,6 @@ jest.mock('@tetherto/pearpass-lib-ui-kit', () => ({
   Snackbar: (props) => mockSnackbar(props)
 }))
 
-jest.mock('../../utils/designVersion', () => ({
-  isV2: () => true
-}))
-
 describe('Toasts Component', () => {
   const mockIcon = jest.fn(() => <div data-testid="mock-icon">Icon</div>)
 

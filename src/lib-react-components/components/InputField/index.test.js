@@ -1,13 +1,11 @@
 import React from 'react'
 
 import { render, fireEvent } from '@testing-library/react'
+import { ExpandMore as DummyIcon } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import { InputField } from './index'
-import { ArrowDownIcon } from '../../icons/ArrowDownIcon'
 import '@testing-library/jest-dom'
-
-const DummyIcon = ArrowDownIcon
 
 describe('InputField Component', () => {
   test('renders label, placeholder, and error message', () => {

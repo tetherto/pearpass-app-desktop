@@ -43,11 +43,11 @@ jest.mock('@tetherto/pearpass-lib-vault', () => ({
 const mockExportJson = jest.fn((..._args: unknown[]) => Promise.resolve())
 const mockExportCsv = jest.fn((..._args: unknown[]) => Promise.resolve())
 
-jest.mock('../../../SettingsView/ExportTab/utils/exportJsonPerVault', () => ({
+jest.mock('../../utils/exportJsonPerVault', () => ({
   handleExportJsonPerVaultTest: (...args: unknown[]) => mockExportJson(...args)
 }))
 
-jest.mock('../../../SettingsView/ExportTab/utils/exportCsvPerVault', () => ({
+jest.mock('../../utils/exportCsvPerVault', () => ({
   handleExportCSVPerVault: (...args: unknown[]) => mockExportCsv(...args)
 }))
 

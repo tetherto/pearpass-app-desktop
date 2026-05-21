@@ -1,6 +1,6 @@
 import { handleFileSelect } from './handleFileSelect'
 import { logger } from './logger'
-import { readFileContent } from '../pages/SettingsView/ImportTab/utils/readFileContent'
+import { readFileContent } from '../pages/SettingsView/utils/readFileContent'
 
 jest.mock('./logger', () => ({
   logger: { error: jest.fn() }
@@ -9,7 +9,7 @@ jest.mock('@tetherto/pear-apps-utils-generate-unique-id', () => ({
   generateUniqueId: jest.fn(() => 'unique-id')
 }))
 
-jest.mock('../pages/SettingsView/ImportTab/utils/readFileContent', () => ({
+jest.mock('../pages/SettingsView/utils/readFileContent', () => ({
   readFileContent: jest.fn()
 }))
 

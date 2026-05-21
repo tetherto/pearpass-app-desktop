@@ -81,14 +81,21 @@ describe('RecordAvatar Component', () => {
     expect(getByText('AB')).toBeInTheDocument()
   })
 
-  test('renders check icon instead of favorite when both isSelected and isFavorite are true', () => {
+  test('renders selected container instead of favorite when both isSelected and isFavorite are true', () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider>
-        <RecordAvatar {...defaultProps} isSelected={true} isFavorite={true} />
+        <RecordAvatar
+          {...defaultProps}
+          testId="record-avatar"
+          isSelected={true}
+          isFavorite={true}
+        />
       </ThemeProvider>
     )
 
-    expect(getByTestId('check-icon')).toBeInTheDocument()
-    expect(queryByTestId('star-icon')).not.toBeInTheDocument()
+    expect(getByTestId('record-avatar-selected')).toBeInTheDocument()
+    expect(
+      queryByTestId(`avatar-favorite-${defaultProps.initials}`)
+    ).not.toBeInTheDocument()
   })
 })

@@ -11,10 +11,6 @@ jest.mock('@tetherto/pearpass-lib-constants', () => ({
   }
 }))
 
-jest.mock('../../utils/designVersion', () => ({
-  isV2: jest.fn()
-}))
-
 const mockNavigate = jest.fn()
 const mockSetModal = jest.fn()
 
@@ -40,16 +36,6 @@ jest.mock('../../hooks/useRecordMenuItems', () => ({
 
 jest.mock('../../hooks/useCreateOrEditRecord', () => ({
   useCreateOrEditRecord: jest.fn()
-}))
-
-jest.mock('../../components/PopupMenu', () => ({
-  PopupMenu: ({ children }) => <div data-testid="popup-menu">{children}</div>
-}))
-
-jest.mock('../../components/CreateNewCategoryPopupContent', () => ({
-  CreateNewCategoryPopupContent: () => (
-    <div data-testid="create-new-category-popup" />
-  )
 }))
 
 jest.mock('../../components/AppHeader', () => {
@@ -95,7 +81,6 @@ import { AppHeaderContextProvider } from '../../context/AppHeaderContext'
 import { useRouter } from '../../context/RouterContext'
 import { useCreateOrEditRecord } from '../../hooks/useCreateOrEditRecord'
 import { useRecordMenuItems } from '../../hooks/useRecordMenuItems'
-import { isV2 } from '../../utils/designVersion'
 
 const renderWithHeaderContext = (ui) =>
   render(<AppHeaderContextProvider>{ui}</AppHeaderContextProvider>)
@@ -104,7 +89,6 @@ describe('AppHeaderContainer', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockAuthenticatorEnabled = false
-    isV2.mockReturnValue(true)
     mockNavigate.mockReset()
     mockSetModal.mockReset()
     useRouter.mockReturnValue({
@@ -120,15 +104,6 @@ describe('AppHeaderContainer', () => {
     useCreateOrEditRecord.mockReturnValue({
       handleCreateOrEditRecord: jest.fn()
     })
-  })
-
-  it('returns null when design is not v2', () => {
-    isV2.mockReturnValue(false)
-
-    const { container } = renderWithHeaderContext(<AppHeaderContainer />)
-
-    expect(container.firstChild).toBeNull()
-    expect(AppHeader).not.toHaveBeenCalled()
   })
 
   it('returns null when current page is not vault', () => {

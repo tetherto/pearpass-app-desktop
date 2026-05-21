@@ -13,34 +13,26 @@ exports[`RadioSelect renders the component with title and options 1`] = `
     <div
       data-testid="radio-option"
     >
-      <div
-        data-active="true"
-        data-testid="button-radio"
-      >
-        Active
-      </div>
+      <input
+        checked=""
+        type="radio"
+      />
       Option 1
     </div>
     <div
       data-testid="radio-option"
     >
-      <div
-        data-active="false"
-        data-testid="button-radio"
-      >
-        Inactive
-      </div>
+      <input
+        type="radio"
+      />
       Option 2
     </div>
     <div
       data-testid="radio-option"
     >
-      <div
-        data-active="false"
-        data-testid="button-radio"
-      >
-        Inactive
-      </div>
+      <input
+        type="radio"
+      />
       Option 3
     </div>
   </div>

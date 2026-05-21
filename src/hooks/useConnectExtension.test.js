@@ -21,9 +21,6 @@ jest.mock(
   '../containers/Modal/ExtensionPairingModalContent/ExtensionPairingModalContent',
   () => ({ ExtensionPairingModalContent: () => null })
 )
-jest.mock('../containers/Modal/ExtensionPairingModalContent', () => ({
-  ExtensionPairingModalContent: () => null
-}))
 
 import { act, renderHook, waitFor } from '@testing-library/react'
 
