@@ -19,6 +19,6 @@ export const CloseIconWrapper = styled.div`
   align-items: center;
   cursor: pointer;
   border-radius: 50%;
-  background: ${({ theme }) => theme.colors.black.dark};
+  background: #050b06;
   flex-shrink: 0;
 `

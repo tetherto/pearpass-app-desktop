@@ -198,7 +198,6 @@
     "@tetherto/pearpass-lib-data-import": "git+https://github.com/tetherto/pearpass-lib-data-import.git",
     "@tetherto/pearpass-lib-native-messaging-bridge": "git+https://github.com/tetherto/pearpass-lib-native-messaging-bridge.git",
     "@tetherto/pearpass-lib-ui-kit": "github:tetherto/pearpass-lib-ui-react-native-components#design-system-v2",
-    "@tetherto/pearpass-lib-ui-theme-provider": "git+https://github.com/tetherto/pearpass-lib-ui-theme-provider.git",
     "@tetherto/pearpass-lib-vault": "git+https://github.com/tetherto/pearpass-lib-vault.git",
     "@tetherto/pearpass-lib-vault-core": "git+https://github.com/tetherto/pearpass-lib-vault-core.git",
     "@tetherto/pearpass-utils-password-check": "git+https://github.com/tetherto/pearpass-utils-password-check.git",

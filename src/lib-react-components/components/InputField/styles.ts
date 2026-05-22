@@ -17,9 +17,9 @@ export const InputWrapper = styled.div`
 
 export const OutlineInputWrapper = styled(InputWrapper)`
   border: 1px solid;
-  border-color: ${({ theme }) => theme.colors.grey100.mode1};
+  border-color: #bababa;
   border-bottom: none;
-  background: ${({ theme }) => theme.colors.grey400.mode1};
+  background: #303030;
   margin-top: 0;
   padding: 8px 10px;
 
@@ -31,17 +31,17 @@ export const OutlineInputWrapper = styled(InputWrapper)`
   &:last-child {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
-    border-bottom: 1px solid ${({ theme }) => theme.colors.grey100.mode1};
+    border-bottom: 1px solid #bababa;
   }
 
   &:hover,
   &:focus-within {
-    border-color: ${({ theme }) => theme.colors.primary400.mode1};
+    border-color: #bade5b;
   }
 
   &:hover + &,
   &:focus-within + & {
-    border-top-color: ${({ theme }) => theme.colors.primary400.mode1};
+    border-top-color: #bade5b;
   }
 `
 
@@ -49,7 +49,7 @@ export const DefaultInputWrapper = styled(InputWrapper)`
   &:not(:first-child) {
     margin-top: 10px;
     padding-top: 10px;
-    border-top: 1px solid ${({ theme }) => theme.colors.grey100.mode1};
+    border-top: 1px solid #bababa;
   }
 `
 
@@ -75,7 +75,7 @@ export const MainWrapper = styled.div`
 `
 
 export const Label = styled.span`
-  color: ${({ theme }) => theme.colors.white.mode1};
+  color: #f6f6f6;
   font-family: 'Inter';
   font-size: 12px;
   font-weight: 400;
@@ -95,17 +95,17 @@ const getInputColor = (params: {
     type?: string
     hasOverlay?: boolean
 }): string => {
-    const { theme, type, hasOverlay } = params
+    const { type, hasOverlay } = params
 
     if (hasOverlay) {
         return 'transparent'
     }
 
     if (type === 'url') {
-        return theme.colors.primary400.mode1
+        return "#BADE5B"
     }
 
-    return theme.colors.white.mode1
+    return "#F6F6F6"
 }
 
 export const Input = styled.input.withConfig({
@@ -116,8 +116,8 @@ export const Input = styled.input.withConfig({
   font-family: 'Inter';
   font-size: 16px;
   font-weight: 700;
-  caret-color: ${({ theme, hasOverlay }) =>
-        hasOverlay ? theme.colors.primary400.mode1 : ''};
+  caret-color: ${({ hasOverlay }) =>
+        hasOverlay ? '#bade5b' : ''};
   width: 100%;
   user-select: ${({ isDisabled }) => (isDisabled ? 'none' : 'auto')};
   cursor: ${({ isDisabled }) => (isDisabled ? 'default' : 'text')};
@@ -127,7 +127,7 @@ export const Input = styled.input.withConfig({
   }
 
   &::placeholder {
-    color: ${({ theme }) => theme.colors.grey100.mode1};
+    color: #bababa;
   }
 `
 

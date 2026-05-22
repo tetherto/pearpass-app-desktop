@@ -4,13 +4,13 @@ export const HeaderTitle = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  color: ${({ theme }) => theme.colors.white.mode1};
+  color: #f6f6f6;
   font-family: 'Inter';
   font-size: 16px;
   font-weight: 500;
 `
 export const PairingDescription = styled.div`
-  color: ${({ theme }) => theme.colors.white.mode1};
+  color: #f6f6f6;
   font-family: 'Inter';
   font-size: 14px;
   text-align: center;
@@ -23,9 +23,9 @@ export const PairTabs = styled.div`
   justify-content: center;
   gap: 4px;
   width: 100%;
-  border: 2px solid ${({ theme }) => theme.colors.grey100.mode1};
+  border: 2px solid #bababa;
   border-radius: 10px;
-  color: ${({ theme }) => theme.colors.primary400.mode1};
+  color: #bade5b;
 `
 
 export const PairTab = styled.button<{ $active?: boolean }>`
@@ -46,12 +46,12 @@ export const PairTab = styled.button<{ $active?: boolean }>`
     border-color 0.15s ease-in-out;
   background-color: transparent;
   border-radius: 7px;
-  color: ${({ theme }) => theme.colors.primary400.mode1};
+  color: #bade5b;
   ${({ $active }) =>
     $active &&
     css`
-      background-color: ${({ theme }) => theme.colors.primary400.mode1};
-      color: ${({ theme }) => theme.colors.black.dark};
+      background-color: #bade5b;
+      color: #050b06;
     `}
 `
 
@@ -70,7 +70,7 @@ export const QRCodeSection = styled.div`
 `
 
 export const QRCodeText = styled.div`
-  color: ${({ theme }) => theme.colors.white.mode1};
+  color: #f6f6f6;
   font-family: 'Inter';
   font-size: 14px;
   font-weight: 500;
@@ -94,7 +94,7 @@ export const QRCode = styled.div`
   height: 226px;
   padding: 15px;
   border-radius: 10px;
-  background-color: ${({ theme }) => theme.colors.white.mode1};
+  background-color: #f6f6f6;
 `
 
 export const BackgroundSection = styled.div`
@@ -105,23 +105,23 @@ export const BackgroundSection = styled.div`
   align-items: center;
   gap: 10px;
   border-radius: 10px;
-  background-color: ${({ theme }) => theme.colors.grey400.mode1};
+  background-color: #303030;
   cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
 `
 
 export const ExpireText = styled.div`
-  color: ${({ theme }) => theme.colors.white.mode1};
+  color: #f6f6f6;
   font-family: 'Inter';
   font-size: 14px;
   font-weight: 500;
 `
 
 export const ExpireTime = styled.span`
-  color: ${({ theme }) => theme.colors.primary400.mode1};
+  color: #bade5b;
 `
 
 export const CopyText = styled.div`
-  color: ${({ theme }) => theme.colors.grey200.mode1};
+  color: #999999;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -139,17 +139,17 @@ export const WarningSection = styled.div`
   align-items: flex-start;
   gap: 8px;
   border-radius: 10px;
-  border: 1px solid ${({ theme }) => theme.colors.errorYellow.mode1};
+  border: 1px solid #ffae00;
   background: linear-gradient(
       0deg,
       rgba(0, 0, 0, 0.8) 0%,
       rgba(0, 0, 0, 0.8) 100%
     ),
-    ${({ theme }) => theme.colors.errorYellow.mode1};
+    #ffae00;
 `
 
 export const WarningText = styled.div`
-  color: ${({ theme }) => theme.colors.white.mode1};
+  color: #f6f6f6;
   font-family: 'Inter';
   font-size: 14px;
   font-weight: 500;
@@ -164,8 +164,8 @@ export const PasteIconWrapper = styled.div`
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background-color: ${({ theme }) => theme.colors.black.dark};
-  color: ${({ theme }) => theme.colors.primary400.mode1};
+  background-color: #050b06;
+  color: #bade5b;
   padding: 9px 15px;
   cursor: pointer;
   gap: 7px;
@@ -185,7 +185,7 @@ export const InputFieldWrapper = styled.div`
 export const LoadVaultNotice = styled.div`
   white-space: nowrap;
   width: 100%;
-  color: ${({ theme }) => theme.colors.white.mode1};
+  color: #f6f6f6;
   text-align: left;
   font-family: 'Inter';
   font-size: 12px;

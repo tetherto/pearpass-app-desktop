@@ -1,5 +1,3 @@
-import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
-
 export const styles = {
   wrapper: {
     display: 'flex',
@@ -12,7 +10,7 @@ export const styles = {
     flex: 1,
     height: 6,
     borderRadius: 20,
-    background: `${colors.grey100.mode1}33`,
+    background: '#BABABA33',
     overflow: 'hidden'
   },
   fill: {

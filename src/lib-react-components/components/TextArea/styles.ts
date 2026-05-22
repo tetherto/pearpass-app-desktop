@@ -14,25 +14,25 @@ const textareaBaseStyles = css<TextAreaStyledProps>`
   font-weight: 700;
   resize: none;
   outline: none;
-  background: ${({ theme }) => theme.colors.grey400.mode1};
-  color: ${({ theme }) => theme.colors.white.mode1};
-  border: 1px solid ${({ theme }) => theme.colors.grey100.mode1};
+  background: #303030;
+  color: #f6f6f6;
+  border: 1px solid #bababa;
   border-radius: 10px;
   padding: 8px 10px;
   padding-right: ${({ hasAdditionalItems }) => (hasAdditionalItems ? '40px' : '10px')};
 
   &::placeholder {
-    color: ${({ theme }) => theme.colors.grey100.mode1};
+    color: #bababa;
   }
 
   &::selection {
-    background: ${({ theme }) => theme.colors.primary400.mode1};
-    color: ${({ theme }) => theme.colors.white.mode1};
+    background: #bade5b;
+    color: #f6f6f6;
   }
 
   &:focus {
     outline: none;
-    border-color: ${({ theme }) => theme.colors.primary400.mode1};
+    border-color: #bade5b;
   }
 `
 
@@ -55,7 +55,7 @@ export const ReportTextAreaComponent = styled.textarea.withConfig({
   font-weight: 600;
 
   &::placeholder {
-    color: ${({ theme }) => theme.colors.grey300.mode1};
+    color: #666666;
   }
 `
 

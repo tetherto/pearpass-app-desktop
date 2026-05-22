@@ -7,7 +7,7 @@ export const Header = styled.div`
   gap: 10px;
 `
 export const Title = styled.span`
-  color: ${({ theme }) => theme.colors.white.mode1};
+  color: #f6f6f6;
   font-family: 'Inter';
   font-size: 12px;
   font-style: normal;
@@ -15,7 +15,7 @@ export const Title = styled.span`
   line-height: normal;
 `
 export const Description = styled.span`
-  color: ${({ theme }) => theme.colors.grey100.mode1};
+  color: #bababa;
   font-family: 'Inter';
   font-size: 12px;
   font-style: normal;

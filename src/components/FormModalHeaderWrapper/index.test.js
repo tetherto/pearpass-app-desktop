@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { render, screen } from '@testing-library/react'
-import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-kit'
 
 import { FormModalHeaderWrapper } from './index'
 import '@testing-library/jest-dom'

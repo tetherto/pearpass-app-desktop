@@ -10,9 +10,9 @@ import {
   MainWrapper,
   NoticeWrapper
 } from './styles'
+import { useTheme } from '@tetherto/pearpass-lib-ui-kit'
 import { EyeFilled, EyeOutlined } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { NoticeText } from '../NoticeText'
-import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
 import { PearPassPasswordFieldProps } from './types'
 
 export const PearPassPasswordField = ({
@@ -24,6 +24,7 @@ export const PearPassPasswordField = ({
   testId = '@tetherto/pearpass-password-field-v2'
 }: PearPassPasswordFieldProps) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+  const { theme } = useTheme()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isDisabled) {
@@ -61,8 +62,8 @@ export const PearPassPasswordField = ({
           onClick=${() => setIsPasswordVisible(!isPasswordVisible)}
         >
           ${isPasswordVisible
-            ? html`<${EyeOutlined} fill=${colors.primary400.mode1} width="24" height="24" />`
-            : html`<${EyeFilled} fill=${colors.primary400.mode1} width="24" height="24" />`}
+            ? html`<${EyeOutlined} fill=${theme.colors.colorPrimary} width="24" height="24" />`
+            : html`<${EyeFilled} fill=${theme.colors.colorPrimary} width="24" height="24" />`}
         </div>
       <//>
     <//>

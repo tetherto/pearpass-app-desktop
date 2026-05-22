@@ -8,7 +8,7 @@ const ROW_MIN_HEIGHT = 42
 
 export const Wrapper = styled.div`
   width: 100%;
-  background: ${({ theme }) => theme.colors.black.mode1};
+  background: #050b06;
   border-radius: 10px;
 `
 
@@ -27,8 +27,8 @@ const BaseRow = styled.div`
 
 export const HeaderContainer = styled(BaseRow)<{ isOpen: boolean }>`
   border: 1px solid
-    ${({ theme, isOpen }) =>
-      isOpen ? theme.colors.primary400.mode1 : 'transparent'};
+    ${({ isOpen }) =>
+      isOpen ? "#BADE5B" : 'transparent'};
   cursor: pointer;
   user-select: none;
 `
@@ -41,7 +41,7 @@ export const HeaderLeft = styled.div`
 `
 
 export const HeaderLabel = styled.span`
-  color: ${({ theme }) => theme.colors.white.mode1};
+  color: #f6f6f6;
   font-family: 'Inter';
   font-size: 14px;
   font-weight: 700;
@@ -85,8 +85,8 @@ export const DropdownItem = styled(BaseRow)<{
   delayMs?: number
 }>`
   border: 1px solid transparent;
-  background: ${({ theme }) => theme.colors.grey500.mode1};
-  color: ${({ theme }) => theme.colors.white.mode1};
+  background: #232323;
+  color: #f6f6f6;
   font-family: 'Inter';
   font-size: 14px;
   font-weight: 700;
@@ -103,7 +103,7 @@ export const DropdownItem = styled(BaseRow)<{
     isOpen ? `${delayMs}ms` : '0ms'};
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.primary400.mode1};
+    border-color: #bade5b;
   }
 
   & svg {
@@ -121,5 +121,5 @@ export const DropdownItemLabel = styled.span`
 
 export const CreateVaultButton = styled(DropdownItem)`
   justify-content: flex-start;
-  color: ${({ theme }) => theme.colors.primary400.mode1};
+  color: #bade5b;
 `

@@ -10,7 +10,7 @@ export const InputWrapper = styled.div`
   border-radius: 10px;
   margin-top: 0;
   padding: 20px 20px 20px 10px;
-  background-color: ${({ theme }) => theme.colors.grey400.mode1};
+  background-color: #303030;
 `
 
 export const MainWrapper = styled.div`
@@ -36,7 +36,7 @@ export const InputAreaWrapper = styled.div`
 `
 
 export const Input = styled.input`
-  color: ${({ theme }) => theme.colors.white.mode1};
+  color: #f6f6f6;
   font-family: 'Inter';
   font-size: 16px;
   font-weight: 700;
@@ -44,7 +44,7 @@ export const Input = styled.input`
   width: 100%;
 
   &::placeholder {
-    color: ${({ theme }) => theme.colors.grey100.mode1};
+    color: #bababa;
   }
 `
 

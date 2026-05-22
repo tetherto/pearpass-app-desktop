@@ -1,14 +1,6 @@
-import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
-
 import { getIconProps } from './getIconProps'
 
-jest.mock('@tetherto/pearpass-lib-ui-theme-provider', () => ({
-  colors: {
-    white: {
-      mode1: '#FFFFFF'
-    }
-  }
-}))
+const DEFAULT_COLOR = '#F6F6F6'
 
 describe('getIconProps', () => {
   it('should return default values when no props are provided', () => {
@@ -19,7 +11,7 @@ describe('getIconProps', () => {
       size: '24',
       height: '24',
       width: '24',
-      color: colors.white.mode1
+      color: DEFAULT_COLOR
     })
   })
 
@@ -31,7 +23,7 @@ describe('getIconProps', () => {
       size: '24',
       height: '24',
       width: '24',
-      color: colors.white.mode1
+      color: DEFAULT_COLOR
     })
   })
 
@@ -43,7 +35,7 @@ describe('getIconProps', () => {
       size: '24',
       height: '32',
       width: '24',
-      color: colors.white.mode1
+      color: DEFAULT_COLOR
     })
   })
 
@@ -55,7 +47,7 @@ describe('getIconProps', () => {
       size: '24',
       height: '24',
       width: '32',
-      color: colors.white.mode1
+      color: DEFAULT_COLOR
     })
   })
 

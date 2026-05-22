@@ -4,7 +4,6 @@
 import { i18n } from '@lingui/core'
 import { compileMessage } from '@lingui/message-utils/compileMessage'
 import { I18nProvider } from '@lingui/react'
-import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
 import {
   setPearpassVaultClient,
   VaultProvider
@@ -42,23 +41,21 @@ function renderApp() {
   root.render(
     <UIKitProvider>
       <LoadingProvider>
-        <ThemeProvider>
-          <VaultProvider>
-            <I18nProvider i18n={i18n}>
-              <ToastProvider>
-                <RouterProvider>
-                  <AppHeaderContextProvider>
-                    <AutoLockProvider>
-                      <ModalProvider>
-                        <App />
-                      </ModalProvider>
-                    </AutoLockProvider>
-                  </AppHeaderContextProvider>
-                </RouterProvider>
-              </ToastProvider>
-            </I18nProvider>
-          </VaultProvider>
-        </ThemeProvider>
+        <VaultProvider>
+          <I18nProvider i18n={i18n}>
+            <ToastProvider>
+              <RouterProvider>
+                <AppHeaderContextProvider>
+                  <AutoLockProvider>
+                    <ModalProvider>
+                      <App />
+                    </ModalProvider>
+                  </AutoLockProvider>
+                </AppHeaderContextProvider>
+              </RouterProvider>
+            </ToastProvider>
+          </I18nProvider>
+        </VaultProvider>
       </LoadingProvider>
     </UIKitProvider>
   )

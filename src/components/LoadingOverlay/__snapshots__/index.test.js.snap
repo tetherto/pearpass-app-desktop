@@ -3,8 +3,13 @@
 exports[`LoadingOverlay renders correctly 1`] = `
 <div>
   <div
-    class="sc-bRKDuR hZKEqe"
-    data-testid="loading-overlay"
-  />
+    class="html-div x1ghz6dp x1717udv x1aw8gp0 xzu4p3z x78zum5 xdt5ytf x1us19tq x5yr21d xh8yej3"
+    data-theme="dark"
+  >
+    <div
+      class="sc-bRKDuR hZKEqe"
+      data-testid="loading-overlay"
+    />
+  </div>
 </div>
 `;

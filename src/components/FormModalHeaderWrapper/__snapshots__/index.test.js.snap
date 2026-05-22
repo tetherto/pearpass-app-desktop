@@ -2,31 +2,36 @@
 
 exports[`FormModalHeaderWrapper renders children and buttons correctly 1`] = `
 <div>
-   
   <div
-    class="sc-bRKDuR dGUPt"
+    class="html-div x1ghz6dp x1717udv x1aw8gp0 xzu4p3z x78zum5 xdt5ytf x1us19tq x5yr21d xh8yej3"
+    data-theme="dark"
   >
+     
     <div
-      class="sc-hvigdm dEdrNg"
+      class="sc-bRKDuR dGUPt"
     >
-       
       <div
-        data-testid="test-children"
+        class="sc-hvigdm dEdrNg"
       >
-        Test Children
+         
+        <div
+          data-testid="test-children"
+        >
+          Test Children
+        </div>
+         
       </div>
-       
-    </div>
-    <div
-      class="sc-fhHczv cpmIbm"
-    >
-       
       <div
-        data-testid="test-buttons"
+        class="sc-fhHczv cpmIbm"
       >
-        Test Buttons
+         
+        <div
+          data-testid="test-buttons"
+        >
+          Test Buttons
+        </div>
+         
       </div>
-       
     </div>
   </div>
 </div>
@@ -34,21 +39,26 @@ exports[`FormModalHeaderWrapper renders children and buttons correctly 1`] = `
 
 exports[`FormModalHeaderWrapper renders with empty content 1`] = `
 <div>
-   
   <div
-    class="sc-bRKDuR dGUPt"
+    class="html-div x1ghz6dp x1717udv x1aw8gp0 xzu4p3z x78zum5 xdt5ytf x1us19tq x5yr21d xh8yej3"
+    data-theme="dark"
   >
+     
     <div
-      class="sc-hvigdm dEdrNg"
+      class="sc-bRKDuR dGUPt"
     >
-       
-       
-    </div>
-    <div
-      class="sc-fhHczv cpmIbm"
-    >
-       
-       
+      <div
+        class="sc-hvigdm dEdrNg"
+      >
+         
+         
+      </div>
+      <div
+        class="sc-fhHczv cpmIbm"
+      >
+         
+         
+      </div>
     </div>
   </div>
 </div>
@@ -56,26 +66,31 @@ exports[`FormModalHeaderWrapper renders with empty content 1`] = `
 
 exports[`FormModalHeaderWrapper renders without buttons 1`] = `
 <div>
-   
   <div
-    class="sc-bRKDuR dGUPt"
+    class="html-div x1ghz6dp x1717udv x1aw8gp0 xzu4p3z x78zum5 xdt5ytf x1us19tq x5yr21d xh8yej3"
+    data-theme="dark"
   >
+     
     <div
-      class="sc-hvigdm dEdrNg"
+      class="sc-bRKDuR dGUPt"
     >
-       
       <div
-        data-testid="test-children"
+        class="sc-hvigdm dEdrNg"
       >
-        Test Children
+         
+        <div
+          data-testid="test-children"
+        >
+          Test Children
+        </div>
+         
       </div>
-       
-    </div>
-    <div
-      class="sc-fhHczv cpmIbm"
-    >
-       
-       
+      <div
+        class="sc-fhHczv cpmIbm"
+      >
+         
+         
+      </div>
     </div>
   </div>
 </div>
@@ -83,26 +98,31 @@ exports[`FormModalHeaderWrapper renders without buttons 1`] = `
 
 exports[`FormModalHeaderWrapper renders without children 1`] = `
 <div>
-   
   <div
-    class="sc-bRKDuR dGUPt"
+    class="html-div x1ghz6dp x1717udv x1aw8gp0 xzu4p3z x78zum5 xdt5ytf x1us19tq x5yr21d xh8yej3"
+    data-theme="dark"
   >
+     
     <div
-      class="sc-hvigdm dEdrNg"
+      class="sc-bRKDuR dGUPt"
     >
-       
-       
-    </div>
-    <div
-      class="sc-fhHczv cpmIbm"
-    >
-       
       <div
-        data-testid="test-buttons"
+        class="sc-hvigdm dEdrNg"
       >
-        Test Buttons
+         
+         
       </div>
-       
+      <div
+        class="sc-fhHczv cpmIbm"
+      >
+         
+        <div
+          data-testid="test-buttons"
+        >
+          Test Buttons
+        </div>
+         
+      </div>
     </div>
   </div>
 </div>

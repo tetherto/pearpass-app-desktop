@@ -21,7 +21,7 @@ export const ContentWrapper = styled.div`
 export const SideViewWrapper = styled.div`
   flex: 1;
   overflow-y: auto;
-  background: ${({ theme }) => theme.colors.grey500.mode1};
-  border-left: 1px solid ${({ theme }) => theme.colors.grey300.mode1};
+  background: #232323;
+  border-left: 1px solid #666666;
   padding: 24px 27px 0 27px;
 `

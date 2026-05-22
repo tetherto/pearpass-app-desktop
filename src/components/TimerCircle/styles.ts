@@ -1,5 +1,3 @@
-import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
-
 export const styles = {
   wrapper: {
     width: 14,
@@ -13,7 +11,7 @@ export const styles = {
   },
   circleBg: {
     fill: 'none',
-    stroke: `${colors.grey100.mode1}33`,
+    stroke: '#BABABA33',
     strokeWidth: 1.5
   }
 }

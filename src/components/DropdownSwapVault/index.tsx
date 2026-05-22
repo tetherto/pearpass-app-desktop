@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
 import { html } from 'htm/react'
-import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
 import { useVault, type Vault } from '@tetherto/pearpass-lib-vault'
 
 import {
@@ -19,6 +18,7 @@ import { CreateOrEditVaultModalContent } from '../../containers/Modal/CreateOrEd
 import { VaultPasswordFormModalContent } from '../../containers/Modal/VaultPasswordFormModalContent'
 import { useModal } from '../../context/ModalContext'
 import { useTranslation } from '../../hooks/useTranslation'
+import { useTheme } from '@tetherto/pearpass-lib-ui-kit'
 import { ExpandMore, LockFilled, LockOutlined } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { logger } from '../../utils/logger'
 
@@ -29,6 +29,7 @@ interface DropdownSwapVaultProps {
 
 export const DropdownSwapVault = ({ vaults, selectedVault }: DropdownSwapVaultProps) => {
   const { t } = useTranslation()
+  const { theme } = useTheme()
 
   const [isOpen, setIsOpen] = useState(false)
 
@@ -134,12 +135,12 @@ export const DropdownSwapVault = ({ vaults, selectedVault }: DropdownSwapVaultPr
         onClick={() => setIsOpen(!isOpen)}
       >
         <HeaderLeft>
-          <LockFilled width="24" height="24" fill={colors.primary400.mode1} />
+          <LockFilled width="24" height="24" fill={theme.colors.colorPrimary} />
           <HeaderLabel>{selectedVault?.name}</HeaderLabel>
         </HeaderLeft>
 
         <HeaderRight isOpen={isOpen}>
-          <ExpandMore width="20" height="20" fill={colors.primary400.mode1} />
+          <ExpandMore width="20" height="20" fill={theme.colors.colorPrimary} />
         </HeaderRight>
       </HeaderContainer>
 
@@ -154,7 +155,7 @@ export const DropdownSwapVault = ({ vaults, selectedVault }: DropdownSwapVaultPr
           >
             <DropdownItemLabel>{vault.name}</DropdownItemLabel>
             {protectedVaultById[vault.id] ? (
-              <LockOutlined width="25" height="25" fill={colors.white.mode1} />
+              <LockOutlined width="25" height="25" fill={theme.colors.colorSurfacePrimary} />
             ) : null}
           </DropdownItem>
         ))}

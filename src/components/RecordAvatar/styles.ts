@@ -34,7 +34,7 @@ export const AvatarContainer = styled.div<AvatarContainerProps>`
   justify-content: center;
   align-items: center;
   border-radius: ${({ size }) => getAvatarBorderRadius(size)};
-  background: ${({ theme }) => theme.colors.secondary400.mode1};
+  background: #2a3b3c;
   min-width: 0;
   flex-shrink: 0;
 `
@@ -59,7 +59,7 @@ export const SelectedAvatarContainer = styled.div`
   gap: 10px;
   flex-shrink: 0;
   border-radius: 10px;
-  background: ${({ theme }) => theme.colors.primary400.mode1};
+  background: #bade5b;
 `
 
 export const FavoriteIcon = styled.div`
@@ -68,7 +68,7 @@ export const FavoriteIcon = styled.div`
   bottom: -9px;
 
   & > svg {
-    fill: ${({ theme }) => theme.colors.primary400.mode1};
+    fill: #bade5b;
   }
 `
 

@@ -19,10 +19,10 @@ export const ToastContainer = styled.div`
   gap: 7px;
 
   border-radius: 10px;
-  background: ${({ theme }) => theme.colors.white.mode1};
+  background: #f6f6f6;
   box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.25);
 
-  color: ${({ theme }) => theme.colors.black.mode1};
+  color: #050b06;
   font-family: 'Inter';
   font-size: 14px;
   font-style: normal;

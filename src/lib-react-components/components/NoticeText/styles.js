@@ -8,16 +8,16 @@ export const NoticeTextWrapper = styled.div`
 `
 
 export const NoticeTextComponent = styled.div`
-  color: ${({ theme, type }) => {
+  color: ${({ type }) => {
     switch (type) {
       case 'success':
-        return theme.colors.primary400.mode1
+        return '#BADE5B'
       case 'error':
-        return theme.colors.errorRed.dark
+        return '#D65C5E'
       case 'warning':
-        return theme.colors.errorYellow.mode1
+        return '#FFAE00'
       default:
-        return theme.colors.white.mode1
+        return '#F6F6F6'
     }
   }};
   font-family: 'Inter';

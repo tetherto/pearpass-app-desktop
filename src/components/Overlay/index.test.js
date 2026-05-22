@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { render, fireEvent } from '@testing-library/react'
-import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-kit'
 
 import { Overlay } from './index'
 import '@testing-library/jest-dom'
@@ -37,7 +37,9 @@ describe('Overlay', () => {
     )
 
     const { container } = renderComponent()
-    expect(container).toBeEmptyDOMElement()
+    expect(
+      container.querySelector('div[type="default"]')
+    ).not.toBeInTheDocument()
     expect(container).toMatchSnapshot()
   })
 

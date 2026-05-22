@@ -2,36 +2,46 @@
 
 exports[`TextArea Component matches snapshot for default variant 1`] = `
 <div
-  class="sc-fhHczv eLkUHf"
+  class="html-div x1ghz6dp x1717udv x1aw8gp0 xzu4p3z x78zum5 xdt5ytf x1us19tq x5yr21d xh8yej3"
+  data-theme="dark"
 >
   <div
-    class="sc-ggWZvA evJOyk"
+    class="sc-fhHczv eLkUHf"
   >
-    <textarea
-      class="sc-bRKDuR cVKynm"
-      data-testid="text-area"
-      placeholder="Enter text here"
+    <div
+      class="sc-ggWZvA evJOyk"
     >
-      snapshot default
-    </textarea>
+      <textarea
+        class="sc-bRKDuR cVKynm"
+        data-testid="text-area"
+        placeholder="Enter text here"
+      >
+        snapshot default
+      </textarea>
+    </div>
   </div>
 </div>
 `;
 
 exports[`TextArea Component matches snapshot for report variant 1`] = `
 <div
-  class="sc-fhHczv eLkUHf"
+  class="html-div x1ghz6dp x1717udv x1aw8gp0 xzu4p3z x78zum5 xdt5ytf x1us19tq x5yr21d xh8yej3"
+  data-theme="dark"
 >
   <div
-    class="sc-ggWZvA evJOyk"
+    class="sc-fhHczv eLkUHf"
   >
-    <textarea
-      class="sc-hvigdm juBlam"
-      data-testid="text-area"
-      placeholder="Report here"
+    <div
+      class="sc-ggWZvA evJOyk"
     >
-      snapshot report
-    </textarea>
+      <textarea
+        class="sc-hvigdm juBlam"
+        data-testid="text-area"
+        placeholder="Report here"
+      >
+        snapshot report
+      </textarea>
+    </div>
   </div>
 </div>
 `;

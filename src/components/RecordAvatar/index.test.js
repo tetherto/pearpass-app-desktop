@@ -1,15 +1,10 @@
 import React from 'react'
 
 import { render } from '@testing-library/react'
-import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-kit'
 
 import { RecordAvatar } from './index'
 import '@testing-library/jest-dom'
-
-jest.mock('../../lib-react-components', () => ({
-  CheckIcon: (props) => <svg data-testid="check-icon" {...props} />,
-  StarIcon: (props) => <svg data-testid="star-icon" {...props} />
-}))
 
 const mockUseFavicon = jest.fn()
 jest.mock('@tetherto/pearpass-lib-vault', () => ({

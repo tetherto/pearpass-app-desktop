@@ -6,7 +6,7 @@ export const RadioSelectWrapper = styled.div`
 `
 
 export const Title = styled.div`
-  color: ${({ theme }) => theme.colors.white.mode1};
+  color: #f6f6f6;
   font-family: 'Inter';
   font-size: 12px;
   font-weight: 500;
@@ -17,7 +17,7 @@ export const RadioOption = styled.div`
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  color: ${({ theme }) => theme.colors.white.mode1};
+  color: #f6f6f6;
   font-family: 'Inter';
   font-size: 14px;
   font-weight: 600;

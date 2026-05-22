@@ -1,5 +1,3 @@
-import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
-
 /**
  * @param {{
  *  size?: string;
@@ -19,7 +17,7 @@ export const getIconProps = ({
   size = '24',
   height,
   width,
-  color = colors.white.mode1,
+  color = '#F6F6F6',
   fill = false
 }) => ({
   size: size,

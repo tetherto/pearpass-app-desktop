@@ -10,7 +10,7 @@ export const SideDrawerWrapper = styled.div.withConfig({
   right: 0;
   width: 400px;
   height: calc(100% - var(--title-bar-height));
-  background: ${({ theme }) => theme.colors.grey500.mode1};
+  background: #232323;
   box-shadow: -4px 4px 4px 0px rgba(0, 0, 0, 0.25);
   transform: ${({ isShown }) =>
     isShown ? 'translateX(0)' : 'translateX(100%)'};

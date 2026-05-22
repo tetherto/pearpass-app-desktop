@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const ModalTitle = styled.h2`
-  color: ${({ theme }) => theme.colors.white.mode1};
+  color: #f6f6f6;
   text-align: center;
   font-family: Inter;
   font-size: 20px;
@@ -29,7 +29,7 @@ export const InputWrapper = styled.div`
   width: 100%;
 `
 export const InputLabel = styled.label`
-  color: ${({ theme }) => theme.colors.white.mode1};
+  color: #f6f6f6;
   font-family: 'Inter';
   font-size: 16px;
   font-style: normal;

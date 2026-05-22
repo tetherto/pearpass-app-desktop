@@ -2,12 +2,6 @@
 
 /* eslint-disable */
 
-declare module '@tetherto/pearpass-lib-ui-theme-provider' {
-  export const ThemeProvider: any
-  export const colors: any
-  export const themes: any
-}
-
 declare module '@tetherto/pearpass-lib-vault' {
   export interface Vault {
     id: string
