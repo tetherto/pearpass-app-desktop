@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Text, Title, useTheme } from '@tetherto/pearpass-lib-ui-kit'
 import { OnboardingShell } from '../../components/OnboardingShell'
 import {
@@ -13,13 +13,33 @@ import {
 import { OnboardingLock } from '../../svgs/OnboardingLock'
 
 interface LoadingPageProps {
-  progress: number
+  onLoadingComplete?: () => void
+  duration?: number
 }
 
 export const LoadingPage = ({
-  progress
+  onLoadingComplete,
+  duration = 3000
 }: LoadingPageProps): React.ReactElement => {
   const { theme } = useTheme()
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    const startTime = Date.now()
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - startTime
+      const newProgress = Math.min((elapsed / duration) * 100, 100)
+
+      setProgress(newProgress)
+
+      if (newProgress >= 100) {
+        clearInterval(interval)
+        onLoadingComplete?.()
+      }
+    }, 50)
+
+    return () => clearInterval(interval)
+  }, [duration, onLoadingComplete])
 
   return (
     <OnboardingShell background="gradient">
