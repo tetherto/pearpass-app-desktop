@@ -365,6 +365,12 @@ declare module '@tetherto/pearpass-lib-vault/src/instances' {
       kdfParallelism?: number
       cipherString: string
     }) => Promise<string>
+    decryptProtonExport: (params: {
+      version: number
+      salt: string
+      content: string
+      password: string
+    }) => Promise<string>
     [key: string]: any
   }
   export const setPearpassVaultClient: (instance: unknown) => void
@@ -474,6 +480,44 @@ declare module '@tetherto/pearpass-lib-data-import' {
       }) => Promise<string>
     }
   ): Promise<unknown>
+
+  export interface OTPRecord {
+    label: string
+    secret: string
+    type: 'TOTP' | 'HOTP'
+    algorithm: 'SHA1' | 'SHA256' | 'SHA512'
+    digits: number
+    issuer?: string
+    period?: number
+    counter?: number
+    raw?: unknown
+  }
+
+  export type NormalizeComplete = { status: 'complete'; records: OTPRecord[] }
+  export type NormalizeIncomplete = {
+    status: 'incomplete-batch'
+    expected: number
+    received: number
+    batchId: number
+  }
+  export type NormalizeResult = NormalizeComplete | NormalizeIncomplete
+
+  export const STATUS: {
+    complete: 'complete'
+    incompleteBatch: 'incomplete-batch'
+    ready: 'ready'
+  }
+
+  export const OTP_PROVIDERS: {
+    googleMigration: 'google-migration'
+    otpUri: 'otp-uri'
+    unknown: 'unknown'
+  }
+
+  export function normalizeImport(input: string | string[]): NormalizeResult
+  export function detectProvider(input: unknown): string
+  export function parseOtpUri(uri: string): OTPRecord
+  export function decodeMigrationUri(uri: string): unknown
 }
 
 declare module '@tetherto/pear-apps-lib-feedback' {

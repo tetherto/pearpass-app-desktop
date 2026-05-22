@@ -1,7 +1,13 @@
 import { useState } from 'react'
 
+import type {
+  OTPRecord,
+  NormalizeResult
+} from '@tetherto/pearpass-lib-data-import'
+import { normalizeImport } from '@tetherto/pearpass-lib-data-import'
 import type { UploadedFile } from '@tetherto/pearpass-lib-ui-kit'
 import {
+  AlertMessage,
   Button,
   Link,
   ListItem,
@@ -16,6 +22,7 @@ import {
   KeyboardArrowRightFilled
 } from '@tetherto/pearpass-lib-ui-kit/icons'
 
+import { decodeQrFromImage } from '../../../../features/qr-decoder/decodeQrFromImage'
 import { useTranslation } from '../../../../hooks/useTranslation'
 import { ScanResultsView } from './ScanResultsView'
 import { createStyles } from './styles'
@@ -27,6 +34,7 @@ type ImportCodesOption = {
   description: string
   learnMoreUrl?: string
   accepts: string[]
+  multiFile?: boolean
   testID?: string
 }
 
@@ -37,6 +45,7 @@ const importCodesOptions: ImportCodesOption[] = [
       'To import your codes, open Google Authenticator, tap the menu, go to Transfer accounts, and select Export accounts. Once the export is complete, one or more QR codes will be generated that you can upload here.',
     learnMoreUrl: 'https://support.google.com/accounts/answer/1066447',
     accepts: ['.png', '.jpg', '.jpeg'],
+    multiFile: true,
     testID: 'settings-import-codes-google-authenticator'
   }
 ]
@@ -51,16 +60,66 @@ export const ImportCodesContent = () => {
     useState<ImportCodesOption | null>(null)
   const [files, setFiles] = useState<UploadedFile[]>([])
   const [isScanned, setIsScanned] = useState(false)
+  const [isScanning, setIsScanning] = useState(false)
+  const [importedCodes, setImportedCodes] = useState<OTPRecord[]>([])
+  const [importError, setImportError] = useState<string | null>(null)
 
   const resetToDefault = () => {
     setState('default')
     setSelectedOption(null)
     setFiles([])
     setIsScanned(false)
+    setIsScanning(false)
+    setImportedCodes([])
+    setImportError(null)
   }
 
   const handleBack = () => {
     resetToDefault()
+  }
+
+  const handleFilesChange = (newFiles: UploadedFile[]) => {
+    setFiles(newFiles)
+    if (isScanned && newFiles.length < files.length) {
+      setIsScanned(false)
+      setImportedCodes([])
+      setImportError(null)
+    }
+  }
+
+  const handleScanFiles = async () => {
+    if (!selectedOption || files.length === 0) return
+
+    setIsScanning(true)
+    setImportError(null)
+
+    try {
+      const decoded: string[] = await Promise.all(
+        files.map((f) => decodeQrFromImage(f.file))
+      )
+
+      const result: NormalizeResult = normalizeImport(decoded)
+
+      if (result.status === 'incomplete-batch') {
+        setImportError(
+          t(
+            'To finish your export, please upload all required QR codes. ({received} currently uploaded)',
+            {
+              received: result.received
+            }
+          )
+        )
+        return
+      }
+
+      setImportedCodes(result.records)
+      setIsScanned(true)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      setImportError(message)
+    } finally {
+      setIsScanning(false)
+    }
   }
 
   return (
@@ -164,8 +223,9 @@ export const ImportCodesContent = () => {
           <div style={styles.uploadArea}>
             <UploadField
               acceptedFormats={selectedOption.accepts}
+              maxFiles={selectedOption.multiFile ? 0 : 1}
               files={files}
-              onFilesChange={setFiles}
+              onFilesChange={handleFilesChange}
               uploadLinkText={t('Upload file')}
               uploadSuffixText={t('or drag and drop it here')}
               formatsPrefix={t('Required Format:')}
@@ -173,19 +233,35 @@ export const ImportCodesContent = () => {
             />
           </div>
 
+          {importError && (
+            <AlertMessage
+              title=""
+              variant="error"
+              size="small"
+              description={importError}
+              testID="import-codes-scan-error"
+            />
+          )}
+
           <div style={styles.footer}>
             <Button
               variant="primary"
               size="small"
-              disabled={files.length === 0}
-              onClick={() => setIsScanned(true)}
+              disabled={files.length === 0 || isScanning}
+              isLoading={isScanning}
+              onClick={handleScanFiles}
               data-testid="import-codes-scan-file-button"
             >
               {t('Scan File')}
             </Button>
           </div>
 
-          {isScanned && <ScanResultsView onImportComplete={resetToDefault} />}
+          {isScanned && (
+            <ScanResultsView
+              importedCodes={importedCodes}
+              onImportComplete={resetToDefault}
+            />
+          )}
         </>
       )}
     </div>

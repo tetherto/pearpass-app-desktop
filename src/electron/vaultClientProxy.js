@@ -119,6 +119,7 @@ const VAULT_METHODS = [
   'fetchFavicon',
   'decryptExportData',
   'decryptBitwardenExport',
+  'decryptProtonExport',
   'activeVaultFind',
   'activeVaultGetWriterKey',
   'personalSwarmInit',
