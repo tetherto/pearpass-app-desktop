@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import { formatDate } from '@tetherto/pear-apps-utils-date'
 import {
@@ -19,12 +19,13 @@ import {
   PhoneIphone,
   Tablet
 } from '@tetherto/pearpass-lib-ui-kit/icons'
-import { useVault } from '@tetherto/pearpass-lib-vault'
+// @ts-expect-error - declaration file is incomplete
+import { getMyDeviceId, useVault } from '@tetherto/pearpass-lib-vault'
 
 import { createStyles, DEVICE_ACTIONS_MENU_WIDTH } from './styles'
 import { useModal } from '../../../context/ModalContext'
 import { useTranslation } from '../../../hooks/useTranslation'
-import { getDeviceName } from '../../../utils/getDeviceName'
+import { logger } from '../../../utils/logger'
 import { RevokeAccessModalContentV2 } from '../RevokeAccessModalContentV2'
 
 const getDeviceDisplayName = (
@@ -83,7 +84,21 @@ export const PairedDevicesModalContent = () => {
     [vaultData]
   )
 
-  const currentDeviceName = useMemo(() => getDeviceName(), [])
+  const [myDeviceId, setMyDeviceId] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    getMyDeviceId()
+      .then((id: string | null) => {
+        if (!cancelled) setMyDeviceId(id ?? null)
+      })
+      .catch((error: unknown) => {
+        logger.error('PairedDevicesModalContent', 'getMyDeviceId failed:', error)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [devices])
 
   const openRevokeModal = (device: Device, displayName: string) => {
     if (!device.id || !vaultId) return
@@ -127,7 +142,7 @@ export const PairedDevicesModalContent = () => {
             const createdAt = device.createdAt
               ? formatDate(new Date(device.createdAt), 'dd-mmm-yyyy', ' ')
               : null
-            const isCurrentDevice = device.name === currentDeviceName
+            const isCurrentDevice = !!myDeviceId && device.id === myDeviceId
 
             return (
               <ListItem
