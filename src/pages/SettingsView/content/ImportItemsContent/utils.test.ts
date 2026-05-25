@@ -98,6 +98,26 @@ describe('detectIsEncrypted', () => {
       ).toBe(false)
     })
   })
+
+  describe('KeePass kdbx exports', () => {
+    it('treats a .kdbx database as encrypted (always needs a password)', () => {
+      // A .kdbx is a binary encrypted database — the JSON-shape checks can't
+      // see that, so detectIsEncrypted must special-case it or the password
+      // screen is skipped.
+      expect(detectIsEncrypted(ImportOptionType.KeePass, 'kdbx', null)).toBe(
+        true
+      )
+    })
+
+    it('does not gate KeePass CSV / XML exports on a password', () => {
+      expect(detectIsEncrypted(ImportOptionType.KeePass, 'csv', null)).toBe(
+        false
+      )
+      expect(detectIsEncrypted(ImportOptionType.KeePass, 'xml', null)).toBe(
+        false
+      )
+    })
+  })
 })
 
 describe('isArgon2BitwardenExport', () => {

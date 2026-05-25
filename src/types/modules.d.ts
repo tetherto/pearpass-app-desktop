@@ -371,6 +371,16 @@ declare module '@tetherto/pearpass-lib-vault/src/instances' {
       content: string
       password: string
     }) => Promise<string>
+    keepassArgon2: (params: {
+      password: string
+      salt: string
+      type: 'argon2d' | 'argon2id'
+      memory: number
+      iterations: number
+      parallelism: number
+      length: number
+      version: number
+    }) => Promise<string>
     [key: string]: any
   }
   export const setPearpassVaultClient: (instance: unknown) => void
@@ -435,7 +445,19 @@ declare module '@tetherto/pearpass-utils-password-generator' {
 declare module '@tetherto/pearpass-lib-data-import' {
   export function decryptKeePassKdbx(
     fileContent: string | ArrayBuffer,
-    password: string
+    password: string,
+    options?: {
+      argon2ViaWorklet?: (params: {
+        password: string
+        salt: string
+        type: 'argon2d' | 'argon2id'
+        memory: number
+        iterations: number
+        parallelism: number
+        length: number
+        version: number
+      }) => Promise<string>
+    }
   ): Promise<unknown>
   export function parse1PasswordData(
     data: unknown,

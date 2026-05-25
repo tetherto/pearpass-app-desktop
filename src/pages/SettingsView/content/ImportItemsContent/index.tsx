@@ -240,7 +240,14 @@ export const ImportItemsContent = () => {
         if (!password) {
           throw new Error(t('Password is required for encrypted files'))
         }
-        dataToProcess = await decryptKeePassKdbx(fileContent, password)
+        // KDBX 4 derives its key with Argon2 — a deliberately memory-hard
+        // KDF. Offload it to the vault worklet (JIT-enabled V8) so it does
+        // not block the renderer thread — same pattern as the Bitwarden
+        // encrypted-import path below.
+        dataToProcess = await decryptKeePassKdbx(fileContent, password, {
+          argon2ViaWorklet:
+            pearpassVaultClient.keepassArgon2.bind(pearpassVaultClient)
+        })
         resolvedType = ImportOptionType.KeePassKDBX
       }
 
@@ -580,7 +587,8 @@ export const ImportItemsContent = () => {
                   'The uploaded file is encrypted. Enter the password to continue.'
                 )}
               </Text>
-              {isArgon2BitwardenExport(selectedFileInfo?.parsedJson ?? null) && (
+              {(isArgon2BitwardenExport(selectedFileInfo?.parsedJson ?? null) ||
+                selectedFileInfo?.fileType === 'kdbx') && (
                 <AlertMessage
                   variant="warning"
                   size="small"

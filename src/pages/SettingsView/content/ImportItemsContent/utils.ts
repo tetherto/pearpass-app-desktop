@@ -51,6 +51,14 @@ export const detectIsEncrypted = (
   fileType: string,
   parsedJson: Record<string, unknown> | null
 ): boolean => {
+  // A KeePass .kdbx is an encrypted database — it always needs the master
+  // password. The JSON-shape checks below can't see that (a .kdbx is binary,
+  // not JSON), so without this it would fall through as "not encrypted" and
+  // the password screen would be skipped.
+  if (importType === ImportOptionType.KeePass && fileType === 'kdbx') {
+    return true
+  }
+
   if (fileType !== 'json' || !parsedJson) return false
 
   if (importType === ImportOptionType.Bitwarden) {

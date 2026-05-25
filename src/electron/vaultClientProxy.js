@@ -120,6 +120,7 @@ const VAULT_METHODS = [
   'decryptExportData',
   'decryptBitwardenExport',
   'decryptProtonExport',
+  'keepassArgon2',
   'activeVaultFind',
   'activeVaultGetWriterKey',
   'personalSwarmInit',
