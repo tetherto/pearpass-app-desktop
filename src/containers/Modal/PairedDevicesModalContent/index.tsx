@@ -19,7 +19,6 @@ import {
   PhoneIphone,
   Tablet
 } from '@tetherto/pearpass-lib-ui-kit/icons'
-// @ts-expect-error - declaration file is incomplete
 import { getMyDeviceId, useVault } from '@tetherto/pearpass-lib-vault'
 
 import { createStyles, DEVICE_ACTIONS_MENU_WIDTH } from './styles'
@@ -98,7 +97,7 @@ export const PairedDevicesModalContent = () => {
     return () => {
       cancelled = true
     }
-  }, [devices])
+  }, [])
 
   const openRevokeModal = (device: Device, displayName: string) => {
     if (!device.id || !vaultId) return

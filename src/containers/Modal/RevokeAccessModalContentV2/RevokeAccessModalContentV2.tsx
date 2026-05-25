@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 
 import { Button, Dialog, Text, useTheme } from '@tetherto/pearpass-lib-ui-kit'
-// @ts-expect-error - declaration file is incomplete
 import { kickDevice } from '@tetherto/pearpass-lib-vault'
 
 import { createStyles } from './RevokeAccessModalContentV2.styles'

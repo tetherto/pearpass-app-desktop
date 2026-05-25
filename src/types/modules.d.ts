@@ -60,6 +60,14 @@ declare module '@tetherto/pearpass-lib-vault' {
 
   export const setPearpassVaultClient: any
   export function setCurrentDeviceName(name: string | null): void
+  export function getMyDeviceId(): Promise<string | null>
+  export function kickDevice(params: {
+    vaultId: string
+    targetDeviceId: string
+  }): Promise<{
+    results: Array<{ targetDeviceId: string; channel: 'outbox' }>
+    failures: Array<{ targetDeviceId: string; error: Error }>
+  }>
   export const VaultProvider: any
   export function useVaults(options?: {
     onCompleted?: (payload: Vault[]) => void
