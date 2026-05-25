@@ -147,6 +147,11 @@ export class VaultHandlers {
     return { success: true }
   }
 
+  async activeVaultRemoveWriter(params) {
+    await this.client.activeVaultRemoveWriter(params.writerKey)
+    return { success: true }
+  }
+
   async activeVaultClose() {
     await this.client.activeVaultClose()
     return { success: true }

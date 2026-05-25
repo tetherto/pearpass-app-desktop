@@ -32,6 +32,7 @@ const COMMAND_DEFINITIONS = [
   { id: 1014, name: 'activeVaultList' },
   { id: 1015, name: 'activeVaultAdd' },
   { id: 1016, name: 'activeVaultRemove' },
+  { id: 1048, name: 'activeVaultRemoveWriter' },
   { id: 1017, name: 'activeVaultClose' },
   { id: 1018, name: 'activeVaultCreateInvite' },
   { id: 1019, name: 'activeVaultDeleteInvite' },
