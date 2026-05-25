@@ -177,8 +177,8 @@ export const DeleteVaultModalContent = ({
     <Dialog
       title={t('Delete {vaultName}', { vaultName })}
       onClose={handleClose}
-      testID="delete-vault-dialog-v2"
-      closeButtonTestID="delete-vault-close-v2"
+      testID="delete-vault-dialog"
+      closeButtonTestID="delete-vault-close"
       footer={
         <>
           <Button
@@ -187,7 +187,7 @@ export const DeleteVaultModalContent = ({
             type="button"
             onClick={handleClose}
             disabled={isLoading}
-            data-testid="delete-vault-discard-v2"
+            data-testid="delete-vault-discard"
           >
             {t('Discard')}
           </Button>
@@ -198,7 +198,7 @@ export const DeleteVaultModalContent = ({
             disabled={isSubmitDisabled}
             isLoading={isLoading}
             onClick={() => handleSubmit(onSubmit)()}
-            data-testid="delete-vault-submit-v2"
+            data-testid="delete-vault-submit"
           >
             {t('Delete')}
           </Button>
@@ -208,12 +208,12 @@ export const DeleteVaultModalContent = ({
       <Form
         onSubmit={handleSubmit(onSubmit)}
         style={styles.form as React.ComponentProps<typeof Form>['style']}
-        testID="delete-vault-form-v2"
+        testID="delete-vault-form"
       >
         <Text
           as="p"
           variant="label"
-          data-testid="delete-vault-description-v2"
+          data-testid="delete-vault-description"
         >
           {t(
             'Are you sure you want to delete "{vaultName}"? All items in this vault will be permanently deleted. This cannot be undone.',
@@ -230,7 +230,7 @@ export const DeleteVaultModalContent = ({
             if (submitError) setSubmitError(null)
           }}
           error={masterPasswordError}
-          testID="delete-vault-password-v2"
+          testID="delete-vault-password"
         />
 
         {showEraseFromAllDevices ? (
@@ -243,7 +243,7 @@ export const DeleteVaultModalContent = ({
                 <span style={styles.eraseLink}>
                   <Link
                     onClick={() => setModal(<PairedDevicesModalContent />)}
-                    data-testid="delete-vault-eraseall-link-v2"
+                    data-testid="delete-vault-eraseall-link"
                   >
                     {t('{count} devices', { count: deviceCount })}
                   </Link>
@@ -253,7 +253,7 @@ export const DeleteVaultModalContent = ({
                 checked={eraseFromAllDevices}
                 onChange={setEraseFromAllDevices}
                 aria-label={t('Erase vault from all devices')}
-                data-testid="delete-vault-eraseall-toggle-v2"
+                data-testid="delete-vault-eraseall-toggle"
               />
             </div>
 
@@ -265,7 +265,7 @@ export const DeleteVaultModalContent = ({
                 description={t(
                   'The removal will take effect on all other devices the next time they access this vault.'
                 )}
-                testID="delete-vault-eraseall-alert-v2"
+                testID="delete-vault-eraseall-alert"
               />
             ) : null}
           </>
@@ -277,7 +277,7 @@ export const DeleteVaultModalContent = ({
             size="small"
             title=""
             description={submitError}
-            testID="delete-vault-error-alert-v2"
+            testID="delete-vault-error-alert"
           />
         ) : null}
       </Form>

@@ -9,7 +9,7 @@ class DetailsPage {
 
   get itemDetailsCounter() {
     return this.root
-    .getByTestId('details-header-v2')
+    .getByTestId('details-header')
     .locator('input[placeholder]')
   }
 
@@ -20,7 +20,7 @@ class DetailsPage {
   // --- Title ---
 
   get getItemDetailsTitle() {
-    return this.root.locator('[data-testid^="details-title"], [data-testid="details-header-v2"]')
+    return this.root.locator('[data-testid^="details-title"], [data-testid="details-header"]')
   }
 
   async verifyTitle(expectedTitle) {
@@ -30,7 +30,7 @@ class DetailsPage {
   // --- Item details / multi-slot ---
 
   getElementItemDetails(labelOrPlaceholder) {
-    const v2LabelMap = {
+    const labelMap = {
       'Email or username': 'credentials-multi-slot-input-slot-0',
       'Password': 'credentials-multi-slot-input-slot-1',
       'https://': 'website-multi-slot-input-slot-0',
@@ -44,9 +44,9 @@ class DetailsPage {
       'Add comment': 'comments-multi-slot-input-slot-0',
       'Other Field': 'custom-fields-multi-slot-input-slot-0',
     }
-    const v2TestId = v2LabelMap[labelOrPlaceholder]
-    if (v2TestId) {
-      return this.root.getByTestId(v2TestId).locator('input').first()
+    const mappedTestId = labelMap[labelOrPlaceholder]
+    if (mappedTestId) {
+      return this.root.getByTestId(mappedTestId).locator('input').first()
     }
 
     return this.root
@@ -92,7 +92,7 @@ class DetailsPage {
   // --- Identity ---
 
   getIdentityDetails(name) {
-    const v2SlotMap = {
+    const slotMap = {
       fullname:               'personal-information-multi-slot-input-slot-0',
       email:                  'personal-information-multi-slot-input-slot-1',
       phone:                  'personal-information-multi-slot-input-slot-2',
@@ -116,9 +116,9 @@ class DetailsPage {
       comment:                'comments-multi-slot-input-slot-0',
       note:                   'comments-multi-slot-input-slot-0',
     }
-    const v2TestId = v2SlotMap[name]
-    if (v2TestId) {
-      return this.root.getByTestId(v2TestId).locator('input').first()
+    const mappedTestId = slotMap[name]
+    if (mappedTestId) {
+      return this.root.getByTestId(mappedTestId).locator('input').first()
     }
     return this.root.getByTestId(`identitydetails-field-${name}`)
   }
@@ -176,15 +176,15 @@ class DetailsPage {
   // --- Actions bar ---
 
   get detailsBarActionsButton() {
-    return this.root.getByTestId('details-button-actions-v2')
+    return this.root.getByTestId('details-button-actions')
   }
 
   get detailsBarEditButton() {
-    return this.root.getByTestId('details-actions-item-edit-v2')
+    return this.root.getByTestId('details-actions-item-edit')
   }
 
   get detailsBarFavoriteButton() {
-    return this.root.getByTestId('details-actions-item-favorite-v2')
+    return this.root.getByTestId('details-actions-item-favorite')
   }
 
   get detailsBarThreeDots() {
@@ -204,11 +204,11 @@ class DetailsPage {
   }
 
   get markAsFavoriteButton() {
-    return this.root.locator('[data-testid="details-actions-item-favorite-v2"]').getByText('Add to Favorites', { exact: true })
+    return this.root.locator('[data-testid="details-actions-item-favorite"]').getByText('Add to Favorites', { exact: true })
   }
 
   get removeFromFavoritesButton() {
-    return this.root.locator('[data-testid="details-actions-item-favorite-v2"]').getByText('Remove from Favorites', { exact: true })
+    return this.root.locator('[data-testid="details-actions-item-favorite"]').getByText('Remove from Favorites', { exact: true })
   }
 
   async clickMarkAsFavoriteButton() {
@@ -231,7 +231,7 @@ class DetailsPage {
   // --- Close button ---
 
   get elementItemCloseButton() {
-    return this.root.getByTestId(/-close-v2$/).first()
+    return this.root.getByTestId(/-close$/).first()
   }
 
   async clickElementItemCloseButton() {
@@ -256,7 +256,7 @@ class DetailsPage {
   }
 
   async clickCreateFolderButton() {
-    const saveBtn = this.root.getByTestId('createfolder-save-v2')
+    const saveBtn = this.root.getByTestId('createfolder-save')
     await expect(saveBtn).toBeVisible()
     await saveBtn.click()
   }

@@ -27,7 +27,7 @@ describe('PearPassPasswordField Component', () => {
       })
     )
 
-    const input = getByTestId('@tetherto/pearpass-password-field-v2') as HTMLInputElement
+    const input = getByTestId('@tetherto/pearpass-password-field') as HTMLInputElement
     expect(input).toBeInTheDocument()
     expect(input).toHaveAttribute('type', 'password')
     expect(input.value).toBe('secret')
@@ -45,7 +45,7 @@ describe('PearPassPasswordField Component', () => {
       })
     )
 
-    const input = getByTestId('@tetherto/pearpass-password-field-v2')
+    const input = getByTestId('@tetherto/pearpass-password-field')
     fireEvent.change(input, { target: { value: 'newsecret' } })
     expect(handleChange).toHaveBeenCalledWith('newsecret')
   })
@@ -62,7 +62,7 @@ describe('PearPassPasswordField Component', () => {
       })
     )
 
-    const input = getByTestId('@tetherto/pearpass-password-field-v2')
+    const input = getByTestId('@tetherto/pearpass-password-field')
     fireEvent.change(input, { target: { value: 'newsecret' } })
     expect(handleChange).not.toHaveBeenCalled()
   })
@@ -78,8 +78,8 @@ describe('PearPassPasswordField Component', () => {
       })
     )
 
-    const input = getByTestId('@tetherto/pearpass-password-field-v2')
-    const toggle = getByTestId('@tetherto/pearpass-password-field-v2-toggle')
+    const input = getByTestId('@tetherto/pearpass-password-field')
+    const toggle = getByTestId('@tetherto/pearpass-password-field-toggle')
 
     expect(input).toHaveAttribute('type', 'password')
 

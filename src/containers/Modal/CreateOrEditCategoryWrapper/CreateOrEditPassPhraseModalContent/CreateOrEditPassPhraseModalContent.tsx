@@ -166,8 +166,8 @@ export const CreateOrEditPassPhraseModalContent = ({
     <Dialog
       title={isEdit ? t('Edit Recovery Phrase Item') : t('New Recovery Phrase Item')}
       onClose={closeModal}
-      testID="createoredit-passphrase-dialog-v2"
-      closeButtonTestID="createoredit-passphrase-close-v2"
+      testID="createoredit-passphrase-dialog"
+      closeButtonTestID="createoredit-passphrase-close"
       footer={
         <>
           <Button
@@ -175,7 +175,7 @@ export const CreateOrEditPassPhraseModalContent = ({
             size="small"
             type="button"
             onClick={closeModal}
-            data-testid="createoredit-passphrase-button-discard-v2"
+            data-testid="createoredit-passphrase-button-discard"
           >
             {t('Discard')}
           </Button>
@@ -186,7 +186,7 @@ export const CreateOrEditPassPhraseModalContent = ({
             disabled={isLoading || (!isEdit && (!values.title?.trim() || !values.passPhrase?.trim()))}
             isLoading={isLoading}
             onClick={() => handleSubmit(onSubmit)()}
-            data-testid="createoredit-passphrase-button-save-v2"
+            data-testid="createoredit-passphrase-button-save"
           >
             {isEdit ? t('Save') : t('Add Item')}
           </Button>
@@ -196,7 +196,7 @@ export const CreateOrEditPassPhraseModalContent = ({
       <Form
         onSubmit={handleSubmit(onSubmit)}
         style={styles.form as React.ComponentProps<typeof Form>['style']}
-        testID="createoredit-passphrase-form-v2"
+        testID="createoredit-passphrase-form"
       >
         <InputField
           label={t('Title')}
@@ -204,7 +204,7 @@ export const CreateOrEditPassPhraseModalContent = ({
           value={titleField.value}
           onChange={(e) => titleField.onChange(e.target.value)}
           error={titleField.error || undefined}
-          testID="createoredit-passphrase-input-title-v2"
+          testID="createoredit-passphrase-input-title"
         />
 
         <div style={styles.sectionLabel}>
@@ -233,19 +233,19 @@ export const CreateOrEditPassPhraseModalContent = ({
           }
         />
 
-        <MultiSlotInput testID="createoredit-passphrase-comments-slot-v2">
+        <MultiSlotInput testID="createoredit-passphrase-comments-slot">
           <InputField
             label={t('Comment')}
             placeholder={t('Enter Comment')}
             value={noteField.value}
             onChange={(e) => noteField.onChange(e.target.value)}
             error={noteField.error || undefined}
-            testID="createoredit-passphrase-input-comment-v2"
+            testID="createoredit-passphrase-input-comment"
           />
         </MultiSlotInput>
 
         <MultiSlotInput
-          testID="createoredit-passphrase-hiddenmessage-slot-v2"
+          testID="createoredit-passphrase-hiddenmessage-slot"
           actions={
             <Button
               variant="tertiaryAccent"
@@ -253,7 +253,7 @@ export const CreateOrEditPassPhraseModalContent = ({
               type="button"
               iconBefore={<Add width={16} height={16} />}
               onClick={() => addCustomField({ type: 'note', note: '' })}
-              data-testid="createoredit-passphrase-button-addhiddenmessage-v2"
+              data-testid="createoredit-passphrase-button-addhiddenmessage"
             >
               {t('Add Another Message')}
             </Button>
@@ -270,7 +270,7 @@ export const CreateOrEditPassPhraseModalContent = ({
                 value={fieldReg.value}
                 onChange={(e) => fieldReg.onChange(e.target.value)}
                 error={fieldReg.error || undefined}
-                testID={`createoredit-passphrase-input-hiddenmessage-v2-${index}`}
+                testID={`createoredit-passphrase-input-hiddenmessage-${index}`}
                 rightSlot={
                   canRemove ? (
                     <Button
@@ -286,7 +286,7 @@ export const CreateOrEditPassPhraseModalContent = ({
                         />
                       }
                       onClick={() => removeCustomFieldItem(index)}
-                      data-testid={`createoredit-passphrase-button-removehiddenmessage-v2-${index}`}
+                      data-testid={`createoredit-passphrase-button-removehiddenmessage-${index}`}
                     />
                   ) : undefined
                 }

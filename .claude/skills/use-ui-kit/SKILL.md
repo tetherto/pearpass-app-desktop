@@ -1,6 +1,6 @@
 ---
 name: use-ui-kit
-description: Use whenever creating or editing UI in this repo — React components, modals, dialogs, forms, buttons, inputs, typography, styling, icons, or any .tsx/.jsx work. The repo uses `@tetherto/pearpass-lib-ui-kit` as the single source for UI primitives; do not roll custom ones. Load this before suggesting any UI change, especially for v2 files (V2 suffix) or when touching src/components, src/containers/Modal, or src/pages.
+description: Use whenever creating or editing UI in this repo — React components, modals, dialogs, forms, buttons, inputs, typography, styling, icons, or any .tsx/.jsx work. The repo uses `@tetherto/pearpass-lib-ui-kit` as the single source for UI primitives; do not roll custom ones. Load this before suggesting any UI change, especially when touching src/components, src/containers/Modal, or src/pages.
 ---
 
 <!-- Mirror of AGENTS.md at repo root — keep in sync. AGENTS.md is the canonical copy; this file exists so Claude Code's skill-trigger mechanism can lazy-load the same content on UI work. -->
@@ -11,20 +11,9 @@ This is the Electron desktop app for PearPass. It's written in React + TypeScrip
 
 This document is for **anyone contributing UI** to the repo — new hires, current engineers, and AI coding assistants (Claude Code, Cursor, Codex, etc.). It captures the component catalog, styling conventions, file-naming rules, and patterns we use when building UI in this app. Read it once before your first UI change; keep it open when you're in doubt.
 
-## Design-system state — `DESKTOP_DESIGN_VERSION === 2`
+## File naming
 
-Which design renders at runtime is controlled by the `DESKTOP_DESIGN_VERSION` flag from `@tetherto/pearpass-lib-constants` (resolved in [electron/runtime-config.cjs](../../../electron/runtime-config.cjs) and exposed via `isV2()` in [src/utils/designVersion.js](../../../src/utils/designVersion.js)).
-
-**Currently `DESKTOP_DESIGN_VERSION === 2`**, so kit components are the right choice for all new UI work. Legacy v1 components still live under [src/lib-react-components/](../../../src/lib-react-components/) and are rendered whenever `isV2()` returns `false` — do not delete them as part of v2 work.
-
-## File naming: when to use the `V2` suffix
-
-The `V2` suffix is a **coexistence marker**, not a design marker. Use it only when a v1 sibling already exists:
-
-- **A v1 file already exists** for this component/screen → create a new file with the `V2` suffix next to it (e.g. v1 `CreateVaultModalContent.jsx` → new `CreateVaultModalContentV2.tsx`). Both live in the tree during migration; the branching happens at the call site via `isV2()`.
-- **No v1 equivalent exists** (net-new feature, net-new component) → create the file with its natural name, **no `V2` suffix**. The codebase is already v2 by default, so the suffix would just be noise.
-
-Before creating a file, glob the directory for the base name without the suffix. If nothing comes up, skip the suffix.
+Files use their natural names — no version suffixes. A few small components (`InputField`, `NoticeText`, `PearPassPasswordField`, `TextArea`) still live under [src/lib-react-components/components/](../../../src/lib-react-components/components/) as a legacy holdover, but that tree is frozen — don't add to it.
 
 ## Golden rules
 
@@ -47,7 +36,7 @@ Import pattern: `import { ComponentName } from '@tetherto/pearpass-lib-ui-kit'`
 ### Forms
 - `Form` — form wrapper with validation.
 - `InputField` — text input. Use instead of `PearPassInputField`.
-- `PasswordField` — password input with strength indicator. Use instead of `PearPassPasswordField` / `PearPassPasswordFieldV2`.
+- `PasswordField` — password input with strength indicator. Use instead of the legacy `PearPassPasswordField`.
 - `SearchField` — search input.
 - `SelectField` — dropdown select.
 - `Dropdown` — low-level dropdown primitive.
@@ -77,7 +66,7 @@ Import pattern: `import { ComponentName } from '@tetherto/pearpass-lib-ui-kit'`
 - `ContextMenu`
 
 ### Feedback
-- `AlertMessage` — inline alerts. Reference: [src/pages/WelcomePage/CardCreateMasterPasswordV2/index.tsx](../../../src/pages/WelcomePage/CardCreateMasterPasswordV2/index.tsx).
+- `AlertMessage` — inline alerts. Reference: [src/pages/WelcomePage/CardCreateMasterPassword/index.tsx](../../../src/pages/WelcomePage/CardCreateMasterPassword/index.tsx).
 - `Snackbar` — toast-style notifications.
 - `PasswordIndicator` — standalone password strength meter.
 
@@ -116,7 +105,7 @@ Always include a test ID on anything a user interacts with (buttons, fields, tog
 - **`testID`** — components that declare it explicitly: `Dialog` (+ `closeButtonTestID`), `Form`, `InputField`, `PasswordField`, `SearchField`, `SelectField`, `TextArea`, `Radio`, `AlertMessage` (+ `actionTestId`).
 - **`data-testid`** — components that extend native HTML and don't redeclare it: `Button`, `ToggleSwitch`, `Checkbox`, `Link`, `Pressable`, `Text`, `Title`.
 
-Rule of thumb: try `testID` first; if TypeScript rejects it, use `data-testid`. When editing an existing file, follow the naming pattern already there (e.g. `createvault-name-v2`, `createvault-discard-v2`).
+Rule of thumb: try `testID` first; if TypeScript rejects it, use `data-testid`. When editing an existing file, follow the naming pattern already there.
 
 ### Prop naming — modern vs. deprecated (important)
 
@@ -128,7 +117,7 @@ The kit recently renamed several field props. **Use the modern names:**
 | `placeholder` | `placeholderText` |
 | `error` (string) | `errorMessage` + `variant` |
 
-⚠️ **Existing v2 files in this repo (e.g. `CreateVaultModalContentV2`, `CardCreateMasterPasswordV2`) still use the deprecated props.** Don't copy their prop names blindly — use the modern ones in new code. The deprecated props still work for now but will be removed.
+⚠️ **Some existing files in this repo (e.g. `CreateOrEditVaultModalContent`, `CardCreateMasterPassword`) still use the deprecated props.** Don't copy their prop names blindly — use the modern ones in new code. The deprecated props still work for now but will be removed.
 
 **Exception:** `SearchField` still uses `onChangeText` + `placeholderText` — those aren't deprecated there. `testID` is current everywhere.
 
@@ -136,7 +125,7 @@ The kit recently renamed several field props. **Use the modern names:**
 
 The codebase does **not** use styled-components. The convention is a `createStyles(colors)` factory that returns plain inline-style objects, consumed via `style={styles.foo}`.
 
-**In the component** (reference: `src/pages/WelcomePage/CardCreateMasterPasswordV2/index.tsx`):
+**In the component** (reference: `src/pages/WelcomePage/CardCreateMasterPassword/index.tsx`):
 
 ```tsx
 import { useTheme } from '@tetherto/pearpass-lib-ui-kit'
@@ -149,7 +138,7 @@ const Component = () => {
 }
 ```
 
-**In the companion `styles.ts`** (reference: `src/pages/WelcomePage/CardCreateMasterPasswordV2/styles.ts`):
+**In the companion `styles.ts`** (reference: `src/pages/WelcomePage/CardCreateMasterPassword/styles.ts`):
 
 ```ts
 import type { ThemeColors } from '@tetherto/pearpass-lib-ui-kit'
@@ -203,17 +192,15 @@ import { Add, Download, Folder, OpenInNew } from '@tetherto/pearpass-lib-ui-kit/
 
 ## Anti-patterns to avoid
 
-When editing a v2 file or creating new UI, do **not**:
+When creating new UI or editing existing files, do **not**:
 
 - Add a new file under `src/lib-react-components/components/` for a Button/Input/Modal variant.
-- Import `PearPassInputField`, `PearPassPasswordField`, or any `Button*` variant from `src/lib-react-components/` into any new file — swap to the kit equivalents.
-- Add a `V2` suffix to a net-new file that has no v1 sibling. Suffix is only for migration coexistence.
+- Import `PearPassPasswordField` or anything else from `src/lib-react-components/` into a new file — swap to the kit equivalents.
+- Add a `V2` (or any version) suffix to a new file. Use natural names.
 - Use native `<button>`, `<input>`, or `<dialog>` in production code (tests are fine).
 - Hardcode hex colors, brand radii, or design-system spacing — use `rawTokens` and `theme.colors`. (Feature-specific layout literals like `maxWidth: '500px'` are fine.)
 - Add new SVG files under `src/` when the kit's icons subpath covers them.
 - Introduce `styled-components` — the convention is `createStyles(colors)` returning plain style objects.
-
-When editing a v1 file and you spot these patterns, mention them to the user but **don't do drive-by rewrites** unless asked — v1 migration is scoped work.
 
 ## When the kit truly lacks something
 

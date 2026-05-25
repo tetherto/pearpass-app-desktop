@@ -54,12 +54,12 @@ export const FolderDropdown = ({
     <ContextMenu
       fullWidth
       trigger={
-        <MultiSlotInput testID='createoredit-folder-slot-v2'>
+        <MultiSlotInput testID='createoredit-folder-slot'>
           <SelectField
             label={t('Folder')}
             value={selectedFolder ?? ''}
             placeholder={t('Choose Folder')}
-            testID='createoredit-select-folder-v2'
+            testID='createoredit-select-folder'
             rightSlot={
               <div style={{ display: 'flex', alignItems: 'center', gap: rawTokens.spacing6 }}>
                 {selectedFolder && (
@@ -79,7 +79,7 @@ export const FolderDropdown = ({
                       e.stopPropagation()
                       onFolderSelect(selectedFolder)
                     }}
-                    data-testid='createoredit-folder-clear-v2'
+                    data-testid='createoredit-folder-clear'
                   />
                 )}
                 <KeyboardArrowBottom color={theme.colors.colorTextPrimary} />
@@ -103,7 +103,7 @@ export const FolderDropdown = ({
           label={name}
           selected={selectedFolder === name}
           onClick={() => onFolderSelect(name)}
-          testID={`createoredit-folder-option-v2-${name}`}
+          testID={`createoredit-folder-option-${name}`}
         />
       ))}
       <NavbarListItem
@@ -117,7 +117,7 @@ export const FolderDropdown = ({
         iconSize={16}
         label={t('Add New Folder')}
         onClick={handleCreateFolder}
-        testID='createoredit-folder-create-v2'
+        testID='createoredit-folder-create'
       />
     </ContextMenu>
   )

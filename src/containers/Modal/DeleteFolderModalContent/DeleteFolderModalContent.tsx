@@ -105,8 +105,8 @@ export const DeleteFolderModalContent = ({
     <Dialog
       title={t('Delete Folder')}
       onClose={handleClose}
-      testID="deletefolder-dialog-v2"
-      closeButtonTestID="deletefolder-close-v2"
+      testID="deletefolder-dialog"
+      closeButtonTestID="deletefolder-close"
       footer={
         <>
           <Button
@@ -114,7 +114,7 @@ export const DeleteFolderModalContent = ({
             size="small"
             type="button"
             onClick={handleClose}
-            data-testid="deletefolder-discard-v2"
+            data-testid="deletefolder-discard"
           >
             {t('Discard')}
           </Button>
@@ -124,7 +124,7 @@ export const DeleteFolderModalContent = ({
               size="small"
               type="button"
               onClick={handleDelete}
-              data-testid="deletefolder-submit-v2"
+              data-testid="deletefolder-submit"
             >
               {t('Delete Folder')}
             </Button>
@@ -134,7 +134,7 @@ export const DeleteFolderModalContent = ({
               size="small"
               type="button"
               onClick={handleDelete}
-              data-testid="deletefolder-submit-v2"
+              data-testid="deletefolder-submit"
             >
               {t('Delete Folder and Items')}
             </Button>
@@ -150,7 +150,7 @@ export const DeleteFolderModalContent = ({
           options={options}
           value={selected}
           onChange={(value) => setSelected(value as DeleteOption)}
-          testID="deletefolder-radio-v2"
+          testID="deletefolder-radio"
         />
       </div>
     </Dialog>

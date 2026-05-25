@@ -18,7 +18,7 @@ class LoginPage {
   // --- Password ---
 
   get passwordInput() {
-    return this.root.getByTestId('login-password-input-v2').locator('input')
+    return this.root.getByTestId('login-password-input').locator('input')
   }
 
   async enterPassword(password) {
@@ -29,7 +29,7 @@ class LoginPage {
   // --- Continue button ---
 
   get continueButton() {
-    return this.root.getByTestId('login-continue-button-v2')
+    return this.root.getByTestId('login-continue-button')
   }
 
   async clickContinue() {

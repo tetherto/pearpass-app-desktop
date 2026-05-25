@@ -11,7 +11,7 @@ export const EmptyResultsView = () => {
   const styles = createStyles()
 
   return (
-    <div style={styles.container} data-testid="empty-results-v2">
+    <div style={styles.container} data-testid="empty-results">
       <Text
         variant="bodyEmphasized"
         color={theme.colors.colorTextPrimary}

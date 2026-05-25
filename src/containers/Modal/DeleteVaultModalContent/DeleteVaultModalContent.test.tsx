@@ -200,13 +200,13 @@ describe('DeleteVaultModalContent', () => {
     render(<DeleteVaultModalContent vaultId="v1" vaultName="V1" />)
 
   const typePassword = (value: string) => {
-    const input = screen.getByTestId('delete-vault-password-v2')
+    const input = screen.getByTestId('delete-vault-password')
     fireEvent.change(input, { target: { value } })
   }
 
   const submit = async () => {
     await act(async () => {
-      fireEvent.click(screen.getByTestId('delete-vault-submit-v2'))
+      fireEvent.click(screen.getByTestId('delete-vault-submit'))
     })
   }
 
@@ -231,7 +231,7 @@ describe('DeleteVaultModalContent', () => {
 
     renderModal()
     typePassword('right')
-    fireEvent.click(screen.getByTestId('delete-vault-eraseall-toggle-v2'))
+    fireEvent.click(screen.getByTestId('delete-vault-eraseall-toggle'))
     await submit()
 
     expect(mockedBroadcast).toHaveBeenCalledWith('v1')

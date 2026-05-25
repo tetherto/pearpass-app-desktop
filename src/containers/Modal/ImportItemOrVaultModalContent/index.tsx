@@ -148,8 +148,8 @@ export const ImportItemOrVaultModalContent = () => {
     <Dialog
       title={t('Import Vault')}
       onClose={closeModal}
-      testID="import-vault-dialog-v2"
-      closeButtonTestID="import-vault-close-v2"
+      testID="import-vault-dialog"
+      closeButtonTestID="import-vault-close"
       footer={
         <>
           <Button

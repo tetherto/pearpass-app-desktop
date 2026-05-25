@@ -210,7 +210,7 @@ jest.mock('../../containers/RecordListView/RecordListView.styles', () => ({
 
 jest.mock('../../containers/EmptyResultsView', () => ({
   EmptyResultsView: () => (
-    <div data-testid="empty-results-v2">No result found.</div>
+    <div data-testid="empty-results">No result found.</div>
   )
 }))
 
@@ -267,7 +267,7 @@ describe('AuthenticatorView', () => {
 
     render(<AuthenticatorView />)
 
-    expect(screen.getByTestId('empty-results-v2')).toBeInTheDocument()
+    expect(screen.getByTestId('empty-results')).toBeInTheDocument()
     expect(screen.queryByText('No codes saved')).not.toBeInTheDocument()
   })
 

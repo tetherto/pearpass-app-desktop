@@ -97,18 +97,18 @@ describe('LockedScreen', () => {
   it('renders headline, description, try-again label, and shell', async () => {
     render(<LockedScreen />)
 
-    expect(screen.getByTestId('locked-screen-v2')).toBeInTheDocument()
+    expect(screen.getByTestId('locked-screen')).toBeInTheDocument()
     expect(screen.getByTestId('onboarding-shell-mock')).toBeInTheDocument()
-    expect(screen.getByTestId('locked-screen-headline-v2').textContent).toBe(
+    expect(screen.getByTestId('locked-screen-headline').textContent).toBe(
       'PearPass locked'
     )
-    expect(screen.getByTestId('locked-screen-desc-line1-v2').textContent).toBe(
+    expect(screen.getByTestId('locked-screen-desc-line1').textContent).toBe(
       'Too many failed attempts.'
     )
-    expect(screen.getByTestId('locked-screen-desc-line2-v2').textContent).toBe(
+    expect(screen.getByTestId('locked-screen-desc-line2').textContent).toBe(
       'For your security, access is temporarily locked.'
     )
-    expect(screen.getByTestId('locked-screen-try-label-v2').textContent).toBe(
+    expect(screen.getByTestId('locked-screen-try-label').textContent).toBe(
       'Try again in'
     )
 
@@ -116,7 +116,7 @@ describe('LockedScreen', () => {
       expect(mockRefreshMasterPasswordStatus).toHaveBeenCalled()
     })
     await waitFor(() => {
-      expect(screen.getByTestId('locked-screen-countdown-v2')).toBeInTheDocument()
+      expect(screen.getByTestId('locked-screen-countdown')).toBeInTheDocument()
     })
   })
 
@@ -132,16 +132,16 @@ describe('LockedScreen', () => {
     render(<LockedScreen />)
 
     expect(
-      screen.getByTestId('locked-screen-countdown-placeholder-v2')
+      screen.getByTestId('locked-screen-countdown-placeholder')
     ).toBeInTheDocument()
-    expect(screen.queryByTestId('locked-screen-countdown-v2')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('locked-screen-countdown')).not.toBeInTheDocument()
 
     act(() => {
       resolveStatus({ isLocked: true, lockoutRemainingMs: 30_000 })
     })
 
     await waitFor(() => {
-      expect(screen.getByTestId('locked-screen-countdown-v2')).toBeInTheDocument()
+      expect(screen.getByTestId('locked-screen-countdown')).toBeInTheDocument()
     })
   })
 
@@ -149,10 +149,10 @@ describe('LockedScreen', () => {
     render(<LockedScreen />)
 
     await waitFor(() => {
-      expect(screen.getByTestId('locked-screen-countdown-v2')).toBeInTheDocument()
+      expect(screen.getByTestId('locked-screen-countdown')).toBeInTheDocument()
     })
-    expect(screen.queryByTestId('locked-screen-countdown-placeholder-v2')).not.toBeInTheDocument()
-    expect(screen.getByTestId('locked-screen-countdown-v2').textContent).toBe(
+    expect(screen.queryByTestId('locked-screen-countdown-placeholder')).not.toBeInTheDocument()
+    expect(screen.getByTestId('locked-screen-countdown').textContent).toBe(
       '00:42'
     )
   })
@@ -258,7 +258,7 @@ describe('LockedScreen', () => {
     })
 
     expect(
-      screen.getByTestId('locked-screen-countdown-placeholder-v2')
+      screen.getByTestId('locked-screen-countdown-placeholder')
     ).toBeInTheDocument()
     expect(mockUseCountDown).not.toHaveBeenCalled()
   })

@@ -32,7 +32,7 @@ export const UpdateRequiredModalContent = ({
   return (
     <Dialog
       title={t('Update App')}
-      testID="updaterequired-dialog-v2"
+      testID="updaterequired-dialog"
       closeOnOutsideClick={false}
       hideCloseButton
       footer={
@@ -42,7 +42,7 @@ export const UpdateRequiredModalContent = ({
             size="small"
             type="button"
             onClick={handleUpdateApp}
-            data-testid="updaterequired-update-v2"
+            data-testid="updaterequired-update"
           >
             {t('Update App')}
           </Button>
@@ -50,7 +50,7 @@ export const UpdateRequiredModalContent = ({
       }
     >
       <div style={styles.body}>
-        <Text as="p" variant="label" color={theme.colors.colorTextSecondary} data-testid="updaterequired-description-v2">
+        <Text as="p" variant="label" color={theme.colors.colorTextSecondary} data-testid="updaterequired-description">
           {t(
             'A newer version of PearPass is available. Please update to the latest version to continue using the app.'
           )}
@@ -60,7 +60,7 @@ export const UpdateRequiredModalContent = ({
             as="span"
             variant="label"
             color={theme.colors.colorTextSecondary}
-            data-testid="updaterequired-timer-label-v2"
+            data-testid="updaterequired-timer-label"
           >
             {t('App will restart in:')}
           </Text>
@@ -68,7 +68,7 @@ export const UpdateRequiredModalContent = ({
             as="span"
             variant="label"
             color={theme.colors.colorTextPrimary}
-            data-testid="updaterequired-timer-value-v2"
+            data-testid="updaterequired-timer-value"
           >
             {expireTime}
           </Text>

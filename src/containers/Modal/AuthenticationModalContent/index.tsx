@@ -96,8 +96,8 @@ export const AuthenticationModalContent = ({
       title={t('Verification Required')}
       open={open}
       onClose={handleClose}
-      testID="authentication-dialog-v2"
-      closeButtonTestID="authentication-close-v2"
+      testID="authentication-dialog"
+      closeButtonTestID="authentication-close"
       footer={
         <Button
           variant="primary"
@@ -106,7 +106,7 @@ export const AuthenticationModalContent = ({
           isLoading={isLoading}
           iconAfter={<KeyboardArrowRightRound />}
           onClick={() => handleSubmit(onSubmit)()}
-          data-testid="authentication-continue-v2"
+          data-testid="authentication-continue"
         >
           {t('Continue')}
         </Button>
@@ -115,9 +115,9 @@ export const AuthenticationModalContent = ({
       <Form
         onSubmit={handleSubmit(onSubmit)}
         style={styles.container as React.ComponentProps<typeof Form>['style']}
-        testID="authentication-form-v2"
+        testID="authentication-form"
       >
-        <Text as="p" variant="body" data-testid="authentication-description-v2">
+        <Text as="p" variant="body" data-testid="authentication-description">
           {t('Use your Master Password to authorize this action.')}
         </Text>
 
@@ -127,7 +127,7 @@ export const AuthenticationModalContent = ({
           {...passwordFieldProps}
           onChange={(e) => onChangePassword(e.target.value)}
           error={passwordFieldProps.error || undefined}
-          testID="authentication-password-v2"
+          testID="authentication-password"
         />
       </Form>
     </Dialog>

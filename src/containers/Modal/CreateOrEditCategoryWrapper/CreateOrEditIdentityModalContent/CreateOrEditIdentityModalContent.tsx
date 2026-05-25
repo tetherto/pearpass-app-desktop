@@ -297,8 +297,8 @@ export const CreateOrEditIdentityModalContent = ({
     <Dialog
       title={isEdit ? t('Edit Identity Item') : t('New Identity Item')}
       onClose={closeModal}
-      testID="createoredit-identity-dialog-v2"
-      closeButtonTestID="createoredit-identity-close-v2"
+      testID="createoredit-identity-dialog"
+      closeButtonTestID="createoredit-identity-close"
       footer={
         <>
           <Button
@@ -306,7 +306,7 @@ export const CreateOrEditIdentityModalContent = ({
             size="small"
             type="button"
             onClick={closeModal}
-            data-testid="createoredit-identity-button-discard-v2"
+            data-testid="createoredit-identity-button-discard"
           >
             {t('Discard')}
           </Button>
@@ -317,7 +317,7 @@ export const CreateOrEditIdentityModalContent = ({
             disabled={isLoading || (!isEdit && !values.title?.trim())}
             isLoading={isLoading}
             onClick={() => handleSubmit(onSubmit)()}
-            data-testid="createoredit-identity-button-save-v2"
+            data-testid="createoredit-identity-button-save"
           >
             {isEdit ? t('Save') : t('Add Item')}
           </Button>
@@ -327,7 +327,7 @@ export const CreateOrEditIdentityModalContent = ({
       <Form
         onSubmit={handleSubmit(onSubmit)}
         style={styles.form as React.ComponentProps<typeof Form>['style']}
-        testID="createoredit-identity-form-v2"
+        testID="createoredit-identity-form"
       >
         <InputField
           label={t('Title')}
@@ -335,7 +335,7 @@ export const CreateOrEditIdentityModalContent = ({
           value={titleField.value}
           onChange={(e) => titleField.onChange(e.target.value)}
           error={titleField.error || undefined}
-          testID="createoredit-identity-input-title-v2"
+          testID="createoredit-identity-input-title"
         />
 
         <div style={styles.sectionLabel}>
@@ -344,14 +344,14 @@ export const CreateOrEditIdentityModalContent = ({
           </Text>
         </div>
 
-        <MultiSlotInput testID="createoredit-identity-personal-slot-v2">
+        <MultiSlotInput testID="createoredit-identity-personal-slot">
           <InputField
             label={t('Fullname')}
             placeholder={t('Enter Name')}
             value={fullNameField.value}
             onChange={(e) => fullNameField.onChange(e.target.value)}
             error={fullNameField.error || undefined}
-            testID="createoredit-identity-input-fullname-v2"
+            testID="createoredit-identity-input-fullname"
           />
           <InputField
             label={t('Email')}
@@ -359,7 +359,7 @@ export const CreateOrEditIdentityModalContent = ({
             value={emailField.value}
             onChange={(e) => emailField.onChange(e.target.value)}
             error={emailField.error || undefined}
-            testID="createoredit-identity-input-email-v2"
+            testID="createoredit-identity-input-email"
           />
           <InputField
             label={t('Phone Number')}
@@ -367,7 +367,7 @@ export const CreateOrEditIdentityModalContent = ({
             value={phoneNumberField.value}
             onChange={(e) => phoneNumberField.onChange(e.target.value)}
             error={phoneNumberField.error || undefined}
-            testID="createoredit-identity-input-phone-v2"
+            testID="createoredit-identity-input-phone"
           />
         </MultiSlotInput>
 
@@ -377,14 +377,14 @@ export const CreateOrEditIdentityModalContent = ({
           </Text>
         </div>
 
-        <MultiSlotInput testID="createoredit-identity-address-slot-v2">
+        <MultiSlotInput testID="createoredit-identity-address-slot">
           <InputField
             label={t('Street Address')}
             placeholder={t('Enter Street Name With Number')}
             value={addressField.value}
             onChange={(e) => addressField.onChange(e.target.value)}
             error={addressField.error || undefined}
-            testID="createoredit-identity-input-address-v2"
+            testID="createoredit-identity-input-address"
           />
           <InputField
             label={t('Country')}
@@ -392,7 +392,7 @@ export const CreateOrEditIdentityModalContent = ({
             value={countryField.value}
             onChange={(e) => countryField.onChange(e.target.value)}
             error={countryField.error || undefined}
-            testID="createoredit-identity-input-country-v2"
+            testID="createoredit-identity-input-country"
           />
           <InputField
             label={t('City')}
@@ -400,7 +400,7 @@ export const CreateOrEditIdentityModalContent = ({
             value={cityField.value}
             onChange={(e) => cityField.onChange(e.target.value)}
             error={cityField.error || undefined}
-            testID="createoredit-identity-input-city-v2"
+            testID="createoredit-identity-input-city"
           />
           <InputField
             label={t('Region / State / Province')}
@@ -408,7 +408,7 @@ export const CreateOrEditIdentityModalContent = ({
             value={regionField.value}
             onChange={(e) => regionField.onChange(e.target.value)}
             error={regionField.error || undefined}
-            testID="createoredit-identity-input-region-v2"
+            testID="createoredit-identity-input-region"
           />
           <InputField
             label={t('ZIP / Postal code')}
@@ -416,7 +416,7 @@ export const CreateOrEditIdentityModalContent = ({
             value={zipField.value}
             onChange={(e) => zipField.onChange(e.target.value)}
             error={zipField.error || undefined}
-            testID="createoredit-identity-input-zip-v2"
+            testID="createoredit-identity-input-zip"
           />
         </MultiSlotInput>
 
@@ -426,14 +426,14 @@ export const CreateOrEditIdentityModalContent = ({
           </Text>
         </div>
 
-        <MultiSlotInput testID="createoredit-identity-passport-slot-v2">
+        <MultiSlotInput testID="createoredit-identity-passport-slot">
           <InputField
             label={t('Fullname')}
             placeholder={t('Enter Name as Shown on Passport')}
             value={passportFullNameField.value}
             onChange={(e) => passportFullNameField.onChange(e.target.value)}
             error={passportFullNameField.error || undefined}
-            testID="createoredit-identity-input-passportfullname-v2"
+            testID="createoredit-identity-input-passportfullname"
           />
           <InputField
             label={t('Passport Number')}
@@ -441,7 +441,7 @@ export const CreateOrEditIdentityModalContent = ({
             value={passportNumberField.value}
             onChange={(e) => passportNumberField.onChange(e.target.value)}
             error={passportNumberField.error || undefined}
-            testID="createoredit-identity-input-passportnumber-v2"
+            testID="createoredit-identity-input-passportnumber"
           />
           <InputField
             label={t('Issuing Country')}
@@ -449,28 +449,28 @@ export const CreateOrEditIdentityModalContent = ({
             value={passportIssuingCountryField.value}
             onChange={(e) => passportIssuingCountryField.onChange(e.target.value)}
             error={passportIssuingCountryField.error || undefined}
-            testID="createoredit-identity-input-passportissuingcountry-v2"
+            testID="createoredit-identity-input-passportissuingcountry"
           />
           <DateField
             label={t('Date of Birth')}
             placeholder={t('Enter DD/MM/YYYY')}
             value={values.passportDob}
             onChange={(e) => setValue('passportDob', e.target.value)}
-            testID="createoredit-identity-input-passportdob-v2"
+            testID="createoredit-identity-input-passportdob"
           />
           <DateField
             label={t('Date of Issue')}
             placeholder={t('Enter DD/MM/YYYY')}
             value={values.passportDateOfIssue}
             onChange={(e) => setValue('passportDateOfIssue', e.target.value)}
-            testID="createoredit-identity-input-passportdateofissue-v2"
+            testID="createoredit-identity-input-passportdateofissue"
           />
           <DateField
             label={t('Expiry Date')}
             placeholder={t('Enter DD/MM/YYYY')}
             value={values.passportExpiryDate}
             onChange={(e) => setValue('passportExpiryDate', e.target.value)}
-            testID="createoredit-identity-input-passportexpirydate-v2"
+            testID="createoredit-identity-input-passportexpirydate"
           />
           <InputField
             label={t('Nationality')}
@@ -478,7 +478,7 @@ export const CreateOrEditIdentityModalContent = ({
             value={passportNationalityField.value}
             onChange={(e) => passportNationalityField.onChange(e.target.value)}
             error={passportNationalityField.error || undefined}
-            testID="createoredit-identity-input-passportnationality-v2"
+            testID="createoredit-identity-input-passportnationality"
           />
           <InputField
             label={t('Gender')}
@@ -486,7 +486,7 @@ export const CreateOrEditIdentityModalContent = ({
             value={passportGenderField.value}
             onChange={(e) => passportGenderField.onChange(e.target.value)}
             error={passportGenderField.error || undefined}
-            testID="createoredit-identity-input-passportgender-v2"
+            testID="createoredit-identity-input-passportgender"
           />
         </MultiSlotInput>
 
@@ -496,28 +496,28 @@ export const CreateOrEditIdentityModalContent = ({
           </Text>
         </div>
 
-        <MultiSlotInput testID="createoredit-identity-idcard-slot-v2">
+        <MultiSlotInput testID="createoredit-identity-idcard-slot">
           <InputField
             label={t('ID Number')}
             placeholder={t('Enter Your ID Number')}
             value={idCardNumberField.value}
             onChange={(e) => idCardNumberField.onChange(e.target.value)}
             error={idCardNumberField.error || undefined}
-            testID="createoredit-identity-input-idcardnumber-v2"
+            testID="createoredit-identity-input-idcardnumber"
           />
           <DateField
             label={t('Date of Issue')}
             placeholder={t('Enter DD/MM/YYYY')}
             value={values.idCardDateOfIssue}
             onChange={(e) => setValue('idCardDateOfIssue', e.target.value)}
-            testID="createoredit-identity-input-idcarddateofissue-v2"
+            testID="createoredit-identity-input-idcarddateofissue"
           />
           <DateField
             label={t('Expiry Date')}
             placeholder={t('Enter DD/MM/YYYY')}
             value={values.idCardExpiryDate}
             onChange={(e) => setValue('idCardExpiryDate', e.target.value)}
-            testID="createoredit-identity-input-idcardexpirydate-v2"
+            testID="createoredit-identity-input-idcardexpirydate"
           />
           <InputField
             label={t('Issuing Country')}
@@ -525,7 +525,7 @@ export const CreateOrEditIdentityModalContent = ({
             value={idCardIssuingCountryField.value}
             onChange={(e) => idCardIssuingCountryField.onChange(e.target.value)}
             error={idCardIssuingCountryField.error || undefined}
-            testID="createoredit-identity-input-idcardissuingcountry-v2"
+            testID="createoredit-identity-input-idcardissuingcountry"
           />
         </MultiSlotInput>
 
@@ -535,28 +535,28 @@ export const CreateOrEditIdentityModalContent = ({
           </Text>
         </div>
 
-        <MultiSlotInput testID="createoredit-identity-drivinglicense-slot-v2">
+        <MultiSlotInput testID="createoredit-identity-drivinglicense-slot">
           <InputField
             label={t('ID Number')}
             placeholder={t('Enter Your ID Number')}
             value={drivingLicenseNumberField.value}
             onChange={(e) => drivingLicenseNumberField.onChange(e.target.value)}
             error={drivingLicenseNumberField.error || undefined}
-            testID="createoredit-identity-input-drivinglicensenumber-v2"
+            testID="createoredit-identity-input-drivinglicensenumber"
           />
           <DateField
             label={t('Date of Issue')}
             placeholder={t('Enter DD/MM/YYYY')}
             value={values.drivingLicenseDateOfIssue}
             onChange={(e) => setValue('drivingLicenseDateOfIssue', e.target.value)}
-            testID="createoredit-identity-input-drivinglicensedateofissue-v2"
+            testID="createoredit-identity-input-drivinglicensedateofissue"
           />
           <DateField
             label={t('Expiry Date')}
             placeholder={t('Enter DD/MM/YYYY')}
             value={values.drivingLicenseExpiryDate}
             onChange={(e) => setValue('drivingLicenseExpiryDate', e.target.value)}
-            testID="createoredit-identity-input-drivinglicenseexpirydate-v2"
+            testID="createoredit-identity-input-drivinglicenseexpirydate"
           />
           <InputField
             label={t('Issuing Country')}
@@ -564,7 +564,7 @@ export const CreateOrEditIdentityModalContent = ({
             value={drivingLicenseIssuingCountryField.value}
             onChange={(e) => drivingLicenseIssuingCountryField.onChange(e.target.value)}
             error={drivingLicenseIssuingCountryField.error || undefined}
-            testID="createoredit-identity-input-drivinglicenseissuingcountry-v2"
+            testID="createoredit-identity-input-drivinglicenseissuingcountry"
           />
         </MultiSlotInput>
 
@@ -587,11 +587,11 @@ export const CreateOrEditIdentityModalContent = ({
           value={noteField.value}
           onChange={(e) => noteField.onChange(e.target.value)}
           error={noteField.error || undefined}
-          testID="createoredit-identity-input-comment-v2"
+          testID="createoredit-identity-input-comment"
         />
 
         <MultiSlotInput
-          testID="createoredit-identity-attachments-slot-v2"
+          testID="createoredit-identity-attachments-slot"
           actions={
             <Button
               variant="tertiaryAccent"
@@ -599,7 +599,7 @@ export const CreateOrEditIdentityModalContent = ({
               type="button"
               iconBefore={<Add width={16} height={16} />}
               onClick={handleFileLoad}
-              data-testid="createoredit-identity-button-addattachment-v2"
+              data-testid="createoredit-identity-button-addattachment"
             >
               {t('Add Another Attachment')}
             </Button>
@@ -619,7 +619,7 @@ export const CreateOrEditIdentityModalContent = ({
                   key={attachment.id || attachment.tempId}
                   label={t('Attachment')}
                   value={attachment.name}
-                  testID={`createoredit-identity-attachment-v2-${index}`}
+                  testID={`createoredit-identity-attachment-${index}`}
                   rightSlot={
                     <Button
                       variant="tertiary"
@@ -642,7 +642,7 @@ export const CreateOrEditIdentityModalContent = ({
                           )
                         )
                       }
-                      data-testid={`createoredit-identity-button-deleteattachment-v2-${index}`}
+                      data-testid={`createoredit-identity-button-deleteattachment-${index}`}
                     />
                   }
                 />
@@ -653,7 +653,7 @@ export const CreateOrEditIdentityModalContent = ({
             label={t('Attachment')}
             placeholder={t('Add or Drop File / Photos')}
             onClick={handleFileLoad}
-            testID="createoredit-identity-attachment-upload-v2"
+            testID="createoredit-identity-attachment-upload"
             rightSlot={
               <UploadFileFilled
                 width={16}
@@ -665,7 +665,7 @@ export const CreateOrEditIdentityModalContent = ({
         </MultiSlotInput>
 
         <MultiSlotInput
-          testID="createoredit-identity-customfields-slot-v2"
+          testID="createoredit-identity-customfields-slot"
           actions={
             <Button
               variant="tertiaryAccent"
@@ -673,7 +673,7 @@ export const CreateOrEditIdentityModalContent = ({
               type="button"
               iconBefore={<Add width={16} height={16} />}
               onClick={() => addCustomField({ type: 'note', note: '' })}
-              data-testid="createoredit-identity-button-addcustomfield-v2"
+              data-testid="createoredit-identity-button-addcustomfield"
             >
               {t('Add Another Message')}
             </Button>
@@ -690,7 +690,7 @@ export const CreateOrEditIdentityModalContent = ({
                 value={fieldReg.value}
                 onChange={(e) => fieldReg.onChange(e.target.value)}
                 error={fieldReg.error || undefined}
-                testID={`createoredit-identity-input-customfield-v2-${index}`}
+                testID={`createoredit-identity-input-customfield-${index}`}
                 rightSlot={
                   canRemove ? (
                     <Button
@@ -706,7 +706,7 @@ export const CreateOrEditIdentityModalContent = ({
                         />
                       }
                       onClick={() => removeCustomFieldItem(index)}
-                      data-testid={`createoredit-identity-button-removecustomfield-v2-${index}`}
+                      data-testid={`createoredit-identity-button-removecustomfield-${index}`}
                     />
                   ) : undefined
                 }

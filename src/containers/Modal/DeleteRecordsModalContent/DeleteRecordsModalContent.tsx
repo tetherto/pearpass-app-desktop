@@ -73,8 +73,8 @@ export const DeleteRecordsModalContent = ({
     <Dialog
       title={dialogTitle}
       onClose={closeModal}
-      testID="delete-records-dialog-v2"
-      closeButtonTestID="delete-records-close-v2"
+      testID="delete-records-dialog"
+      closeButtonTestID="delete-records-close"
       footer={
         <>
           <Button
@@ -82,7 +82,7 @@ export const DeleteRecordsModalContent = ({
             size="small"
             type="button"
             onClick={closeModal}
-            data-testid="delete-records-discard-v2"
+            data-testid="delete-records-discard"
           >
             {t('Discard')}
           </Button>
@@ -93,7 +93,7 @@ export const DeleteRecordsModalContent = ({
             disabled={!count || isLoading}
             isLoading={isLoading}
             onClick={handleDelete}
-            data-testid="delete-records-submit-v2"
+            data-testid="delete-records-submit"
           >
             {submitLabel}
           </Button>

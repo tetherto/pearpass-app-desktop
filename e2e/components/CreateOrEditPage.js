@@ -9,14 +9,14 @@ class CreateOrEditPage {
 
   getCreateOrEditInputField(field) {
     const overrides = {
-      website: 'createoredit-input-website-v2-0',
-      attachment: 'createoredit-attachment-upload-v2',
+      website: 'createoredit-input-website-0',
+      attachment: 'createoredit-attachment-upload',
     }
     const dashIndex = field.indexOf('-')
     const testId = overrides[field] ??
       (dashIndex !== -1
-        ? `createoredit-${field.slice(0, dashIndex)}-input-${field.slice(dashIndex + 1)}-v2`
-        : `createoredit-input-${field}-v2`)
+        ? `createoredit-${field.slice(0, dashIndex)}-input-${field.slice(dashIndex + 1)}`
+        : `createoredit-input-${field}`)
     return this.root.getByTestId(testId).locator('input').first()
   }
 
@@ -42,8 +42,8 @@ class CreateOrEditPage {
   getCreateOrEditButton(name) {
     const dashIndex = name.indexOf('-')
     const testId = dashIndex !== -1
-      ? `createoredit-${name.slice(0, dashIndex)}-button-${name.slice(dashIndex + 1)}-v2`
-      : `createoredit-button-${name}-v2`
+      ? `createoredit-${name.slice(0, dashIndex)}-button-${name.slice(dashIndex + 1)}`
+      : `createoredit-button-${name}`
     return this.root.getByTestId(testId)
   }
 
@@ -58,7 +58,7 @@ class CreateOrEditPage {
   }
 
   get elementItemCloseButton() {
-    return this.root.getByTestId(/-close-v2$/).first()
+    return this.root.getByTestId(/-close$/).first()
   }
 
   async clickElementItemCloseButton() {
@@ -87,7 +87,7 @@ class CreateOrEditPage {
   // --- Password generation ---
 
   get passwordMenu() {
-    return this.root.getByTestId('createoredit-button-generatepassword-v2')
+    return this.root.getByTestId('createoredit-button-generatepassword')
   }
 
   async openPasswordMenu() {
@@ -97,7 +97,7 @@ class CreateOrEditPage {
 
   get insertPasswordButton() {
     return this.root
-      .getByTestId('generatepassword-button-primary-v2')
+      .getByTestId('generatepassword-button-primary')
       .first()
   }
 
@@ -145,7 +145,7 @@ class CreateOrEditPage {
   // --- Attachment upload ---
 
   getCreateOrEditUploadAttachment() {
-    return this.root.getByTestId(/-attachment-upload-v2$/).first()
+    return this.root.getByTestId(/-attachment-upload$/).first()
   }
 
   async clickOnAttachment() {
@@ -155,7 +155,7 @@ class CreateOrEditPage {
   }
 
   get deleteAttachmentButton() {
-    return this.root.getByTestId(/-button-deleteattachment-v2-0$/).first()
+    return this.root.getByTestId(/-button-deleteattachment-0$/).first()
   }
 
   async clickOnDeleteAttachmentButton() {
@@ -178,12 +178,12 @@ class CreateOrEditPage {
 
   get uploadedFileLink() {
     return this.root
-      .getByTestId('uploadfiles-field-v2')
+      .getByTestId('uploadfiles-field')
       .getByText('TestPhoto.png', { exact: true })
   }
 
   get uploadedFile() {
-    return this.root.getByTestId('uploadfiles-button-additem-v2')
+    return this.root.getByTestId('uploadfiles-button-additem')
   }
 
   get uploadedImage() {
@@ -211,11 +211,11 @@ class CreateOrEditPage {
   }
 
   get customNoteInput() {
-    return this.root.getByTestId('createoredit-custom-input-customfield-v2-0').locator('input').first()
+    return this.root.getByTestId('createoredit-custom-input-customfield-0').locator('input').first()
   }
 
   get customNoteInput_first() {
-    return this.root.getByTestId(/^createoredit-custom-input-customfield-v2-/)
+    return this.root.getByTestId(/^createoredit-custom-input-customfield-/)
   }
 
   async fillCustomNoteInput() {
@@ -241,7 +241,7 @@ class CreateOrEditPage {
   // --- Folder dropdown ---
 
   get dropdownFolderMenu() {
-    return this.root.getByTestId('createoredit-select-folder-v2')
+    return this.root.getByTestId('createoredit-select-folder')
   }
 
   async openDropdownMenu() {
@@ -250,7 +250,7 @@ class CreateOrEditPage {
   }
 
   async selectFromDropdownMenu(foldername) {
-    const folder = this.root.getByTestId(`createoredit-folder-option-v2-${foldername}`)
+    const folder = this.root.getByTestId(`createoredit-folder-option-${foldername}`)
     await expect(folder).toBeVisible()
     await folder.click()
   }

@@ -87,14 +87,14 @@ export const EmptyCollectionView = ({
   }, [isFavoritesView, selectedFolder, recordType, categoryLabel, t])
 
   return (
-    <div style={styles.container} data-testid="empty-collection-v2">
+    <div style={styles.container} data-testid="empty-collection">
       <div style={styles.content}>
         <div style={styles.illustration}>
           <ItemCardIllustration width={null} height={ILLUSTRATION_HEIGHT} />
         </div>
 
         <div style={styles.textBlock}>
-          <Title as="h2" data-testid="empty-collection-v2-title">
+          <Title as="h2" data-testid="empty-collection-title">
             {title}
           </Title>
           {descriptionParagraphs.map((paragraph, index) => (
@@ -121,7 +121,7 @@ export const EmptyCollectionView = ({
                 variant="primary"
                 size="small"
                 fullWidth
-                data-testid="empty-collection-v2-add"
+                data-testid="empty-collection-add"
                 iconBefore={<Add width={16} height={16} />}
                 onClick={handleAddItem}
               >
@@ -133,7 +133,7 @@ export const EmptyCollectionView = ({
                 variant="secondary"
                 size="small"
                 fullWidth
-                data-testid="empty-collection-v2-import"
+                data-testid="empty-collection-import"
                 iconBefore={
                   <ImportExport
                     width={16}

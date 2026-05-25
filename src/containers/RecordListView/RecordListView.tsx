@@ -149,7 +149,7 @@ export const RecordListView = ({
 
   return (
     <div style={styles.wrapper}>
-      <div style={styles.scrollArea} data-testid="record-list-v2">
+      <div style={styles.scrollArea} data-testid="record-list">
         {sections.map((section, sectionIndex) => {
           const isCollapsed = !!collapsedSections[section.key]
           const labelKey = SECTION_TITLE_KEYS[section.key] ?? section.title

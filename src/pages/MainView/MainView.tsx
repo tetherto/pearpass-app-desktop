@@ -150,7 +150,7 @@ export const MainView = () => {
   const hasSearch = !!searchValue.length
 
   return (
-    <div style={styles.wrapper} data-testid="main-view-v2">
+    <div style={styles.wrapper} data-testid="main-view">
       <MainViewHeader
         sortKey={sortKey}
         setSortKey={setSortKey}

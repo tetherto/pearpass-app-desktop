@@ -179,8 +179,8 @@ export const CreateOrEditNoteModalContent = ({
     <Dialog
       title={isEdit ? t('Edit Note Item') : t('New Note Item')}
       onClose={closeModal}
-      testID="createoredit-note-dialog-v2"
-      closeButtonTestID="createoredit-note-close-v2"
+      testID="createoredit-note-dialog"
+      closeButtonTestID="createoredit-note-close"
       footer={
         <>
           <Button
@@ -188,7 +188,7 @@ export const CreateOrEditNoteModalContent = ({
             size="small"
             type="button"
             onClick={closeModal}
-            data-testid="createoredit-note-button-discard-v2"
+            data-testid="createoredit-note-button-discard"
           >
             {t('Discard')}
           </Button>
@@ -199,7 +199,7 @@ export const CreateOrEditNoteModalContent = ({
             disabled={isLoading || (!isEdit && !values.title?.trim())}
             isLoading={isLoading}
             onClick={() => handleSubmit(onSubmit)()}
-            data-testid="createoredit-note-button-save-v2"
+            data-testid="createoredit-note-button-save"
           >
             {isEdit ? t('Save') : t('Add Item')}
           </Button>
@@ -209,7 +209,7 @@ export const CreateOrEditNoteModalContent = ({
       <Form
         onSubmit={handleSubmit(onSubmit)}
         style={styles.form as React.ComponentProps<typeof Form>['style']}
-        testID="createoredit-note-form-v2"
+        testID="createoredit-note-form"
       >
         <InputField
           label={t('Title')}
@@ -217,7 +217,7 @@ export const CreateOrEditNoteModalContent = ({
           value={titleField.value}
           onChange={(e) => titleField.onChange(e.target.value)}
           error={titleField.error || undefined}
-          testID="createoredit-note-input-title-v2"
+          testID="createoredit-note-input-title"
         />
 
         <div style={styles.sectionLabel}>
@@ -232,7 +232,7 @@ export const CreateOrEditNoteModalContent = ({
           value={noteField.value}
           onChange={(e) => noteField.onChange(e.target.value)}
           error={noteField.error || undefined}
-          testID="createoredit-note-input-note-v2"
+          testID="createoredit-note-input-note"
         />
 
         <div style={styles.sectionLabel}>
@@ -249,7 +249,7 @@ export const CreateOrEditNoteModalContent = ({
         />
 
         <MultiSlotInput
-          testID="createoredit-note-attachments-slot-v2"
+          testID="createoredit-note-attachments-slot"
           actions={
             <Button
               variant="tertiaryAccent"
@@ -257,7 +257,7 @@ export const CreateOrEditNoteModalContent = ({
               type="button"
               iconBefore={<Add width={16} height={16} />}
               onClick={handleFileLoad}
-              data-testid="createoredit-note-button-addattachment-v2"
+              data-testid="createoredit-note-button-addattachment"
             >
               {t('Add Another Attachment')}
             </Button>
@@ -277,7 +277,7 @@ export const CreateOrEditNoteModalContent = ({
                   key={attachment.id || attachment.tempId}
                   label={t('Attachment')}
                   value={attachment.name}
-                  testID={`createoredit-note-attachment-v2-${index}`}
+                  testID={`createoredit-note-attachment-${index}`}
                   rightSlot={
                     <Button
                       variant="tertiary"
@@ -300,7 +300,7 @@ export const CreateOrEditNoteModalContent = ({
                           )
                         )
                       }
-                      data-testid={`createoredit-note-button-deleteattachment-v2-${index}`}
+                      data-testid={`createoredit-note-button-deleteattachment-${index}`}
                     />
                   }
                 />
@@ -311,7 +311,7 @@ export const CreateOrEditNoteModalContent = ({
             label={t('Attachment')}
             placeholder={t('Add or Drop File / Photos')}
             onClick={handleFileLoad}
-            testID="createoredit-note-attachment-upload-v2"
+            testID="createoredit-note-attachment-upload"
             rightSlot={
               <UploadFileFilled
                 width={16}
@@ -323,7 +323,7 @@ export const CreateOrEditNoteModalContent = ({
         </MultiSlotInput>
 
         <MultiSlotInput
-          testID="createoredit-note-hiddenmessage-slot-v2"
+          testID="createoredit-note-hiddenmessage-slot"
           actions={
             <Button
               variant="tertiaryAccent"
@@ -331,7 +331,7 @@ export const CreateOrEditNoteModalContent = ({
               type="button"
               iconBefore={<Add width={16} height={16} />}
               onClick={() => addCustomField({ type: 'note', note: '' })}
-              data-testid="createoredit-note-button-addhiddenmessage-v2"
+              data-testid="createoredit-note-button-addhiddenmessage"
             >
               {t('Add Another Message')}
             </Button>
@@ -348,7 +348,7 @@ export const CreateOrEditNoteModalContent = ({
                 value={fieldReg.value}
                 onChange={(e) => fieldReg.onChange(e.target.value)}
                 error={fieldReg.error || undefined}
-                testID={`createoredit-note-input-hiddenmessage-v2-${index}`}
+                testID={`createoredit-note-input-hiddenmessage-${index}`}
                 rightSlot={
                   canRemove ? (
                     <Button
@@ -364,7 +364,7 @@ export const CreateOrEditNoteModalContent = ({
                         />
                       }
                       onClick={() => removeCustomFieldItem(index)}
-                      data-testid={`createoredit-note-button-removehiddenmessage-v2-${index}`}
+                      data-testid={`createoredit-note-button-removehiddenmessage-${index}`}
                     />
                   ) : undefined
                 }

@@ -178,8 +178,8 @@ export const CreateOrEditCustomModalContent = ({
     <Dialog
       title={isEdit ? t('Edit Other Item') : t('New Other Item')}
       onClose={closeModal}
-      testID="createoredit-custom-dialog-v2"
-      closeButtonTestID="createoredit-custom-close-v2"
+      testID="createoredit-custom-dialog"
+      closeButtonTestID="createoredit-custom-close"
       footer={
         <>
           <Button
@@ -187,7 +187,7 @@ export const CreateOrEditCustomModalContent = ({
             size="small"
             type="button"
             onClick={closeModal}
-            data-testid="createoredit-custom-button-discard-v2"
+            data-testid="createoredit-custom-button-discard"
           >
             {t('Discard')}
           </Button>
@@ -198,7 +198,7 @@ export const CreateOrEditCustomModalContent = ({
             disabled={isLoading || (!isEdit && !values.title?.trim())}
             isLoading={isLoading}
             onClick={() => handleSubmit(onSubmit)()}
-            data-testid="createoredit-custom-button-save-v2"
+            data-testid="createoredit-custom-button-save"
           >
             {isEdit ? t('Save') : t('Add Item')}
           </Button>
@@ -208,7 +208,7 @@ export const CreateOrEditCustomModalContent = ({
       <Form
         onSubmit={handleSubmit(onSubmit)}
         style={styles.form as React.ComponentProps<typeof Form>['style']}
-        testID="createoredit-custom-form-v2"
+        testID="createoredit-custom-form"
       >
         <InputField
           label={t('Title')}
@@ -216,7 +216,7 @@ export const CreateOrEditCustomModalContent = ({
           value={titleField.value}
           onChange={(e) => titleField.onChange(e.target.value)}
           error={titleField.error || undefined}
-          testID="createoredit-custom-input-title-v2"
+          testID="createoredit-custom-input-title"
         />
 
         <div style={styles.sectionLabel}>
@@ -232,19 +232,19 @@ export const CreateOrEditCustomModalContent = ({
           }
         />
 
-        <MultiSlotInput testID="createoredit-custom-comments-slot-v2">
+        <MultiSlotInput testID="createoredit-custom-comments-slot">
           <InputField
             label={t('Comment')}
             placeholder={t('Enter Comment')}
             value={noteField.value}
             onChange={(e) => noteField.onChange(e.target.value)}
             error={noteField.error || undefined}
-            testID="createoredit-custom-input-comment-v2"
+            testID="createoredit-custom-input-comment"
           />
         </MultiSlotInput>
 
         <MultiSlotInput
-          testID="createoredit-custom-attachments-slot-v2"
+          testID="createoredit-custom-attachments-slot"
           actions={
             <Button
               variant="tertiaryAccent"
@@ -252,7 +252,7 @@ export const CreateOrEditCustomModalContent = ({
               type="button"
               iconBefore={<Add width={16} height={16} />}
               onClick={handleFileLoad}
-              data-testid="createoredit-custom-button-addattachment-v2"
+              data-testid="createoredit-custom-button-addattachment"
             >
               {t('Add Another Attachment')}
             </Button>
@@ -272,7 +272,7 @@ export const CreateOrEditCustomModalContent = ({
                   key={attachment.id || attachment.tempId}
                   label={t('Attachment')}
                   value={attachment.name}
-                  testID={`createoredit-custom-attachment-v2-${index}`}
+                  testID={`createoredit-custom-attachment-${index}`}
                   rightSlot={
                     <Button
                       variant="tertiary"
@@ -295,7 +295,7 @@ export const CreateOrEditCustomModalContent = ({
                           )
                         )
                       }
-                      data-testid={`createoredit-custom-button-deleteattachment-v2-${index}`}
+                      data-testid={`createoredit-custom-button-deleteattachment-${index}`}
                     />
                   }
                 />
@@ -306,7 +306,7 @@ export const CreateOrEditCustomModalContent = ({
             label={t('Attachment')}
             placeholder={t('Add or Drop File / Photos')}
             onClick={handleFileLoad}
-            testID="createoredit-custom-attachment-upload-v2"
+            testID="createoredit-custom-attachment-upload"
             rightSlot={
               <UploadFileFilled
                 width={16}
@@ -318,7 +318,7 @@ export const CreateOrEditCustomModalContent = ({
         </MultiSlotInput>
 
         <MultiSlotInput
-          testID="createoredit-custom-hiddenmessage-slot-v2"
+          testID="createoredit-custom-hiddenmessage-slot"
           actions={
             <Button
               variant="tertiaryAccent"
@@ -328,7 +328,7 @@ export const CreateOrEditCustomModalContent = ({
               onClick={() =>
                 addCustomField({ type: 'note', name: 'note', note: '' })
               }
-              data-testid="createoredit-custom-button-addhiddenmessage-v2"
+              data-testid="createoredit-custom-button-addhiddenmessage"
             >
               {t('Add Another Message')}
             </Button>
@@ -345,7 +345,7 @@ export const CreateOrEditCustomModalContent = ({
                 value={fieldReg.value}
                 onChange={(e) => fieldReg.onChange(e.target.value)}
                 error={fieldReg.error || undefined}
-                testID={`createoredit-custom-input-hiddenmessage-v2-${index}`}
+                testID={`createoredit-custom-input-hiddenmessage-${index}`}
                 rightSlot={
                   canRemove ? (
                     <Button
@@ -361,7 +361,7 @@ export const CreateOrEditCustomModalContent = ({
                         />
                       }
                       onClick={() => removeCustomFieldItem(index)}
-                      data-testid={`createoredit-custom-button-removehiddenmessage-v2-${index}`}
+                      data-testid={`createoredit-custom-button-removehiddenmessage-${index}`}
                     />
                   ) : undefined
                 }

@@ -75,8 +75,8 @@ export const AddDeviceModalContent = () => {
     <Dialog
       title={t('Share {name}', { name: vault?.name ?? '' })}
       onClose={closeModal}
-      testID="add-device-dialog-v2"
-      closeButtonTestID="add-device-close-v2"
+      testID="add-device-dialog"
+      closeButtonTestID="add-device-close"
     >
       <div style={styles.body}>
         <Text variant="caption" color={colors.colorTextSecondary}>
@@ -114,7 +114,7 @@ export const AddDeviceModalContent = () => {
               variant="tertiary"
               size="small"
               aria-label={t('Copy vault key')}
-              data-testid="add-device-v2-copy-link"
+              data-testid="add-device-copy-link"
               onClick={handleCopyKey}
             >
               <ContentCopy

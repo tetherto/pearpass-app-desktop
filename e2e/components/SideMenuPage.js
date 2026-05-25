@@ -67,7 +67,7 @@ class SideMenuPage {
   }
 
   get deleteFolderButton() {
-    return this.root.getByTestId('deletefolder-submit-v2')
+    return this.root.getByTestId('deletefolder-submit')
   }
 
   async clickSidebarAddButton() {
@@ -77,10 +77,10 @@ class SideMenuPage {
 
   async createFolder(name) {
     await this.clickSidebarAddButton()
-    const nameInput = this.root.getByTestId('createfolder-name-v2').locator('input')
+    const nameInput = this.root.getByTestId('createfolder-name').locator('input')
     await expect(nameInput).toBeVisible()
     await nameInput.fill(name)
-    const saveBtn = this.root.getByTestId('createfolder-save-v2')
+    const saveBtn = this.root.getByTestId('createfolder-save')
     await expect(saveBtn).toBeVisible()
     await saveBtn.click()
     await expect(saveBtn).toBeHidden()

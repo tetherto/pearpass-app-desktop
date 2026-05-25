@@ -247,7 +247,7 @@ export const Sidebar = () => {
   }
 
   return (
-    <aside style={styles.wrapper} data-testid="sidebar-v2">
+    <aside style={styles.wrapper} data-testid="sidebar">
       {renderVaultHeader()}
 
       <div style={styles.scrollContainer}>

@@ -151,8 +151,8 @@ export const CreateOrEditWifiModalContent = ({
     <Dialog
       title={isEdit ? t('Edit Wi-Fi Item') : t('New Wi-Fi Item')}
       onClose={closeModal}
-      testID="createoredit-wifi-dialog-v2"
-      closeButtonTestID="createoredit-wifi-close-v2"
+      testID="createoredit-wifi-dialog"
+      closeButtonTestID="createoredit-wifi-close"
       footer={
         <>
           <Button
@@ -160,7 +160,7 @@ export const CreateOrEditWifiModalContent = ({
             size="small"
             type="button"
             onClick={closeModal}
-            data-testid="createoredit-wifi-button-discard-v2"
+            data-testid="createoredit-wifi-button-discard"
           >
             {t('Discard')}
           </Button>
@@ -171,7 +171,7 @@ export const CreateOrEditWifiModalContent = ({
             disabled={isLoading || (!isEdit && (!values.title?.trim() || !values.password?.trim()))}
             isLoading={isLoading}
             onClick={() => handleSubmit(onSubmit)()}
-            data-testid="createoredit-wifi-button-save-v2"
+            data-testid="createoredit-wifi-button-save"
           >
             {isEdit ? t('Save') : t('Add Item')}
           </Button>
@@ -181,7 +181,7 @@ export const CreateOrEditWifiModalContent = ({
       <Form
         onSubmit={handleSubmit(onSubmit)}
         style={styles.form as React.ComponentProps<typeof Form>['style']}
-        testID="createoredit-wifi-form-v2"
+        testID="createoredit-wifi-form"
       >
         <div style={styles.sectionLabel}>
           <Text variant="caption" color={theme.colors.colorTextSecondary}>
@@ -190,7 +190,7 @@ export const CreateOrEditWifiModalContent = ({
         </div>
 
         <MultiSlotInput
-          testID="createoredit-wifi-credentials-slot-v2"
+          testID="createoredit-wifi-credentials-slot"
           actions={
             <Button
               variant="tertiaryAccent"
@@ -206,7 +206,7 @@ export const CreateOrEditWifiModalContent = ({
                   }
                 })
               }
-              data-testid="createoredit-wifi-button-generatepassword-v2"
+              data-testid="createoredit-wifi-button-generatepassword"
             >
               {t('Generate Password')}
             </Button>
@@ -218,10 +218,10 @@ export const CreateOrEditWifiModalContent = ({
             value={titleField.value}
             onChange={(e) => titleField.onChange(e.target.value)}
             error={titleField.error || undefined}
-            testID="createoredit-wifi-input-name-v2"
+            testID="createoredit-wifi-input-name"
           />
           <PasswordFieldStrengthIndicator
-            testID="createoredit-wifi-input-password-v2"
+            testID="createoredit-wifi-input-password"
             passwordField={passwordField}
             passwordType={passwordType}
             setPasswordType={setPasswordType}
@@ -247,11 +247,11 @@ export const CreateOrEditWifiModalContent = ({
           value={noteField.value}
           onChange={(e) => noteField.onChange(e.target.value)}
           error={noteField.error || undefined}
-          testID="createoredit-wifi-input-comment-v2"
+          testID="createoredit-wifi-input-comment"
         />
 
         <MultiSlotInput
-          testID="createoredit-wifi-hiddenmessage-slot-v2"
+          testID="createoredit-wifi-hiddenmessage-slot"
           actions={
             <Button
               variant="tertiaryAccent"
@@ -259,7 +259,7 @@ export const CreateOrEditWifiModalContent = ({
               type="button"
               iconBefore={<Add width={16} height={16} />}
               onClick={() => addCustomField({ type: 'note', note: '' })}
-              data-testid="createoredit-wifi-button-addhiddenmessage-v2"
+              data-testid="createoredit-wifi-button-addhiddenmessage"
             >
               {t('Add Another Message')}
             </Button>
@@ -276,7 +276,7 @@ export const CreateOrEditWifiModalContent = ({
                 value={fieldReg.value}
                 onChange={(e) => fieldReg.onChange(e.target.value)}
                 error={fieldReg.error || undefined}
-                testID={`createoredit-wifi-input-hiddenmessage-v2-${index}`}
+                testID={`createoredit-wifi-input-hiddenmessage-${index}`}
                 rightSlot={
                   canRemove ? (
                     <Button
@@ -292,7 +292,7 @@ export const CreateOrEditWifiModalContent = ({
                         />
                       }
                       onClick={() => removeCustomFieldItem(index)}
-                      data-testid={`createoredit-wifi-button-removehiddenmessage-v2-${index}`}
+                      data-testid={`createoredit-wifi-button-removehiddenmessage-${index}`}
                     />
                   ) : undefined
                 }

@@ -196,7 +196,7 @@ class MainPage {
   }
 
   async clickMoveFolderSubmit() {
-    const submitBtn = this.root.getByTestId('movefolder-submit-v2')
+    const submitBtn = this.root.getByTestId('movefolder-submit')
     await expect(submitBtn).toBeVisible()
     await expect(submitBtn).toBeEnabled()
     await submitBtn.click()
@@ -205,7 +205,7 @@ class MainPage {
   // --- Empty collection ---
 
   get emptyCollectionView() {
-    return this.root.getByTestId('empty-collection-v2')
+    return this.root.getByTestId('empty-collection')
   }
 
   async verifyEmptyCollection() {
@@ -230,7 +230,7 @@ class MainPage {
   // --- Confirm / delete ---
 
   async clickYesButton() {
-    await this.root.getByTestId('delete-records-submit-v2').click()
+    await this.root.getByTestId('delete-records-submit').click()
   }
 
 }

@@ -129,9 +129,9 @@ describe('OtpCodeField', () => {
     expect(screen.getByText('Authenticator Token')).toBeInTheDocument()
     expect(screen.getByText('123 456')).toBeInTheDocument()
     expect(screen.getByText('20s')).toBeInTheDocument()
-    expect(screen.getByTestId('otp-code-field-v2-copy')).toBeInTheDocument()
+    expect(screen.getByTestId('otp-code-field-copy')).toBeInTheDocument()
     expect(
-      screen.queryByTestId('otp-code-field-v2-next-code')
+      screen.queryByTestId('otp-code-field-next-code')
     ).not.toBeInTheDocument()
   })
 
@@ -160,7 +160,7 @@ describe('OtpCodeField', () => {
       />
     )
 
-    fireEvent.click(screen.getByTestId('otp-code-field-v2-copy'))
+    fireEvent.click(screen.getByTestId('otp-code-field-copy'))
     expect(mockCopyToClipboard).toHaveBeenCalledWith('123456')
   })
 
@@ -189,7 +189,7 @@ describe('OtpCodeField', () => {
 
     expect(screen.getByText('111 222')).toBeInTheDocument()
     expect(
-      screen.getByTestId('otp-code-field-v2-next-code').textContent
+      screen.getByTestId('otp-code-field-next-code').textContent
     ).toContain('Next Code')
     expect(screen.queryByText(/s$/)).not.toBeInTheDocument()
   })
@@ -217,7 +217,7 @@ describe('OtpCodeField', () => {
       />
     )
 
-    fireEvent.click(screen.getByTestId('otp-code-field-v2-next-code'))
+    fireEvent.click(screen.getByTestId('otp-code-field-next-code'))
     expect(mockGenerateNext).toHaveBeenCalledTimes(1)
   })
 })

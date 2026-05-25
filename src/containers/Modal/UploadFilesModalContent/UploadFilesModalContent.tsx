@@ -43,8 +43,8 @@ export const UploadFilesModalContent = ({
     <Dialog
       title={isTypeImage ? t('Upload Picture') : t('Upload Attachment')}
       onClose={closeModal}
-      testID="uploadfiles-dialog-v2"
-      closeButtonTestID="uploadfiles-close-v2"
+      testID="uploadfiles-dialog"
+      closeButtonTestID="uploadfiles-close"
       footer={
         <>
           <Button
@@ -52,7 +52,7 @@ export const UploadFilesModalContent = ({
             size="small"
             type="button"
             onClick={closeModal}
-            data-testid="uploadfiles-button-discard-v2"
+            data-testid="uploadfiles-button-discard"
           >
             {t('Discard')}
           </Button>
@@ -62,7 +62,7 @@ export const UploadFilesModalContent = ({
             type="button"
             disabled={files.length === 0}
             onClick={handleSubmit}
-            data-testid="uploadfiles-button-additem-v2"
+            data-testid="uploadfiles-button-additem"
           >
             {t('Add Item')}
           </Button>
@@ -77,7 +77,7 @@ export const UploadFilesModalContent = ({
           acceptedFormats={acceptedFormats}
           uploadLinkText={t('Upload file')}
           uploadSuffixText={t('or drag and drop it here')}
-          testID="uploadfiles-field-v2"
+          testID="uploadfiles-field"
         />
       </div>
     </Dialog>

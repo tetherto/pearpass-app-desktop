@@ -213,8 +213,8 @@ export const CreateOrEditCreditCardModalContent = ({
     <Dialog
       title={isEdit ? t('Edit Credit Card Item') : t('New Credit Card Item')}
       onClose={closeModal}
-      testID="createoredit-creditcard-dialog-v2"
-      closeButtonTestID="createoredit-creditcard-close-v2"
+      testID="createoredit-creditcard-dialog"
+      closeButtonTestID="createoredit-creditcard-close"
       footer={
         <>
           <Button
@@ -222,7 +222,7 @@ export const CreateOrEditCreditCardModalContent = ({
             size="small"
             type="button"
             onClick={closeModal}
-            data-testid="createoredit-creditcard-button-discard-v2"
+            data-testid="createoredit-creditcard-button-discard"
           >
             {t('Discard')}
           </Button>
@@ -233,7 +233,7 @@ export const CreateOrEditCreditCardModalContent = ({
             disabled={isLoading || (!isEdit && !values.title?.trim())}
             isLoading={isLoading}
             onClick={() => handleSubmit(onSubmit)()}
-            data-testid="createoredit-creditcard-button-save-v2"
+            data-testid="createoredit-creditcard-button-save"
           >
             {isEdit ? t('Save') : t('Add Item')}
           </Button>
@@ -243,7 +243,7 @@ export const CreateOrEditCreditCardModalContent = ({
       <Form
         onSubmit={handleSubmit(onSubmit)}
         style={styles.form as React.ComponentProps<typeof Form>['style']}
-        testID="createoredit-creditcard-form-v2"
+        testID="createoredit-creditcard-form"
       >
         <InputField
           label={t('Title')}
@@ -251,7 +251,7 @@ export const CreateOrEditCreditCardModalContent = ({
           value={titleField.value}
           onChange={(e) => titleField.onChange(e.target.value)}
           error={titleField.error || undefined}
-          testID="createoredit-creditcard-input-title-v2"
+          testID="createoredit-creditcard-input-title"
         />
 
         <div style={styles.sectionLabel}>
@@ -260,21 +260,21 @@ export const CreateOrEditCreditCardModalContent = ({
           </Text>
         </div>
 
-        <MultiSlotInput testID="createoredit-creditcard-details-slot-v2">
+        <MultiSlotInput testID="createoredit-creditcard-details-slot">
           <InputField
             label={t('Cardholder Name')}
             placeholder={t('Enter Name')}
             value={nameField.value}
             onChange={(e) => nameField.onChange(e.target.value)}
             error={nameField.error || undefined}
-            testID="createoredit-creditcard-input-name-v2"
+            testID="createoredit-creditcard-input-name"
           />
           <InputField
             label={t('Card Number')}
             placeholder={t('Enter Card Number')}
             value={values.number}
             onChange={(e) => setValue('number', formatCardNumber(e.target.value))}
-            testID="createoredit-creditcard-input-number-v2"
+            testID="createoredit-creditcard-input-number"
           />
           <DateField
             label={t('Expiration Date')}
@@ -282,7 +282,7 @@ export const CreateOrEditCreditCardModalContent = ({
             value={values.expireDate}
             onChange={(e) => setValue('expireDate', formatExpireDate(e.target.value))}
             pickerMode="month-year"
-            testID="createoredit-creditcard-input-expiredate-v2"
+            testID="createoredit-creditcard-input-expiredate"
           />
           <PasswordField
             label={t('Security Code')}
@@ -292,7 +292,7 @@ export const CreateOrEditCreditCardModalContent = ({
               securityCodeField.onChange(e.target.value.replace(/\D/g, ''))
             }
             error={securityCodeField.error || undefined}
-            testID="createoredit-creditcard-input-securitycode-v2"
+            testID="createoredit-creditcard-input-securitycode"
           />
           <PasswordField
             label={t('PIN')}
@@ -302,7 +302,7 @@ export const CreateOrEditCreditCardModalContent = ({
               pinCodeField.onChange(e.target.value.replace(/\D/g, ''))
             }
             error={pinCodeField.error || undefined}
-            testID="createoredit-creditcard-input-pincode-v2"
+            testID="createoredit-creditcard-input-pincode"
           />
         </MultiSlotInput>
 
@@ -319,19 +319,19 @@ export const CreateOrEditCreditCardModalContent = ({
           }
         />
 
-        <MultiSlotInput testID="createoredit-creditcard-comment-slot-v2">
+        <MultiSlotInput testID="createoredit-creditcard-comment-slot">
           <InputField
             label={t('Comment')}
             placeholder={t('Enter Comment')}
             value={noteField.value}
             onChange={(e) => noteField.onChange(e.target.value)}
             error={noteField.error || undefined}
-            testID="createoredit-creditcard-input-comment-v2"
+            testID="createoredit-creditcard-input-comment"
           />
         </MultiSlotInput>
 
         <MultiSlotInput
-          testID="createoredit-creditcard-attachments-slot-v2"
+          testID="createoredit-creditcard-attachments-slot"
           actions={
             <Button
               variant="tertiaryAccent"
@@ -339,7 +339,7 @@ export const CreateOrEditCreditCardModalContent = ({
               type="button"
               iconBefore={<Add width={16} height={16} />}
               onClick={handleFileLoad}
-              data-testid="createoredit-creditcard-button-addattachment-v2"
+              data-testid="createoredit-creditcard-button-addattachment"
             >
               {t('Add Another Attachment')}
             </Button>
@@ -359,7 +359,7 @@ export const CreateOrEditCreditCardModalContent = ({
                   key={attachment.id || attachment.tempId}
                   label={t('Attachment')}
                   value={attachment.name}
-                  testID={`createoredit-creditcard-attachment-v2-${index}`}
+                  testID={`createoredit-creditcard-attachment-${index}`}
                   rightSlot={
                     <Button
                       variant="tertiary"
@@ -382,7 +382,7 @@ export const CreateOrEditCreditCardModalContent = ({
                           )
                         )
                       }
-                      data-testid={`createoredit-creditcard-button-deleteattachment-v2-${index}`}
+                      data-testid={`createoredit-creditcard-button-deleteattachment-${index}`}
                     />
                   }
                 />
@@ -393,7 +393,7 @@ export const CreateOrEditCreditCardModalContent = ({
             label={t('Attachment')}
             placeholder={t('Add or Drop File / Photos')}
             onClick={handleFileLoad}
-            testID="createoredit-creditcard-attachment-upload-v2"
+            testID="createoredit-creditcard-attachment-upload"
             rightSlot={
               <UploadFileFilled
                 width={16}
@@ -405,7 +405,7 @@ export const CreateOrEditCreditCardModalContent = ({
         </MultiSlotInput>
 
         <MultiSlotInput
-          testID="createoredit-creditcard-hiddenmessage-slot-v2"
+          testID="createoredit-creditcard-hiddenmessage-slot"
           actions={
             <Button
               variant="tertiaryAccent"
@@ -413,7 +413,7 @@ export const CreateOrEditCreditCardModalContent = ({
               type="button"
               iconBefore={<Add width={16} height={16} />}
               onClick={() => addCustomField({ type: 'note', name: 'note' })}
-              data-testid="createoredit-creditcard-button-addhiddenmessage-v2"
+              data-testid="createoredit-creditcard-button-addhiddenmessage"
             >
               {t('Add Another Message')}
             </Button>
@@ -430,7 +430,7 @@ export const CreateOrEditCreditCardModalContent = ({
                 value={fieldReg.value}
                 onChange={(e) => fieldReg.onChange(e.target.value)}
                 error={fieldReg.error || undefined}
-                testID={`createoredit-creditcard-input-hiddenmessage-v2-${index}`}
+                testID={`createoredit-creditcard-input-hiddenmessage-${index}`}
                 rightSlot={
                   canRemove ? (
                     <Button
@@ -446,7 +446,7 @@ export const CreateOrEditCreditCardModalContent = ({
                         />
                       }
                       onClick={() => removeCustomFieldItem(index)}
-                      data-testid={`createoredit-creditcard-button-removehiddenmessage-v2-${index}`}
+                      data-testid={`createoredit-creditcard-button-removehiddenmessage-${index}`}
                     />
                   ) : undefined
                 }

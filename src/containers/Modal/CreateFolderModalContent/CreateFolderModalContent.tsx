@@ -94,8 +94,8 @@ export const CreateFolderModalContent = ({
     <Dialog
       title={isRename ? t('Rename Folder') : t('Create New Folder')}
       onClose={onClose}
-      testID="createfolder-dialog-v2"
-      closeButtonTestID="createfolder-close-v2"
+      testID="createfolder-dialog"
+      closeButtonTestID="createfolder-close"
       footer={
         <>
           <Button
@@ -103,7 +103,7 @@ export const CreateFolderModalContent = ({
             size="small"
             type="button"
             onClick={onClose}
-            data-testid="createfolder-discard-v2"
+            data-testid="createfolder-discard"
           >
             {t('Discard')}
           </Button>
@@ -114,7 +114,7 @@ export const CreateFolderModalContent = ({
             disabled={isSaveDisabled}
             isLoading={isLoading}
             onClick={handleSubmit(onSubmit)}
-            data-testid="createfolder-save-v2"
+            data-testid="createfolder-save"
           >
             {isRename ? t('Save') : t('Create New Folder')}
           </Button>
@@ -124,7 +124,7 @@ export const CreateFolderModalContent = ({
       <Form
         onSubmit={handleSubmit(onSubmit)}
         style={styles.form as React.ComponentProps<typeof Form>['style']}
-        testID="createfolder-form-v2"
+        testID="createfolder-form"
       >
         <InputField
           label={t('Folder Name')}
@@ -134,7 +134,7 @@ export const CreateFolderModalContent = ({
             titleField.onChange(e.target.value)
           }
           error={titleField.error || undefined}
-          testID="createfolder-name-v2"
+          testID="createfolder-name"
         />
       </Form>
     </Dialog>

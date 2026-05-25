@@ -237,8 +237,8 @@ export const CreateOrEditLoginModalContent = ({
     <Dialog
       title={isEdit ? t('Edit Login Item') : t('New Login Item')}
       onClose={closeModal}
-      testID='createoredit-login-dialog-v2'
-      closeButtonTestID='createoredit-login-close-v2'
+      testID='createoredit-login-dialog'
+      closeButtonTestID='createoredit-login-close'
       footer={
         <>
           <Button
@@ -246,7 +246,7 @@ export const CreateOrEditLoginModalContent = ({
             size='small'
             type='button'
             onClick={closeModal}
-            data-testid='createoredit-button-discard-v2'
+            data-testid='createoredit-button-discard'
           >
             {t('Discard')}
           </Button>
@@ -261,7 +261,7 @@ export const CreateOrEditLoginModalContent = ({
             }
             isLoading={isLoading}
             onClick={() => handleSubmit(onSubmit)()}
-            data-testid='createoredit-button-save-v2'
+            data-testid='createoredit-button-save'
           >
             {isEdit ? t('Save') : t('Add Item')}
           </Button>
@@ -271,7 +271,7 @@ export const CreateOrEditLoginModalContent = ({
       <Form
         onSubmit={handleSubmit(onSubmit)}
         style={styles.form as React.ComponentProps<typeof Form>['style']}
-        testID='createoredit-form-v2'
+        testID='createoredit-form'
       >
         <InputField
           label={t('Title')}
@@ -279,7 +279,7 @@ export const CreateOrEditLoginModalContent = ({
           value={titleField.value}
           onChange={(e) => titleField.onChange(e.target.value)}
           error={titleField.error || undefined}
-          testID='createoredit-input-title-v2'
+          testID='createoredit-input-title'
         />
 
         <div style={styles.sectionLabel}>
@@ -289,7 +289,7 @@ export const CreateOrEditLoginModalContent = ({
         </div>
 
         <MultiSlotInput
-          testID='createoredit-credentials-slot-v2'
+          testID='createoredit-credentials-slot'
           actions={
             <Button
               variant='tertiaryAccent'
@@ -309,7 +309,7 @@ export const CreateOrEditLoginModalContent = ({
                   }
                 })
               }
-              data-testid='createoredit-button-generatepassword-v2'
+              data-testid='createoredit-button-generatepassword'
             >
               {t('Generate Password')}
             </Button>
@@ -322,20 +322,20 @@ export const CreateOrEditLoginModalContent = ({
             onChange={(e) => usernameField.onChange(e.target.value)}
             error={usernameField.error || undefined}
             isGrouped
-            testID='createoredit-input-username-v2'
+            testID='createoredit-input-username'
           />
           <PasswordFieldStrengthIndicator
             passwordField={passwordField}
             passwordType={passwordType}
             setPasswordType={setPasswordType}
             isGrouped
-            testID='createoredit-input-password-v2'
+            testID='createoredit-input-password'
           />
         </MultiSlotInput>
 
         {AUTHENTICATOR_ENABLED ? (
           <MultiSlotInput
-            testID='createoredit-authenticator-slot-v2'
+            testID='createoredit-authenticator-slot'
             errorMessage={otpSecretField.error || undefined}
           >
             <PasswordField
@@ -343,7 +343,7 @@ export const CreateOrEditLoginModalContent = ({
               placeholder={t('Enter your key or URI')}
               value={otpSecretField.value}
               onChange={(e) => otpSecretField.onChange(e.target.value)}
-              testID='createoredit-input-otpsecret-v2'
+              testID='createoredit-input-otpsecret'
               rightSlot={
                 isEdit && otpSecretField.value ? (
                   <Button
@@ -359,7 +359,7 @@ export const CreateOrEditLoginModalContent = ({
                       />
                     }
                     onClick={() => setValue('otpSecret', '')}
-                    data-testid='createoredit-button-deleteotp-v2'
+                    data-testid='createoredit-button-deleteotp'
                   />
                 ) : undefined
               }
@@ -375,7 +375,7 @@ export const CreateOrEditLoginModalContent = ({
             }
             placeholder=''
             disabled
-            testID='createoredit-input-passkey-v2'
+            testID='createoredit-input-passkey'
           />
         ) : null}
 
@@ -386,7 +386,7 @@ export const CreateOrEditLoginModalContent = ({
         </div>
 
         <MultiSlotInput
-          testID='createoredit-websites-slot-v2'
+          testID='createoredit-websites-slot'
           actions={
             <Button
               variant='tertiaryAccent'
@@ -394,7 +394,7 @@ export const CreateOrEditLoginModalContent = ({
               type='button'
               iconBefore={<Add width={16} height={16} />}
               onClick={() => addWebsite({ name: 'website' })}
-              data-testid='createoredit-button-addwebsite-v2'
+              data-testid='createoredit-button-addwebsite'
             >
               {t('Add Another Website')}
             </Button>
@@ -410,7 +410,7 @@ export const CreateOrEditLoginModalContent = ({
                 value={websiteField.value}
                 onChange={(e) => websiteField.onChange(e.target.value)}
                 error={websiteField.error || undefined}
-                testID={`createoredit-input-website-v2-${index}`}
+                testID={`createoredit-input-website-${index}`}
                 rightSlot={
                   index > 0 ? (
                     <Button
@@ -426,7 +426,7 @@ export const CreateOrEditLoginModalContent = ({
                         />
                       }
                       onClick={() => removeWebsite(index)}
-                      data-testid={`createoredit-button-removewebsite-v2-${index}`}
+                      data-testid={`createoredit-button-removewebsite-${index}`}
                     />
                   ) : undefined
                 }
@@ -448,19 +448,19 @@ export const CreateOrEditLoginModalContent = ({
           }
         />
 
-        <MultiSlotInput testID='createoredit-comment-slot-v2'>
+        <MultiSlotInput testID='createoredit-comment-slot'>
           <InputField
             label={t('Comment')}
             placeholder={t('Enter Comment')}
             value={noteField.value}
             onChange={(e) => noteField.onChange(e.target.value)}
             error={noteField.error || undefined}
-            testID='createoredit-input-comment-v2'
+            testID='createoredit-input-comment'
           />
         </MultiSlotInput>
 
         <MultiSlotInput
-          testID='createoredit-attachments-slot-v2'
+          testID='createoredit-attachments-slot'
           actions={
             <Button
               variant='tertiaryAccent'
@@ -468,7 +468,7 @@ export const CreateOrEditLoginModalContent = ({
               type='button'
               iconBefore={<Add width={16} height={16} />}
               onClick={handleFileLoad}
-              data-testid='createoredit-button-addattachment-v2'
+              data-testid='createoredit-button-addattachment'
             >
               {t('Add Another Attachment')}
             </Button>
@@ -488,7 +488,7 @@ export const CreateOrEditLoginModalContent = ({
                   key={attachment.id || attachment.tempId}
                   label={t('Attachment')}
                   value={attachment.name}
-                  testID={`createoredit-attachment-v2-${index}`}
+                  testID={`createoredit-attachment-${index}`}
                   rightSlot={
                     <Button
                       variant='tertiary'
@@ -511,7 +511,7 @@ export const CreateOrEditLoginModalContent = ({
                           )
                         )
                       }
-                      data-testid={`createoredit-button-deleteattachment-v2-${index}`}
+                      data-testid={`createoredit-button-deleteattachment-${index}`}
                     />
                   }
                 />
@@ -522,7 +522,7 @@ export const CreateOrEditLoginModalContent = ({
             label={t('Attachment')}
             placeholder={t('Add or Drop File / Photos')}
             onClick={handleFileLoad}
-            testID='createoredit-attachment-upload-v2'
+            testID='createoredit-attachment-upload'
             rightSlot={
               <UploadFileFilled
                 width={16}
@@ -534,7 +534,7 @@ export const CreateOrEditLoginModalContent = ({
         </MultiSlotInput>
 
         <MultiSlotInput
-          testID='createoredit-hiddenmessage-slot-v2'
+          testID='createoredit-hiddenmessage-slot'
           actions={
             <Button
               variant='tertiaryAccent'
@@ -542,7 +542,7 @@ export const CreateOrEditLoginModalContent = ({
               type='button'
               iconBefore={<Add width={16} height={16} />}
               onClick={() => addCustomField({ type: 'note', name: 'note' })}
-              data-testid='createoredit-button-addhiddenmessage-v2'
+              data-testid='createoredit-button-addhiddenmessage'
             >
               {t('Add Another Message')}
             </Button>
@@ -559,7 +559,7 @@ export const CreateOrEditLoginModalContent = ({
                 value={fieldReg.value}
                 onChange={(e) => fieldReg.onChange(e.target.value)}
                 error={fieldReg.error || undefined}
-                testID={`createoredit-input-hiddenmessage-v2-${index}`}
+                testID={`createoredit-input-hiddenmessage-${index}`}
                 rightSlot={
                   canRemove ? (
                     <Button
@@ -575,7 +575,7 @@ export const CreateOrEditLoginModalContent = ({
                         />
                       }
                       onClick={() => removeCustomFieldItem(index)}
-                      data-testid={`createoredit-button-removehiddenmessage-v2-${index}`}
+                      data-testid={`createoredit-button-removehiddenmessage-${index}`}
                     />
                   ) : undefined
                 }

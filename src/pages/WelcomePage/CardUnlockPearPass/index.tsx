@@ -142,7 +142,7 @@ export const CardUnlockPearPass = (): React.ReactElement => {
           onChangeText={handlePasswordChange}
           variant={error ? 'error' : 'default'}
           errorMessage={error || undefined}
-          testID="login-password-input-v2"
+          testID="login-password-input"
         />
 
         <Footer>
@@ -151,7 +151,7 @@ export const CardUnlockPearPass = (): React.ReactElement => {
             variant="primary"
             size="small"
             isLoading={isLoading}
-            data-testid="login-continue-button-v2"
+            data-testid="login-continue-button"
             iconAfter={
               <ButtonIconWrapper>
                 <KeyboardArrowRightRound />

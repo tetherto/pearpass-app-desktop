@@ -153,8 +153,8 @@ export const ImportVaultPreviewModalContent = () => {
     <Dialog
       title={t('Import Vault')}
       onClose={closeModal}
-      testID="import-vault-preview-dialog-v2"
-      closeButtonTestID="import-vault-preview-close-v2"
+      testID="import-vault-preview-dialog"
+      closeButtonTestID="import-vault-preview-close"
       footer={
         <Button
           variant="primary"

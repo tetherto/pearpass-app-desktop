@@ -61,7 +61,7 @@ export const OtpCodeField = ({
   const cardStyle = isGrouped ? styles.cardGrouped : styles.card
 
   return (
-    <div style={cardStyle} data-testid={testID || 'otp-code-field-v2'}>
+    <div style={cardStyle} data-testid={testID || 'otp-code-field'}>
       <div style={styles.topRow}>
         <div style={styles.innerColumn}>
           <Text variant="caption" color={theme.colors.colorTextSecondary}>
@@ -72,7 +72,7 @@ export const OtpCodeField = ({
         <Button
           variant="tertiary"
           size="small"
-          data-testid="otp-code-field-v2-copy"
+          data-testid="otp-code-field-copy"
           aria-label={i18n._('Copy code')}
           iconBefore={<ContentCopy color={theme.colors.colorTextPrimary} />}
           onClick={() => code && copyToClipboard(code)}
@@ -107,7 +107,7 @@ export const OtpCodeField = ({
           size="small"
           fullWidth
           disabled={isLoading}
-          data-testid="otp-code-field-v2-next-code"
+          data-testid="otp-code-field-next-code"
           onClick={generateNext}
         >
           {i18n._('Next Code')}

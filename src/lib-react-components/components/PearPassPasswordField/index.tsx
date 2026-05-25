@@ -21,7 +21,7 @@ export const PearPassPasswordField = ({
   onChange,
   isDisabled,
   error,
-  testId = '@tetherto/pearpass-password-field-v2'
+  testId = '@tetherto/pearpass-password-field'
 }: PearPassPasswordFieldProps) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const { theme } = useTheme()

@@ -232,8 +232,8 @@ export const GeneratePasswordModalContent = ({
     <Dialog
       title={t('New Password Item')}
       onClose={closeModal}
-      testID='generatepassword-dialog-v2'
-      closeButtonTestID='generatepassword-close-v2'
+      testID='generatepassword-dialog'
+      closeButtonTestID='generatepassword-close'
       footer={
         <>
           <Button
@@ -241,7 +241,7 @@ export const GeneratePasswordModalContent = ({
             size='small'
             type='button'
             onClick={closeModal}
-            data-testid='generatepassword-button-discard-v2'
+            data-testid='generatepassword-button-discard'
           >
             {t('Discard')}
           </Button>
@@ -255,7 +255,7 @@ export const GeneratePasswordModalContent = ({
               )
             }
             onClick={handlePrimaryAction}
-            data-testid='generatepassword-button-primary-v2'
+            data-testid='generatepassword-button-primary'
           >
             {onPasswordInsert ? t('Use Password') : t('Copy Password')}
           </Button>

@@ -33,8 +33,8 @@ export const DisplayPictureModalContent = ({
     <Dialog
       title={name}
       onClose={closeModal}
-      testID="displaypicture-dialog-v2"
-      closeButtonTestID="displaypicture-close-v2"
+      testID="displaypicture-dialog"
+      closeButtonTestID="displaypicture-close"
       footer={
         <>
           <Button
@@ -42,7 +42,7 @@ export const DisplayPictureModalContent = ({
             size="small"
             type="button"
             onClick={closeModal}
-            data-testid="displaypicture-discard-v2"
+            data-testid="displaypicture-discard"
           >
             {t('Close')}
           </Button>
@@ -52,7 +52,7 @@ export const DisplayPictureModalContent = ({
             type="button"
             onClick={handleDownload}
             iconBefore={<Download width={16} height={16} />}
-            data-testid="displaypicture-download-v2"
+            data-testid="displaypicture-download"
           >
             {t('Download')}
           </Button>

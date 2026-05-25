@@ -160,8 +160,8 @@ export const MoveFolderModalContent = ({
     <Dialog
       title={moveDialogTitle}
       onClose={closeModal}
-      testID="movefolder-dialog-v2"
-      closeButtonTestID="movefolder-close-v2"
+      testID="movefolder-dialog"
+      closeButtonTestID="movefolder-close"
       footer={
         <>
           <Button
@@ -169,7 +169,7 @@ export const MoveFolderModalContent = ({
             size="small"
             type="button"
             onClick={closeModal}
-            data-testid="movefolder-discard-v2"
+            data-testid="movefolder-discard"
           >
             {t('Discard')}
           </Button>
@@ -180,7 +180,7 @@ export const MoveFolderModalContent = ({
             disabled={isMoveDisabled}
             isLoading={isLoading}
             onClick={handleMove}
-            data-testid="movefolder-submit-v2"
+            data-testid="movefolder-submit"
           >
             {moveSubmitLabel}
           </Button>
@@ -226,7 +226,7 @@ export const MoveFolderModalContent = ({
                           record.type as keyof typeof RECORD_COLOR_BY_TYPE
                         ] ?? RECORD_COLOR_BY_TYPE.custom
                       }
-                      testId={`movefolder-avatar-v2-${index}`}
+                      testId={`movefolder-avatar-${index}`}
                     />
                     <div style={itemText}>
                       <Text>{titleText}</Text>

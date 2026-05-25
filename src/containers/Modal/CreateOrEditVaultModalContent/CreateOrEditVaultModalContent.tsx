@@ -113,8 +113,8 @@ export const CreateOrEditVaultModalContent = ({
     <Dialog
       title={isEditMode ? t('Rename Vault') : t('Create New Vault')}
       onClose={onClose}
-      testID="createvault-dialog-v2"
-      closeButtonTestID="createvault-close-v2"
+      testID="createvault-dialog"
+      closeButtonTestID="createvault-close"
       footer={
         <>
           <Button
@@ -122,7 +122,7 @@ export const CreateOrEditVaultModalContent = ({
             size="small"
             type="button"
             onClick={onClose}
-            data-testid="createvault-discard-v2"
+            data-testid="createvault-discard"
           >
             {t('Discard')}
           </Button>
@@ -133,7 +133,7 @@ export const CreateOrEditVaultModalContent = ({
             disabled={isSaveDisabled}
             isLoading={isLoading}
             onClick={() => handleSubmit(submit)()}
-            data-testid="createvault-save-v2"
+            data-testid="createvault-save"
           >
             {t('Save')}
           </Button>
@@ -143,7 +143,7 @@ export const CreateOrEditVaultModalContent = ({
       <Form
         onSubmit={handleSubmit(submit)}
         style={styles.form as React.ComponentProps<typeof Form>['style']}
-        testID="createvault-form-v2"
+        testID="createvault-form"
       >
         <InputField
           label={t('Vault Name')}
@@ -152,7 +152,7 @@ export const CreateOrEditVaultModalContent = ({
           onChangeText={(v) => nameField.onChange(v)}
           variant={nameError ? 'error' : 'default'}
           errorMessage={nameError || undefined}
-          testID="createvault-name-v2"
+          testID="createvault-name"
         />
       </Form>
     </Dialog>

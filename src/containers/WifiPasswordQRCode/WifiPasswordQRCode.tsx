@@ -38,7 +38,7 @@ export const WifiPasswordQRCode = ({
 
   return (
     <div
-      data-testid="wifidetails-qrcode-v2"
+      data-testid="wifidetails-qrcode"
       style={{
         display: 'flex',
         flexDirection: 'column',

@@ -8,7 +8,7 @@ class Utilities {
   // --- Bulk delete ---
 
   async deleteAllElements() {
-    const emptyState = this.root.getByTestId('empty-collection-v2')
+    const emptyState = this.root.getByTestId('empty-collection')
 
     while (true) {
       const emptyVisible = await emptyState.isVisible().catch(() => false)
@@ -31,7 +31,7 @@ class Utilities {
       await expect(deleteButton).toBeVisible({ timeout: 5000 })
       await deleteButton.click()
 
-      const confirmButton = this.root.getByTestId('delete-records-submit-v2')
+      const confirmButton = this.root.getByTestId('delete-records-submit')
       await expect(confirmButton).toBeVisible({ timeout: 5000 })
       await confirmButton.click()
 

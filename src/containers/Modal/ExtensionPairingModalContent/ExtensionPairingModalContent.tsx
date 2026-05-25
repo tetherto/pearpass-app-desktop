@@ -37,8 +37,8 @@ export const ExtensionPairingModalContent = ({
     <Dialog
       title={t('Pair Code for Browser Extension')}
       onClose={closeModal}
-      testID="extension-pairing-dialog-v2"
-      closeButtonTestID="extension-pairing-close-v2"
+      testID="extension-pairing-dialog"
+      closeButtonTestID="extension-pairing-close"
       footer={
         <>
           <Button
@@ -46,7 +46,7 @@ export const ExtensionPairingModalContent = ({
             size="small"
             type="button"
             onClick={closeModal}
-            data-testid="extension-pairing-discard-v2"
+            data-testid="extension-pairing-discard"
           >
             {t('Discard')}
           </Button>
@@ -57,7 +57,7 @@ export const ExtensionPairingModalContent = ({
             onClick={onCopy}
             disabled={!pairingToken || loadingPairing}
             iconBefore={<ContentCopy width={16} height={16} />}
-            data-testid="extension-pairing-copy-v2"
+            data-testid="extension-pairing-copy"
           >
             {t('Copy Code')}
           </Button>
@@ -72,7 +72,7 @@ export const ExtensionPairingModalContent = ({
           copyable
           onCopy={onCopy}
           disabled={loadingPairing}
-          testID="extension-pairing-token-v2"
+          testID="extension-pairing-token"
         />
 
         <div style={styles.instructionsBox}>

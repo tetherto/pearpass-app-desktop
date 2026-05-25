@@ -25,7 +25,7 @@ const LockCountdown = ({
   const timeRemaining = useCountDown({ initialSeconds, onFinish })
   
   return (
-    <span data-testid="locked-screen-countdown-v2" style={style}>
+    <span data-testid="locked-screen-countdown" style={style}>
       {timeRemaining}
     </span>
   )
@@ -64,26 +64,26 @@ export const LockedScreen = (): React.ReactElement => {
 
   return (
     <OnboardingShell background="solid">
-      <div style={styles.root} data-testid="locked-screen-v2">
+      <div style={styles.root} data-testid="locked-screen">
         <div style={styles.main}>
           <div style={styles.pageHeaderWrap}>
             <PageHeader
               as="h1"
               title={t('PearPass locked')}
-              testID="locked-screen-headline-v2"
+              testID="locked-screen-headline"
             />
           </div>
 
           <div style={styles.description}>
             <p
               style={styles.descriptionText}
-              data-testid="locked-screen-desc-line1-v2"
+              data-testid="locked-screen-desc-line1"
             >
               {t('Too many failed attempts.')}
             </p>
             <p
               style={styles.descriptionText}
-              data-testid="locked-screen-desc-line2-v2"
+              data-testid="locked-screen-desc-line2"
             >
               {t('For your security, access is temporarily locked.')}
             </p>
@@ -98,7 +98,7 @@ export const LockedScreen = (): React.ReactElement => {
               />
               <span
                 style={styles.pillText}
-                data-testid="locked-screen-try-label-v2"
+                data-testid="locked-screen-try-label"
               >
                 {t('Try again in')}
               </span>
@@ -112,7 +112,7 @@ export const LockedScreen = (): React.ReactElement => {
             ) : (
               <span
                 style={styles.countdown}
-                data-testid="locked-screen-countdown-placeholder-v2"
+                data-testid="locked-screen-countdown-placeholder"
               >
                 —
               </span>

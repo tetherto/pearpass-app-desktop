@@ -98,7 +98,7 @@ test.describe('Password', () => {
     await expect(toggle).toHaveAttribute('aria-checked', 'true')
     await expect(root.getByText('Strong')).toBeVisible()
 
-    await root.getByTestId('generatepassword-button-discard-v2').click()
+    await root.getByTestId('generatepassword-button-discard').click()
     await createOrEditPage.clickOnCreateOrEditButton('discard')
     await mainPage.clickDetailsCloseButton()
   })

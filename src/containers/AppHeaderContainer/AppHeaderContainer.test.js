@@ -44,7 +44,7 @@ jest.mock('../../components/AppHeader', () => {
     AppHeader: jest.fn((props) =>
       React.createElement(
         'div',
-        { 'data-testid': 'app-header-v2-mock' },
+        { 'data-testid': 'app-header-mock' },
         React.createElement('input', {
           'data-testid': 'mock-search',
           value: props.searchValue,
@@ -129,14 +129,14 @@ describe('AppHeaderContainer', () => {
 
     renderWithHeaderContext(<AppHeaderContainer />)
 
-    expect(screen.getByTestId('app-header-v2-mock')).toBeInTheDocument()
+    expect(screen.getByTestId('app-header-mock')).toBeInTheDocument()
     expect(AppHeader).toHaveBeenCalled()
   })
 
-  it('renders AppHeader on vault when v2 and not blocked', () => {
+  it('renders AppHeader on vault when not blocked', () => {
     renderWithHeaderContext(<AppHeaderContainer />)
 
-    expect(screen.getByTestId('app-header-v2-mock')).toBeInTheDocument()
+    expect(screen.getByTestId('app-header-mock')).toBeInTheDocument()
     expect(AppHeader).toHaveBeenCalled()
   })
 

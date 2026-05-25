@@ -103,7 +103,7 @@ export const RecordDetails = () => {
     <RecordItemIcon
       record={record}
       size={24}
-      testId={`details-avatar-v2-${record.type}`}
+      testId={`details-avatar-${record.type}`}
     />
   )
 
@@ -124,7 +124,7 @@ export const RecordDetails = () => {
             size="small"
             aria-label={t('More actions')}
             iconBefore={<MoreVert color={theme.colors.colorTextPrimary} />}
-            data-testid="details-button-actions-v2"
+            data-testid="details-button-actions"
           />
         }
       >
@@ -144,7 +144,7 @@ export const RecordDetails = () => {
               setIsMenuOpen(false)
               action.click?.()
             }}
-            testID={`details-actions-item-${action.type}-v2`}
+            testID={`details-actions-item-${action.type}`}
           />
         ))}
       </ContextMenu>
@@ -154,13 +154,13 @@ export const RecordDetails = () => {
         aria-label={t('Close')}
         iconBefore={<KeyboardTab color={theme.colors.colorTextPrimary} />}
         onClick={handleCollapse}
-        data-testid="details-button-close-v2"
+        data-testid="details-button-close"
       />
     </div>
   )
 
   return (
-    <div style={styles.root} data-testid="details-header-v2">
+    <div style={styles.root} data-testid="details-header">
       <div style={styles.header}>
         <ItemScreenHeader title={title} icon={avatar} actions={headerActions} />
       </div>
