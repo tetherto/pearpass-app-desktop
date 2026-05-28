@@ -63,7 +63,7 @@ export const AuthenticatorView = () => {
   const { setModal, isOpen: isModalOpen } = useModal()
   const { handleCreateOrEditRecord } = useCreateOrEditRecord()
   const { searchValue } = useAppHeaderContext()
-  const { copyToClipboard } = useCopyToClipboard()
+  const { copyToClipboard, isCopyToClipboardDisabled } = useCopyToClipboard()
   const styles = createStyles(theme.colors)
   const emptyStateStyles = createEmptyStateStyles()
   const listStyles = createListStyles(theme.colors)
@@ -240,7 +240,8 @@ export const AuthenticatorView = () => {
           ? html`
               <div style=${listStyles.rowRightElement}>
                 <${Text} variant="labelEmphasized"> ${formatOtpCode(code)} <//>
-                <${Button}
+                ${!isCopyToClipboardDisabled &&
+                html`<${Button}
                   variant="tertiary"
                   size="small"
                   data-testid=${`authenticator-record-copy-${record.id}`}
@@ -250,7 +251,7 @@ export const AuthenticatorView = () => {
                     event.stopPropagation()
                     if (code) copyToClipboard(code)
                   }}
-                />
+                />`}
               </div>
             `
           : undefined}

@@ -68,7 +68,7 @@ export const CustomDetailsForm = ({
   const { theme } = useTheme()
   const styles = createStyles()
   const { setModal } = useModal()
-  const { copyToClipboard } = useCopyToClipboard()
+  const { copyToClipboard, isCopyToClipboardDisabled } = useCopyToClipboard()
 
   const initialValues = useMemo<CustomDetailsFormValues>(
     () => ({
@@ -137,7 +137,7 @@ export const CustomDetailsForm = ({
                 value={(values.note as string) ?? ''}
                 placeholder={t('Enter Comment')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="comments-multi-slot-input-slot-0"
@@ -169,7 +169,7 @@ export const CustomDetailsForm = ({
                   value={field.note ?? ''}
                   placeholder={t('Enter Hidden Message')}
                   readOnly
-                  copyable
+                  copyable={!isCopyToClipboardDisabled}
                   onCopy={copyToClipboard}
                   isGrouped
                   testID={`hidden-messages-multi-slot-input-slot-${index}`}

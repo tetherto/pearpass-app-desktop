@@ -76,7 +76,7 @@ export const CreditCardDetailsForm = ({
   const { t } = useTranslation()
   const styles = createStyles()
   const { setModal } = useModal()
-  const { copyToClipboard } = useCopyToClipboard()
+  const { copyToClipboard, isCopyToClipboardDisabled } = useCopyToClipboard()
 
   const initialValues = useMemo<CreditCardDetailsFormValues>(
     () => ({
@@ -153,7 +153,7 @@ export const CreditCardDetailsForm = ({
               label={t('Cardholder Name')}
               placeholder={t('John Smith')}
               readOnly
-              copyable
+              copyable={!isCopyToClipboardDisabled}
               onCopy={copyToClipboard}
               isGrouped
               testID="card-details-multi-slot-input-slot-0"
@@ -166,7 +166,7 @@ export const CreditCardDetailsForm = ({
               label={t('Card Number')}
               placeholder={t('1234 1234 1234 1234')}
               readOnly
-              copyable
+              copyable={!isCopyToClipboardDisabled}
               onCopy={copyToClipboard}
               isGrouped
               testID="card-details-multi-slot-input-slot-1"
@@ -179,7 +179,7 @@ export const CreditCardDetailsForm = ({
               label={t('Expiration Date')}
               placeholder={t('MM YY')}
               readOnly
-              copyable
+              copyable={!isCopyToClipboardDisabled}
               onCopy={copyToClipboard}
               isGrouped
               testID="card-details-multi-slot-input-slot-2"
@@ -192,7 +192,7 @@ export const CreditCardDetailsForm = ({
               label={t('Security Code')}
               placeholder={t('123')}
               readOnly
-              copyable
+              copyable={!isCopyToClipboardDisabled}
               onCopy={copyToClipboard}
               isGrouped
               testID="card-details-multi-slot-input-slot-3"
@@ -205,7 +205,7 @@ export const CreditCardDetailsForm = ({
               label={t('PIN')}
               placeholder={t('1234')}
               readOnly
-              copyable
+              copyable={!isCopyToClipboardDisabled}
               onCopy={copyToClipboard}
               isGrouped
               testID="card-details-multi-slot-input-slot-4"
@@ -236,7 +236,7 @@ export const CreditCardDetailsForm = ({
             label={t('Comment')}
             placeholder={t('Add comment')}
             readOnly
-            copyable
+            copyable={!isCopyToClipboardDisabled}
             onCopy={copyToClipboard}
             isGrouped
             testID="comments-multi-slot-input-slot-0"
@@ -254,7 +254,7 @@ export const CreditCardDetailsForm = ({
               value={field.note ?? ''}
               placeholder={t('Enter Hidden Message')}
               readOnly
-              copyable
+              copyable={!isCopyToClipboardDisabled}
               onCopy={copyToClipboard}
               isGrouped
               testID={`hidden-messages-multi-slot-input-slot-${index}`}

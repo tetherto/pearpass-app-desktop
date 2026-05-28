@@ -89,7 +89,7 @@ export const LoginRecordDetailsForm = ({
   const { theme } = useTheme()
   const styles = createStyles()
   const { setModal } = useModal()
-  const { copyToClipboard } = useCopyToClipboard()
+  const { copyToClipboard, isCopyToClipboardDisabled } = useCopyToClipboard()
 
   const initialValues = useMemo<LoginRecordDetailsFormValues>(
     () => ({
@@ -175,7 +175,7 @@ export const LoginRecordDetailsForm = ({
                 label={t('Email / Username')}
                 placeholder={t('Email / Username')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="credentials-multi-slot-input-slot-0"
@@ -188,7 +188,7 @@ export const LoginRecordDetailsForm = ({
                 label={t('Password')}
                 placeholder={t('Password')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="credentials-multi-slot-input-slot-1"
@@ -222,7 +222,7 @@ export const LoginRecordDetailsForm = ({
                 value={website}
                 placeholder={t('Enter Website')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID={`website-multi-slot-input-slot-${index}`}
@@ -286,7 +286,7 @@ export const LoginRecordDetailsForm = ({
               label={t('Comment')}
               placeholder={t('Add comment')}
               readOnly
-              copyable
+              copyable={!isCopyToClipboardDisabled}
               onCopy={copyToClipboard}
               isGrouped
               testID="comments-multi-slot-input-slot-0"
@@ -304,7 +304,7 @@ export const LoginRecordDetailsForm = ({
                 value={field.note ?? ''}
                 placeholder={t('Enter Hidden Message')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID={`hidden-messages-multi-slot-input-slot-${index}`}

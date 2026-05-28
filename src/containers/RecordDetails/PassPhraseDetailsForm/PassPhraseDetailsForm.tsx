@@ -49,7 +49,7 @@ export const PassPhraseDetailsForm = ({
 }: PassPhraseDetailsFormProps) => {
   const { t } = useTranslation()
   const styles = createStyles()
-  const { copyToClipboard } = useCopyToClipboard()
+  const { copyToClipboard, isCopyToClipboardDisabled } = useCopyToClipboard()
 
   const initialValues = useMemo<PassPhraseDetailsFormValues>(
     () => ({
@@ -82,7 +82,7 @@ export const PassPhraseDetailsForm = ({
             label={t('Comment')}
             placeholder={t('Enter Comment')}
             readOnly
-            copyable
+            copyable={!isCopyToClipboardDisabled}
             onCopy={copyToClipboard}
             isGrouped
             testID="comments-multi-slot-input-slot-0"
@@ -100,7 +100,7 @@ export const PassPhraseDetailsForm = ({
               value={field.note ?? ''}
               placeholder={t('Enter Hidden Message')}
               readOnly
-              copyable
+              copyable={!isCopyToClipboardDisabled}
               onCopy={copyToClipboard}
               isGrouped
               testID={`hidden-messages-multi-slot-input-slot-${index}`}

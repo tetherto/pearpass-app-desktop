@@ -52,7 +52,7 @@ export const WifiDetailsForm = ({
   const { t } = useTranslation()
   const { theme } = useTheme()
   const styles = createStyles()
-  const { copyToClipboard } = useCopyToClipboard()
+  const { copyToClipboard, isCopyToClipboardDisabled } = useCopyToClipboard()
 
   const initialValues = useMemo<WifiDetailsFormValues>(
     () => ({
@@ -88,7 +88,7 @@ export const WifiDetailsForm = ({
               label={t('Wi-Fi Password')}
               placeholder={t('Insert Wi-Fi Password')}
               readOnly
-              copyable
+              copyable={!isCopyToClipboardDisabled}
               onCopy={copyToClipboard}
               isGrouped
               testID="credentials-multi-slot-input-slot-0"
@@ -114,7 +114,7 @@ export const WifiDetailsForm = ({
                 label={t('Comment')}
                 placeholder={t('Add comment')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="comments-multi-slot-input-slot-0"
@@ -132,7 +132,7 @@ export const WifiDetailsForm = ({
                   value={field.note ?? ''}
                   placeholder={t('Enter Hidden Message')}
                   readOnly
-                  copyable
+                  copyable={!isCopyToClipboardDisabled}
                   onCopy={copyToClipboard}
                   isGrouped
                   testID={`hidden-messages-multi-slot-input-slot-${index}`}

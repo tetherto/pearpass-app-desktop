@@ -33,7 +33,7 @@ export const OtpCodeField = ({
   const { i18n } = useLingui()
   const { theme } = useTheme()
   const styles = createStyles(theme.colors)
-  const { copyToClipboard } = useCopyToClipboard()
+  const { copyToClipboard, isCopyToClipboardDisabled } = useCopyToClipboard()
 
   const { code, timeRemaining, type, period, generateNext, isLoading } = useOtp(
     {
@@ -69,14 +69,16 @@ export const OtpCodeField = ({
           </Text>
           <Text variant="labelEmphasized">{formattedCode || ''}</Text>
         </div>
-        <Button
-          variant="tertiary"
-          size="small"
-          data-testid="otp-code-field-copy"
-          aria-label={i18n._('Copy code')}
-          iconBefore={<ContentCopy color={theme.colors.colorTextPrimary} />}
-          onClick={() => code && copyToClipboard(code)}
-        />
+        {!isCopyToClipboardDisabled && (
+          <Button
+            variant="tertiary"
+            size="small"
+            data-testid="otp-code-field-copy"
+            aria-label={i18n._('Copy code')}
+            iconBefore={<ContentCopy color={theme.colors.colorTextPrimary} />}
+            onClick={() => code && copyToClipboard(code)}
+          />
+        )}
       </div>
 
       {isTOTP && (

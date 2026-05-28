@@ -69,7 +69,7 @@ export const NoteDetailsForm = ({
   const { theme } = useTheme()
   const styles = createStyles()
   const { setModal } = useModal()
-  const { copyToClipboard } = useCopyToClipboard()
+  const { copyToClipboard, isCopyToClipboardDisabled } = useCopyToClipboard()
 
   const initialValues = useMemo<NoteDetailsFormValues>(
     () => ({
@@ -122,7 +122,7 @@ export const NoteDetailsForm = ({
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
-  
+
   return (
     <div style={styles.container}>
       {hasNote && (
@@ -136,7 +136,7 @@ export const NoteDetailsForm = ({
               label={t('Note')}
               placeholder={t('Enter Note')}
               readOnly
-              copyable
+              copyable={!isCopyToClipboardDisabled}
               onCopy={copyToClipboard}
               isGrouped
               testID="note-multi-slot-input-slot-0"
@@ -176,7 +176,7 @@ export const NoteDetailsForm = ({
                   value={field.note ?? ''}
                   placeholder={t('Enter Hidden Message')}
                   readOnly
-                  copyable
+                  copyable={!isCopyToClipboardDisabled}
                   onCopy={copyToClipboard}
                   isGrouped
                   testID={`hidden-messages-multi-slot-input-slot-${index}`}

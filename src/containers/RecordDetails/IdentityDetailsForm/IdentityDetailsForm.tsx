@@ -109,7 +109,10 @@ const buildIdentityAttachmentSources = (values: {
     { fieldName: 'attachments', items: values.attachments ?? [] },
     { fieldName: 'passportPicture', items: values.passportPicture ?? [] },
     { fieldName: 'idCardPicture', items: values.idCardPicture ?? [] },
-    { fieldName: 'drivingLicensePicture', items: values.drivingLicensePicture ?? [] }
+    {
+      fieldName: 'drivingLicensePicture',
+      items: values.drivingLicensePicture ?? []
+    }
   ]
 
   groups.forEach(({ fieldName, items }) => {
@@ -180,7 +183,7 @@ export const IdentityDetailsForm = ({
   const { t } = useTranslation()
   const styles = createStyles()
   const { setModal } = useModal()
-  const { copyToClipboard } = useCopyToClipboard()
+  const { copyToClipboard, isCopyToClipboardDisabled } = useCopyToClipboard()
 
   const initialValues = useMemo<IdentityDetailsFormValues>(
     () => ({
@@ -331,7 +334,7 @@ export const IdentityDetailsForm = ({
                 label={t('Full Name')}
                 placeholder={t('John Smith')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="personal-information-multi-slot-input-slot-0"
@@ -344,7 +347,7 @@ export const IdentityDetailsForm = ({
                 label={t('Email')}
                 placeholder={t('Insert email')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="personal-information-multi-slot-input-slot-1"
@@ -357,7 +360,7 @@ export const IdentityDetailsForm = ({
                 label={t('Phone Number')}
                 placeholder={t('Insert phone number')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="personal-information-multi-slot-input-slot-2"
@@ -378,7 +381,7 @@ export const IdentityDetailsForm = ({
                 label={t('Address')}
                 placeholder={t('Insert address')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="address-multi-slot-input-slot-0"
@@ -391,7 +394,7 @@ export const IdentityDetailsForm = ({
                 label={t('ZIP')}
                 placeholder={t('Insert ZIP')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="address-multi-slot-input-slot-1"
@@ -404,7 +407,7 @@ export const IdentityDetailsForm = ({
                 label={t('City')}
                 placeholder={t('Insert city')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="address-multi-slot-input-slot-2"
@@ -417,7 +420,7 @@ export const IdentityDetailsForm = ({
                 label={t('Region')}
                 placeholder={t('Insert region')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="address-multi-slot-input-slot-3"
@@ -430,7 +433,7 @@ export const IdentityDetailsForm = ({
                 label={t('Country')}
                 placeholder={t('Insert country')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="address-multi-slot-input-slot-4"
@@ -451,7 +454,7 @@ export const IdentityDetailsForm = ({
                 label={t('Full Name')}
                 placeholder={t('John Smith')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="passport-multi-slot-input-slot-0"
@@ -464,7 +467,7 @@ export const IdentityDetailsForm = ({
                 label={t('Passport Number')}
                 placeholder={t('Insert numbers')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="passport-multi-slot-input-slot-1"
@@ -477,7 +480,7 @@ export const IdentityDetailsForm = ({
                 label={t('Issuing Country')}
                 placeholder={t('Insert country')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="passport-multi-slot-input-slot-2"
@@ -490,7 +493,7 @@ export const IdentityDetailsForm = ({
                 label={t('Date of Issue')}
                 placeholder={DATE_FORMAT}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="passport-multi-slot-input-slot-3"
@@ -503,7 +506,7 @@ export const IdentityDetailsForm = ({
                 label={t('Expiry Date')}
                 placeholder={DATE_FORMAT}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="passport-multi-slot-input-slot-4"
@@ -516,7 +519,7 @@ export const IdentityDetailsForm = ({
                 label={t('Nationality')}
                 placeholder={t('Insert your nationality')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="passport-multi-slot-input-slot-5"
@@ -529,7 +532,7 @@ export const IdentityDetailsForm = ({
                 label={t('Date of Birth')}
                 placeholder={DATE_FORMAT}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="passport-multi-slot-input-slot-6"
@@ -542,7 +545,7 @@ export const IdentityDetailsForm = ({
                 label={t('Gender')}
                 placeholder={t('M/F')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="passport-multi-slot-input-slot-7"
@@ -563,7 +566,7 @@ export const IdentityDetailsForm = ({
                 label={t('ID Number')}
                 placeholder={t('123456789')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="identity-card-multi-slot-input-slot-0"
@@ -576,7 +579,7 @@ export const IdentityDetailsForm = ({
                 label={t('Creation Date')}
                 placeholder={DATE_FORMAT}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="identity-card-multi-slot-input-slot-1"
@@ -589,7 +592,7 @@ export const IdentityDetailsForm = ({
                 label={t('Expiry Date')}
                 placeholder={DATE_FORMAT}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="identity-card-multi-slot-input-slot-2"
@@ -602,7 +605,7 @@ export const IdentityDetailsForm = ({
                 label={t('Issuing Country')}
                 placeholder={t('Insert country')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="identity-card-multi-slot-input-slot-3"
@@ -623,7 +626,7 @@ export const IdentityDetailsForm = ({
                 label={t('ID Number')}
                 placeholder={t('123456789')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="driving-license-multi-slot-input-slot-0"
@@ -636,7 +639,7 @@ export const IdentityDetailsForm = ({
                 label={t('Creation Date')}
                 placeholder={DATE_FORMAT}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="driving-license-multi-slot-input-slot-1"
@@ -649,7 +652,7 @@ export const IdentityDetailsForm = ({
                 label={t('Expiry Date')}
                 placeholder={DATE_FORMAT}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="driving-license-multi-slot-input-slot-2"
@@ -662,7 +665,7 @@ export const IdentityDetailsForm = ({
                 label={t('Issuing Country')}
                 placeholder={t('Insert country')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="driving-license-multi-slot-input-slot-3"
@@ -708,7 +711,7 @@ export const IdentityDetailsForm = ({
                 label={t('Comment')}
                 placeholder={t('Enter Comment')}
                 readOnly
-                copyable
+                copyable={!isCopyToClipboardDisabled}
                 onCopy={copyToClipboard}
                 isGrouped
                 testID="comments-multi-slot-input-slot-0"
@@ -726,7 +729,7 @@ export const IdentityDetailsForm = ({
                   value={field.note ?? ''}
                   placeholder={t('Enter Hidden Message')}
                   readOnly
-                  copyable
+                  copyable={!isCopyToClipboardDisabled}
                   onCopy={copyToClipboard}
                   isGrouped
                   testID={`hidden-messages-multi-slot-input-slot-${index}`}
