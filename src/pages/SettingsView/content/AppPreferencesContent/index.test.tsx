@@ -3,7 +3,7 @@
 import React from 'react'
 
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { LOCAL_STORAGE_KEYS } from '../../../../constants/localStorage'
 import { AppPreferencesContent } from './index'
@@ -28,9 +28,13 @@ jest.mock('../../../../hooks/useAutoLockPreferences', () => ({
   })
 }))
 
-jest.mock('@tetherto/pearpass-lib-ui-kit/icons', () => ({
-  KeyboardArrowBottom: () => null
-}))
+jest.mock(
+  '@tetherto/pearpass-lib-ui-kit/icons',
+  () => ({
+    KeyboardArrowBottom: () => null
+  }),
+  { virtual: true }
+)
 
 jest.mock('@tetherto/pearpass-lib-constants', () => ({
   AUTO_LOCK_ENABLED: true,
@@ -62,7 +66,19 @@ const mockTheme = {
   }
 }
 
-jest.mock('@tetherto/pearpass-lib-ui-kit', () => ({
+// Mock useUserData for biometric password verification
+const mockLogIn = jest.fn()
+
+jest.mock('@tetherto/pearpass-lib-vault', () => ({
+  useUserData: () => ({
+    logIn: mockLogIn,
+    refreshMasterPasswordStatus: jest.fn()
+  })
+}))
+
+jest.mock(
+  '@tetherto/pearpass-lib-ui-kit',
+  () => ({
   useTheme: () => mockTheme,
   PageHeader: (props: { title: string; subtitle?: React.ReactNode }) => (
     <div>
@@ -76,6 +92,7 @@ jest.mock('@tetherto/pearpass-lib-ui-kit', () => ({
     checked?: boolean
     onChange?: (checked: boolean) => void
     label?: string
+    description?: string
   }) => {
     const testId = props['data-testid']
     return (
@@ -94,7 +111,9 @@ jest.mock('@tetherto/pearpass-lib-ui-kit', () => ({
     'data-testid'?: string
     children?: React.ReactNode
     onClick?: () => void
+    type?: string
     iconAfter?: React.ReactNode
+    isLoading?: boolean
   }) => (
     <button
       type="button"
@@ -131,22 +150,216 @@ jest.mock('@tetherto/pearpass-lib-ui-kit', () => ({
     >
       {props.label}
     </button>
-  )
-}))
+  ),
+  Dialog: (props: {
+    title?: string
+    open?: boolean
+    onClose?: () => void
+    testID?: string
+    closeButtonTestID?: string
+    footer?: React.ReactNode
+    children?: React.ReactNode
+  }) => {
+    if (!props.open) return null
+    return (
+      <div data-testid={props.testID}>
+        <h2>{props.title}</h2>
+        <button data-testid={props.closeButtonTestID} onClick={props.onClose}>
+          Close
+        </button>
+        {props.children}
+        {props.footer}
+      </div>
+    )
+  },
+  Form: (props: {
+    onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void
+    testID?: string
+    children?: React.ReactNode
+  }) => (
+    <form
+      data-testid={props.testID}
+      onSubmit={(e) => {
+        e.preventDefault()
+        props.onSubmit?.(e)
+      }}
+    >
+      {props.children}
+    </form>
+  ),
+  PasswordField: (props: {
+    label?: string
+    value?: string
+    onChange?: (e: { target: { value: string } }) => void
+    error?: string
+    testID?: string
+    placeholder?: string
+  }) => {
+    return (
+      <div>
+        <label>{props.label}</label>
+        <input
+          data-testid={props.testID}
+          type="password"
+          value={props.value}
+          onChange={(e) => {
+            props.onChange?.(e)
+          }}
+        />
+        {props.error && <span data-testid="password-field-error">{props.error}</span>}
+      </div>
+    )
+  }
+  }),
+  { virtual: true }
+)
 
 beforeEach(() => {
   localStorage.clear()
   mockSetTimeoutMs.mockClear()
   mockTimeoutMs = 60_000
+  mockLogIn.mockReset()
+  // Default: biometric is available but not enabled
+  delete (window as unknown as Record<string, unknown>).electronAPI
 })
 
+const mockBiometricAvailable = (available: boolean) => {
+  ;(window as unknown as Record<string, unknown>).electronAPI = {
+    isBiometricAvailable: () => Promise.resolve(available),
+    encryptString: (text: string) => Promise.resolve(`encrypted:${text}`)
+  }
+}
+
 describe('AppPreferencesContent', () => {
-  it('renders the heading and all rows', () => {
+  it('renders the heading and all standard rows', async () => {
+    mockBiometricAvailable(true)
     render(<AppPreferencesContent />)
-    expect(screen.getByText('App Preferences')).toBeInTheDocument()
+    await screen.findByText('App Preferences')
     expect(screen.getByText('Auto Lock')).toBeInTheDocument()
     expect(screen.getByText('Copy to Clipboard')).toBeInTheDocument()
     expect(screen.getByText('Reminders')).toBeInTheDocument()
+  })
+
+  it('shows Touch ID toggle when biometric is available', async () => {
+    mockBiometricAvailable(true)
+    render(<AppPreferencesContent />)
+    const toggle = await screen.findByTestId('settings-biometric-toggle')
+    expect(toggle).toBeInTheDocument()
+    expect(toggle).toHaveAttribute('aria-checked', 'false')
+  })
+
+  it('hides Touch ID toggle when biometric is unavailable', async () => {
+    mockBiometricAvailable(false)
+    render(<AppPreferencesContent />)
+    // Wait for the component to render and the effect to settle
+    await waitFor(() => {
+      expect(screen.queryByTestId('settings-biometric-toggle')).not.toBeInTheDocument()
+    })
+  })
+
+  it('hides Touch ID toggle when electronAPI is not present', async () => {
+    // No electronAPI set — biometric not available
+    render(<AppPreferencesContent />)
+    await waitFor(() => {
+      expect(screen.queryByTestId('settings-biometric-toggle')).not.toBeInTheDocument()
+    })
+  })
+
+  it('reads biometric enabled state from localStorage', async () => {
+    mockBiometricAvailable(true)
+    localStorage.setItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED, 'true')
+    localStorage.setItem(LOCAL_STORAGE_KEYS.BIOMETRIC_ENCRYPTED_PASSWORD, 'stored-blob')
+    render(<AppPreferencesContent />)
+    const toggle = await screen.findByTestId('settings-biometric-toggle')
+    expect(toggle).toHaveAttribute('aria-checked', 'true')
+  })
+
+  it('opens password verification dialog when toggling ON', async () => {
+    mockBiometricAvailable(true)
+    render(<AppPreferencesContent />)
+    const toggle = await screen.findByTestId('settings-biometric-toggle')
+    expect(toggle).toHaveAttribute('aria-checked', 'false')
+
+    // Click toggle to enable
+    fireEvent.click(toggle)
+
+    // Dialog should open
+    await screen.findByTestId('settings-biometric-dialog')
+    expect(screen.getByText('Enable Touch ID')).toBeInTheDocument()
+    expect(screen.getByTestId('settings-biometric-password')).toBeInTheDocument()
+  })
+
+  it('confirms password and enables Touch ID on successful verification', async () => {
+    mockBiometricAvailable(true)
+    mockLogIn.mockResolvedValue(undefined as never)
+
+    render(<AppPreferencesContent />)
+    const toggle = await screen.findByTestId('settings-biometric-toggle')
+    fireEvent.click(toggle)
+
+    // Enter password in the dialog
+    const passwordInput = await screen.findByTestId('settings-biometric-password')
+    fireEvent.change(passwordInput, { target: { value: 'correct-password' } })
+
+    // Click Confirm
+    const confirmButton = screen.getByTestId('settings-biometric-confirm')
+    fireEvent.click(confirmButton)
+
+    await waitFor(() => {
+      expect(mockLogIn).toHaveBeenCalled()
+      expect(
+        localStorage.getItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED)
+      ).toBe('true')
+      expect(
+        localStorage.getItem(LOCAL_STORAGE_KEYS.BIOMETRIC_ENCRYPTED_PASSWORD)
+      ).toBe('encrypted:correct-password')
+    })
+
+    // Toggle should now be checked
+    expect(toggle).toHaveAttribute('aria-checked', 'true')
+  })
+
+  it('shows error on failed password verification', async () => {
+    mockBiometricAvailable(true)
+    mockLogIn.mockRejectedValue(new Error('Invalid master password') as never)
+
+    render(<AppPreferencesContent />)
+    const toggle = await screen.findByTestId('settings-biometric-toggle')
+    fireEvent.click(toggle)
+
+    const passwordInput = await screen.findByTestId('settings-biometric-password')
+    fireEvent.change(passwordInput, { target: { value: 'wrong-password' } })
+
+    const confirmButton = screen.getByTestId('settings-biometric-confirm')
+    fireEvent.click(confirmButton)
+
+    await waitFor(() => {
+      expect(screen.getByText('Invalid master password')).toBeInTheDocument()
+    })
+
+    // Toggle should still be unchecked
+    expect(toggle).toHaveAttribute('aria-checked', 'false')
+  })
+
+  it('clears biometric data when toggling OFF', async () => {
+    mockBiometricAvailable(true)
+    localStorage.setItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED, 'true')
+    localStorage.setItem(LOCAL_STORAGE_KEYS.BIOMETRIC_ENCRYPTED_PASSWORD, 'stored-blob')
+
+    render(<AppPreferencesContent />)
+    const toggle = await screen.findByTestId('settings-biometric-toggle')
+    expect(toggle).toHaveAttribute('aria-checked', 'true')
+
+    // Click toggle to disable
+    fireEvent.click(toggle)
+
+    expect(toggle).toHaveAttribute('aria-checked', 'false')
+    expect(
+      localStorage.getItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED)
+    ).toBeNull()
+    expect(
+      localStorage.getItem(LOCAL_STORAGE_KEYS.BIOMETRIC_ENCRYPTED_PASSWORD)
+    ).toBeNull()
   })
 
   it('starts with clipboard enabled when localStorage has no value', () => {

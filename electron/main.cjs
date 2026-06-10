@@ -796,6 +796,86 @@ function registerIPC() {
     logger.clearLogPath()
     return { enabled: false, forced: false }
   })
+
+  // ---- Touch ID / Biometric ----
+
+  const { safeStorage, systemPreferences } = require('electron')
+
+  // Check if biometric auth is available (macOS 10.12.2+ with Touch ID)
+  ipcMain.handle('biometric:isAvailable', async () => {
+    if (process.platform !== 'darwin') return false
+    try {
+      return systemPreferences.canPromptTouchID()
+    } catch {
+      return false
+    }
+  })
+
+  // Prompt the system Touch ID dialog
+  ipcMain.handle('biometric:promptTouchID', async (_event, reason) => {
+    if (process.platform !== 'darwin') {
+      throw new Error('Biometric authentication is only supported on macOS')
+    }
+    try {
+      await systemPreferences.promptTouchID(reason || 'Authenticate to PearPass')
+      return true
+    } catch {
+      return false
+    }
+  })
+
+  // Encrypt a string with safeStorage (macOS Keychain-bound)
+  ipcMain.handle('biometric:encryptString', async (_event, plaintext) => {
+    if (!safeStorage.isEncryptionAvailable()) {
+      throw new Error('safeStorage encryption is not available')
+    }
+    try {
+      const buffer = safeStorage.encryptString(plaintext)
+      return buffer.toString('base64')
+    } catch (error) {
+      throw new Error(`Encryption failed: ${error.message}`)
+    }
+  })
+
+  // Atomic Touch ID prompt + safeStorage decryption.
+  // The renderer must pass the encrypted blob; decryption is gated behind
+  // a successful Touch ID scan — the renderer cannot decrypt without it.
+  ipcMain.handle(
+    'biometric:unlockWithPassword',
+    async (_event, reason, encryptedB64) => {
+      if (process.platform !== 'darwin') {
+        throw new Error('Biometric authentication is only supported on macOS')
+      }
+
+      // Step 1: prompt Touch ID
+      try {
+        await systemPreferences.promptTouchID(
+          reason || 'Authenticate to PearPass'
+        )
+      } catch (err) {
+        // 'user cancelled' vs 'device unavailable' have materially different
+        // support paths — log the error so diagnostics can distinguish them.
+        logger.warn('MAIN', 'Touch ID prompt failed', err)
+        return { success: false, password: null }
+      }
+
+      // Step 2: decrypt only if Touch ID succeeded
+      if (!safeStorage.isEncryptionAvailable()) {
+        return { success: false, password: null }
+      }
+
+      try {
+        const buffer = Buffer.from(encryptedB64, 'base64')
+        const password = safeStorage.decryptString(buffer)
+        return { success: true, password }
+      } catch (err) {
+        // Distinguish 'bad base64', 'Keychain unavailable', 'malformed blob'
+        // in logs so support can triage without a repro.
+        logger.error('MAIN', 'Biometric decryption failed', err)
+        return { success: false, password: null }
+      }
+    }
+  )
 }
 
 app.whenReady().then(async () => {

@@ -27,7 +27,16 @@ declare global {
       isLoggingEnabled: () => Promise<{ enabled: boolean; forced: boolean }>
       setLogging: (
         enabled: boolean
-      ) => Promise<{ enabled: boolean; forced: boolean }>
+      ) => Promise<{ enabled: boolean; forced: boolean }>,
+
+      // Biometric / Touch ID
+      isBiometricAvailable: () => Promise<boolean>
+      promptTouchID: (reason?: string) => Promise<boolean>
+      encryptString: (text: string) => Promise<string>
+      unlockWithPassword: (
+        reason?: string,
+        encryptedB64?: string
+      ) => Promise<{ success: boolean; password: string | null }>
     }
   }
 }

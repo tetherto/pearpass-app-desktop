@@ -1,10 +1,13 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
   Button,
+  Dialog,
   Dropdown,
+  Form,
   NavbarListItem,
   PageHeader,
+  PasswordField,
   Text,
   ToggleSwitch,
   useTheme
@@ -14,6 +17,11 @@ import {
   AUTO_LOCK_ENABLED,
   AUTO_LOCK_TIMEOUT_OPTIONS
 } from '@tetherto/pearpass-lib-constants'
+import { useUserData } from '@tetherto/pearpass-lib-vault'
+import {
+  clearBuffer,
+  stringToBuffer
+} from '@tetherto/pearpass-lib-vault/src/utils/buffer'
 
 import { LOCAL_STORAGE_KEYS } from '../../../../constants/localStorage'
 import { useAutoLockPreferences } from '../../../../hooks/useAutoLockPreferences'
@@ -26,7 +34,12 @@ const TEST_IDS = {
   autoLockSelect: 'settings-auto-lock-select',
   autoLockOption: 'settings-auto-lock-option',
   copyToClipboardToggle: 'settings-copy-to-clipboard-toggle',
-  remindersToggle: 'settings-reminders-toggle'
+  remindersToggle: 'settings-reminders-toggle',
+  biometricToggle: 'settings-biometric-toggle',
+  biometricDialog: 'settings-biometric-dialog',
+  biometricPasswordField: 'settings-biometric-password',
+  biometricConfirmButton: 'settings-biometric-confirm',
+  biometricCancelButton: 'settings-biometric-cancel'
 } as const
 
 type TimeoutOption = {
@@ -56,6 +69,41 @@ export const AppPreferencesContent = () => {
   const [isReminderDisabled, setIsReminderDisabled] = useState(() =>
     isPasswordChangeReminderDisabled()
   )
+
+  // ---- Biometric / Touch ID state ----
+  const [isBiometricAvailable, setIsBiometricAvailable] = useState(false)
+  const [isBiometricEnabled, setIsBiometricEnabled] = useState(false)
+  const [isBiometricLoading, setIsBiometricLoading] = useState(true)
+
+  const { logIn } = useUserData()
+
+  // Biometric password-verification dialog state
+  const [isVerifyDialogOpen, setIsVerifyDialogOpen] = useState(false)
+  const [verifyPassword, setVerifyPassword] = useState('')
+  const [verifyError, setVerifyError] = useState('')
+  const [isVerifyLoading, setIsVerifyLoading] = useState(false)
+
+  // Check biometric availability on mount
+  useEffect(() => {
+    const api = window.electronAPI
+    if (!api?.isBiometricAvailable) {
+      setIsBiometricLoading(false)
+      return
+    }
+    api.isBiometricAvailable()
+      .then((available) => {
+        setIsBiometricAvailable(available)
+        if (available) {
+          setIsBiometricEnabled(
+            localStorage.getItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED) === 'true'
+          )
+        }
+        setIsBiometricLoading(false)
+      })
+      .catch(() => {
+        setIsBiometricLoading(false)
+      })
+  }, [])
 
   const translatedTimeoutOptions = useMemo(
     () =>
@@ -104,6 +152,84 @@ export const AppPreferencesContent = () => {
     }
     setIsReminderDisabled(!isOn)
   }, [])
+
+  // ---- Biometric handlers ----
+
+  const handleBiometricToggle = useCallback((isOn: boolean) => {
+    if (isOn) {
+      // Open the password verification dialog
+      setVerifyPassword('')
+      setVerifyError('')
+      setIsVerifyDialogOpen(true)
+    } else {
+      // Disable: clear stored biometric data and close any open verification dialog
+      localStorage.removeItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED)
+      localStorage.removeItem(LOCAL_STORAGE_KEYS.BIOMETRIC_ENCRYPTED_PASSWORD)
+      setIsBiometricEnabled(false)
+      setIsVerifyDialogOpen(false)
+      setVerifyError('')
+      setVerifyPassword('')
+    }
+  }, [])
+
+  const handleVerifyPasswordSubmit = useCallback(async () => {
+    if (isVerifyLoading) return
+
+    if (!verifyPassword) {
+      setVerifyError(t('Password is required'))
+      return
+    }
+
+    const passwordBuffer = stringToBuffer(verifyPassword)
+
+    try {
+      setIsVerifyLoading(true)
+      setVerifyError('')
+
+      // Verify the master password by attempting login
+      try {
+        await logIn({ password: passwordBuffer })
+      } catch {
+        setVerifyError(t('Invalid master password'))
+        return
+      }
+
+      // Password is correct — encrypt it with safeStorage and persist
+      try {
+        const api = window.electronAPI
+        if (!api?.encryptString) {
+          throw new Error('safeStorage encryption is not available')
+        }
+
+        const encryptedB64 = await api.encryptString(verifyPassword)
+
+        localStorage.setItem(
+          LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED,
+          'true'
+        )
+        localStorage.setItem(
+          LOCAL_STORAGE_KEYS.BIOMETRIC_ENCRYPTED_PASSWORD,
+          encryptedB64
+        )
+
+        setIsBiometricEnabled(true)
+        setIsVerifyDialogOpen(false)
+      } catch {
+        setVerifyError(t('Failed to enable Touch ID. Please try again.'))
+      }
+    } finally {
+      clearBuffer(passwordBuffer)
+      setIsVerifyLoading(false)
+    }
+  }, [isVerifyLoading, verifyPassword, logIn, t])
+
+  const handleVerifyDialogClose = useCallback(() => {
+    if (!isVerifyLoading) {
+      setIsVerifyDialogOpen(false)
+      setVerifyError('')
+      setVerifyPassword('')
+    }
+  }, [isVerifyLoading])
 
   return (
     <div data-testid={TEST_IDS.root} style={styles.root}>
@@ -178,7 +304,63 @@ export const AppPreferencesContent = () => {
             description={t("Get alerts when it's time to update your passwords")}
           />
         </div>
+
+        {!isBiometricLoading && isBiometricAvailable && (
+          <div style={styles.rowDivider}>
+            <ToggleSwitch
+              data-testid={TEST_IDS.biometricToggle}
+              checked={isBiometricEnabled}
+              onChange={handleBiometricToggle}
+              label={t('Unlock with Touch ID')}
+              description={t(
+                'Use your fingerprint to unlock PearPass instead of typing your master password'
+              )}
+            />
+          </div>
+        )}
       </div>
+
+      {/* Password verification dialog for enabling Touch ID */}
+      <Dialog
+        title={t('Enable Touch ID')}
+        open={isVerifyDialogOpen}
+        onClose={handleVerifyDialogClose}
+        closeOnOutsideClick={false}
+        testID={TEST_IDS.biometricDialog}
+        closeButtonTestID={TEST_IDS.biometricCancelButton}
+        footer={
+          <Button
+            variant="primary"
+            size="small"
+            type="button"
+            isLoading={isVerifyLoading}
+            onClick={handleVerifyPasswordSubmit}
+            data-testid={TEST_IDS.biometricConfirmButton}
+          >
+            {t('Confirm')}
+          </Button>
+        }
+      >
+        <Form
+          onSubmit={(e: { preventDefault: () => void }) => {
+            e.preventDefault()
+            handleVerifyPasswordSubmit()
+          }}
+          testID="settings-biometric-form"
+        >
+          <Text as="p" variant="body">
+            {t('Enter your master password to enable Touch ID unlock.')}
+          </Text>
+
+          <PasswordField
+            label={t('Password')}
+            value={verifyPassword}
+            onChange={(e) => setVerifyPassword(e.target.value)}
+            error={verifyError || undefined}
+            testID={TEST_IDS.biometricPasswordField}
+          />
+        </Form>
+      </Dialog>
     </div>
   )
 }

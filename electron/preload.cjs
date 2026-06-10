@@ -63,5 +63,12 @@ window.electronAPI = {
   openLogsFolder: () => ipcRenderer.invoke('vault:openLogsFolder'),
   isLoggingEnabled: () => ipcRenderer.invoke('vault:isLoggingEnabled'),
   setLogging: (enabled) =>
-    ipcRenderer.invoke('vault:setLogging', { enabled: !!enabled })
+    ipcRenderer.invoke('vault:setLogging', { enabled: !!enabled }),
+
+  // Biometric / Touch ID
+  isBiometricAvailable: () => ipcRenderer.invoke('biometric:isAvailable'),
+  promptTouchID: (reason) => ipcRenderer.invoke('biometric:promptTouchID', reason),
+  encryptString: (text) => ipcRenderer.invoke('biometric:encryptString', text),
+  unlockWithPassword: (reason, encryptedB64) =>
+    ipcRenderer.invoke('biometric:unlockWithPassword', reason, encryptedB64)
 }
