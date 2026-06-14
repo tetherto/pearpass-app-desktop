@@ -71,3 +71,6 @@ test-results
 out/
 
 src/PearPass
+
+# AI-generated plans
+plans/

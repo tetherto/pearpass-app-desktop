@@ -26,7 +26,8 @@ const TEST_IDS = {
   autoLockSelect: 'settings-auto-lock-select',
   autoLockOption: 'settings-auto-lock-option',
   copyToClipboardToggle: 'settings-copy-to-clipboard-toggle',
-  remindersToggle: 'settings-reminders-toggle'
+  remindersToggle: 'settings-reminders-toggle',
+  backgroundModeToggle: 'settings-background-mode-toggle'
 } as const
 
 type TimeoutOption = {
@@ -56,6 +57,9 @@ export const AppPreferencesContent = () => {
   const [isReminderDisabled, setIsReminderDisabled] = useState(() =>
     isPasswordChangeReminderDisabled()
   )
+  const [isBackgroundModeEnabled, setIsBackgroundModeEnabled] = useState<
+    boolean | null
+  >(null)
 
   const translatedTimeoutOptions = useMemo(
     () =>
@@ -103,6 +107,43 @@ export const AppPreferencesContent = () => {
       )
     }
     setIsReminderDisabled(!isOn)
+  }, [])
+
+  // Fetch the initial background-mode state from the main process on mount
+  React.useEffect(() => {
+    let cancelled = false
+    window.electronAPI
+      ?.getBackgroundMode()
+      .then((enabled) => {
+        if (!cancelled) setIsBackgroundModeEnabled(enabled)
+      })
+      .catch(() => {
+        if (!cancelled) setIsBackgroundModeEnabled(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const bgToggleRef = React.useRef(0)
+  const handleBackgroundModeToggle = useCallback((isOn: boolean) => {
+    // Serialize: ignore stale responses from in-flight IPC calls on rapid toggle
+    const generation = ++bgToggleRef.current
+    setIsBackgroundModeEnabled(isOn)
+    window.electronAPI
+      ?.setBackgroundMode(isOn)
+      .then(() => {
+        if (generation !== bgToggleRef.current) return // stale response
+        if (isOn) {
+          localStorage.setItem(LOCAL_STORAGE_KEYS.BACKGROUND_MODE_ENABLED, 'true')
+        } else {
+          localStorage.removeItem(LOCAL_STORAGE_KEYS.BACKGROUND_MODE_ENABLED)
+        }
+      })
+      .catch(() => {
+        if (generation !== bgToggleRef.current) return // stale response
+        setIsBackgroundModeEnabled(!isOn)
+      })
   }, [])
 
   return (
@@ -177,6 +218,20 @@ export const AppPreferencesContent = () => {
             label={t('Reminders')}
             description={t("Get alerts when it's time to update your passwords")}
           />
+        </div>
+
+        <div style={styles.rowDivider}>
+          {isBackgroundModeEnabled !== null && (
+            <ToggleSwitch
+              data-testid={TEST_IDS.backgroundModeToggle}
+              checked={isBackgroundModeEnabled}
+              onChange={handleBackgroundModeToggle}
+              label={t('Background Mode')}
+              description={t(
+                'Keep PearPass running in the system tray when the window is closed to maintain the browser extension connection'
+              )}
+            />
+          )}
         </div>
       </div>
     </div>

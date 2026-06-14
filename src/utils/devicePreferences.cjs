@@ -13,16 +13,26 @@ const path = require('path')
 const FILE_NAME = 'device-preferences.json'
 
 const DEFAULTS = {
-  loggingEnabled: false
+  loggingEnabled: false,
+  backgroundModeEnabled: false
+}
+
+const PREF_KEYS = Object.keys(DEFAULTS)
+
+function coerce(raw) {
+  /** @type {Record<string, boolean>} */
+  const out = {}
+  for (const key of PREF_KEYS) {
+    out[key] = !!raw[key]
+  }
+  return out
 }
 
 function read(storageDir) {
   try {
     const raw = fs.readFileSync(path.join(storageDir, FILE_NAME), 'utf8')
     const parsed = JSON.parse(raw)
-    return {
-      loggingEnabled: parsed.loggingEnabled === true
-    }
+    return coerce(parsed)
   } catch {
     return { ...DEFAULTS }
   }
@@ -31,12 +41,9 @@ function read(storageDir) {
 function write(storageDir, partial) {
   fs.mkdirSync(storageDir, { recursive: true })
   const merged = { ...read(storageDir), ...partial }
-  const out = {
-    loggingEnabled: !!merged.loggingEnabled
-  }
   fs.writeFileSync(
     path.join(storageDir, FILE_NAME),
-    JSON.stringify(out) + '\n',
+    JSON.stringify(coerce(merged)) + '\n',
     'utf8'
   )
 }
