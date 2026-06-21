@@ -31,12 +31,37 @@ declare global {
 
       // Biometric / Touch ID
       isBiometricAvailable: () => Promise<boolean>
-      promptTouchID: (reason?: string) => Promise<boolean>
-      encryptString: (text: string) => Promise<string>
-      unlockWithPassword: (
-        reason?: string,
-        encryptedB64?: string
-      ) => Promise<{ success: boolean; password: string | null }>
+      storeBiometricCredentials: (credentials: {
+        ciphertext: string
+        nonce: string
+        salt: string
+        hashedPassword: string
+      }) => Promise<boolean>
+      retrieveBiometricCredentials: (reason?: string) => Promise<{
+        success: boolean
+        credentials: {
+          ciphertext: string
+          nonce: string
+          salt: string
+          hashedPassword: string
+        } | null
+      }>
+      deleteBiometricCredentials: () => Promise<boolean>
     }
   }
+}
+
+// Augment the vault library with exports that are present at runtime
+// but not yet declared in the library's own types.d.ts.
+declare module '@tetherto/pearpass-lib-vault' {
+  export function getMasterEncryption(): Promise<
+    | undefined
+    | {
+        ciphertext: string
+        nonce: string
+        salt: string
+        hashedPassword?: string
+      }
+  >
+  export function runActionScan(): Promise<void>
 }

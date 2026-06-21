@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import { Validator } from '@tetherto/pear-apps-utils-validator'
-import { useUserData } from '@tetherto/pearpass-lib-vault'
+import { getMasterEncryption, useUserData } from '@tetherto/pearpass-lib-vault'
 import {
   clearBuffer,
   stringToBuffer
@@ -21,6 +21,7 @@ import {
   validatePasswordChange
 } from '@tetherto/pearpass-utils-password-check'
 
+import { LOCAL_STORAGE_KEYS } from '../../../../constants/localStorage'
 import { useGlobalLoading } from '../../../../context/LoadingContext'
 import { useTranslation } from '../../../../hooks/useTranslation'
 import { logger } from '../../../../utils/logger'
@@ -114,6 +115,40 @@ export const MasterPasswordContent = () => {
         newPassword: newPasswordBuffer,
         currentPassword: currentPasswordBuffer
       })
+
+      // If biometric unlock is enabled, re-store credentials with the new password
+      const isBiometricEnabled =
+        localStorage.getItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED) ===
+        'true'
+
+      if (isBiometricEnabled) {
+        try {
+          const encryption = await getMasterEncryption()
+
+          if (
+            encryption?.ciphertext &&
+            encryption?.nonce &&
+            encryption?.hashedPassword
+          ) {
+            const api = window.electronAPI
+            if (api?.storeBiometricCredentials) {
+              await api.storeBiometricCredentials({
+                ciphertext: encryption.ciphertext,
+                nonce: encryption.nonce,
+                salt: encryption.salt || '',
+                hashedPassword: encryption.hashedPassword
+              })
+            }
+          }
+        } catch (bioErr) {
+          logger.error(
+            'MasterPasswordContent',
+            'Failed to update biometric credentials after password change:',
+            bioErr
+          )
+        }
+      }
+
       setIsLoading(false)
       resetValues()
     } catch (error) {

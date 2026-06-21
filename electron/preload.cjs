@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 /**
- * Preload: with contextIsolation false, runs in the same context as the page.
- * Injects Node globals (__dirname, __filename) and Pear placeholder so the original
+ * Preload: runs in the same context as the page (contextIsolation false).
+ * Injects Node globals (__dirname, __filename) and exposes electronAPI on window.
  */
 const path = require('path')
 
@@ -67,8 +67,10 @@ window.electronAPI = {
 
   // Biometric / Touch ID
   isBiometricAvailable: () => ipcRenderer.invoke('biometric:isAvailable'),
-  promptTouchID: (reason) => ipcRenderer.invoke('biometric:promptTouchID', reason),
-  encryptString: (text) => ipcRenderer.invoke('biometric:encryptString', text),
-  unlockWithPassword: (reason, encryptedB64) =>
-    ipcRenderer.invoke('biometric:unlockWithPassword', reason, encryptedB64)
+  storeBiometricCredentials: (credentials) =>
+    ipcRenderer.invoke('biometric:storeCredentials', credentials),
+  retrieveBiometricCredentials: (reason) =>
+    ipcRenderer.invoke('biometric:retrieveCredentials', reason),
+  deleteBiometricCredentials: () =>
+    ipcRenderer.invoke('biometric:deleteCredentials')
 }

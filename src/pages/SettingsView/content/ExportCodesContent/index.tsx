@@ -14,7 +14,6 @@ import {
 import {
   // @ts-expect-error — JS module without type declarations
   exportOtpRecords,
-  // @ts-expect-error — JS module without type declarations
   getMasterEncryption,
   useVault
 } from '@tetherto/pearpass-lib-vault'

@@ -10,8 +10,10 @@ import {
 import {
   KeyboardArrowRightRound
 } from '@tetherto/pearpass-lib-ui-kit/icons'
-import { useCreateVault, useUserData, useVault, useVaults } from '@tetherto/pearpass-lib-vault'
+import { runActionScan, useCreateVault, useUserData, useVault, useVaults } from '@tetherto/pearpass-lib-vault'
+import { pearpassVaultClient } from '@tetherto/pearpass-lib-vault/src/instances'
 import { clearBuffer, stringToBuffer } from '@tetherto/pearpass-lib-vault/src/utils/buffer'
+import { logger } from '../../../utils/logger'
 
 import { OnboardingShell } from '../../../components/OnboardingShell'
 import { LOCAL_STORAGE_KEYS } from '../../../constants/localStorage'
@@ -19,7 +21,6 @@ import { NAVIGATION_ROUTES } from '../../../constants/navigation'
 import { useGlobalLoading } from '../../../context/LoadingContext'
 import { useRouter } from '../../../context/RouterContext'
 import { useTranslation } from '../../../hooks/useTranslation'
-import { logger } from '../../../utils/logger'
 import { sortByName } from '../../../utils/sortByName'
 import {
   ButtonIconWrapper,
@@ -41,20 +42,15 @@ export const CardUnlockPearPass = (): React.ReactElement => {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  // Read localStorage on every render so the check reflects runtime changes
-  // (e.g. user enables Touch ID in Settings and returns without remounting).
   const isBiometricConfigured =
-    localStorage.getItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED) === 'true' &&
-    !!localStorage.getItem(LOCAL_STORAGE_KEYS.BIOMETRIC_ENCRYPTED_PASSWORD)
+    localStorage.getItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED) === 'true'
 
   useGlobalLoading({ isLoading })
 
   const biometricInFlightRef = useRef(false)
-  // Once the user cancels/errors Touch ID, stop auto-prompting on focus events
   const biometricAutoDisabledRef = useRef(false)
+  const biometricLoginSucceededRef = useRef(false)
 
-  // Stable refs to avoid tryBiometricLogin changing identity on every render
-  // when t / navigate references change (common in i18n / router libraries).
   const tRef = useRef(t)
   tRef.current = t
   const navigateRef = useRef(navigate)
@@ -63,19 +59,19 @@ export const CardUnlockPearPass = (): React.ReactElement => {
   currentPageRef.current = currentPage
 
   const tryBiometricLogin = useCallback((isManual = false) => {
+    if (biometricLoginSucceededRef.current) return
     if (biometricInFlightRef.current) return
     if (!isManual && biometricAutoDisabledRef.current) return
     biometricInFlightRef.current = true
 
     const api = window.electronAPI
-    if (!api?.unlockWithPassword) {
+    if (!api?.retrieveBiometricCredentials) {
       biometricInFlightRef.current = false
       return
     }
 
     const isEnabled = localStorage.getItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED) === 'true'
-    const encryptedPassword = localStorage.getItem(LOCAL_STORAGE_KEYS.BIOMETRIC_ENCRYPTED_PASSWORD)
-    if (!isEnabled || !encryptedPassword) {
+    if (!isEnabled) {
       biometricInFlightRef.current = false
       return
     }
@@ -86,12 +82,11 @@ export const CardUnlockPearPass = (): React.ReactElement => {
 
     ;(async () => {
       try {
-        const result = await api.unlockWithPassword(
-          localT('Unlock PearPass'),
-          encryptedPassword
+        const result = await api.retrieveBiometricCredentials(
+          localT('Unlock PearPass')
         )
 
-        if (!result.success || !result.password) {
+        if (!result.success || !result.credentials) {
           biometricAutoDisabledRef.current = true
           biometricInFlightRef.current = false
           return
@@ -99,12 +94,23 @@ export const CardUnlockPearPass = (): React.ReactElement => {
 
         setIsLoading(true)
 
-        let passwordBuffer
         try {
-          passwordBuffer = stringToBuffer(result.password)
+          await logIn({
+            ciphertext: result.credentials.ciphertext,
+            nonce: result.credentials.nonce,
+            hashedPassword: result.credentials.hashedPassword,
+          })
 
-          await logIn({ password: passwordBuffer })
-          await initVaults({ password: passwordBuffer })
+          biometricLoginSucceededRef.current = true
+
+          try {
+            await pearpassVaultClient?.personalSwarmInit?.()
+          } catch (swarmErr) {
+            logger.error('CardUnlockPearPass', 'personalSwarmInit failed', swarmErr)
+          }
+          runActionScan().catch((err: unknown) =>
+            logger.error('CardUnlockPearPass', 'runActionScan failed', err)
+          )
 
           const vaults = await refetchVaults()
           const firstVault = sortByName(vaults)[0]
@@ -126,13 +132,18 @@ export const CardUnlockPearPass = (): React.ReactElement => {
         } catch {
           setError(localT('Biometric unlock failed. Please enter your password.'))
           biometricAutoDisabledRef.current = true
+          pearpassVaultClient?.encryptionClose?.().catch((err: unknown) =>
+            logger.error('CardUnlockPearPass', 'encryptionClose failed', err)
+          )
         } finally {
-          clearBuffer(passwordBuffer)
           setIsLoading(false)
         }
-      } catch {
-        // Biometric prompt failed (user cancelled, device unavailable, etc.)
-        // Silently fall through to manual password entry
+      } catch (bioPromptErr) {
+        const bioErr = bioPromptErr instanceof Error
+          ? bioPromptErr
+          : new Error(String(bioPromptErr))
+        const code = (bioPromptErr as Record<string, unknown>)?.code
+        logger.error('CardUnlockPearPass', 'Biometric retrieveCredentials failed', { code, message: bioErr.message })
         setIsLoading(false)
         biometricAutoDisabledRef.current = true
       }
@@ -141,21 +152,21 @@ export const CardUnlockPearPass = (): React.ReactElement => {
     })()
   }, [logIn, initVaults, refetchVaults, isVaultProtected, refetchVault, createVault, addDevice])
 
-  // Auto-trigger Touch ID on mount (if window is focused) and on every window focus event
   useEffect(() => {
     if (!isBiometricConfigured) return
 
-    // If the window already has focus on mount, trigger immediately
+    const scheduleBiometricAfterPaint = () => {
+      requestAnimationFrame(() => {
+        tryBiometricLogin()
+      })
+    }
+
     if (document.hasFocus()) {
-      tryBiometricLogin()
+      scheduleBiometricAfterPaint()
     }
 
-    const handleFocus = () => {
-      tryBiometricLogin()
-    }
-
-    window.addEventListener('focus', handleFocus)
-    return () => window.removeEventListener('focus', handleFocus)
+    window.addEventListener('focus', scheduleBiometricAfterPaint)
+    return () => window.removeEventListener('focus', scheduleBiometricAfterPaint)
   }, [isBiometricConfigured, tryBiometricLogin])
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -227,11 +238,6 @@ export const CardUnlockPearPass = (): React.ReactElement => {
             : t('Invalid password')
       )
 
-      logger.error(
-        'CardUnlockPearPass',
-        'Error unlocking with master password:',
-        submitError
-      )
     } finally {
       clearBuffer(passwordBuffer)
       setIsLoading(false)
