@@ -188,7 +188,7 @@ describe('getNativeMessagingLocations', () => {
   it('should return correct browser entries for Linux including snap', () => {
     os.platform.mockReturnValue('linux')
     const { browsers } = getNativeMessagingLocations()
-    expect(browsers).toHaveLength(8)
+    expect(browsers).toHaveLength(9)
     expect(browsers[0].name).toBe('Google Chrome')
     expect(browsers[0].manifestPath).toContain('google-chrome')
     expect(browsers[0].browserDir).toBeNull()
@@ -203,15 +203,22 @@ describe('getNativeMessagingLocations', () => {
     expect(browsers[4].manifestPath).toContain('BraveSoftware/Brave-Browser')
     expect(browsers[5].name).toBe('Brave (Snap)')
     expect(browsers[5].manifestPath).toContain('snap/brave/current')
-    expect(browsers[6].name).toBe('Firefox')
+    expect(browsers[6].name).toBe('Brave (Flatpak)')
     expect(browsers[6].manifestPath).toContain(
+      '.var/app/com.brave.Browser/config/BraveSoftware/Brave-Browser'
+    )
+    expect(browsers[6].flatpakBrowserWrapperPath).toContain(
+      '.var/app/com.brave.Browser/data/bin/pearpass-wrapper.sh'
+    )
+    expect(browsers[7].name).toBe('Firefox')
+    expect(browsers[7].manifestPath).toContain(
       '.mozilla/native-messaging-hosts'
     )
-    expect(browsers[7].name).toBe('Firefox (Snap)')
-    expect(browsers[7].manifestPath).toContain(
+    expect(browsers[8].name).toBe('Firefox (Snap)')
+    expect(browsers[8].manifestPath).toContain(
       'snap/firefox/common/.mozilla/native-messaging-hosts'
     )
-    expect(browsers[7].browserDir).toBeNull()
+    expect(browsers[8].browserDir).toBeNull()
   })
 
   it('should return correct browser entries with registry keys for Windows', () => {
@@ -242,8 +249,8 @@ describe('cleanupNativeMessaging', () => {
     os.platform.mockReturnValue('linux')
     const result = await cleanupNativeMessaging()
     expect(result.success).toBe(true)
-    expect(result.message).toContain('Removed 8 manifest file')
-    expect(fs.unlink).toHaveBeenCalledTimes(8)
+    expect(result.message).toContain('Removed 9 manifest file')
+    expect(fs.unlink).toHaveBeenCalledTimes(9)
   })
 
   it('should remove manifest files on macOS', async () => {
@@ -471,8 +478,41 @@ describe('setupNativeMessaging', () => {
       bridgePath: MOCK_BRIDGE_PATH
     })
     expect(result.success).toBe(true)
-    // Linux installs always write: 1 executable + 8 browser manifests.
-    expect(fs.writeFile).toHaveBeenCalledTimes(9)
+    // Linux installs always write: 1 executable + 9 browser manifests
+    // + the Brave Flatpak wrapper.
+    expect(fs.writeFile).toHaveBeenCalledTimes(11)
+  })
+
+  it('writes a Flatpak-aware wrapper for Brave Flatpak', async () => {
+    os.platform.mockReturnValue('linux')
+
+    const result = await setupNativeMessaging({
+      userDataPath: MOCK_USER_DATA_PATH,
+      execPath: MOCK_EXEC_PATH,
+      bridgePath: MOCK_BRIDGE_PATH
+    })
+
+    expect(result.success).toBe(true)
+
+    const flatpakWrapperWrite = fs.writeFile.mock.calls.find(([target]) =>
+      target.includes('.var/app/com.brave.Browser/data/bin/pearpass-wrapper.sh')
+    )
+    expect(flatpakWrapperWrite).toBeDefined()
+    expect(flatpakWrapperWrite[1]).toContain('flatpak-spawn --host')
+    expect(flatpakWrapperWrite[1]).toContain(MOCK_EXEC_PATH)
+    expect(flatpakWrapperWrite[1]).toContain(MOCK_BRIDGE_PATH)
+    expect(fs.chmod).toHaveBeenCalledWith(flatpakWrapperWrite[0], 0o755)
+
+    const flatpakManifestWrite = fs.writeFile.mock.calls.find(([target]) =>
+      target.includes(
+        '.var/app/com.brave.Browser/config/BraveSoftware/Brave-Browser/NativeMessagingHosts'
+      )
+    )
+    expect(flatpakManifestWrite).toBeDefined()
+    const manifest = JSON.parse(flatpakManifestWrite[1])
+    expect(manifest.path).toContain(
+      '.var/app/com.brave.Browser/data/bin/pearpass-wrapper.sh'
+    )
   })
 
   it('under snap, skips the wrapper and points manifests at /snap/bin/<name>.native-host', async () => {
@@ -488,8 +528,8 @@ describe('setupNativeMessaging', () => {
         bridgePath: MOCK_BRIDGE_PATH
       })
       expect(result.success).toBe(true)
-      // 8 browser manifests, no wrapper executable.
-      expect(fs.writeFile).toHaveBeenCalledTimes(8)
+      // 9 browser manifests, no wrapper executable.
+      expect(fs.writeFile).toHaveBeenCalledTimes(9)
       // Every chmod is the manifest 0o644; no wrapper 0o755.
       for (const [, mode] of fs.chmod.mock.calls) {
         expect(mode).toBe(0o644)
