@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { render, screen } from '@testing-library/react'
-import { ThemeProvider } from '@tetherto/pearpass-lib-ui-kit'
 
 import { FormModalHeaderWrapper } from './index'
 import '@testing-library/jest-dom'
@@ -12,9 +11,7 @@ describe('FormModalHeaderWrapper', () => {
 
   test('renders children and buttons correctly', () => {
     const { container } = render(
-      <ThemeProvider>
-        <FormModalHeaderWrapper children={mockChildren} buttons={mockButtons} />
-      </ThemeProvider>
+      <FormModalHeaderWrapper children={mockChildren} buttons={mockButtons} />
     )
 
     expect(screen.getByTestId('test-children')).toBeInTheDocument()
@@ -24,9 +21,7 @@ describe('FormModalHeaderWrapper', () => {
 
   test('renders without children', () => {
     const { container } = render(
-      <ThemeProvider>
-        <FormModalHeaderWrapper buttons={mockButtons} />
-      </ThemeProvider>
+      <FormModalHeaderWrapper buttons={mockButtons} />
     )
 
     expect(screen.queryByTestId('test-children')).not.toBeInTheDocument()
@@ -36,9 +31,7 @@ describe('FormModalHeaderWrapper', () => {
 
   test('renders without buttons', () => {
     const { container } = render(
-      <ThemeProvider>
-        <FormModalHeaderWrapper children={mockChildren} />
-      </ThemeProvider>
+      <FormModalHeaderWrapper children={mockChildren} />
     )
 
     expect(screen.getByTestId('test-children')).toBeInTheDocument()
@@ -47,11 +40,7 @@ describe('FormModalHeaderWrapper', () => {
   })
 
   test('renders with empty content', () => {
-    const { container } = render(
-      <ThemeProvider>
-        <FormModalHeaderWrapper />
-      </ThemeProvider>
-    )
+    const { container } = render(<FormModalHeaderWrapper />)
 
     expect(container).toMatchSnapshot()
   })

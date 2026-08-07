@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { render, screen, fireEvent } from '@testing-library/react'
-import { ThemeProvider } from '@tetherto/pearpass-lib-ui-kit'
 
 import { RadioSelect } from './index'
 import '@testing-library/jest-dom'
@@ -33,15 +32,13 @@ describe('RadioSelect', () => {
 
   const renderComponent = (props = {}) =>
     render(
-      <ThemeProvider>
-        <RadioSelect
-          title={mockTitle}
-          options={mockOptions}
-          selectedOption="option1"
-          onChange={mockOnChange}
-          {...props}
-        />
-      </ThemeProvider>
+      <RadioSelect
+        title={mockTitle}
+        options={mockOptions}
+        selectedOption="option1"
+        onChange={mockOnChange}
+        {...props}
+      />
     )
 
   test('renders the component with title and options', () => {
@@ -91,14 +88,12 @@ describe('RadioSelect', () => {
     expect(container.querySelectorAll('input[type="radio"]')[0]).toBeChecked()
 
     rerender(
-      <ThemeProvider>
-        <RadioSelect
-          title={mockTitle}
-          options={mockOptions}
-          selectedOption="option3"
-          onChange={mockOnChange}
-        />
-      </ThemeProvider>
+      <RadioSelect
+        title={mockTitle}
+        options={mockOptions}
+        selectedOption="option3"
+        onChange={mockOnChange}
+      />
     )
 
     expect(container.querySelectorAll('input[type="radio"]')[2]).toBeChecked()

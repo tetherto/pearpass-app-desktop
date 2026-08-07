@@ -2,37 +2,32 @@
 
 exports[`InputField Component matches snapshot for default variant 1`] = `
 <div
-  class="html-div x1ghz6dp x1717udv x1aw8gp0 xzu4p3z x78zum5 xdt5ytf x1us19tq x5yr21d xh8yej3"
-  data-theme="dark"
+  class="sc-bRKDuR sc-fhHczv iUcaPP fvDOQV"
 >
   <div
-    class="sc-bRKDuR sc-fhHczv iUcaPP fvDOQV"
+    class="sc-ggWZvA jlOnfN"
   >
     <div
-      class="sc-ggWZvA jlOnfN"
+      class="sc-jwTyAe hXRaZK"
     >
-      <div
-        class="sc-jwTyAe hXRaZK"
+      <span
+        class="sc-hjsuWn ebTJZm"
       >
-        <span
-          class="sc-hjsuWn ebTJZm"
-        >
-          Label
-        </span>
+        Label
+      </span>
+      <div
+        class="sc-jJLAfE gttYtk"
+      >
+        <input
+          class="sc-hwkwBN kEAjAa"
+          data-testid="input-field"
+          placeholder="Enter text"
+          type="text"
+          value="snapshot test"
+        />
         <div
-          class="sc-jJLAfE gttYtk"
-        >
-          <input
-            class="sc-hwkwBN kEAjAa"
-            data-testid="input-field"
-            placeholder="Enter text"
-            type="text"
-            value="snapshot test"
-          />
-          <div
-            class="sc-kNOymR iQIqLX"
-          />
-        </div>
+          class="sc-kNOymR iQIqLX"
+        />
       </div>
     </div>
   </div>
@@ -41,37 +36,32 @@ exports[`InputField Component matches snapshot for default variant 1`] = `
 
 exports[`InputField Component matches snapshot for outline variant 1`] = `
 <div
-  class="html-div x1ghz6dp x1717udv x1aw8gp0 xzu4p3z x78zum5 xdt5ytf x1us19tq x5yr21d xh8yej3"
-  data-theme="dark"
+  class="sc-bRKDuR sc-hvigdm iUcaPP fYHaBr"
 >
   <div
-    class="sc-bRKDuR sc-hvigdm iUcaPP fYHaBr"
+    class="sc-ggWZvA jlOnfN"
   >
     <div
-      class="sc-ggWZvA jlOnfN"
+      class="sc-jwTyAe hXRaZK"
     >
-      <div
-        class="sc-jwTyAe hXRaZK"
+      <span
+        class="sc-hjsuWn ebTJZm"
       >
-        <span
-          class="sc-hjsuWn ebTJZm"
-        >
-          Outline Label
-        </span>
+        Outline Label
+      </span>
+      <div
+        class="sc-jJLAfE gttYtk"
+      >
+        <input
+          class="sc-hwkwBN kEAjAa"
+          data-testid="input-field"
+          placeholder="Enter text"
+          type="text"
+          value="outline snapshot"
+        />
         <div
-          class="sc-jJLAfE gttYtk"
-        >
-          <input
-            class="sc-hwkwBN kEAjAa"
-            data-testid="input-field"
-            placeholder="Enter text"
-            type="text"
-            value="outline snapshot"
-          />
-          <div
-            class="sc-kNOymR iQIqLX"
-          />
-        </div>
+          class="sc-kNOymR iQIqLX"
+        />
       </div>
     </div>
   </div>

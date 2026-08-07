@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { render } from '@testing-library/react'
-import { ThemeProvider } from '@tetherto/pearpass-lib-ui-kit'
 
 import { LoadingOverlay } from './index'
 import '@testing-library/jest-dom'
@@ -9,9 +8,7 @@ import '@testing-library/jest-dom'
 describe('LoadingOverlay', () => {
   test('renders correctly', () => {
     const { container } = render(
-      <ThemeProvider>
-        <LoadingOverlay data-testid="loading-overlay" />
-      </ThemeProvider>
+      <LoadingOverlay data-testid="loading-overlay" />
     )
 
     expect(container).toMatchSnapshot()
@@ -19,13 +16,11 @@ describe('LoadingOverlay', () => {
 
   test('passes props correctly', () => {
     const { getByTestId } = render(
-      <ThemeProvider>
-        <LoadingOverlay
-          data-testid="loading-overlay"
-          id="test-id"
-          className="test-class"
-        />
-      </ThemeProvider>
+      <LoadingOverlay
+        data-testid="loading-overlay"
+        id="test-id"
+        className="test-class"
+      />
     )
 
     const overlay = getByTestId('loading-overlay')
