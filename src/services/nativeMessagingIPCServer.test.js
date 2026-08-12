@@ -76,15 +76,6 @@ jest.mock('./handlers/SecurityHandlers', () => ({
     })
     this.nmFinishHandshake = jest.fn().mockResolvedValue({ ok: true })
     this.nmCloseSession = jest.fn().mockResolvedValue({ ok: true })
-    this.nmResetPairing = jest.fn().mockResolvedValue({
-      ok: true,
-      clearedSessions: 0,
-      newIdentity: {
-        ed25519PublicKey: 'new-mock-ed25519-key',
-        x25519PublicKey: 'new-mock-x25519-key',
-        creationDate: new Date().toISOString()
-      }
-    })
     this.checkExtensionPairingStatus = jest.fn().mockResolvedValue({
       isPaired: false,
       status: 'not_paired'

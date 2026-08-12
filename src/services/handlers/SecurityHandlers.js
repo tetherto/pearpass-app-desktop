@@ -1,6 +1,6 @@
 import sodium from 'sodium-native'
 
-import { PAIRING_STATES } from '../../constants/pairing.js'
+import { PAIRED_BROWSERS_CHANGED_EVENT } from '../../constants/pairing.js'
 import { SecurityErrorCodes } from '../../constants/securityErrors.js'
 import {
   getAutoLockTimeoutMs,
@@ -12,23 +12,23 @@ import {
 } from '../../utils/autoLock.js'
 import { createErrorWithCode } from '../../utils/createErrorWithCode.js'
 import { getNativeMessagingEnabled } from '../nativeMessagingPreferences.js'
+import { getOrCreateIdentity, getFingerprint } from '../security/appIdentity.js'
 import {
-  getOrCreateIdentity,
-  getFingerprint,
-  verifyPairingToken,
-  resetIdentity,
-  setClientIdentityPublicKey,
-  getClientIdentityPublicKey,
-  getCachedClientIdentityPublicKey,
-  getClientPairingState,
-  confirmClientPairing
-} from '../security/appIdentity.js'
+  addPendingClient,
+  confirmClient,
+  getCachedClientPublicKeys,
+  getClient,
+  listConfirmedClients
+} from '../security/pairedClients.js'
+import {
+  consumeInvite,
+  findLiveInviteByCode
+} from '../security/pairingInvites.js'
 import { PROTOCOL_TAGS } from '../security/protocolConstants.js'
 import { beginHandshake } from '../security/sessionManager.js'
 import {
   getSession,
   closeSession,
-  clearAllSessions,
   concatBytes
 } from '../security/sessionStore.js'
 /**
@@ -67,47 +67,33 @@ export class SecurityHandlers {
 
     const id = await getOrCreateIdentity(this.client)
 
-    // Verify the pairing token matches what the desktop app expects
-    const isValidToken = await verifyPairingToken(
+    // Each browser is authorized by its own single-use invitation
+    const invite = await findLiveInviteByCode(
       this.client,
       id.ed25519PublicKey,
       pairingToken
     )
-    if (!isValidToken) {
+    if (!invite) {
       throw new Error(
         createErrorWithCode(
           SecurityErrorCodes.INVALID_PAIRING_TOKEN,
-          'The pairing token is incorrect'
+          'The pairing token is incorrect or has expired'
         )
       )
     }
 
-    // Check if a different client is already paired
-    const existingClientPubB64 = await getClientIdentityPublicKey(this.client)
-    const pairingState = await getClientPairingState(this.client)
-
-    if (
-      existingClientPubB64 &&
-      existingClientPubB64 !== clientEd25519PublicKeyB64 &&
-      pairingState === PAIRING_STATES.CONFIRMED
-    ) {
-      // Existing pairing is confirmed - reject new client
-      throw new Error(
-        createErrorWithCode(
-          SecurityErrorCodes.CLIENT_ALREADY_PAIRED,
-          'A different extension is already paired. Reset pairing in the desktop app first.'
-        )
-      )
-    }
-
-    // If there is no existing client or pairing with existing client is pending
-    // save/overwrite with new client
-    if (existingClientPubB64 !== clientEd25519PublicKeyB64) {
-      await setClientIdentityPublicKey(
-        this.client,
-        clientEd25519PublicKeyB64,
-        PAIRING_STATES.PENDING
-      )
+    // Re-pairing a browser that is already registered is a no-op, and leaves
+    // the invitation available for the browser it was actually minted for.
+    const existing = await getClient(this.client, clientEd25519PublicKeyB64)
+    if (!existing) {
+      await addPendingClient(this.client, {
+        publicKey: clientEd25519PublicKeyB64,
+        label: invite.label,
+        inviteId: invite.id
+      })
+      // Consumed here rather than at confirmation time, so two browsers
+      // cannot redeem the same code.
+      await consumeInvite(this.client, invite.id, clientEd25519PublicKeyB64)
     }
 
     return {
@@ -133,9 +119,61 @@ export class SecurityHandlers {
     }
 
     // Verify this matches our pending pairing
-    await confirmClientPairing(this.client, clientEd25519PublicKeyB64)
+    await confirmClient(this.client, clientEd25519PublicKeyB64)
+
+    // Pairing completes over IPC, so tell the UI to refresh its browser list
+    if (global.window) {
+      global.window.dispatchEvent(new Event(PAIRED_BROWSERS_CHANGED_EVENT))
+    }
 
     return { confirmed: true }
+  }
+
+  /**
+   * Work out which paired extension a handshake belongs to.
+   *
+   * Extensions that predate multi-browser support do not identify themselves,
+   * so a single paired client is still resolvable; beyond that the caller has
+   * to say who it is.
+   * @param {string|undefined} clientEd25519PublicKeyB64
+   * @returns {Promise<string>} base64 Ed25519 key of the calling extension
+   */
+  async resolveHandshakeClient(clientEd25519PublicKeyB64) {
+    const confirmed = await listConfirmedClients(this.client)
+
+    if (!clientEd25519PublicKeyB64) {
+      if (confirmed.length === 1) return confirmed[0].publicKey
+
+      if (confirmed.length > 1) {
+        throw new Error(
+          createErrorWithCode(
+            SecurityErrorCodes.AMBIGUOUS_CLIENT,
+            'Several browsers are paired. Please update the PearPass extension to the latest version.'
+          )
+        )
+      }
+
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.NOT_PAIRED,
+          'No client identity registered. Please complete pairing first.'
+        )
+      )
+    }
+
+    const match = confirmed.find(
+      (entry) => entry.publicKey === clientEd25519PublicKeyB64
+    )
+    if (!match) {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.NOT_PAIRED,
+          'This browser is not paired. Please complete pairing first.'
+        )
+      )
+    }
+
+    return match.publicKey
   }
 
   /**
@@ -153,18 +191,7 @@ export class SecurityHandlers {
       )
     }
 
-    // Require a pinned client public key in secure vault (set during pairing via nmGetAppIdentity)
-    const clientPubB64 = await getClientIdentityPublicKey(this.client)
-    if (!clientPubB64) {
-      throw new Error(
-        createErrorWithCode(
-          SecurityErrorCodes.NOT_PAIRED,
-          'No client identity registered. Please complete pairing first.'
-        )
-      )
-    }
-
-    const { extEphemeralPubB64 } = params || {}
+    const { extEphemeralPubB64, clientEd25519PublicKeyB64 } = params || {}
     if (!extEphemeralPubB64) {
       throw new Error(
         createErrorWithCode(
@@ -173,7 +200,12 @@ export class SecurityHandlers {
         )
       )
     }
-    return beginHandshake(this.client, extEphemeralPubB64)
+
+    const clientPubB64 = await this.resolveHandshakeClient(
+      clientEd25519PublicKeyB64
+    )
+
+    return beginHandshake(this.client, extEphemeralPubB64, clientPubB64)
   }
 
   /**
@@ -209,8 +241,8 @@ export class SecurityHandlers {
     }
     if (session.clientVerified) return { ok: true }
 
-    // Load pinned client identity
-    const clientPubB64 = await getClientIdentityPublicKey(this.client)
+    // The session records which paired extension it was opened for
+    const clientPubB64 = session.clientPublicKey
     if (!clientPubB64) {
       throw new Error(
         createErrorWithCode(
@@ -323,8 +355,9 @@ export class SecurityHandlers {
       )
     }
 
-    const storedClientPubB64 = getCachedClientIdentityPublicKey()
-    const paired = storedClientPubB64 === clientEd25519PublicKeyB64
+    const paired = getCachedClientPublicKeys().includes(
+      clientEd25519PublicKeyB64
+    )
 
     return {
       paired
@@ -409,25 +442,5 @@ export class SecurityHandlers {
 
     window.dispatchEvent(new Event('reset-timer'))
     return { ok: true }
-  }
-
-  /**
-   * Reset pairing by generating new identity keys and clearing all sessions
-   * This will unpair the connected extension
-   */
-  async nmResetPairing() {
-    const clearedSessions = clearAllSessions()
-
-    const newIdentity = await resetIdentity(this.client)
-
-    return {
-      ok: true,
-      clearedSessions,
-      newIdentity: {
-        ed25519PublicKey: newIdentity.ed25519PublicKey,
-        x25519PublicKey: newIdentity.x25519PublicKey,
-        creationDate: newIdentity.creationDate
-      }
-    }
   }
 }

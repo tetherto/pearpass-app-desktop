@@ -8,27 +8,57 @@ import {
   useTheme
 } from '@tetherto/pearpass-lib-ui-kit'
 import {
+  Add,
   MoreVert,
   PublicOutlined,
   SwapVert
 } from '@tetherto/pearpass-lib-ui-kit/icons'
+import { formatDate } from '@tetherto/pear-apps-utils-date'
 
+import { PAIRING_STATES } from '../../../../constants/pairing'
 import { useConnectExtension } from '../../../../hooks/useConnectExtension'
+import { usePairedBrowsers } from '../../../../hooks/usePairedBrowsers'
 import { useTranslation } from '../../../../hooks/useTranslation'
 import { createStyles } from './styles'
 
 const TEST_IDS = {
   root: 'settings-your-devices',
   extensionSection: 'settings-card-browser-extension-connections',
-  extensionActionButton: 'settings-browser-extension-action'
+  extensionActionButton: 'settings-browser-extension-action',
+  addBrowserButton: 'settings-browser-extension-add',
+  disableButton: 'settings-browser-extension-disable'
 } as const
+
+type PairedBrowser = {
+  publicKey: string
+  label: string
+  pairingState: string
+  pairedAt: string
+}
 
 export const YourDevicesContent = () => {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const styles = createStyles(theme.colors)
-  const { isBrowserExtensionEnabled, toggleBrowserExtension } =
+  const { isBrowserExtensionEnabled, addBrowser, unpairBrowser, disableBrowserExtension } =
     useConnectExtension()
+  const { browsers } = usePairedBrowsers()
+
+  const hasBrowsers = browsers.length > 0
+
+  const getSubtitle = (browser: PairedBrowser) => {
+    if (browser.pairingState !== PAIRING_STATES.CONFIRMED) {
+      return t('Waiting for the browser to confirm…')
+    }
+
+    try {
+      return t('Paired on {date}', {
+        date: formatDate(browser.pairedAt, 'dd-mm-yy', '/')
+      })
+    } catch {
+      return undefined
+    }
+  }
 
   return (
     <div data-testid={TEST_IDS.root} style={styles.root}>
@@ -47,47 +77,69 @@ export const YourDevicesContent = () => {
       </div>
 
       <div data-testid={TEST_IDS.extensionSection} style={styles.sectionCard}>
-        {isBrowserExtensionEnabled ? (
+        {hasBrowsers ? (
           <div style={styles.list}>
-            <div>
-              <ListItem
-                icon={
-                  <div style={styles.iconWrap}>
-                    <PublicOutlined
-                      width={16}
-                      height={16}
-                      color={theme.colors.colorTextPrimary}
-                    />
-                  </div>
+            {(browsers as PairedBrowser[]).map((browser, index) => (
+              <div
+                key={browser.publicKey}
+                style={
+                  index < browsers.length - 1
+                    ? styles.listItemBorder
+                    : undefined
                 }
-                title={'Browser'}
-                testID="settings-device-item-browser"
-                rightElement={
-                  <ContextMenu
-                    trigger={
-                      <Button
-                        variant="tertiary"
-                        size="small"
-                        iconBefore={
-                          <MoreVert
-                            width={16}
-                            height={16}
-                            color={theme.colors.colorTextPrimary}
-                          />
-                        }
-                        data-testid={TEST_IDS.extensionActionButton}
-                        aria-label={t('Browser extension actions')}
+              >
+                <ListItem
+                  icon={
+                    <div style={styles.iconWrap}>
+                      <PublicOutlined
+                        width={16}
+                        height={16}
+                        color={theme.colors.colorTextPrimary}
                       />
-                    }
-                  >
-                    <NavbarListItem
-                      label={t('Unpair Browser extension')}
-                      variant="destructive"
-                      onClick={() => toggleBrowserExtension(false)}
-                    />
-                  </ContextMenu>
-                }
-              />
+                    </div>
+                  }
+                  title={browser.label}
+                  subtitle={getSubtitle(browser)}
+                  testID={`settings-device-item-${index}`}
+                  rightElement={
+                    <ContextMenu
+                      trigger={
+                        <Button
+                          variant="tertiary"
+                          size="small"
+                          iconBefore={
+                            <MoreVert
+                              width={16}
+                              height={16}
+                              color={theme.colors.colorTextPrimary}
+                            />
+                          }
+                          data-testid={`${TEST_IDS.extensionActionButton}-${index}`}
+                          aria-label={t('Browser extension actions')}
+                        />
+                      }
+                    >
+                      <NavbarListItem
+                        label={t('Unpair {label}', { label: browser.label })}
+                        variant="destructive"
+                        onClick={() => unpairBrowser(browser.publicKey)}
+                      />
+                    </ContextMenu>
+                  }
+                />
+              </div>
+            ))}
+
+            <div style={styles.footer}>
+              <Button
+                variant="tertiary"
+                size="small"
+                onClick={addBrowser}
+                iconBefore={<Add width={16} height={16} />}
+                data-testid={TEST_IDS.addBrowserButton}
+              >
+                {t('Add Browser Extension')}
+              </Button>
             </div>
           </div>
         ) : (
@@ -104,8 +156,9 @@ export const YourDevicesContent = () => {
               <Button
                 variant="tertiary"
                 size="small"
-                onClick={() => toggleBrowserExtension(true)}
+                onClick={addBrowser}
                 iconBefore={<SwapVert width={16} height={16} />}
+                data-testid={TEST_IDS.addBrowserButton}
               >
                 {t('Generate Pair Code for Browser Extension')}
               </Button>
@@ -113,6 +166,19 @@ export const YourDevicesContent = () => {
           </div>
         )}
       </div>
+
+      {isBrowserExtensionEnabled ? (
+        <div style={styles.disableWrap}>
+          <Button
+            variant="destructive"
+            size="small"
+            onClick={disableBrowserExtension}
+            data-testid={TEST_IDS.disableButton}
+          >
+            {t('Turn off browser extension connections')}
+          </Button>
+        </div>
+      ) : null}
     </div>
   )
 }

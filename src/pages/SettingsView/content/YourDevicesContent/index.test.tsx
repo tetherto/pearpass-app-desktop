@@ -10,18 +10,40 @@ import { YourDevicesContent } from './index'
 
 jest.mock('../../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
-    t: (str: string) => str
+    t: (str: string, values?: Record<string, unknown>) =>
+      values
+        ? str.replace(/\{(\w+)\}/g, (_, key) => String(values[key] ?? ''))
+        : str
   })
 }))
 
-const mockToggleBrowserExtension = jest.fn()
+jest.mock('@tetherto/pear-apps-utils-date', () => ({
+  formatDate: () => '01/08/26'
+}))
+
+const mockAddBrowser = jest.fn()
+const mockUnpairBrowser = jest.fn()
+const mockDisableBrowserExtension = jest.fn()
+
 let mockExtensionState = {
   isBrowserExtensionEnabled: false,
-  toggleBrowserExtension: mockToggleBrowserExtension
+  addBrowser: mockAddBrowser,
+  unpairBrowser: mockUnpairBrowser,
+  disableBrowserExtension: mockDisableBrowserExtension
 }
+
+let mockBrowsers: Array<Record<string, string>> = []
 
 jest.mock('../../../../hooks/useConnectExtension', () => ({
   useConnectExtension: () => mockExtensionState
+}))
+
+jest.mock('../../../../hooks/usePairedBrowsers', () => ({
+  usePairedBrowsers: () => ({
+    browsers: mockBrowsers,
+    isLoading: false,
+    refresh: jest.fn()
+  })
 }))
 
 jest.mock('./styles', () => ({
@@ -30,10 +52,13 @@ jest.mock('./styles', () => ({
     sectionHeading: {},
     sectionCard: {},
     list: {},
+    listItemBorder: {},
+    footer: {},
     iconWrap: {},
     emptyBrowserStateWrap: {},
     emptyStateCaptions: {},
-    emptyStateFooter: {}
+    emptyStateFooter: {},
+    disableWrap: {}
   })
 }))
 
@@ -79,11 +104,13 @@ jest.mock('@tetherto/pearpass-lib-ui-kit', () => ({
   ListItem: (props: {
     testID?: string
     title?: React.ReactNode
+    subtitle?: React.ReactNode
     rightElement?: React.ReactNode
     [key: string]: unknown
   }) => (
     <div data-testid={props.testID}>
       <div>{props.title}</div>
+      <div>{props.subtitle}</div>
       {props.rightElement}
     </div>
   ),
@@ -112,17 +139,35 @@ jest.mock('@tetherto/pearpass-lib-ui-kit', () => ({
 }))
 
 jest.mock('@tetherto/pearpass-lib-ui-kit/icons', () => ({
+  Add: () => null,
   MoreVert: () => null,
-  PhoneIphone: () => null,
+  PublicOutlined: () => null,
   SwapVert: () => null
 }))
+
+const CHROME = {
+  publicKey: 'chromeKey',
+  label: 'Chrome — work laptop',
+  pairingState: 'CONFIRMED',
+  pairedAt: '2026-08-01T00:00:00.000Z'
+}
+
+const FIREFOX = {
+  publicKey: 'firefoxKey',
+  label: 'Firefox',
+  pairingState: 'CONFIRMED',
+  pairedAt: '2026-08-02T00:00:00.000Z'
+}
 
 describe('YourDevicesContent', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    mockBrowsers = []
     mockExtensionState = {
       isBrowserExtensionEnabled: false,
-      toggleBrowserExtension: mockToggleBrowserExtension
+      addBrowser: mockAddBrowser,
+      unpairBrowser: mockUnpairBrowser,
+      disableBrowserExtension: mockDisableBrowserExtension
     }
   })
 
@@ -134,75 +179,90 @@ describe('YourDevicesContent', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows empty state when the browser extension is disabled', () => {
+  it('shows empty state when no browser is paired', () => {
     render(<YourDevicesContent />)
 
     expect(screen.getByText('Browser Extension')).toBeInTheDocument()
     expect(
-      screen.getByText(
-        'Create a unique pairing code to link your PearPass extension and enable autofill.'
-      )
-    ).toBeInTheDocument()
-    expect(
       screen.getByText('Generate Pair Code for Browser Extension')
     ).toBeInTheDocument()
+    expect(screen.queryByTestId('settings-device-item-0')).not.toBeInTheDocument()
+  })
+
+  it('calls addBrowser from the empty state', () => {
+    render(<YourDevicesContent />)
+
+    fireEvent.click(screen.getByText('Generate Pair Code for Browser Extension'))
+
+    expect(mockAddBrowser).toHaveBeenCalledTimes(1)
+  })
+
+  it('renders a row per paired browser', () => {
+    mockBrowsers = [CHROME, FIREFOX]
+
+    render(<YourDevicesContent />)
+
+    expect(screen.getByTestId('settings-device-item-0')).toBeInTheDocument()
+    expect(screen.getByTestId('settings-device-item-1')).toBeInTheDocument()
+    expect(screen.getByText('Chrome — work laptop')).toBeInTheDocument()
+    expect(screen.getByText('Firefox')).toBeInTheDocument()
+    // Both rows carry a pairing date (the formatter is stubbed to one value)
+    expect(screen.getAllByText('Paired on 01/08/26')).toHaveLength(2)
+  })
+
+  it('shows a pending browser as awaiting confirmation', () => {
+    mockBrowsers = [{ ...CHROME, pairingState: 'PENDING' }]
+
+    render(<YourDevicesContent />)
+
     expect(
-      screen.queryByTestId('settings-device-item-browser')
+      screen.getByText('Waiting for the browser to confirm…')
+    ).toBeInTheDocument()
+  })
+
+  it('offers to add another browser once one is paired', () => {
+    mockBrowsers = [CHROME]
+
+    render(<YourDevicesContent />)
+
+    fireEvent.click(screen.getByTestId('settings-browser-extension-add'))
+
+    expect(mockAddBrowser).toHaveBeenCalledTimes(1)
+  })
+
+  it('unpairs only the chosen browser', () => {
+    mockBrowsers = [CHROME, FIREFOX]
+
+    render(<YourDevicesContent />)
+
+    fireEvent.click(screen.getByText('Unpair Firefox'))
+
+    expect(mockUnpairBrowser).toHaveBeenCalledTimes(1)
+    expect(mockUnpairBrowser).toHaveBeenCalledWith('firefoxKey')
+  })
+
+  it('hides the global off-switch while the integration is off', () => {
+    mockBrowsers = [CHROME]
+
+    render(<YourDevicesContent />)
+
+    expect(
+      screen.queryByTestId('settings-browser-extension-disable')
     ).not.toBeInTheDocument()
   })
 
-  it('calls toggleBrowserExtension(true) when generate-pair-code button is clicked', () => {
-    render(<YourDevicesContent />)
-
-    fireEvent.click(
-      screen.getByText('Generate Pair Code for Browser Extension')
-    )
-
-    expect(mockToggleBrowserExtension).toHaveBeenCalledTimes(1)
-    expect(mockToggleBrowserExtension).toHaveBeenCalledWith(true)
-  })
-
-  it('shows browser device row when the extension is enabled', () => {
+  it('turns the whole integration off from the section control', () => {
+    mockBrowsers = [CHROME]
     mockExtensionState = {
-      isBrowserExtensionEnabled: true,
-      toggleBrowserExtension: mockToggleBrowserExtension
+      ...mockExtensionState,
+      isBrowserExtensionEnabled: true
     }
 
     render(<YourDevicesContent />)
 
-    expect(
-      screen.getByTestId('settings-device-item-browser')
-    ).toBeInTheDocument()
-    expect(screen.getByText('Browser')).toBeInTheDocument()
-    expect(
-      screen.queryByText('Generate Pair Code for Browser Extension')
-    ).not.toBeInTheDocument()
-  })
+    fireEvent.click(screen.getByTestId('settings-browser-extension-disable'))
 
-  it('shows the extension actions button when the extension is enabled', () => {
-    mockExtensionState = {
-      isBrowserExtensionEnabled: true,
-      toggleBrowserExtension: mockToggleBrowserExtension
-    }
-
-    render(<YourDevicesContent />)
-
-    expect(
-      screen.getByTestId('settings-browser-extension-action')
-    ).toBeInTheDocument()
-  })
-
-  it('calls toggleBrowserExtension(false) when unpair is clicked', () => {
-    mockExtensionState = {
-      isBrowserExtensionEnabled: true,
-      toggleBrowserExtension: mockToggleBrowserExtension
-    }
-
-    render(<YourDevicesContent />)
-
-    fireEvent.click(screen.getByText('Unpair Browser extension'))
-
-    expect(mockToggleBrowserExtension).toHaveBeenCalledTimes(1)
-    expect(mockToggleBrowserExtension).toHaveBeenCalledWith(false)
+    expect(mockDisableBrowserExtension).toHaveBeenCalledTimes(1)
+    expect(mockUnpairBrowser).not.toHaveBeenCalled()
   })
 })

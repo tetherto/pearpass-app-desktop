@@ -74,5 +74,11 @@ export const createStyles = (colors: ThemeColors) => ({
     display: 'flex' as const,
     justifyContent: 'flex-start' as const,
     padding: `${rawTokens.spacing4}px`
+  },
+
+  disableWrap: {
+    display: 'flex' as const,
+    justifyContent: 'flex-start' as const,
+    marginTop: `${rawTokens.spacing12}px`
   }
 })

@@ -4,7 +4,7 @@
 
 import sodium from 'sodium-native'
 
-/** @typedef {{ key: Uint8Array, sendSeq: number, lastRecvSeq: number, transcript: Uint8Array, clientVerified: boolean, createdAt: number }} Session */
+/** @typedef {{ key: Uint8Array, sendSeq: number, lastRecvSeq: number, transcript: Uint8Array, clientPublicKey: string|null, clientVerified: boolean, createdAt: number }} Session */
 
 const SESSIONS = new Map()
 
@@ -46,9 +46,16 @@ export const deriveSessionKey = (sharedSecret, transcript) => {
  * Create a new session from shared secret and transcript.
  * @param {Uint8Array} sharedSecret
  * @param {Uint8Array} transcript
+ * @param {string|null} [clientPublicKey] - base64 Ed25519 key of the paired
+ *   extension this session belongs to, used to verify its signature later and
+ *   to close its sessions when it is unpaired
  * @returns {{ sessionId: string, key: Uint8Array }}
  */
-export const createSession = (sharedSecret, transcript) => {
+export const createSession = (
+  sharedSecret,
+  transcript,
+  clientPublicKey = null
+) => {
   const key = deriveSessionKey(sharedSecret, transcript)
   const sessionIdBytes = randomBytes(16)
   const sessionId = Buffer.from(sessionIdBytes).toString('hex')
@@ -57,6 +64,7 @@ export const createSession = (sharedSecret, transcript) => {
     sendSeq: 0,
     lastRecvSeq: 0,
     transcript,
+    clientPublicKey,
     clientVerified: false,
     createdAt: Date.now()
   })
@@ -92,6 +100,23 @@ export const getSession = (sessionId) => {
  */
 export const closeSession = (sessionId) => {
   SESSIONS.delete(sessionId)
+}
+
+/**
+ * Close every session belonging to one extension, leaving other extensions
+ * connected. Used when a single browser is unpaired.
+ * @param {string} clientPublicKey
+ * @returns {number} how many sessions were closed
+ */
+export const closeSessionsForClient = (clientPublicKey) => {
+  let closed = 0
+  for (const [sessionId, session] of SESSIONS) {
+    if (session.clientPublicKey === clientPublicKey) {
+      SESSIONS.delete(sessionId)
+      closed++
+    }
+  }
+  return closed
 }
 
 /**

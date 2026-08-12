@@ -3,11 +3,7 @@
 
 import sodium from 'sodium-native'
 
-import {
-  getOrCreateIdentity,
-  __getMemIdentity,
-  getClientIdentityPublicKey
-} from './appIdentity.js'
+import { getOrCreateIdentity, __getMemIdentity } from './appIdentity.js'
 import {
   randomBytes,
   concatBytes,
@@ -87,17 +83,18 @@ export const decryptWithSession = (sessionId, nonce, ciphertext) => {
  * return host ephemeral public key and signature over transcript.
  * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
  * @param {string} extensionEphemeralPublicKeyB64
+ * @param {string} clientPubB64 - base64 Ed25519 key of the paired extension
+ *   this handshake is for, resolved by the caller
  * @returns {{ hostEphemeralPubB64: string, signatureB64: string, sessionId: string }}
  */
 export const beginHandshake = async (
   client,
-  extensionEphemeralPublicKeyB64
+  extensionEphemeralPublicKeyB64,
+  clientPubB64
 ) => {
   // Load or create identity, then load private parts from encryption store (or memory)
   await getOrCreateIdentity(client)
 
-  // Load pinned client public key (required for transcript binding)
-  const clientPubB64 = await getClientIdentityPublicKey(client)
   if (!clientPubB64) {
     throw new Error(
       createErrorWithCode(
@@ -128,7 +125,8 @@ export const beginHandshake = async (
         return finalizeHandshakeWithMemoryIdentity(
           mem,
           extensionEphemeralPublicKeyB64,
-          clientPublicKeyBytes
+          clientPublicKeyBytes,
+          clientPubB64
         )
       }
     } catch {}
@@ -181,7 +179,7 @@ export const beginHandshake = async (
   sodium.crypto_sign_detached(signature, transcript, ed25519PrivateKeyBytes)
 
   // Create session
-  const { sessionId } = createSession(sharedSecret, transcript)
+  const { sessionId } = createSession(sharedSecret, transcript, clientPubB64)
 
   return {
     hostEphemeralPubB64: Buffer.from(hostEphemeralPublicKey).toString('base64'),
@@ -194,12 +192,14 @@ export const beginHandshake = async (
  * Fallback: finalize handshake using in-memory identity keys
  * @param {{ ed25519PublicKeyBytes: Uint8Array, ed25519PrivateKeyBytes: Uint8Array, x25519PublicKeyBytes: Uint8Array, x25519PrivateKeyBytes: Uint8Array } | { edPk: Uint8Array, edSk: Uint8Array, xPk: Uint8Array, xSk: Uint8Array }} mem
  * @param {string} extensionEphemeralPublicKeyB64
- * @param {Uint8Array} clientPublicKeyBytes - The pinned client Ed25519 public key
+ * @param {Uint8Array} clientPublicKeyBytes - The paired client Ed25519 public key
+ * @param {string} clientPubB64 - Same key, base64, recorded on the session
  */
 function finalizeHandshakeWithMemoryIdentity(
   mem,
   extensionEphemeralPublicKeyB64,
-  clientPublicKeyBytes
+  clientPublicKeyBytes,
+  clientPubB64
 ) {
   const hostEphemeralPrivateKey = new Uint8Array(
     sodium.crypto_box_SECRETKEYBYTES
@@ -233,7 +233,7 @@ function finalizeHandshakeWithMemoryIdentity(
   sodium.crypto_sign_detached(signature, transcript, privateKey)
 
   // Create session
-  const { sessionId } = createSession(sharedSecret, transcript)
+  const { sessionId } = createSession(sharedSecret, transcript, clientPubB64)
 
   return {
     hostEphemeralPubB64: Buffer.from(hostEphemeralPublicKey).toString('base64'),
