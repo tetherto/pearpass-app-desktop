@@ -83,10 +83,6 @@ export class NativeMessagingIPCServer {
       securityHandlers.nmCloseSession.bind(securityHandlers)
     )
     this.methodRegistry.register(
-      'nmResetPairing',
-      securityHandlers.nmResetPairing.bind(securityHandlers)
-    )
-    this.methodRegistry.register(
       'getAutoLockSettings',
       securityHandlers.getAutoLockSettings.bind(securityHandlers)
     )

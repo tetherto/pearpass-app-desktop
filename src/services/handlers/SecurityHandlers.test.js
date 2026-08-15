@@ -32,10 +32,14 @@ import {
 } from '../../utils/autoLock.js'
 import { getNativeMessagingEnabled } from '../nativeMessagingPreferences'
 import * as appIdentity from '../security/appIdentity'
+import * as pairedClients from '../security/pairedClients'
+import * as pairingInvites from '../security/pairingInvites'
 import * as sessionManager from '../security/sessionManager'
 import * as sessionStore from '../security/sessionStore'
 
 jest.mock('../security/appIdentity')
+jest.mock('../security/pairedClients')
+jest.mock('../security/pairingInvites')
 jest.mock('../security/sessionManager')
 jest.mock('../security/sessionStore')
 jest.mock('../nativeMessagingPreferences', () => ({
@@ -78,39 +82,49 @@ describe('SecurityHandlers', () => {
       ).rejects.toThrow(SecurityErrorCodes.CLIENT_PUBLIC_KEY_REQUIRED)
     })
 
-    it('throws if verifyPairingToken returns false', async () => {
+    it('throws if no live invite matches the pairing token', async () => {
       appIdentity.getOrCreateIdentity.mockResolvedValue({
         ed25519PublicKey: 'pubKey',
         x25519PublicKey: 'xPubKey'
       })
-      appIdentity.verifyPairingToken.mockResolvedValue(false)
+      pairingInvites.findLiveInviteByCode.mockResolvedValue(null)
+
       await expect(
         handlers.nmGetAppIdentity({
           pairingToken: 'token',
           clientEd25519PublicKeyB64: 'clientPub'
         })
       ).rejects.toThrow(SecurityErrorCodes.INVALID_PAIRING_TOKEN)
+
+      expect(pairedClients.addPendingClient).not.toHaveBeenCalled()
     })
 
-    it('returns identity info and stores client public key if pairingToken is valid', async () => {
+    it('registers the client and consumes the invite when the code is valid', async () => {
       appIdentity.getOrCreateIdentity.mockResolvedValue({
         ed25519PublicKey: 'pubKey',
         x25519PublicKey: 'xPubKey'
       })
-      appIdentity.verifyPairingToken.mockResolvedValue(true)
       appIdentity.getFingerprint.mockReturnValue('fingerprint')
-      appIdentity.setClientIdentityPublicKey.mockResolvedValue(undefined)
-      appIdentity.getClientIdentityPublicKey.mockResolvedValue(null)
+      pairingInvites.findLiveInviteByCode.mockResolvedValue({
+        id: 'invite-1',
+        label: 'Chrome'
+      })
+      pairedClients.getClient.mockResolvedValue(null)
 
       const result = await handlers.nmGetAppIdentity({
         pairingToken: 'token',
         clientEd25519PublicKeyB64: 'clientPub'
       })
 
-      expect(appIdentity.setClientIdentityPublicKey).toHaveBeenCalledWith(
+      expect(pairedClients.addPendingClient).toHaveBeenCalledWith(client, {
+        publicKey: 'clientPub',
+        label: 'Chrome',
+        inviteId: 'invite-1'
+      })
+      expect(pairingInvites.consumeInvite).toHaveBeenCalledWith(
         client,
-        'clientPub',
-        'PENDING'
+        'invite-1',
+        'clientPub'
       )
       expect(result).toEqual({
         ed25519PublicKey: 'pubKey',
@@ -119,43 +133,53 @@ describe('SecurityHandlers', () => {
       })
     })
 
-    it('throws if a different client is already paired', async () => {
+    it('pairs a second browser without disturbing the first', async () => {
       appIdentity.getOrCreateIdentity.mockResolvedValue({
         ed25519PublicKey: 'pubKey',
         x25519PublicKey: 'xPubKey'
       })
-      appIdentity.verifyPairingToken.mockResolvedValue(true)
-      appIdentity.getClientIdentityPublicKey.mockResolvedValue(
-        'existingClientPub'
-      )
-      appIdentity.getClientPairingState.mockResolvedValue('CONFIRMED')
+      appIdentity.getFingerprint.mockReturnValue('fingerprint')
+      pairingInvites.findLiveInviteByCode.mockResolvedValue({
+        id: 'invite-2',
+        label: 'Firefox'
+      })
+      // The first browser is already registered under a different key
+      pairedClients.getClient.mockResolvedValue(null)
 
-      await expect(
-        handlers.nmGetAppIdentity({
-          pairingToken: 'token',
-          clientEd25519PublicKeyB64: 'differentClientPub'
-        })
-      ).rejects.toThrow(SecurityErrorCodes.CLIENT_ALREADY_PAIRED)
+      await handlers.nmGetAppIdentity({
+        pairingToken: 'second-code',
+        clientEd25519PublicKeyB64: 'secondClientPub'
+      })
 
-      expect(appIdentity.setClientIdentityPublicKey).not.toHaveBeenCalled()
+      expect(pairedClients.addPendingClient).toHaveBeenCalledWith(client, {
+        publicKey: 'secondClientPub',
+        label: 'Firefox',
+        inviteId: 'invite-2'
+      })
     })
 
-    it('allows re-pairing same client with valid token', async () => {
+    it('is a no-op for a client that is already registered', async () => {
       appIdentity.getOrCreateIdentity.mockResolvedValue({
         ed25519PublicKey: 'pubKey',
         x25519PublicKey: 'xPubKey'
       })
-      appIdentity.verifyPairingToken.mockResolvedValue(true)
       appIdentity.getFingerprint.mockReturnValue('fingerprint')
-      appIdentity.setClientIdentityPublicKey.mockResolvedValue(undefined)
-      appIdentity.getClientIdentityPublicKey.mockResolvedValue('sameClientPub')
+      pairingInvites.findLiveInviteByCode.mockResolvedValue({
+        id: 'invite-1',
+        label: 'Chrome'
+      })
+      pairedClients.getClient.mockResolvedValue({
+        publicKey: 'sameClientPub',
+        label: 'Chrome'
+      })
 
       const result = await handlers.nmGetAppIdentity({
         pairingToken: 'token',
         clientEd25519PublicKeyB64: 'sameClientPub'
       })
 
-      expect(appIdentity.setClientIdentityPublicKey).not.toHaveBeenCalled()
+      expect(pairedClients.addPendingClient).not.toHaveBeenCalled()
+      expect(pairingInvites.consumeInvite).not.toHaveBeenCalled()
       expect(result).toEqual({
         ed25519PublicKey: 'pubKey',
         x25519PublicKey: 'xPubKey',
@@ -167,8 +191,10 @@ describe('SecurityHandlers', () => {
   describe('nmBeginHandshake', () => {
     beforeEach(() => {
       getNativeMessagingEnabled.mockReturnValue(true)
-      // By default, simulate a paired client with a stored public key
-      appIdentity.getClientIdentityPublicKey.mockResolvedValue('clientPubKey')
+      // By default, simulate a single confirmed client
+      pairedClients.listConfirmedClients.mockResolvedValue([
+        { publicKey: 'clientPubKey' }
+      ])
     })
 
     it('throws if native messaging is disabled', async () => {
@@ -178,8 +204,8 @@ describe('SecurityHandlers', () => {
       ).rejects.toThrow(SecurityErrorCodes.NATIVE_MESSAGING_DISABLED)
     })
 
-    it('throws if no client public key is stored (not paired)', async () => {
-      appIdentity.getClientIdentityPublicKey.mockResolvedValue(null)
+    it('throws if no client is paired', async () => {
+      pairedClients.listConfirmedClients.mockResolvedValue([])
 
       await expect(
         handlers.nmBeginHandshake({ extEphemeralPubB64: 'abc' })
@@ -193,17 +219,65 @@ describe('SecurityHandlers', () => {
       )
     })
 
-    it('calls beginHandshake with correct params when client is paired', async () => {
-      appIdentity.getClientIdentityPublicKey.mockResolvedValue('clientPubKey')
+    it('resolves the only paired client when the extension does not identify itself', async () => {
       sessionManager.beginHandshake.mockResolvedValue('handshake-result')
+
       const result = await handlers.nmBeginHandshake({
         extEphemeralPubB64: 'abc'
       })
-      expect(appIdentity.getClientIdentityPublicKey).toHaveBeenCalledWith(
-        client
+
+      expect(sessionManager.beginHandshake).toHaveBeenCalledWith(
+        client,
+        'abc',
+        'clientPubKey'
       )
-      expect(sessionManager.beginHandshake).toHaveBeenCalledWith(client, 'abc')
       expect(result).toBe('handshake-result')
+    })
+
+    it('throws AMBIGUOUS_CLIENT when several browsers are paired and the caller is anonymous', async () => {
+      pairedClients.listConfirmedClients.mockResolvedValue([
+        { publicKey: 'chromeKey' },
+        { publicKey: 'firefoxKey' }
+      ])
+
+      await expect(
+        handlers.nmBeginHandshake({ extEphemeralPubB64: 'abc' })
+      ).rejects.toThrow(SecurityErrorCodes.AMBIGUOUS_CLIENT)
+      expect(sessionManager.beginHandshake).not.toHaveBeenCalled()
+    })
+
+    it('handshakes with the named client when several browsers are paired', async () => {
+      pairedClients.listConfirmedClients.mockResolvedValue([
+        { publicKey: 'chromeKey' },
+        { publicKey: 'firefoxKey' }
+      ])
+      sessionManager.beginHandshake.mockResolvedValue('handshake-result')
+
+      const result = await handlers.nmBeginHandshake({
+        extEphemeralPubB64: 'abc',
+        clientEd25519PublicKeyB64: 'firefoxKey'
+      })
+
+      expect(sessionManager.beginHandshake).toHaveBeenCalledWith(
+        client,
+        'abc',
+        'firefoxKey'
+      )
+      expect(result).toBe('handshake-result')
+    })
+
+    it('throws NOT_PAIRED when the named client is unknown', async () => {
+      pairedClients.listConfirmedClients.mockResolvedValue([
+        { publicKey: 'chromeKey' }
+      ])
+
+      await expect(
+        handlers.nmBeginHandshake({
+          extEphemeralPubB64: 'abc',
+          clientEd25519PublicKeyB64: 'strangerKey'
+        })
+      ).rejects.toThrow(SecurityErrorCodes.NOT_PAIRED)
+      expect(sessionManager.beginHandshake).not.toHaveBeenCalled()
     })
   })
 
@@ -230,12 +304,12 @@ describe('SecurityHandlers', () => {
       ).rejects.toThrow(SecurityErrorCodes.SESSION_NOT_FOUND)
     })
 
-    it('throws if client identity is not paired', async () => {
+    it('throws if the session carries no client identity', async () => {
       sessionStore.getSession.mockReturnValue({
         id: 'sid',
-        transcript: new Uint8Array([1, 2, 3])
+        transcript: new Uint8Array([1, 2, 3]),
+        clientPublicKey: null
       })
-      appIdentity.getClientIdentityPublicKey.mockResolvedValue(null)
 
       await expect(
         handlers.nmFinishHandshake({
@@ -245,12 +319,37 @@ describe('SecurityHandlers', () => {
       ).rejects.toThrow(SecurityErrorCodes.CLIENT_NOT_PAIRED)
     })
 
-    it('throws ClientSignatureInvalid and closes session when signature is invalid', async () => {
-      const session = { id: 'sid', transcript: new Uint8Array([1, 2, 3]) }
+    it('verifies against the client the session was opened for', async () => {
+      const chromeKey = Buffer.alloc(32, 7).toString('base64')
+      const session = {
+        id: 'sid',
+        transcript: new Uint8Array([1, 2, 3]),
+        clientPublicKey: chromeKey
+      }
       sessionStore.getSession.mockReturnValue(session)
-      appIdentity.getClientIdentityPublicKey.mockResolvedValue(
-        Buffer.alloc(32, 1).toString('base64')
+      const sodium = require('sodium-native')
+      sodium.crypto_sign_verify_detached.mockReturnValue(true)
+
+      const result = await handlers.nmFinishHandshake({
+        sessionId: 'sid',
+        clientSigB64: Buffer.alloc(64, 2).toString('base64')
+      })
+
+      expect(result).toEqual({ ok: true })
+      expect(session.clientVerified).toBe(true)
+      // Third argument is the public key the signature is checked against
+      expect(sodium.crypto_sign_verify_detached.mock.calls[0][2]).toEqual(
+        new Uint8Array(Buffer.from(chromeKey, 'base64'))
       )
+    })
+
+    it('throws ClientSignatureInvalid and closes session when signature is invalid', async () => {
+      const session = {
+        id: 'sid',
+        transcript: new Uint8Array([1, 2, 3]),
+        clientPublicKey: Buffer.alloc(32, 1).toString('base64')
+      }
+      sessionStore.getSession.mockReturnValue(session)
       const sodium = require('sodium-native')
       sodium.crypto_sign_verify_detached.mockReturnValue(false)
 
@@ -288,20 +387,19 @@ describe('SecurityHandlers', () => {
       )
     })
 
-    it('returns paired=true when client key matches', async () => {
-      appIdentity.getCachedClientIdentityPublicKey.mockReturnValue(
+    it('returns paired=true for any cached client key', async () => {
+      pairedClients.getCachedClientPublicKeys.mockReturnValue([
+        'firstKey',
         'clientPubKey123'
-      )
+      ])
       const result = await handlers.checkExtensionPairingStatus({
         clientEd25519PublicKeyB64: 'clientPubKey123'
       })
       expect(result.paired).toBe(true)
     })
 
-    it('returns paired=false when key does not match', async () => {
-      appIdentity.getCachedClientIdentityPublicKey.mockReturnValue(
-        'differentKey'
-      )
+    it('returns paired=false when key is not cached', async () => {
+      pairedClients.getCachedClientPublicKeys.mockReturnValue(['differentKey'])
       const result = await handlers.checkExtensionPairingStatus({
         clientEd25519PublicKeyB64: 'clientPubKey123'
       })
@@ -309,7 +407,7 @@ describe('SecurityHandlers', () => {
     })
 
     it('returns paired=false when no client key is stored', async () => {
-      appIdentity.getCachedClientIdentityPublicKey.mockReturnValue(null)
+      pairedClients.getCachedClientPublicKeys.mockReturnValue([])
       const result = await handlers.checkExtensionPairingStatus({
         clientEd25519PublicKeyB64: 'clientPubKey123'
       })
@@ -317,26 +415,29 @@ describe('SecurityHandlers', () => {
     })
   })
 
-  describe('nmResetPairing', () => {
-    it('clears sessions and resets identity', async () => {
-      sessionStore.clearAllSessions.mockReturnValue(['sid1', 'sid2'])
-      appIdentity.resetIdentity.mockResolvedValue({
-        ed25519PublicKey: 'newPub',
-        x25519PublicKey: 'newXPub',
-        creationDate: '2024-01-01'
+  describe('nmConfirmPairing', () => {
+    it('confirms the client and announces the change', async () => {
+      const listener = jest.fn()
+      window.addEventListener('paired-browsers-changed', listener)
+
+      const result = await handlers.nmConfirmPairing({
+        clientEd25519PublicKeyB64: 'clientPub'
       })
-      const result = await handlers.nmResetPairing()
-      expect(sessionStore.clearAllSessions).toHaveBeenCalled()
-      expect(appIdentity.resetIdentity).toHaveBeenCalledWith(client)
-      expect(result).toEqual({
-        ok: true,
-        clearedSessions: ['sid1', 'sid2'],
-        newIdentity: {
-          ed25519PublicKey: 'newPub',
-          x25519PublicKey: 'newXPub',
-          creationDate: '2024-01-01'
-        }
-      })
+
+      expect(pairedClients.confirmClient).toHaveBeenCalledWith(
+        client,
+        'clientPub'
+      )
+      expect(listener).toHaveBeenCalled()
+      expect(result).toEqual({ confirmed: true })
+
+      window.removeEventListener('paired-browsers-changed', listener)
+    })
+
+    it('throws if the client public key is missing', async () => {
+      await expect(handlers.nmConfirmPairing({})).rejects.toThrow(
+        SecurityErrorCodes.CLIENT_PUBLIC_KEY_REQUIRED
+      )
     })
   })
 

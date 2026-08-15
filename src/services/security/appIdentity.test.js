@@ -4,12 +4,8 @@ import {
   getOrCreateIdentity,
   getPairingCode,
   getFingerprint,
-  __getMemIdentity,
-  setClientIdentityPublicKey,
-  confirmClientPairing
+  __getMemIdentity
 } from './appIdentity'
-import { LOCAL_STORAGE_KEYS } from '../../constants/localStorage'
-import { PAIRING_STATES } from '../../constants/pairing'
 import { logger } from '../../utils/logger'
 
 // Mock dependencies
@@ -113,7 +109,6 @@ describe('appIdentity', () => {
       const creationDate = '2024-01-01T00:00:00.000Z'
 
       mockClient.encryptionGet
-        .mockResolvedValueOnce(null) // pairing secret missing initially
         .mockResolvedValueOnce(ed25519Mock)
         .mockResolvedValueOnce(x25519Mock)
         .mockResolvedValueOnce(creationDate)
@@ -145,7 +140,6 @@ describe('appIdentity', () => {
       const creationDate = '2024-01-01T00:00:00.000Z'
 
       mockClient.encryptionGet
-        .mockResolvedValueOnce({ data: null }) // pairing secret missing initially
         .mockResolvedValueOnce({ data: ed25519Mock })
         .mockResolvedValueOnce({ data: x25519Mock })
         .mockResolvedValueOnce({ data: creationDate })
@@ -263,52 +257,6 @@ describe('appIdentity', () => {
       const fp2 = getFingerprint(key2)
 
       expect(fp1).not.toBe(fp2)
-    })
-  })
-  describe('setClientIdentityPublicKey', () => {
-    it('should store client data in vault but NOT in localStorage', async () => {
-      const clientPub = 'clientPub123'
-      await setClientIdentityPublicKey(mockClient, clientPub)
-
-      expect(mockClient.encryptionAdd).toHaveBeenCalledWith(
-        'nm.client.data',
-        JSON.stringify({
-          publicKey: clientPub,
-          pairingState: PAIRING_STATES.PENDING
-        })
-      )
-
-      expect(
-        localStorage.getItem(LOCAL_STORAGE_KEYS.NM_CLIENT_PUBLIC_KEY)
-      ).toBeNull()
-    })
-  })
-
-  describe('confirmClientPairing', () => {
-    it('should update vault state and set localStorage', async () => {
-      const clientPub = 'clientPub123'
-
-      // Mock existing pending pairing in vault
-      mockClient.encryptionGet.mockResolvedValue(
-        JSON.stringify({
-          publicKey: clientPub,
-          pairingState: PAIRING_STATES.PENDING
-        })
-      )
-
-      await confirmClientPairing(mockClient, clientPub)
-
-      expect(mockClient.encryptionAdd).toHaveBeenCalledWith(
-        'nm.client.data',
-        JSON.stringify({
-          publicKey: clientPub,
-          pairingState: PAIRING_STATES.CONFIRMED
-        })
-      )
-
-      expect(
-        localStorage.getItem(LOCAL_STORAGE_KEYS.NM_CLIENT_PUBLIC_KEY)
-      ).toBe(clientPub)
     })
   })
 })

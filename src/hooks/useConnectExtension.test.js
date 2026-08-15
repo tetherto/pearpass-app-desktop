@@ -21,8 +21,12 @@ jest.mock(
   '../containers/Modal/ExtensionPairingModalContent/ExtensionPairingModalContent',
   () => ({ ExtensionPairingModalContent: () => null })
 )
+jest.mock(
+  '../containers/Modal/AddBrowserModalContent/AddBrowserModalContent',
+  () => ({ AddBrowserModalContent: () => null })
+)
 
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook } from '@testing-library/react'
 
 import { useConnectExtension } from './useConnectExtension'
 import { createOrGetPearpassClient } from '../services/createOrGetPearpassClient'
@@ -36,10 +40,20 @@ import {
   setNativeMessagingEnabled
 } from '../services/nativeMessagingPreferences'
 import {
-  getFingerprint,
   getOrCreateIdentity,
-  getPairingToken
+  resetIdentity
 } from '../services/security/appIdentity'
+import {
+  clearClients,
+  listClients,
+  removeClient
+} from '../services/security/pairedClients'
+import {
+  clearInvites,
+  getInviteCode,
+  mintInvite
+} from '../services/security/pairingInvites'
+import { closeSessionsForClient } from '../services/security/sessionStore'
 import {
   killNativeMessagingHostProcesses,
   setupNativeMessaging
@@ -74,10 +88,22 @@ jest.mock('../services/nativeMessagingPreferences', () => ({
   setNativeMessagingEnabled: jest.fn()
 }))
 jest.mock('../services/security/appIdentity', () => ({
-  getFingerprint: jest.fn(),
   getOrCreateIdentity: jest.fn(),
-  getPairingToken: jest.fn(),
   resetIdentity: jest.fn()
+}))
+jest.mock('../services/security/pairedClients', () => ({
+  clearClients: jest.fn().mockResolvedValue(undefined),
+  listClients: jest.fn(),
+  removeClient: jest.fn().mockResolvedValue(true)
+}))
+jest.mock('../services/security/pairingInvites', () => ({
+  clearInvites: jest.fn().mockResolvedValue(undefined),
+  getInviteCode: jest.fn(),
+  mintInvite: jest.fn()
+}))
+jest.mock('../services/security/sessionStore.js', () => ({
+  clearAllSessions: jest.fn(),
+  closeSessionsForClient: jest.fn()
 }))
 jest.mock('../utils/nativeMessagingSetup', () => ({
   setupNativeMessaging: jest.fn(),
@@ -95,6 +121,10 @@ jest.mock('../electron', () => ({
 describe('useConnectExtension', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    createOrGetPearpassClient.mockReturnValue({
+      encryptionAdd: jest.fn().mockResolvedValue(undefined)
+    })
+    listClients.mockResolvedValue([])
   })
 
   it('initializes extension state if enabled and running', () => {
@@ -113,92 +143,158 @@ describe('useConnectExtension', () => {
     expect(result.current.isBrowserExtensionEnabled).toBe(false)
   })
 
-  it('connects extension successfully via toggleBrowserExtension', async () => {
-    const fakeIdentity = {
-      ed25519PublicKey: 'pubkey',
-      creationDate: '2023-01-01'
-    }
-
-    setupNativeMessaging.mockResolvedValue({ success: true })
-    startNativeMessagingIPC.mockResolvedValue()
-    killNativeMessagingHostProcesses.mockResolvedValue()
-    createOrGetPearpassClient.mockReturnValue({
-      encryptionAdd: jest.fn().mockResolvedValue(undefined)
-    })
-    getOrCreateIdentity.mockResolvedValue(fakeIdentity)
-    getPairingToken.mockResolvedValue('PAIRCODE-ABCD')
-    getFingerprint.mockReturnValue('ABCD1234')
-
-    const { result } = renderHook(() => useConnectExtension())
-
-    await act(async () => {
-      await result.current.toggleBrowserExtension(true)
+  describe('addBrowser', () => {
+    beforeEach(() => {
+      getNativeMessagingEnabled.mockReturnValue(false)
+      isNativeMessagingIPCRunning.mockReturnValue(false)
+      setupNativeMessaging.mockResolvedValue({ success: true })
+      startNativeMessagingIPC.mockResolvedValue()
     })
 
-    expect(setupNativeMessaging).toHaveBeenCalled()
-    expect(killNativeMessagingHostProcesses).toHaveBeenCalled()
-    expect(startNativeMessagingIPC).toHaveBeenCalled()
-    expect(setNativeMessagingEnabled).toHaveBeenCalledWith(true)
-    expect(mockSetModal).toHaveBeenCalled()
+    it('sets up native messaging then opens the naming modal', async () => {
+      const { result } = renderHook(() => useConnectExtension())
+
+      await act(async () => {
+        await result.current.addBrowser()
+      })
+
+      expect(setupNativeMessaging).toHaveBeenCalled()
+      expect(killNativeMessagingHostProcesses).toHaveBeenCalled()
+      expect(startNativeMessagingIPC).toHaveBeenCalled()
+      expect(setNativeMessagingEnabled).toHaveBeenCalledWith(true)
+      expect(mockSetModal).toHaveBeenCalled()
+    })
+
+    it('skips setup when the integration is already on', async () => {
+      getNativeMessagingEnabled.mockReturnValue(true)
+      isNativeMessagingIPCRunning.mockReturnValue(true)
+
+      const { result } = renderHook(() => useConnectExtension())
+
+      await act(async () => {
+        await result.current.addBrowser()
+      })
+
+      expect(setupNativeMessaging).not.toHaveBeenCalled()
+      expect(mockSetModal).toHaveBeenCalled()
+    })
+
+    it('reports setup failure without opening the modal', async () => {
+      setupNativeMessaging.mockResolvedValue({
+        success: false,
+        message: 'fail'
+      })
+
+      const { result } = renderHook(() => useConnectExtension())
+
+      await act(async () => {
+        await result.current.addBrowser()
+      })
+
+      expect(startNativeMessagingIPC).not.toHaveBeenCalled()
+      expect(mockSetModal).not.toHaveBeenCalled()
+      expect(mockSetToast).toHaveBeenCalled()
+    })
+
+    it('mints an invite and shows its code when a label is submitted', async () => {
+      const invite = { id: 'invite-1', expiresAt: '2026-08-12T10:00:00.000Z' }
+      getOrCreateIdentity.mockResolvedValue({ ed25519PublicKey: 'pubkey' })
+      mintInvite.mockResolvedValue(invite)
+      getInviteCode.mockReturnValue('123456-ABCD')
+
+      const { result } = renderHook(() => useConnectExtension())
+
+      await act(async () => {
+        await result.current.addBrowser()
+      })
+
+      // The naming modal hands the chosen label back to the hook
+      const onSubmit = mockSetModal.mock.calls[0][0].props.onSubmit
+      await act(async () => {
+        await onSubmit('Chrome — work laptop')
+      })
+
+      expect(mintInvite).toHaveBeenCalledWith(
+        expect.anything(),
+        'Chrome — work laptop'
+      )
+      expect(getInviteCode).toHaveBeenCalledWith('pubkey', invite)
+      expect(mockSetModal).toHaveBeenLastCalledWith(expect.anything(), {
+        replace: true
+      })
+    })
+
+    it('falls back to a numbered label when none is given', async () => {
+      listClients.mockResolvedValue([{ publicKey: 'a' }, { publicKey: 'b' }])
+      getOrCreateIdentity.mockResolvedValue({ ed25519PublicKey: 'pubkey' })
+      mintInvite.mockResolvedValue({ id: 'invite-1', expiresAt: 'later' })
+      getInviteCode.mockReturnValue('123456-ABCD')
+
+      const { result } = renderHook(() => useConnectExtension())
+
+      await act(async () => {
+        await result.current.addBrowser()
+      })
+
+      const onSubmit = mockSetModal.mock.calls[0][0].props.onSubmit
+      await act(async () => {
+        await onSubmit('   ')
+      })
+
+      expect(mintInvite).toHaveBeenCalledWith(
+        expect.anything(),
+        'Browser {count}'
+      )
+    })
   })
 
-  it('handles setup failure gracefully via toggleBrowserExtension', async () => {
-    setupNativeMessaging.mockResolvedValue({ success: false, message: 'fail' })
-    createOrGetPearpassClient.mockReturnValue({})
+  describe('unpairBrowser', () => {
+    it('removes only that client and closes its sessions', async () => {
+      const { result } = renderHook(() => useConnectExtension())
 
-    const { result } = renderHook(() => useConnectExtension())
+      await act(async () => {
+        await result.current.unpairBrowser('chromeKey')
+      })
 
-    await act(async () => {
-      await result.current.toggleBrowserExtension(true)
+      expect(removeClient).toHaveBeenCalledWith(expect.anything(), 'chromeKey')
+      expect(closeSessionsForClient).toHaveBeenCalledWith('chromeKey')
+      // The integration itself stays up for the remaining browsers
+      expect(stopNativeMessagingIPC).not.toHaveBeenCalled()
+      expect(resetIdentity).not.toHaveBeenCalled()
     })
 
-    expect(setupNativeMessaging).toHaveBeenCalled()
-    expect(startNativeMessagingIPC).not.toHaveBeenCalled()
-    expect(mockSetToast).toHaveBeenCalled()
+    it('announces the change so the settings list refreshes', async () => {
+      const listener = jest.fn()
+      window.addEventListener('paired-browsers-changed', listener)
+
+      const { result } = renderHook(() => useConnectExtension())
+
+      await act(async () => {
+        await result.current.unpairBrowser('chromeKey')
+      })
+
+      expect(listener).toHaveBeenCalled()
+      window.removeEventListener('paired-browsers-changed', listener)
+    })
   })
 
-  it('stops native messaging when toggled off', async () => {
-    stopNativeMessagingIPC.mockResolvedValue()
+  describe('disableBrowserExtension', () => {
+    it('tears down the integration and clears every pairing', async () => {
+      stopNativeMessagingIPC.mockResolvedValue()
 
-    const { result } = renderHook(() => useConnectExtension())
+      const { result } = renderHook(() => useConnectExtension())
 
-    await act(async () => {
-      await result.current.toggleBrowserExtension(false)
-    })
+      await act(async () => {
+        await result.current.disableBrowserExtension()
+      })
 
-    expect(stopNativeMessagingIPC).toHaveBeenCalled()
-    expect(setNativeMessagingEnabled).toHaveBeenCalledWith(false)
-  })
-
-  it('loads pairing info on enable', async () => {
-    const fakeIdentity = {
-      ed25519PublicKey: 'pubkey',
-      creationDate: '2023-01-01'
-    }
-
-    setupNativeMessaging.mockResolvedValue({ success: true })
-    startNativeMessagingIPC.mockResolvedValue()
-    killNativeMessagingHostProcesses.mockResolvedValue()
-    getOrCreateIdentity.mockResolvedValue(fakeIdentity)
-    getPairingToken.mockResolvedValue('PAIRCODE-ABCD')
-    getFingerprint.mockReturnValue('ABCD1234')
-
-    getNativeMessagingEnabled.mockReturnValue(false)
-    isNativeMessagingIPCRunning.mockReturnValue(false)
-    createOrGetPearpassClient.mockReturnValue({
-      encryptionAdd: jest.fn().mockResolvedValue(undefined)
-    })
-
-    const { result } = renderHook(() => useConnectExtension())
-
-    await act(async () => {
-      await result.current.toggleBrowserExtension(true)
-    })
-
-    await waitFor(() => {
-      expect(getOrCreateIdentity).toHaveBeenCalled()
-      expect(getPairingToken).toHaveBeenCalled()
-      expect(getFingerprint).toHaveBeenCalledWith('pubkey')
+      expect(stopNativeMessagingIPC).toHaveBeenCalled()
+      expect(killNativeMessagingHostProcesses).toHaveBeenCalled()
+      expect(clearClients).toHaveBeenCalled()
+      expect(clearInvites).toHaveBeenCalled()
+      expect(setNativeMessagingEnabled).toHaveBeenCalledWith(false)
+      expect(resetIdentity).toHaveBeenCalled()
+      expect(result.current.isBrowserExtensionEnabled).toBe(false)
     })
   })
 })

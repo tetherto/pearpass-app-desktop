@@ -78,11 +78,11 @@ jest.mock('./appIdentity', () => ({
     ed25519PrivateKeyBytes: new Uint8Array(64).fill(11),
     x25519PublicKeyBytes: new Uint8Array(32).fill(12),
     x25519PrivateKeyBytes: new Uint8Array(32).fill(13)
-  })),
-  getClientIdentityPublicKey: jest
-    .fn()
-    .mockResolvedValue(Buffer.alloc(32, 99).toString('base64'))
+  }))
 }))
+
+/** The paired extension a handshake is resolved to by its caller. */
+const CLIENT_PUB_B64 = Buffer.alloc(32, 99).toString('base64')
 
 describe('sessionManager', () => {
   let mockClient
@@ -114,7 +114,11 @@ describe('sessionManager', () => {
         .mockResolvedValueOnce(ed25519Mock)
         .mockResolvedValueOnce(x25519Mock)
 
-      const result = await beginHandshake(mockClient, extEphemeralPubB64)
+      const result = await beginHandshake(
+        mockClient,
+        extEphemeralPubB64,
+        CLIENT_PUB_B64
+      )
 
       expect(result).toHaveProperty('sessionId')
       expect(result).toHaveProperty('hostEphemeralPubB64')
@@ -143,7 +147,11 @@ describe('sessionManager', () => {
         .mockResolvedValueOnce(ed25519Mock)
         .mockResolvedValueOnce(x25519Mock)
 
-      const result = await beginHandshake(mockClient, extEphemeralPubB64)
+      const result = await beginHandshake(
+        mockClient,
+        extEphemeralPubB64,
+        CLIENT_PUB_B64
+      )
       const session = getSession(result.sessionId)
 
       expect(session).toBeDefined()
@@ -157,7 +165,11 @@ describe('sessionManager', () => {
 
       mockClient.encryptionGet.mockResolvedValue(null)
 
-      const result = await beginHandshake(mockClient, extEphemeralPubB64)
+      const result = await beginHandshake(
+        mockClient,
+        extEphemeralPubB64,
+        CLIENT_PUB_B64
+      )
 
       expect(result).toHaveProperty('sessionId')
       expect(result).toHaveProperty('hostEphemeralPubB64')
@@ -172,7 +184,11 @@ describe('sessionManager', () => {
 
       mockClient.encryptionGet.mockResolvedValue(null)
 
-      const result = await beginHandshake(mockClient, extEphemeralPubB64)
+      const result = await beginHandshake(
+        mockClient,
+        extEphemeralPubB64,
+        CLIENT_PUB_B64
+      )
       const session = getSession(result.sessionId)
 
       expect(session.sendSeq).toBe(0)
@@ -186,7 +202,11 @@ describe('sessionManager', () => {
     beforeEach(async () => {
       const extEphemeralPubB64 = Buffer.alloc(32, 60).toString('base64')
       mockClient.encryptionGet.mockResolvedValue(null)
-      const result = await beginHandshake(mockClient, extEphemeralPubB64)
+      const result = await beginHandshake(
+        mockClient,
+        extEphemeralPubB64,
+        CLIENT_PUB_B64
+      )
       sessionId = result.sessionId
     })
 
@@ -222,7 +242,11 @@ describe('sessionManager', () => {
     beforeEach(async () => {
       const extEphemeralPubB64 = Buffer.alloc(32, 70).toString('base64')
       mockClient.encryptionGet.mockResolvedValue(null)
-      const result = await beginHandshake(mockClient, extEphemeralPubB64)
+      const result = await beginHandshake(
+        mockClient,
+        extEphemeralPubB64,
+        CLIENT_PUB_B64
+      )
       sessionId = result.sessionId
     })
 
@@ -268,7 +292,11 @@ describe('sessionManager', () => {
     beforeEach(async () => {
       const extEphemeralPubB64 = Buffer.alloc(32, 80).toString('base64')
       mockClient.encryptionGet.mockResolvedValue(null)
-      const result = await beginHandshake(mockClient, extEphemeralPubB64)
+      const result = await beginHandshake(
+        mockClient,
+        extEphemeralPubB64,
+        CLIENT_PUB_B64
+      )
       sessionId = result.sessionId
     })
 
@@ -338,7 +366,11 @@ describe('sessionManager', () => {
     it('should handle empty plaintext encryption', async () => {
       const extEphemeralPubB64 = Buffer.alloc(32, 90).toString('base64')
       mockClient.encryptionGet.mockResolvedValue(null)
-      const result = await beginHandshake(mockClient, extEphemeralPubB64)
+      const result = await beginHandshake(
+        mockClient,
+        extEphemeralPubB64,
+        CLIENT_PUB_B64
+      )
 
       const plaintext = new Uint8Array(0)
       const encrypted = encryptWithSession(result.sessionId, plaintext)
@@ -351,7 +383,11 @@ describe('sessionManager', () => {
     it('should handle large plaintext encryption', async () => {
       const extEphemeralPubB64 = Buffer.alloc(32, 100).toString('base64')
       mockClient.encryptionGet.mockResolvedValue(null)
-      const result = await beginHandshake(mockClient, extEphemeralPubB64)
+      const result = await beginHandshake(
+        mockClient,
+        extEphemeralPubB64,
+        CLIENT_PUB_B64
+      )
 
       const plaintext = new Uint8Array(10000).fill(42)
       const encrypted = encryptWithSession(result.sessionId, plaintext)

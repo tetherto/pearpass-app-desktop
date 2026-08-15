@@ -1,21 +1,21 @@
 // App identity utilities for Native Messaging secure pairing
 // Generates long-term Ed25519 (signing) and X25519 (ECDH) keypairs.
 // Private keys are stored via pearpass client's encryption* APIs.
+//
+// Which extensions are paired is not tracked here — see pairedClients.js.
 
 import sodium from 'sodium-native'
 
 import { clearAllSessions } from './sessionStore.js'
 import { LOCAL_STORAGE_KEYS } from '../../constants/localStorage.js'
-import { PAIRING_STATES } from '../../constants/pairing.js'
-import { SecurityErrorCodes } from '../../constants/securityErrors.js'
-import { createErrorWithCode } from '../../utils/createErrorWithCode.js'
 import { logger } from '../../utils/logger.js'
 
 const ENC_KEY_ED25519 = 'nm.identity.ed25519'
 const ENC_KEY_X25519 = 'nm.identity.x25519'
 const ENC_KEY_CREATION_DATE = 'nm.identity.creationDate'
-const ENC_KEY_CLIENT_DATA = 'nm.client.data'
-const ENC_KEY_PAIRING_SECRET = 'nm.identity.pairingSecret'
+// Pre-multi-browser storage, cleared on reset so stale pairings cannot linger.
+const ENC_KEY_LEGACY_CLIENT_DATA = 'nm.client.data'
+const ENC_KEY_LEGACY_PAIRING_SECRET = 'nm.identity.pairingSecret'
 const PAIRING_CODE_TAG = Buffer.from('pearpass/pairingcode/v1', 'utf8')
 
 // In-memory fallback cache if persistence is unavailable (e.g., before unlock)
@@ -62,43 +62,6 @@ const toBase64 = (bytes) => Buffer.from(bytes).toString('base64')
  */
 const fromBase64 = (base64String) =>
   new Uint8Array(Buffer.from(base64String, 'base64'))
-
-/**
- * Load or create the pairing secret used for pairing token derivation.
- * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
- * @returns {Promise<string>} base64-encoded secret
- */
-const getOrCreatePairingSecret = async (client) => {
-  let pairingSecretB64 = normalizeEncryptionGet(
-    await client.encryptionGet(ENC_KEY_PAIRING_SECRET).catch(() => null)
-  )
-  if (pairingSecretB64) {
-    const bytes = Buffer.from(pairingSecretB64, 'base64')
-    if (bytes.length !== 32) {
-      throw new Error(
-        createErrorWithCode(
-          SecurityErrorCodes.INVALID_PAIRING_SECRET,
-          'Invalid pairing secret'
-        )
-      )
-    }
-  }
-
-  if (!pairingSecretB64) {
-    const secretBytes = new Uint8Array(32)
-    sodium.randombytes_buf(secretBytes)
-    pairingSecretB64 = Buffer.from(secretBytes).toString('base64')
-    try {
-      await client.encryptionAdd(ENC_KEY_PAIRING_SECRET, pairingSecretB64)
-    } catch (err) {
-      throw new Error(
-        `PairingSecretPersistenceFailed: ${err?.message || 'Unknown error'}`
-      )
-    }
-  }
-
-  return pairingSecretB64
-}
 
 /**
  * Ensure encryption is initialized on the client.
@@ -234,13 +197,6 @@ const generateAndPersistIdentity = async (client) => {
 export const getOrCreateIdentity = async (client) => {
   await ensureEncryptionInitialized(client)
 
-  // Create a pairing secret associated with this identity
-  try {
-    await getOrCreatePairingSecret(client)
-  } catch {
-    // Pairing token can be generated later via getPairingToken
-  }
-
   // Try load encrypted blobs first (normalize to base64 string)
   const ed25519BlobB64 = normalizeEncryptionGet(
     await client.encryptionGet(ENC_KEY_ED25519).catch(() => null)
@@ -303,7 +259,6 @@ export const getPairingCode = (ed25519PublicKeyB64, pairingSecretB64) => {
   input.set(PAIRING_CODE_TAG, 0)
   input.set(secret, PAIRING_CODE_TAG.length)
   input.set(publicKey, PAIRING_CODE_TAG.length + secret.length)
-  input.set(publicKey, secret.length)
 
   const out = new Uint8Array(32)
   sodium.crypto_hash_sha256(out, input)
@@ -330,39 +285,6 @@ export const getFingerprint = (ed25519PublicKeyB64) => {
 }
 
 /**
- * Derive the pairing token for the given identity from the stored pairing secret.
- * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
- * @param {string} ed25519PublicKeyB64
- * @returns {Promise<string>}
- */
-export const getPairingToken = async (client, ed25519PublicKeyB64) => {
-  const pairingSecretB64 = await getOrCreatePairingSecret(client)
-  return getPairingCode(ed25519PublicKeyB64, pairingSecretB64)
-}
-
-/**
- * Verify a pairing token against the expected value derived from the stored secret.
- * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
- * @param {string} ed25519PublicKeyB64
- * @param {string} userProvidedToken
- * @returns {Promise<boolean>}
- */
-export const verifyPairingToken = async (
-  client,
-  ed25519PublicKeyB64,
-  userProvidedToken
-) => {
-  if (!userProvidedToken || typeof userProvidedToken !== 'string') {
-    return false
-  }
-
-  const expectedToken = await getPairingToken(client, ed25519PublicKeyB64)
-
-  // Case-insensitive comparison
-  return userProvidedToken.toUpperCase() === expectedToken.toUpperCase()
-}
-
-/**
  * Reset the app identity by deleting existing keys and generating new ones
  * This will unpair any connected extensions
  * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
@@ -380,11 +302,14 @@ export const resetIdentity = async (client) => {
     await client.encryptionAdd(ENC_KEY_ED25519, '').catch(() => {})
     await client.encryptionAdd(ENC_KEY_X25519, '').catch(() => {})
     await client.encryptionAdd(ENC_KEY_CREATION_DATE, '').catch(() => {})
-    await client.encryptionAdd(ENC_KEY_CLIENT_DATA, '').catch(() => {})
-    await client.encryptionAdd(ENC_KEY_PAIRING_SECRET, '').catch(() => {})
+    await client.encryptionAdd(ENC_KEY_LEGACY_CLIENT_DATA, '').catch(() => {})
+    await client
+      .encryptionAdd(ENC_KEY_LEGACY_PAIRING_SECRET, '')
+      .catch(() => {})
 
-    // Also clear client public key from localStorage
+    // Also clear client public keys from localStorage
     localStorage.removeItem(LOCAL_STORAGE_KEYS.NM_CLIENT_PUBLIC_KEY)
+    localStorage.removeItem(LOCAL_STORAGE_KEYS.NM_CLIENT_PUBLIC_KEYS)
 
     logger.info('APP-IDENTITY', 'Cleared existing identity keys')
   } catch (err) {
@@ -408,120 +333,3 @@ export const resetIdentity = async (client) => {
 // Internal: expose in-memory identity for session fallback
 // eslint-disable-next-line no-underscore-dangle
 export const __getMemIdentity = () => MEMORY_IDENTITY
-
-/**
- * Store client (extension) Ed25519 public key with pairing state.
- * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
- * @param {string} ed25519PublicKeyB64
- * @param {string} state - PAIRING_STATES.PENDING or PAIRING_STATES.CONFIRMED
- */
-export const setClientIdentityPublicKey = async (
-  client,
-  ed25519PublicKeyB64,
-  state = PAIRING_STATES.PENDING
-) => {
-  if (!ed25519PublicKeyB64) {
-    throw new Error(
-      createErrorWithCode(
-        SecurityErrorCodes.MISSING_CLIENT_PUBLIC_KEY,
-        'Client public key is required'
-      )
-    )
-  }
-
-  await client.encryptionAdd(
-    ENC_KEY_CLIENT_DATA,
-    JSON.stringify({
-      publicKey: ed25519PublicKeyB64,
-      pairingState: state
-    })
-  )
-}
-
-/**
- * Helper to get parsed client data from vault
- * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
- */
-const getClientData = async (client) => {
-  const data = normalizeEncryptionGet(
-    await client.encryptionGet(ENC_KEY_CLIENT_DATA).catch(() => null)
-  )
-  if (!data) return null
-  try {
-    return JSON.parse(data)
-  } catch {
-    return null
-  }
-}
-
-/**
- * Load client (extension) Ed25519 public key from vault.
- * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
- * @returns {Promise<string|null>}
- */
-export const getClientIdentityPublicKey = async (client) => {
-  const data = await getClientData(client)
-  return data?.publicKey || null
-}
-
-/**
- * Load client (extension) Ed25519 public key from local storage cache.
- * @returns {string|null}
- */
-export const getCachedClientIdentityPublicKey = () =>
-  localStorage.getItem(LOCAL_STORAGE_KEYS.NM_CLIENT_PUBLIC_KEY) || null
-
-/**
- * Get the current pairing state.
- * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
- * @returns {Promise<string|null>} - PAIRING_STATES.PENDING, PAIRING_STATES.CONFIRMED, or null
- */
-export const getClientPairingState = async (client) => {
-  const data = await getClientData(client)
-  return data?.pairingState || null
-}
-
-/**
- * Confirm pairing after extension successfully encrypted its keypair.
- * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} client
- * @param {string} clientEd25519PublicKeyB64
- */
-export const confirmClientPairing = async (
-  client,
-  clientEd25519PublicKeyB64
-) => {
-  const data = await getClientData(client)
-
-  if (!data?.publicKey) {
-    throw new Error(
-      createErrorWithCode(
-        SecurityErrorCodes.NO_PENDING_PAIRING,
-        'No pending pairing found'
-      )
-    )
-  }
-
-  if (data.publicKey !== clientEd25519PublicKeyB64) {
-    throw new Error(
-      createErrorWithCode(
-        SecurityErrorCodes.CLIENT_KEY_MISMATCH,
-        'Client public key does not match stored pending pairing key'
-      )
-    )
-  }
-
-  // Now that pairing is confirmed do store client public key in localStorage
-  // Accessible even when locked for checkExtensionPairingStatus
-  localStorage.setItem(
-    LOCAL_STORAGE_KEYS.NM_CLIENT_PUBLIC_KEY,
-    clientEd25519PublicKeyB64
-  )
-
-  await client.encryptionAdd(
-    ENC_KEY_CLIENT_DATA,
-    JSON.stringify({
-      ...data,
-      pairingState: PAIRING_STATES.CONFIRMED
-    })
-  )
-}
