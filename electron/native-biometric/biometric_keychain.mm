@@ -12,6 +12,8 @@
 #import <Security/Security.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 #include <napi.h>
+#include <string>
+#include <vector>
 
 // Create a biometric-gated access control ref
 static SecAccessControlRef CreateBiometricAccessControl() {
@@ -91,15 +93,15 @@ static OSStatus KeychainFindWithContext(NSString *nsService, NSString *nsAccount
   return status;
 }
 
-// Heap-allocated state that lives until the biometric callback fires.
-// Napi::Promise::Deferred is a C++ class — storing it in a struct avoids
-// ObjC block capture issues.
-struct AsyncRetrieveData {
-  Napi::Promise::Deferred deferred;
-  LAContext *context;
-  NSString *nsService;
-  NSString *nsAccount;
-  bool resolved;
+// Plain C++/ObjC result of the biometric flow, populated on whatever thread
+// LocalAuthentication's reply block runs on. Deliberately holds no Napi::
+// values — those are only safe to touch on the JS thread inside an active
+// V8 HandleScope, which this struct's producer (the reply block) is not.
+struct RetrieveResult {
+  bool success = false;
+  std::vector<char> data;
+  std::string errorMessage;
+  std::string errorCode;
 };
 
 // store(service, account, data : Buffer)
@@ -150,6 +152,16 @@ Napi::Value Store(const Napi::CallbackInfo &info) {
 // retrieve(service, account, reason) -> Promise<Buffer>
 // OS shows Touch ID dialog using `reason`. Returns a Promise — does NOT block
 // the Node.js event loop during biometric prompt (which can take 1-30s).
+//
+// LAContext's evaluatePolicy:reply: fires its block on an arbitrary internal
+// dispatch queue, never the JS thread. Touching any Napi:: value (creating a
+// Buffer, resolving/rejecting the Deferred) from there segfaults V8 with
+// "Cannot create a handle without a HandleScope" — being on the right OS
+// thread isn't the same as being inside a valid V8 HandleScope, and plain
+// dispatch_async(dispatch_get_main_queue(), ...) does neither of that setup.
+// Napi::ThreadSafeFunction is the mechanism N-API provides specifically to
+// marshal a call from any thread back onto the JS thread with a proper
+// Napi::Env/HandleScope already active — that's what makes this safe.
 Napi::Value Retrieve(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
 
@@ -165,6 +177,17 @@ Napi::Value Retrieve(const Napi::CallbackInfo &info) {
 
   auto deferred = Napi::Promise::Deferred::New(env);
 
+  // Bound to a no-op JS function: we never invoke it, we only use this TSFN
+  // as a thread-marshaling vehicle for the native Callback below.
+  // __block: ThreadSafeFunction has no copy constructor (move-only), so the
+  // Objective-C block below must capture it by reference, not by value.
+  __block Napi::ThreadSafeFunction tsfn = Napi::ThreadSafeFunction::New(
+      env,
+      Napi::Function::New(env, [](const Napi::CallbackInfo &) {}),
+      "BiometricRetrieve",
+      0,
+      1);
+
   LAContext *context = [[LAContext alloc] init];
   context.localizedReason = [NSString stringWithUTF8String:reason.c_str()];
   context.interactionNotAllowed = NO;
@@ -173,80 +196,76 @@ Napi::Value Retrieve(const Napi::CallbackInfo &info) {
   NSString *nsService = [[NSString stringWithUTF8String:service.c_str()] retain];
   NSString *nsAccount = [[NSString stringWithUTF8String:account.c_str()] retain];
 
-  auto *data = new AsyncRetrieveData{
-    std::move(deferred),
-    context,
-    nsService,
-    nsAccount,
-    false
-  };
-
   [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
           localizedReason:context.localizedReason
                     reply:^(BOOL success, NSError * _Nullable error) {
-    // Retain error — the autorelease pool may drain before dispatch_async fires
-    NSError *retainedError = [error retain];
-
+    // LocalAuthentication invokes this reply block on an arbitrary internal
+    // thread. LAContext (and the CSSM/Security keychain-session objects it
+    // holds) is not safe to query or release off the main thread — doing so
+    // crashes inside Security.framework's/AppKit's own teardown code
+    // (confirmed via macOS crash reports: SIGSEGV inside
+    // SSDLSession::~SSDLSession()/dbClose, and separately inside
+    // -[NSCGSWindow dealloc] via SkyLight, both invoked from a background
+    // dispatch queue). Hop to the main thread first for ALL Objective-C/
+    // Security work — this mirrors why the pre-fix code happened to dodge
+    // *this* crash (it also dispatched to the main queue), even though it
+    // still crashed later from touching Napi:: values with no HandleScope.
     dispatch_async(dispatch_get_main_queue(), ^{
-      if (data->resolved) {
-        [retainedError release];
-        [data->context release];
-        [data->nsService release];
-        [data->nsAccount release];
-        delete data;
-        return;
-      }
+      auto *result = new RetrieveResult();
 
       if (!success) {
-        data->resolved = true;
-        Napi::Error err = Napi::Error::New(data->deferred.Env(),
-          "Biometric authentication failed");
-
-        if (retainedError != nil && retainedError.code == LAErrorUserCancel) {
-          err.Set("code", "ERR_USER_CANCELED");
-        } else {
-          err.Set("code", "ERR_AUTH_FAILED");
-        }
-
-        data->deferred.Reject(err.Value());
-
-        [retainedError release];
-        [data->context release];
-        [data->nsService release];
-        [data->nsAccount release];
-        delete data;
-        return;
-      }
-
-      [retainedError release];
-
-      // Biometric auth succeeded — query keychain with authenticated context
-      CFTypeRef result = NULL;
-      OSStatus status = KeychainFindWithContext(data->nsService, data->nsAccount,
-                                                  data->context, &result);
-
-      data->resolved = true;
-
-      if (status == errSecItemNotFound) {
-        Napi::Error err = Napi::Error::New(data->deferred.Env(),
-          "Biometric credentials not found");
-        err.Set("code", "ERR_ITEM_NOT_FOUND");
-        data->deferred.Reject(err.Value());
-      } else if (status != errSecSuccess) {
-        Napi::Error err = Napi::Error::New(data->deferred.Env(),
-          [NSString stringWithFormat:@"Keychain retrieve failed: %d", (int)status].UTF8String);
-        data->deferred.Reject(err.Value());
+        result->errorMessage = "Biometric authentication failed";
+        result->errorCode = (error != nil && error.code == LAErrorUserCancel)
+            ? "ERR_USER_CANCELED"
+            : "ERR_AUTH_FAILED";
       } else {
-        NSData *nsData = (NSData *)CFBridgingRelease(result);
-        Napi::Buffer<char> buffer = Napi::Buffer<char>::Copy(data->deferred.Env(),
-            static_cast<const char *>([nsData bytes]), [nsData length]);
-        data->deferred.Resolve(buffer);
+        CFTypeRef keychainResult = NULL;
+        OSStatus status = KeychainFindWithContext(nsService, nsAccount, context,
+                                                   &keychainResult);
+
+        if (status == errSecItemNotFound) {
+          result->errorMessage = "Biometric credentials not found";
+          result->errorCode = "ERR_ITEM_NOT_FOUND";
+        } else if (status != errSecSuccess) {
+          result->errorMessage =
+              [NSString stringWithFormat:@"Keychain retrieve failed: %d", (int)status]
+                  .UTF8String;
+        } else {
+          NSData *nsData = (NSData *)CFBridgingRelease(keychainResult);
+          const char *bytes = static_cast<const char *>([nsData bytes]);
+          result->data.assign(bytes, bytes + [nsData length]);
+          result->success = true;
+        }
       }
 
-      [data->context release];
-      [data->nsService release];
-      [data->nsAccount release];
-      delete data;
+      [context release];
+      [nsService release];
+      [nsAccount release];
+
+      // We're on the main OS thread now, but that alone still doesn't give
+      // us a V8 HandleScope — only Napi::ThreadSafeFunction sets that up.
+      // Marshals `result` to the JS thread and invokes this callback there.
+      napi_status callStatus = tsfn.BlockingCall(
+          result,
+          [deferred](Napi::Env jsEnv, Napi::Function, RetrieveResult *r) {
+            if (r->success) {
+              Napi::Buffer<char> buffer =
+                  Napi::Buffer<char>::Copy(jsEnv, r->data.data(), r->data.size());
+              deferred.Resolve(buffer);
+            } else {
+              Napi::Error err = Napi::Error::New(jsEnv, r->errorMessage);
+              if (!r->errorCode.empty()) err.Set("code", r->errorCode);
+              deferred.Reject(err.Value());
+            }
+            delete r;
+          });
+
+      if (callStatus != napi_ok) {
+        // Callback was never scheduled (e.g. queue closing) — avoid a leak.
+        delete result;
+      }
+
+      tsfn.Release();
     });
   }];
 
