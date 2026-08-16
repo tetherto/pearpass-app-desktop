@@ -28,6 +28,10 @@ declare global {
       setLogging: (
         enabled: boolean
       ) => Promise<{ enabled: boolean; forced: boolean }>
+      getBackgroundMode: () => Promise<boolean>
+      setBackgroundMode: (
+        enabled: boolean
+      ) => Promise<{ enabled: boolean }>
     }
   }
 }

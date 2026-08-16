@@ -7,12 +7,6 @@ import { Button, InputField } from '@tetherto/pearpass-lib-ui-kit'
 import { useVault } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
 
-import { RadioSelect } from '../../../components/RadioSelect'
-import { useLoadingContext } from '../../../context/LoadingContext'
-import { useModal } from '../../../context/ModalContext'
-import { useTranslation } from '../../../hooks/useTranslation'
-import { logger } from '../../../utils/logger'
-import { ModalContent } from '../ModalContent'
 import {
   Content,
   InputLabel,
@@ -21,6 +15,12 @@ import {
   ModalTitle,
   Wrapper
 } from './styles'
+import { RadioSelect } from '../../../components/RadioSelect'
+import { useLoadingContext } from '../../../context/LoadingContext'
+import { useModal } from '../../../context/ModalContext'
+import { useTranslation } from '../../../hooks/useTranslation'
+import { logger } from '../../../utils/logger'
+import { ModalContent } from '../ModalContent'
 
 const UPDATE_MODE = {
   NAME: 'name',

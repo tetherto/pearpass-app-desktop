@@ -63,5 +63,8 @@ window.electronAPI = {
   openLogsFolder: () => ipcRenderer.invoke('vault:openLogsFolder'),
   isLoggingEnabled: () => ipcRenderer.invoke('vault:isLoggingEnabled'),
   setLogging: (enabled) =>
-    ipcRenderer.invoke('vault:setLogging', { enabled: !!enabled })
+    ipcRenderer.invoke('vault:setLogging', { enabled: !!enabled }),
+  getBackgroundMode: () => ipcRenderer.invoke('app:getBackgroundMode'),
+  setBackgroundMode: (enabled) =>
+    ipcRenderer.invoke('app:setBackgroundMode', { enabled: !!enabled })
 }

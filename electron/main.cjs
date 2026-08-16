@@ -12,9 +12,11 @@ const {
   app,
   BrowserWindow,
   ipcMain,
+  Menu,
   nativeImage,
   shell,
-  clipboard
+  clipboard,
+  Tray
 } = require('electron')
 const PearRuntime = require('pear-runtime')
 const getPearRuntimeLegacyStorage = require('pear-runtime-legacy-storage')
@@ -111,6 +113,22 @@ let workletSidecar = null
 
 /** @type {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient | null} */
 let vaultClient = null
+
+/** @type {import('electron').Tray | null} */
+let tray = null
+
+/**
+ * Persisted background-mode preference (default false).
+ * Read from devicePreferences at startup; updated via IPC at runtime.
+ */
+let backgroundModeEnabled = false
+
+/**
+ * Set to true when the user explicitly chooses "Quit" from the tray menu
+ * (or via Cmd+Q on macOS). Allows the window close event to distinguish
+ * between "user clicked red X" (→ hide to tray) and "user wants to quit".
+ */
+let forceQuit = false
 
 function getExecPath() {
   if (!app.isPackaged) return null
@@ -544,6 +562,88 @@ async function startWorkletOnly() {
   })
 }
 
+/**
+ * Build the system-tray icon and context menu.
+ * Called once after createWindow() when background mode is enabled.
+ */
+function createTray() {
+  // Use the pear logo (transparent background) for the tray icon.
+  // On macOS this is set as a template image so the OS renders it in the
+  // correct menu-bar color (dark in light mode, light in dark mode).
+  const iconPath = app.isPackaged
+    ? path.join(process.resourcesPath, 'assets', 'images', 'pearpass_logo.png')
+    : path.join(__dirname, '..', 'assets', 'images', 'pearpass_logo.png')
+
+  let trayIcon = null
+  try {
+    trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 })
+    if (isMac) {
+      trayIcon.setTemplateImage(true)
+    }
+  } catch (err) {
+    logger.warn('MAIN', 'Failed to create tray icon from path', err)
+    return
+  }
+
+  if (!trayIcon || trayIcon.isEmpty()) {
+    logger.warn('MAIN', 'Tray icon is empty or could not be created from path')
+    return
+  }
+
+  tray = new Tray(trayIcon)
+  tray.setToolTip(pkg.productName)
+
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Show PearPass',
+      click: () => {
+        if (forceQuit) return
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.show()
+          mainWindow.focus()
+        } else {
+          createWindow()
+        }
+        safelyShowDock()
+      }
+    },
+    { type: 'separator' },
+    {
+      label: 'Quit',
+      click: () => {
+        forceQuit = true
+        app.quit()
+      }
+    }
+  ])
+
+  tray.setContextMenu(contextMenu)
+
+  // On macOS, clicking the tray icon re-shows the window
+  if (isMac) {
+    tray.on('click', () => {
+      if (forceQuit) return
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.show()
+        mainWindow.focus()
+      } else {
+        createWindow()
+      }
+      safelyShowDock()
+    })
+  }
+}
+
+function safelyShowDock() {
+  if (!isMac) return
+  try { app.dock.show() } catch { /* ignore */ }
+}
+
+function safelyHideDock() {
+  if (!isMac) return
+  try { app.dock.hide() } catch { /* ignore */ }
+}
+
 function createWindow() {
   const isV2 = runtimeConfig.designVersion === 2
   // Resolve app icon per-platform
@@ -616,6 +716,16 @@ function createWindow() {
     }
   })
 
+  // Intercept window close: when background mode is on and the user hasn't
+  // explicitly chosen to quit, hide the window instead of destroying it.
+  mainWindow.on('close', (event) => {
+    if (backgroundModeEnabled && !forceQuit && mainWindow && !mainWindow.isDestroyed()) {
+      event.preventDefault()
+      mainWindow.hide()
+      safelyHideDock()
+    }
+  })
+
   mainWindow.on('closed', () => {
     mainWindow = null
   })
@@ -653,6 +763,28 @@ function toSerializableArg(value) {
     return value.map(toSerializableArg)
   }
   return value
+}
+
+/**
+ * Update the in-memory background-mode flag and persist to disk.
+ */
+function setBackgroundMode(value) {
+  backgroundModeEnabled = !!value
+  try {
+    devicePreferences.write(getStorageDir(), {
+      backgroundModeEnabled
+    })
+  } catch (err) {
+    logger.warn('MAIN', 'Failed to persist background mode preference', err)
+  }
+
+  // Create or destroy the tray accordingly
+  if (backgroundModeEnabled) {
+    if (!tray) createTray()
+  } else if (tray) {
+    tray.destroy()
+    tray = null
+  }
 }
 
 function registerIPC() {
@@ -758,6 +890,15 @@ function registerIPC() {
     forced: loggingForced
   }))
 
+  ipcMain.handle('app:getBackgroundMode', () => backgroundModeEnabled)
+
+  ipcMain.handle('app:setBackgroundMode', (_event, payload) => {
+    const next = !!(payload && payload.enabled)
+    if (next === backgroundModeEnabled) return { enabled: backgroundModeEnabled }
+    setBackgroundMode(next)
+    return { enabled: backgroundModeEnabled }
+  })
+
   ipcMain.handle('vault:setLogging', async (_event, payload) => {
     if (loggingForced) {
       return { enabled: true, forced: true }
@@ -801,8 +942,9 @@ function registerIPC() {
 app.whenReady().then(async () => {
   emitStartupMarker('PEARPASS_MAIN_READY')
   app.setName(pkg.productName)
-  const { loggingEnabled } = devicePreferences.read(getStorageDir())
-  loggingActive = loggingForced || loggingEnabled
+  const prefs = devicePreferences.read(getStorageDir())
+  loggingActive = loggingForced || prefs.loggingEnabled
+  backgroundModeEnabled = prefs.backgroundModeEnabled
   if (loggingActive) {
     logger.setLogPath(getStorageDir())
   }
@@ -819,6 +961,11 @@ app.whenReady().then(async () => {
   }
 
   createWindow()
+
+  // If background mode was enabled on a previous launch, set up the tray now
+  if (backgroundModeEnabled) {
+    createTray()
+  }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -841,7 +988,11 @@ async function cleanup() {
 }
 
 app.on('window-all-closed', async () => {
-  app.quit()
+  // When background mode is enabled, do not quit when all windows are closed —
+  // the app should keep running in the tray.
+  if (!backgroundModeEnabled) {
+    app.quit()
+  }
 })
 
 app.on('before-quit', async () => {

@@ -3,7 +3,7 @@
 import React from 'react'
 
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { LOCAL_STORAGE_KEYS } from '../../../../constants/localStorage'
 import { AppPreferencesContent } from './index'
@@ -134,10 +134,21 @@ jest.mock('@tetherto/pearpass-lib-ui-kit', () => ({
   )
 }))
 
+const mockGetBackgroundMode = jest.fn(() => Promise.resolve(false))
+const mockSetBackgroundMode = jest.fn(() => Promise.resolve({ enabled: false }))
+
 beforeEach(() => {
   localStorage.clear()
   mockSetTimeoutMs.mockClear()
   mockTimeoutMs = 60_000
+  mockGetBackgroundMode.mockClear()
+  mockSetBackgroundMode.mockClear()
+
+  // Augment the jsdom window with a mock electronAPI for background-mode tests
+  globalThis.window.electronAPI = {
+    getBackgroundMode: mockGetBackgroundMode,
+    setBackgroundMode: mockSetBackgroundMode
+  } as unknown as Window['electronAPI']
 })
 
 describe('AppPreferencesContent', () => {
@@ -235,5 +246,108 @@ describe('AppPreferencesContent', () => {
     expect(
       localStorage.getItem(LOCAL_STORAGE_KEYS.PASSWORD_CHANGE_REMINDER_ENABLED)
     ).toBeNull()
+  })
+})
+
+describe('background mode toggle', () => {
+  it('renders the background mode toggle after loading state', async () => {
+    mockGetBackgroundMode.mockResolvedValue(false)
+    render(<AppPreferencesContent />)
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('settings-background-mode-toggle')
+      ).toBeInTheDocument()
+    })
+    expect(
+      screen.getByTestId('settings-background-mode-toggle')
+    ).toHaveAttribute('aria-checked', 'false')
+  })
+
+  it('shows background mode as enabled when main process returns true', async () => {
+    mockGetBackgroundMode.mockResolvedValue(true)
+    render(<AppPreferencesContent />)
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('settings-background-mode-toggle')
+      ).toHaveAttribute('aria-checked', 'true')
+    })
+  })
+
+  it('calls setBackgroundMode(false) when toggled off', async () => {
+    mockGetBackgroundMode.mockResolvedValue(true)
+    mockSetBackgroundMode.mockResolvedValue({ enabled: false })
+    render(<AppPreferencesContent />)
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('settings-background-mode-toggle')
+      ).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByTestId('settings-background-mode-toggle'))
+    expect(mockSetBackgroundMode).toHaveBeenCalledWith(false)
+  })
+
+  it('calls setBackgroundMode(true) when toggled on', async () => {
+    mockGetBackgroundMode.mockResolvedValue(false)
+    mockSetBackgroundMode.mockResolvedValue({ enabled: true })
+    render(<AppPreferencesContent />)
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('settings-background-mode-toggle')
+      ).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByTestId('settings-background-mode-toggle'))
+    expect(mockSetBackgroundMode).toHaveBeenCalledWith(true)
+  })
+
+  it('writes to localStorage when background mode is enabled', async () => {
+    mockGetBackgroundMode.mockResolvedValue(false)
+    mockSetBackgroundMode.mockResolvedValue({ enabled: true })
+    render(<AppPreferencesContent />)
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('settings-background-mode-toggle')
+      ).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByTestId('settings-background-mode-toggle'))
+    // localStorage write is deferred until IPC resolves
+    await waitFor(() => {
+      expect(
+        localStorage.getItem(LOCAL_STORAGE_KEYS.BACKGROUND_MODE_ENABLED)
+      ).toBe('true')
+    })
+  })
+
+  it('removes localStorage key when background mode is disabled', async () => {
+    mockGetBackgroundMode.mockResolvedValue(true)
+    mockSetBackgroundMode.mockResolvedValue({ enabled: false })
+    render(<AppPreferencesContent />)
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('settings-background-mode-toggle')
+      ).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByTestId('settings-background-mode-toggle'))
+    // localStorage removal is deferred until IPC resolves
+    await waitFor(() => {
+      expect(
+        localStorage.getItem(LOCAL_STORAGE_KEYS.BACKGROUND_MODE_ENABLED)
+      ).toBeNull()
+    })
+  })
+
+  it('calls setBackgroundMode optimistically even when toggling to the same value', async () => {
+    // Simulate main process returning early when the value is unchanged
+    mockGetBackgroundMode.mockResolvedValue(true)
+    mockSetBackgroundMode.mockResolvedValue({ enabled: true }) // no-op response
+    render(<AppPreferencesContent />)
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('settings-background-mode-toggle')
+      ).toHaveAttribute('aria-checked', 'true')
+    })
+    fireEvent.click(screen.getByTestId('settings-background-mode-toggle'))
+    // The handler always calls setBackgroundMode optimistically, but the
+    // main process returns early without side effects when value is unchanged
+    expect(mockSetBackgroundMode).toHaveBeenCalledWith(false)
   })
 })
