@@ -6,5 +6,6 @@ export const LOCAL_STORAGE_KEYS = {
   AUTO_LOCK_ENABLED: 'auto-lock-enabled',
   AUTO_LOCK_TIMEOUT_MS: 'auto-lock-timeout-ms',
   NM_CLIENT_PUBLIC_KEY: 'nm-client-public-key',
-  EXTENSION_DIALOG_DISMISSED: 'extension-dialog-dismissed'
+  EXTENSION_DIALOG_DISMISSED: 'extension-dialog-dismissed',
+  LAST_OPENED_VAULT_ID: 'last-opened-vault-id'
 }

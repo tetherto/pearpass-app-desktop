@@ -17,6 +17,10 @@ import { NAVIGATION_ROUTES } from '../../../constants/navigation'
 import { useGlobalLoading } from '../../../context/LoadingContext'
 import { useRouter } from '../../../context/RouterContext'
 import { useTranslation } from '../../../hooks/useTranslation'
+import {
+  getLastOpenedVaultId,
+  setLastOpenedVaultId
+} from '../../../utils/lastOpenedVaultStorage'
 import { logger } from '../../../utils/logger'
 import { sortByName } from '../../../utils/sortByName'
 import {
@@ -71,20 +75,29 @@ export const CardUnlockPearPass = (): React.ReactElement => {
       await initVaults({ password: passwordBuffer })
 
       const vaults = await refetchVaults()
-      const firstVault = sortByName(vaults)[0]
+      const sortedVaults = sortByName(vaults)
+      const storedVaultId = getLastOpenedVaultId()
+      const targetVault =
+        sortedVaults.find((vault) => vault.id === storedVaultId) ??
+        sortedVaults[0]
 
-      if (firstVault) {
-        const isProtected = await isVaultProtected(firstVault.id)
+      if (targetVault) {
+        const isProtected = await isVaultProtected(targetVault.id)
 
         if (isProtected) {
-          navigate(currentPage, { state: 'vaultPassword', vaultId: firstVault.id })
+          navigate(currentPage, {
+            state: 'vaultPassword',
+            vaultId: targetVault.id
+          })
         } else {
-          await refetchVault(firstVault.id)
+          await refetchVault(targetVault.id)
+          setLastOpenedVaultId(targetVault.id)
           navigate('vault', { recordType: 'all' })
         }
       } else {
-        await createVault({ name: t('Personal') })
+        const createdVault = await createVault({ name: t('Personal') })
         await addDevice()
+        setLastOpenedVaultId(createdVault?.id)
         navigate('vault', { recordType: 'all' })
       }
     } catch (submitError) {

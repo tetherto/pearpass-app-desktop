@@ -9,6 +9,7 @@ import { createStyles } from './CreateOrEditVaultModalContent.styles'
 import { useGlobalLoading } from '../../../context/LoadingContext'
 import { useRouter } from '../../../context/RouterContext'
 import { useTranslation } from '../../../hooks/useTranslation'
+import { setLastOpenedVaultId } from '../../../utils/lastOpenedVaultStorage'
 import { logger } from '../../../utils/logger'
 
 export type CreateOrEditVaultModalContentProps = {
@@ -85,12 +86,14 @@ export const CreateOrEditVaultModalContent = ({
     try {
       setIsLoading(true)
 
-      await createVault({
+      const createdVault = await createVault({
         name: formValues.name,
         password: ''
       })
 
       await addDevice()
+
+      setLastOpenedVaultId(createdVault?.id)
 
       onSuccess?.()
       if(shouldRedirectToMain) {

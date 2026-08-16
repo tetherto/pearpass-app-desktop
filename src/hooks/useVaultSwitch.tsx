@@ -5,6 +5,7 @@ import { useVault, type Vault } from '@tetherto/pearpass-lib-vault'
 import { VaultPasswordFormModalContent } from '../containers/Modal/VaultPasswordFormModalContent'
 import { useLoadingContext } from '../context/LoadingContext'
 import { useModal } from '../context/ModalContext'
+import { setLastOpenedVaultId } from '../utils/lastOpenedVaultStorage'
 import { logger } from '../utils/logger'
 /**
  * Switch active vault with the same flow everywhere: optional password modal
@@ -42,6 +43,7 @@ export function useVaultSwitch() {
                 setIsLoading(true)
                 try {
                   await refetchVault(vault.id, { password })
+                  setLastOpenedVaultId(vault.id)
                   closeModal()
                   await onSuccess()
                 } finally {
@@ -54,6 +56,7 @@ export function useVaultSwitch() {
         }
 
         await refetchVault(vault.id)
+        setLastOpenedVaultId(vault.id)
         await onSuccess()
       } catch (error) {
         logger.error('useVaultSwitch', 'Error switching to vault:', error)

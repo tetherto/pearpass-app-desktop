@@ -36,6 +36,7 @@ import { useGlobalLoading } from '../../../context/LoadingContext'
 import { useRouter } from '../../../context/RouterContext'
 import { clearStaleVaultsDir } from '../../../electron'
 import { useTranslation } from '../../../hooks/useTranslation'
+import { setLastOpenedVaultId } from '../../../utils/lastOpenedVaultStorage'
 import { logger } from '../../../utils/logger'
 import { STRENGTH_MAP } from '../../../constants/password'
 
@@ -121,8 +122,9 @@ export const CardCreateMasterPassword = () => {
       await createMasterPassword(createBuffer)
       await logIn({ password: loginBuffer })
       await initVaults({ password: loginBuffer })
-      await createVault({ name: t('Personal') })
+      const createdVault = await createVault({ name: t('Personal') })
       await addDevice()
+      setLastOpenedVaultId(createdVault?.id)
       navigate('vault', { recordType: 'all' })
       setIsLoading(false)
     } catch (error) {
