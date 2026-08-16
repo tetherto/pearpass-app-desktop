@@ -11,7 +11,6 @@ import {
   useTheme
 } from '@tetherto/pearpass-lib-ui-kit'
 import {
-  // @ts-expect-error — JS module without type declarations
   getMasterEncryption,
   // @ts-expect-error — JS module without type declarations
   getVaultById,

@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 /**
- * Preload: with contextIsolation false, runs in the same context as the page.
- * Injects Node globals (__dirname, __filename) and Pear placeholder so the original
+ * Preload: runs in the same context as the page (contextIsolation false).
+ * Injects Node globals (__dirname, __filename) and exposes electronAPI on window.
  */
 const path = require('path')
 
@@ -63,5 +63,14 @@ window.electronAPI = {
   openLogsFolder: () => ipcRenderer.invoke('vault:openLogsFolder'),
   isLoggingEnabled: () => ipcRenderer.invoke('vault:isLoggingEnabled'),
   setLogging: (enabled) =>
-    ipcRenderer.invoke('vault:setLogging', { enabled: !!enabled })
+    ipcRenderer.invoke('vault:setLogging', { enabled: !!enabled }),
+
+  // Biometric / Touch ID
+  isBiometricAvailable: () => ipcRenderer.invoke('biometric:isAvailable'),
+  storeBiometricCredentials: (credentials) =>
+    ipcRenderer.invoke('biometric:storeCredentials', credentials),
+  retrieveBiometricCredentials: (reason) =>
+    ipcRenderer.invoke('biometric:retrieveCredentials', reason),
+  deleteBiometricCredentials: () =>
+    ipcRenderer.invoke('biometric:deleteCredentials')
 }

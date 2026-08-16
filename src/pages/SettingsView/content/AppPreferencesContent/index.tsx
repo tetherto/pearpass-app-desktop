@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
   Button,
@@ -18,15 +18,19 @@ import {
 import { LOCAL_STORAGE_KEYS } from '../../../../constants/localStorage'
 import { useAutoLockPreferences } from '../../../../hooks/useAutoLockPreferences'
 import { useTranslation } from '../../../../hooks/useTranslation'
+import { logger } from '../../../../utils/logger'
 import { isPasswordChangeReminderDisabled } from '../../../../utils/isPasswordChangeReminderDisabled'
+import { useModal } from '../../../../context/ModalContext'
 import { createStyles } from './styles'
+import { EnableTouchIdDialog } from './EnableTouchIdDialog'
 
 const TEST_IDS = {
   root: 'settings-app-preferences',
   autoLockSelect: 'settings-auto-lock-select',
   autoLockOption: 'settings-auto-lock-option',
   copyToClipboardToggle: 'settings-copy-to-clipboard-toggle',
-  remindersToggle: 'settings-reminders-toggle'
+  remindersToggle: 'settings-reminders-toggle',
+  biometricToggle: 'settings-biometric-toggle'
 } as const
 
 type TimeoutOption = {
@@ -44,6 +48,7 @@ export const AppPreferencesContent = () => {
   const { theme } = useTheme()
   const { colors } = theme
   const styles = createStyles(colors)
+  const { setModal, closeModal } = useModal()
 
   const { timeoutMs, setTimeoutMs } = useAutoLockPreferences()
 
@@ -56,6 +61,31 @@ export const AppPreferencesContent = () => {
   const [isReminderDisabled, setIsReminderDisabled] = useState(() =>
     isPasswordChangeReminderDisabled()
   )
+
+  const [isBiometricAvailable, setIsBiometricAvailable] = useState(false)
+  const [isBiometricEnabled, setIsBiometricEnabled] = useState(false)
+  const [isBiometricLoading, setIsBiometricLoading] = useState(true)
+
+  useEffect(() => {
+    const api = window.electronAPI
+    if (!api?.isBiometricAvailable) {
+      setIsBiometricLoading(false)
+      return
+    }
+    api.isBiometricAvailable()
+      .then((available) => {
+        setIsBiometricAvailable(available)
+        if (available) {
+          setIsBiometricEnabled(
+            localStorage.getItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED) === 'true'
+          )
+        }
+        setIsBiometricLoading(false)
+      })
+      .catch(() => {
+        setIsBiometricLoading(false)
+      })
+  }, [])
 
   const translatedTimeoutOptions = useMemo(
     () =>
@@ -104,6 +134,27 @@ export const AppPreferencesContent = () => {
     }
     setIsReminderDisabled(!isOn)
   }, [])
+
+  const handleBiometricToggle = useCallback((isOn: boolean) => {
+    if (isOn) {
+      setModal(
+        <EnableTouchIdDialog
+          closeModal={closeModal}
+          onEnabled={() => setIsBiometricEnabled(true)}
+        />
+      )
+    } else {
+      // Delete biometric credentials and clear localStorage
+      const api = window.electronAPI
+      if (api?.deleteBiometricCredentials) {
+        api.deleteBiometricCredentials().catch((err: unknown) =>
+          logger.error('AppPreferencesContent', 'Failed to delete biometric credentials', err)
+        )
+      }
+      localStorage.removeItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED)
+      setIsBiometricEnabled(false)
+    }
+  }, [setModal, closeModal])
 
   return (
     <div data-testid={TEST_IDS.root} style={styles.root}>
@@ -178,6 +229,20 @@ export const AppPreferencesContent = () => {
             description={t("Get alerts when it's time to update your passwords")}
           />
         </div>
+
+        {!isBiometricLoading && isBiometricAvailable && (
+          <div style={styles.rowDivider}>
+            <ToggleSwitch
+              data-testid={TEST_IDS.biometricToggle}
+              checked={isBiometricEnabled}
+              onChange={handleBiometricToggle}
+              label={t('Unlock with Touch ID')}
+              description={t(
+                'Use your fingerprint to unlock PearPass instead of typing your master password'
+              )}
+            />
+          </div>
+        )}
       </div>
     </div>
   )

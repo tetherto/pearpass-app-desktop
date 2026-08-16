@@ -31,7 +31,9 @@
     "icon": "assets/darwin/icon.png",
     "target": "dmg",
     "hardenedRuntime": true,
-    "gatekeeperAssess": false
+    "gatekeeperAssess": false,
+    "entitlements": "build-assets/entitlements.mac.plist",
+    "entitlementsInherit": "build-assets/entitlements.mac.plist"
   },
   "afterSign": "scripts/notarize.cjs",
   "afterPack": "scripts/afterPack.cjs",

@@ -3,7 +3,7 @@
 import React from 'react'
 
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { LOCAL_STORAGE_KEYS } from '../../../../constants/localStorage'
 import { AppPreferencesContent } from './index'
@@ -28,9 +28,13 @@ jest.mock('../../../../hooks/useAutoLockPreferences', () => ({
   })
 }))
 
-jest.mock('@tetherto/pearpass-lib-ui-kit/icons', () => ({
-  KeyboardArrowBottom: () => null
-}))
+jest.mock(
+  '@tetherto/pearpass-lib-ui-kit/icons',
+  () => ({
+    KeyboardArrowBottom: () => null
+  }),
+  { virtual: true }
+)
 
 jest.mock('@tetherto/pearpass-lib-constants', () => ({
   AUTO_LOCK_ENABLED: true,
@@ -62,7 +66,28 @@ const mockTheme = {
   }
 }
 
-jest.mock('@tetherto/pearpass-lib-ui-kit', () => ({
+// Mock ModalContext
+const mockSetModal = jest.fn()
+const mockCloseModal = jest.fn()
+
+jest.mock('../../../../context/ModalContext', () => ({
+  useModal: () => ({
+    setModal: mockSetModal,
+    closeModal: mockCloseModal
+  })
+}))
+
+// Mock EnableTouchIdDialog
+jest.mock('./EnableTouchIdDialog', () => ({
+  EnableTouchIdDialog: () => (
+    <div data-testid="settings-biometric-dialog">
+      <span>Enable Touch ID</span>
+    </div>
+  )
+}))
+jest.mock(
+  '@tetherto/pearpass-lib-ui-kit',
+  () => ({
   useTheme: () => mockTheme,
   PageHeader: (props: { title: string; subtitle?: React.ReactNode }) => (
     <div>
@@ -76,6 +101,7 @@ jest.mock('@tetherto/pearpass-lib-ui-kit', () => ({
     checked?: boolean
     onChange?: (checked: boolean) => void
     label?: string
+    description?: string
   }) => {
     const testId = props['data-testid']
     return (
@@ -94,7 +120,9 @@ jest.mock('@tetherto/pearpass-lib-ui-kit', () => ({
     'data-testid'?: string
     children?: React.ReactNode
     onClick?: () => void
+    type?: string
     iconAfter?: React.ReactNode
+    isLoading?: boolean
   }) => (
     <button
       type="button"
@@ -131,22 +159,159 @@ jest.mock('@tetherto/pearpass-lib-ui-kit', () => ({
     >
       {props.label}
     </button>
-  )
-}))
+  ),
+  Form: (props: {
+    onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void
+    testID?: string
+    children?: React.ReactNode
+  }) => (
+    <form
+      data-testid={props.testID}
+      onSubmit={(e) => {
+        e.preventDefault()
+        props.onSubmit?.(e)
+      }}
+    >
+      {props.children}
+    </form>
+  ),
+  PasswordField: (props: {
+    label?: string
+    value?: string
+    onChange?: (e: { target: { value: string } }) => void
+    error?: string
+    testID?: string
+    placeholder?: string
+  }) => {
+    return (
+      <div>
+        <label>{props.label}</label>
+        <input
+          data-testid={props.testID}
+          type="password"
+          value={props.value}
+          onChange={(e) => {
+            props.onChange?.(e)
+          }}
+        />
+        {props.error && <span data-testid="password-field-error">{props.error}</span>}
+      </div>
+    )
+  }
+  }),
+  { virtual: true }
+)
 
 beforeEach(() => {
   localStorage.clear()
   mockSetTimeoutMs.mockClear()
+  mockSetModal.mockClear()
+  mockCloseModal.mockClear()
   mockTimeoutMs = 60_000
+  delete (window as unknown as Record<string, unknown>).electronAPI
 })
 
+const mockBiometricAvailable = (available: boolean) => {
+  ;(window as unknown as Record<string, unknown>).electronAPI = {
+    isBiometricAvailable: () => Promise.resolve(available),
+    storeBiometricCredentials: jest.fn(() => Promise.resolve(true)),
+    deleteBiometricCredentials: jest.fn(() => Promise.resolve(true)),
+    retrieveBiometricCredentials: jest.fn()
+  }
+}
+
 describe('AppPreferencesContent', () => {
-  it('renders the heading and all rows', () => {
+  it('renders the heading and all standard rows', async () => {
+    mockBiometricAvailable(true)
     render(<AppPreferencesContent />)
-    expect(screen.getByText('App Preferences')).toBeInTheDocument()
+    await screen.findByText('App Preferences')
     expect(screen.getByText('Auto Lock')).toBeInTheDocument()
     expect(screen.getByText('Copy to Clipboard')).toBeInTheDocument()
     expect(screen.getByText('Reminders')).toBeInTheDocument()
+  })
+
+  it('shows Touch ID toggle when biometric is available', async () => {
+    mockBiometricAvailable(true)
+    render(<AppPreferencesContent />)
+    const toggle = await screen.findByTestId('settings-biometric-toggle')
+    expect(toggle).toBeInTheDocument()
+    expect(toggle).toHaveAttribute('aria-checked', 'false')
+  })
+
+  it('hides Touch ID toggle when biometric is unavailable', async () => {
+    mockBiometricAvailable(false)
+    render(<AppPreferencesContent />)
+    await waitFor(() => {
+      expect(screen.queryByTestId('settings-biometric-toggle')).not.toBeInTheDocument()
+    })
+  })
+
+  it('hides Touch ID toggle when electronAPI is not present', async () => {
+    render(<AppPreferencesContent />)
+    await waitFor(() => {
+      expect(screen.queryByTestId('settings-biometric-toggle')).not.toBeInTheDocument()
+    })
+  })
+
+  it('reads biometric enabled state from localStorage', async () => {
+    mockBiometricAvailable(true)
+    localStorage.setItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED, 'true')
+    render(<AppPreferencesContent />)
+    const toggle = await screen.findByTestId('settings-biometric-toggle')
+    expect(toggle).toHaveAttribute('aria-checked', 'true')
+  })
+
+  it('reads biometric disabled state from localStorage', async () => {
+    mockBiometricAvailable(true)
+    render(<AppPreferencesContent />)
+    const toggle = await screen.findByTestId('settings-biometric-toggle')
+    expect(toggle).toHaveAttribute('aria-checked', 'false')
+  })
+
+  it('opens EnableTouchIdDialog via ModalContext when toggling ON', async () => {
+    mockBiometricAvailable(true)
+    render(<AppPreferencesContent />)
+    const toggle = await screen.findByTestId('settings-biometric-toggle')
+    expect(toggle).toHaveAttribute('aria-checked', 'false')
+
+    fireEvent.click(toggle)
+
+    expect(mockSetModal).toHaveBeenCalledTimes(1)
+    const modalContent = mockSetModal.mock.calls[0][0]
+    expect(modalContent).toBeDefined()
+  })
+
+  it('passes closeModal and onEnabled to EnableTouchIdDialog', async () => {
+    mockBiometricAvailable(true)
+    render(<AppPreferencesContent />)
+    const toggle = await screen.findByTestId('settings-biometric-toggle')
+    fireEvent.click(toggle)
+
+    expect(mockSetModal).toHaveBeenCalledTimes(1)
+    const modalContent = mockSetModal.mock.calls[0][0] as React.ReactElement
+    expect(modalContent).toBeDefined()
+    expect(modalContent.type).toBeDefined()
+  })
+
+  it('clears biometric data when toggling OFF', async () => {
+    mockBiometricAvailable(true)
+    localStorage.setItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED, 'true')
+
+    render(<AppPreferencesContent />)
+    const toggle = await screen.findByTestId('settings-biometric-toggle')
+    expect(toggle).toHaveAttribute('aria-checked', 'true')
+
+    fireEvent.click(toggle)
+
+    expect(toggle).toHaveAttribute('aria-checked', 'false')
+    expect(
+      localStorage.getItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED)
+    ).toBeNull()
+
+    const api = (window as unknown as Record<string, unknown>).electronAPI as {
+      deleteBiometricCredentials: ReturnType<typeof jest.fn>
+    }
+    expect(api.deleteBiometricCredentials).toHaveBeenCalled()
   })
 
   it('starts with clipboard enabled when localStorage has no value', () => {

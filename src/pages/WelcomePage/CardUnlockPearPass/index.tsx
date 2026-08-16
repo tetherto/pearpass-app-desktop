@@ -1,6 +1,7 @@
-import React, { FormEvent, useState } from 'react'
+import React, { FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 import {
   Button,
+  Link,
   PasswordField,
   Text,
   Title,
@@ -9,15 +10,17 @@ import {
 import {
   KeyboardArrowRightRound
 } from '@tetherto/pearpass-lib-ui-kit/icons'
-import { useCreateVault, useUserData, useVault, useVaults } from '@tetherto/pearpass-lib-vault'
+import { runActionScan, useCreateVault, useUserData, useVault, useVaults } from '@tetherto/pearpass-lib-vault'
+import { pearpassVaultClient } from '@tetherto/pearpass-lib-vault/src/instances'
 import { clearBuffer, stringToBuffer } from '@tetherto/pearpass-lib-vault/src/utils/buffer'
+import { logger } from '../../../utils/logger'
 
 import { OnboardingShell } from '../../../components/OnboardingShell'
+import { LOCAL_STORAGE_KEYS } from '../../../constants/localStorage'
 import { NAVIGATION_ROUTES } from '../../../constants/navigation'
 import { useGlobalLoading } from '../../../context/LoadingContext'
 import { useRouter } from '../../../context/RouterContext'
 import { useTranslation } from '../../../hooks/useTranslation'
-import { logger } from '../../../utils/logger'
 import { sortByName } from '../../../utils/sortByName'
 import {
   ButtonIconWrapper,
@@ -39,10 +42,135 @@ export const CardUnlockPearPass = (): React.ReactElement => {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
+  const isBiometricConfigured =
+    localStorage.getItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED) === 'true'
+
   useGlobalLoading({ isLoading })
 
-  const handlePasswordChange = (value: string) => {
-    setPassword(value)
+  const biometricInFlightRef = useRef(false)
+  const biometricAutoDisabledRef = useRef(false)
+  const biometricLoginSucceededRef = useRef(false)
+
+  const tRef = useRef(t)
+  tRef.current = t
+  const navigateRef = useRef(navigate)
+  navigateRef.current = navigate
+  const currentPageRef = useRef(currentPage)
+  currentPageRef.current = currentPage
+
+  const tryBiometricLogin = useCallback((isManual = false) => {
+    if (biometricLoginSucceededRef.current) return
+    if (biometricInFlightRef.current) return
+    if (!isManual && biometricAutoDisabledRef.current) return
+    biometricInFlightRef.current = true
+
+    const api = window.electronAPI
+    if (!api?.retrieveBiometricCredentials) {
+      biometricInFlightRef.current = false
+      return
+    }
+
+    const isEnabled = localStorage.getItem(LOCAL_STORAGE_KEYS.BIOMETRIC_LOGIN_ENABLED) === 'true'
+    if (!isEnabled) {
+      biometricInFlightRef.current = false
+      return
+    }
+
+    const localT = tRef.current
+    const localNavigate = navigateRef.current
+    const localCurrentPage = currentPageRef.current
+
+    ;(async () => {
+      try {
+        const result = await api.retrieveBiometricCredentials(
+          localT('Unlock PearPass')
+        )
+
+        if (!result.success || !result.credentials) {
+          biometricAutoDisabledRef.current = true
+          biometricInFlightRef.current = false
+          return
+        }
+
+        setIsLoading(true)
+
+        try {
+          await logIn({
+            ciphertext: result.credentials.ciphertext,
+            nonce: result.credentials.nonce,
+            hashedPassword: result.credentials.hashedPassword,
+          })
+
+          biometricLoginSucceededRef.current = true
+
+          try {
+            await pearpassVaultClient?.personalSwarmInit?.()
+          } catch (swarmErr) {
+            logger.error('CardUnlockPearPass', 'personalSwarmInit failed', swarmErr)
+          }
+          runActionScan().catch((err: unknown) =>
+            logger.error('CardUnlockPearPass', 'runActionScan failed', err)
+          )
+
+          const vaults = await refetchVaults()
+          const firstVault = sortByName(vaults)[0]
+
+          if (firstVault) {
+            const isProtected = await isVaultProtected(firstVault.id)
+
+            if (isProtected) {
+              localNavigate(localCurrentPage, { state: 'vaultPassword', vaultId: firstVault.id })
+            } else {
+              await refetchVault(firstVault.id)
+              localNavigate('vault', { recordType: 'all' })
+            }
+          } else {
+            await createVault({ name: localT('Personal') })
+            await addDevice()
+            localNavigate('vault', { recordType: 'all' })
+          }
+        } catch {
+          setError(localT('Biometric unlock failed. Please enter your password.'))
+          biometricAutoDisabledRef.current = true
+          pearpassVaultClient?.encryptionClose?.().catch((err: unknown) =>
+            logger.error('CardUnlockPearPass', 'encryptionClose failed', err)
+          )
+        } finally {
+          setIsLoading(false)
+        }
+      } catch (bioPromptErr) {
+        const bioErr = bioPromptErr instanceof Error
+          ? bioPromptErr
+          : new Error(String(bioPromptErr))
+        const code = (bioPromptErr as Record<string, unknown>)?.code
+        logger.error('CardUnlockPearPass', 'Biometric retrieveCredentials failed', { code, message: bioErr.message })
+        setIsLoading(false)
+        biometricAutoDisabledRef.current = true
+      }
+
+      biometricInFlightRef.current = false
+    })()
+  }, [logIn, initVaults, refetchVaults, isVaultProtected, refetchVault, createVault, addDevice])
+
+  useEffect(() => {
+    if (!isBiometricConfigured) return
+
+    const scheduleBiometricAfterPaint = () => {
+      requestAnimationFrame(() => {
+        tryBiometricLogin()
+      })
+    }
+
+    if (document.hasFocus()) {
+      scheduleBiometricAfterPaint()
+    }
+
+    window.addEventListener('focus', scheduleBiometricAfterPaint)
+    return () => window.removeEventListener('focus', scheduleBiometricAfterPaint)
+  }, [isBiometricConfigured, tryBiometricLogin])
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value)
 
     if (error) {
       setError('')
@@ -110,11 +238,6 @@ export const CardUnlockPearPass = (): React.ReactElement => {
             : t('Invalid password')
       )
 
-      logger.error(
-        'CardUnlockPearPass',
-        'Error unlocking with master password:',
-        submitError
-      )
     } finally {
       clearBuffer(passwordBuffer)
       setIsLoading(false)
@@ -138,10 +261,9 @@ export const CardUnlockPearPass = (): React.ReactElement => {
         <PasswordField
           label={t('Password')}
           value={password}
-          placeholderText={t('Enter Master Password')}
-          onChangeText={handlePasswordChange}
-          variant={error ? 'error' : 'default'}
-          errorMessage={error || undefined}
+          placeholder={t('Enter Master Password')}
+          onChange={handlePasswordChange}
+          error={error || undefined}
           testID="login-password-input"
         />
 
@@ -161,6 +283,17 @@ export const CardUnlockPearPass = (): React.ReactElement => {
             {t('Continue')}
           </Button>
         </Footer>
+
+        {isBiometricConfigured && (
+          <div style={{ textAlign: 'center' as const, fontSize: '12px', marginTop: '12px' }}>
+            <Link
+              onClick={() => tryBiometricLogin(true)}
+              data-testid="login-touchid-link"
+            >
+              {t('Unlock with Touch ID')}
+            </Link>
+          </div>
+        )}
       </Shell>
     </OnboardingShell>
   )

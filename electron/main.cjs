@@ -4,6 +4,29 @@
  * Electron main process: creates the window, starts pear-runtime (P2P OTA, bare workers, storage),
  * and registers secure IPC handlers so the renderer can use runtime and vault services.
  */
+
+// ---- Global error guards ----
+process.on('unhandledRejection', (reason, promise) => {
+  try {
+    const detail = reason instanceof Error
+      ? `code=${reason.code} message=${reason.message} stack=${reason.stack?.split('\\n').slice(0, 5).join(' | ')}`
+      : String(reason);
+    process.stderr.write(`[PEARPASS] UNHANDLED_REJECTION ${detail}\n`);
+  } catch { /* never throw from the error handler itself */ }
+  // Do NOT rethrow or call process.exit — keep the process alive for triage
+});
+
+process.on('uncaughtException', (error) => {
+  try {
+    const detail = error instanceof Error
+      ? `code=${error.code} message=${error.message} stack=${error.stack?.split('\\n').slice(0, 5).join(' | ')}`
+      : String(error);
+    process.stderr.write(`[PEARPASS] UNCAUGHT_EXCEPTION ${detail}\n`);
+  } catch { /* never throw from the error handler itself */ }
+  // Do NOT rethrow or call process.exit — keep the process alive for triage
+});
+// --------------------------------------------------------------------------------
+
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
@@ -715,14 +738,54 @@ function registerIPC() {
     }
     const rawArgs = args || []
     const deserialized = rawArgs.map(fromSerializableArg)
+
+    // Diagnostic: log auth-sensitive vault calls (gated — off in production)
+    const AUTH_METHODS = [
+      'initWithCredentials',
+      'initWithPassword',
+      'getMasterPasswordStatus',
+      'recordFailedMasterPassword',
+      'resetFailedAttempts',
+      'createMasterPassword',
+      'updateMasterPassword',
+      'encryptionInit',
+      'encryptionGetStatus',
+      'hashPassword',
+      'encryptVaultKeyWithHashedPassword'
+    ]
+    const debugVaultCalls = process.env.PEARPASS_DEBUG_VAULT_CALLS === 'true'
+    if (debugVaultCalls && AUTH_METHODS.includes(method)) {
+      logger.info('MAIN', `[vault:invoke] → ${method}`, {
+        argKeys: rawArgs.map((a, i) => {
+          if (a && typeof a === 'object' && !Array.isArray(a)) {
+            return `[${i}]:{${Object.keys(a).join(',')}}`
+          }
+          if (a === undefined) return `[${i}]:undefined`
+          if (a === null) return `[${i}]:null`
+          return `[${i}]:${typeof a}`
+        })
+      })
+    }
+    // End diagnostic
+
     try {
       const result = await fn.apply(vaultClient, deserialized)
+      if (debugVaultCalls && AUTH_METHODS.includes(method)) {
+        logger.info('MAIN', `[vault:invoke] ✓ ${method} OK`, { hasData: result !== undefined })
+      }
       return { ok: true, data: toSerializableArg(result) }
     } catch (err) {
+      if (debugVaultCalls && AUTH_METHODS.includes(method)) {
+        logger.error('MAIN', `[vault:invoke] ✗ ${method} FAILED`, {
+          code: err?.code,
+          message: err?.message ?? String(err),
+          stack: err?.stack?.split('\n').slice(0, 5).join('\n')
+        })
+      }
       return {
         ok: false,
-        error: err.message || String(err),
-        code: err.code
+        error: err?.message ?? String(err),
+        code: err?.code
       }
     }
   })
@@ -795,6 +858,99 @@ function registerIPC() {
     }
     logger.clearLogPath()
     return { enabled: false, forced: false }
+  })
+
+  // ---- Touch ID / Biometric (native N-API addon, biometric-gated keychain) ----
+  // Uses kSecAccessControlBiometryCurrentSet — the OS requires a real
+  // Touch ID / Face ID scan before releasing stored data.
+
+  let biometricKeychain = null
+  try {
+    biometricKeychain = require('./native-biometric')
+  } catch {
+    logger.warn('MAIN', 'Native biometric-keychain addon failed to load — biometric unlock will be unavailable')
+  }
+
+  function isBiometricUsable() {
+    if (process.platform !== 'darwin') return false
+    if (!biometricKeychain) return false
+    return true
+  }
+
+  const BIOMETRIC_SERVICE = 'com.pears.pass.biometric'
+  const BIOMETRIC_ACCOUNT = 'master-credentials'
+
+  // Check if biometric auth is available (macOS with Touch ID/Face ID)
+  ipcMain.handle('biometric:isAvailable', async () => {
+    if (!isBiometricUsable()) return false
+    try {
+      return biometricKeychain.isAvailable()
+    } catch {
+      return false
+    }
+  })
+
+  // Store Argon2id-derived vault credentials (not the raw master password)
+  ipcMain.handle('biometric:storeCredentials', async (_event, credentials) => {
+    if (!isBiometricUsable()) {
+      throw new Error('Biometric authentication is only supported on macOS')
+    }
+    try {
+      const data = Buffer.from(JSON.stringify(credentials), 'utf8')
+      logger.info('MAIN', 'Storing biometric credentials', {
+        hasCiphertext: !!credentials?.ciphertext,
+        hasNonce: !!credentials?.nonce,
+        hasSalt: !!credentials?.salt,
+        hasHashedPassword: !!credentials?.hashedPassword,
+      })
+      await biometricKeychain.store(BIOMETRIC_SERVICE, BIOMETRIC_ACCOUNT, data)
+      logger.info('MAIN', 'Biometric credentials stored successfully')
+      return true
+    } catch (error) {
+      logger.error('MAIN', 'Biometric keychain store failed', { code: error.code, message: error.message })
+      throw new Error(`Biometric keychain store failed: ${error.message}`)
+    }
+  })
+
+  // Retrieve vault credentials — OS shows biometric dialog; keychain
+  // refuses release without a scan (kSecAccessControlBiometryCurrentSet).
+  ipcMain.handle('biometric:retrieveCredentials', async (_event, reason) => {
+    if (!isBiometricUsable()) {
+      throw new Error('Biometric authentication is only supported on macOS')
+    }
+    try {
+      const data = await biometricKeychain.retrieve(
+        BIOMETRIC_SERVICE,
+        BIOMETRIC_ACCOUNT,
+        reason || 'Authenticate to PearPass'
+      )
+      const credentials = JSON.parse(data.toString('utf8'))
+      return { success: true, credentials }
+    } catch (error) {
+      const errDetail = { code: error.code, message: error.message }
+      if (error.code === 'ERR_USER_CANCELED') {
+        logger.warn('MAIN', 'Biometric retrieval cancelled by user', errDetail)
+      } else if (error.code === 'ERR_AUTH_FAILED') {
+        logger.warn('MAIN', 'Biometric authentication failed (too many attempts / no match)', errDetail)
+      } else if (error.code === 'ERR_ITEM_NOT_FOUND') {
+        logger.warn('MAIN', 'Biometric credentials not found in keychain', errDetail)
+      } else {
+        logger.error('MAIN', 'Biometric credential retrieval failed', error)
+      }
+      return { success: false, credentials: null }
+    }
+  })
+
+  // Delete biometric credentials (called when user disables Touch ID)
+  ipcMain.handle('biometric:deleteCredentials', async () => {
+    if (!isBiometricUsable()) return false
+    try {
+      await biometricKeychain.remove(BIOMETRIC_SERVICE, BIOMETRIC_ACCOUNT)
+      return true
+    } catch (error) {
+      logger.warn('MAIN', 'Biometric credential deletion failed', error)
+      return false
+    }
   })
 }
 
