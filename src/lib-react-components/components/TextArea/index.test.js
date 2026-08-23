@@ -1,18 +1,12 @@
 import React from 'react'
 
 import { render, fireEvent } from '@testing-library/react'
-import { ThemeProvider } from '@tetherto/pearpass-lib-ui-kit'
 
 import { TextArea } from './index'
 import '@testing-library/jest-dom'
 
 describe('TextArea Component', () => {
-  const setup = (props) =>
-    render(
-      <ThemeProvider>
-        <TextArea {...props} />
-      </ThemeProvider>
-    )
+  const setup = (props) => render(<TextArea {...props} />)
 
   test('renders with correct value and placeholder for default variant', () => {
     const { getByPlaceholderText } = setup({

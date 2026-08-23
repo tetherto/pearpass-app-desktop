@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { render, fireEvent } from '@testing-library/react'
-import { ThemeProvider } from '@tetherto/pearpass-lib-ui-kit'
 import { ExpandMore as DummyIcon } from '@tetherto/pearpass-lib-ui-kit/icons'
 
 import { InputField } from './index'
@@ -10,14 +9,12 @@ import '@testing-library/jest-dom'
 describe('InputField Component', () => {
   test('renders label, placeholder, and error message', () => {
     const { getByText, getByPlaceholderText } = render(
-      <ThemeProvider>
-        <InputField
-          value="test value"
-          label="Test Label"
-          placeholder="Enter text"
-          error="Error occurred"
-        />
-      </ThemeProvider>
+      <InputField
+        value="test value"
+        label="Test Label"
+        placeholder="Enter text"
+        error="Error occurred"
+      />
     )
     expect(getByText('Test Label')).toBeInTheDocument()
     expect(getByPlaceholderText('Enter text')).toBeInTheDocument()
@@ -27,9 +24,7 @@ describe('InputField Component', () => {
   test('calls onChange when input changes if not disabled', () => {
     const handleChange = jest.fn()
     const { getByPlaceholderText } = render(
-      <ThemeProvider>
-        <InputField value="" placeholder="Enter text" onChange={handleChange} />
-      </ThemeProvider>
+      <InputField value="" placeholder="Enter text" onChange={handleChange} />
     )
     const input = getByPlaceholderText('Enter text')
     fireEvent.change(input, { target: { value: 'new value' } })
@@ -39,14 +34,12 @@ describe('InputField Component', () => {
   test('does not call onChange when disabled', () => {
     const handleChange = jest.fn()
     const { getByPlaceholderText } = render(
-      <ThemeProvider>
-        <InputField
-          value=""
-          placeholder="Enter text"
-          onChange={handleChange}
-          isDisabled={true}
-        />
-      </ThemeProvider>
+      <InputField
+        value=""
+        placeholder="Enter text"
+        onChange={handleChange}
+        isDisabled={true}
+      />
     )
     const input = getByPlaceholderText('Enter text')
     fireEvent.change(input, { target: { value: 'should not change' } })
@@ -56,13 +49,11 @@ describe('InputField Component', () => {
   test('calls onClick when outer element is clicked and focuses input', () => {
     const handleClick = jest.fn()
     const { getByPlaceholderText } = render(
-      <ThemeProvider>
-        <InputField
-          value="click test"
-          placeholder="Enter text"
-          onClick={handleClick}
-        />
-      </ThemeProvider>
+      <InputField
+        value="click test"
+        placeholder="Enter text"
+        onClick={handleClick}
+      />
     )
     const input = getByPlaceholderText('Enter text')
     const outerElement = input.closest('div')
@@ -74,13 +65,11 @@ describe('InputField Component', () => {
   test('renders overlay correctly: visible when not focused, hidden when focused', async () => {
     const overlayText = 'Overlay Content'
     const { queryByText, getByPlaceholderText } = render(
-      <ThemeProvider>
-        <InputField
-          value="overlay test"
-          placeholder="Enter text"
-          overlay={overlayText}
-        />
-      </ThemeProvider>
+      <InputField
+        value="overlay test"
+        placeholder="Enter text"
+        overlay={overlayText}
+      />
     )
     expect(queryByText(overlayText)).toBeInTheDocument()
 
@@ -91,13 +80,7 @@ describe('InputField Component', () => {
 
   test('renders icon if provided', () => {
     const { container } = render(
-      <ThemeProvider>
-        <InputField
-          value="icon test"
-          placeholder="Enter text"
-          icon={DummyIcon}
-        />
-      </ThemeProvider>
+      <InputField value="icon test" placeholder="Enter text" icon={DummyIcon} />
     )
     const icon = container.querySelector('svg')
     expect(icon).toBeInTheDocument()
@@ -106,49 +89,41 @@ describe('InputField Component', () => {
   test('renders additionalItems if provided', () => {
     const additionalItemText = 'Additional'
     const { getByText } = render(
-      <ThemeProvider>
-        <InputField
-          value="additional test"
-          placeholder="Enter text"
-          additionalItems={<div>{additionalItemText}</div>}
-        />
-      </ThemeProvider>
+      <InputField
+        value="additional test"
+        placeholder="Enter text"
+        additionalItems={<div>{additionalItemText}</div>}
+      />
     )
     expect(getByText(additionalItemText)).toBeInTheDocument()
   })
 
   test('matches snapshot for default variant', () => {
     const { container } = render(
-      <ThemeProvider>
-        <InputField
-          value="snapshot test"
-          placeholder="Enter text"
-          label="Label"
-        />
-      </ThemeProvider>
+      <InputField
+        value="snapshot test"
+        placeholder="Enter text"
+        label="Label"
+      />
     )
     expect(container.firstChild).toMatchSnapshot()
   })
 
   test('matches snapshot for outline variant', () => {
     const { container } = render(
-      <ThemeProvider>
-        <InputField
-          value="outline snapshot"
-          placeholder="Enter text"
-          label="Outline Label"
-          variant="outline"
-        />
-      </ThemeProvider>
+      <InputField
+        value="outline snapshot"
+        placeholder="Enter text"
+        label="Outline Label"
+        variant="outline"
+      />
     )
     expect(container.firstChild).toMatchSnapshot()
   })
 
   test('autoFocus prop focuses input automatically', () => {
     const { getByPlaceholderText } = render(
-      <ThemeProvider>
-        <InputField value="autofocus test" placeholder="Enter text" autoFocus />
-      </ThemeProvider>
+      <InputField value="autofocus test" placeholder="Enter text" autoFocus />
     )
     const input = getByPlaceholderText('Enter text')
     expect(document.activeElement).toBe(input)
