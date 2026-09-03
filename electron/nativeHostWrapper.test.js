@@ -10,6 +10,7 @@ jest.mock('fs/promises', () => ({
 const fsp = require('fs/promises')
 
 const {
+  buildFlatpakBrowserWrapperContent,
   buildWrapperContent,
   writeWrapperAtomic,
   refreshNativeHostWrapperIfPresent
@@ -81,6 +82,37 @@ describe('buildWrapperContent', () => {
         bridgeScriptPath: BRIDGE_PATH
       })
     ).toThrow('Unsupported platform: aix')
+  })
+})
+
+describe('buildFlatpakBrowserWrapperContent', () => {
+  it('re-enters the host before launching the native bridge', () => {
+    const content = buildFlatpakBrowserWrapperContent({
+      electronExecPath: EXEC_PATH,
+      bridgeScriptPath: BRIDGE_PATH,
+      isPearPassFlatpak: false
+    })
+
+    expect(content).toContain('#!/bin/bash')
+    expect(content).toContain('flatpak-spawn --host')
+    expect(content).toContain('ELECTRON_RUN_AS_NODE=1')
+    expect(content).toContain(EXEC_PATH)
+    expect(content).toContain(BRIDGE_PATH)
+  })
+
+  it('launches the PearPass Flatpak native host command when PearPass is Flatpak', () => {
+    const content = buildFlatpakBrowserWrapperContent({
+      electronExecPath: EXEC_PATH,
+      bridgeScriptPath: BRIDGE_PATH,
+      isPearPassFlatpak: true
+    })
+
+    expect(content).toContain('flatpak-spawn --host')
+    expect(content).toContain('flatpak run')
+    expect(content).toContain('com.pears.pass')
+    expect(content).toContain('--command=pearpass-native-host')
+    expect(content).not.toContain(EXEC_PATH)
+    expect(content).not.toContain(BRIDGE_PATH)
   })
 })
 

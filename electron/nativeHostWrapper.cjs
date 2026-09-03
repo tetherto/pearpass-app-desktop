@@ -61,6 +61,43 @@ set ELECTRON_RUN_AS_NODE=1
   throw new Error(`Unsupported platform: ${platform}`)
 }
 
+function buildFlatpakBrowserWrapperContent({
+  electronExecPath,
+  bridgeScriptPath,
+  isPearPassFlatpak
+}) {
+  if (isPearPassFlatpak) {
+    return `#!/bin/bash
+# PearPass Native Messaging Host for Flatpak browsers
+# Flatpak browsers run native hosts inside their sandbox; re-enter the host,
+# then launch the PearPass Flatpak native host command.
+set -e
+
+if [ "\${container-}" = flatpak ]; then
+  exec flatpak-spawn --host flatpak run --command=${FLATPAK_NATIVE_HOST_COMMAND} ${FLATPAK_APP_ID} "$@"
+fi
+
+exec flatpak run --command=${FLATPAK_NATIVE_HOST_COMMAND} ${FLATPAK_APP_ID} "$@"
+`
+  }
+
+  return `#!/bin/bash
+# PearPass Native Messaging Host for Flatpak browsers
+# Flatpak browsers run native hosts inside their sandbox; re-enter the host
+# before launching the AppImage/Electron native messaging bridge.
+set -e
+
+if [ "\${container-}" = flatpak ]; then
+  exec flatpak-spawn --host env ELECTRON_RUN_AS_NODE=1 \\
+    "${electronExecPath}" \\
+    "${bridgeScriptPath}"
+fi
+
+export ELECTRON_RUN_AS_NODE=1
+exec "${electronExecPath}" "${bridgeScriptPath}"
+`
+}
+
 // Atomic so Chrome can't read a half-written wrapper while spawning the host.
 async function writeWrapperAtomic(executablePath, content, platform) {
   const tmpPath = `${executablePath}.tmp-${process.pid}`
@@ -95,6 +132,7 @@ async function refreshNativeHostWrapperIfPresent({
 }
 
 module.exports = {
+  buildFlatpakBrowserWrapperContent,
   buildWrapperContent,
   writeWrapperAtomic,
   refreshNativeHostWrapperIfPresent

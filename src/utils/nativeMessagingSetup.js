@@ -16,7 +16,8 @@ import nativeHostWrapper from '../../electron/nativeHostWrapper.cjs'
 
 const { isFlatpakRuntime, isSnapRuntime, getHostHome, getSnapRealHome } =
   flatpakPaths
-const { buildWrapperContent } = nativeHostWrapper
+const { buildFlatpakBrowserWrapperContent, buildWrapperContent } =
+  nativeHostWrapper
 
 const NATIVE_BRIDGE_PROCESS_IDENTIFIER = 'pearpass-lib-native-messaging-bridge'
 
@@ -113,7 +114,7 @@ export const generateNativeHostExecutable = async (
 /**
  * Returns platform-specific browser entries for native messaging manifest installation.
  * Each entry includes a browserDir for detecting whether the browser is installed.
- * @returns {{ browsers: Array<{name: string, browserDir: string|null, manifestPath: string, registryKey?: string}> }}
+ * @returns {{ browsers: Array<{name: string, browserDir: string|null, manifestPath: string, registryKey?: string, flatpakBrowserWrapperPath?: string}> }}
  */
 export const getNativeMessagingLocations = () => {
   const platform = os.platform()
@@ -354,6 +355,30 @@ export const getNativeMessagingLocations = () => {
           )
         },
         {
+          name: 'Brave (Flatpak)',
+          browserDir: null,
+          manifestPath: path.join(
+            home,
+            '.var',
+            'app',
+            'com.brave.Browser',
+            'config',
+            'BraveSoftware',
+            'Brave-Browser',
+            'NativeMessagingHosts',
+            manifestFile
+          ),
+          flatpakBrowserWrapperPath: path.join(
+            home,
+            '.var',
+            'app',
+            'com.brave.Browser',
+            'data',
+            'bin',
+            'pearpass-wrapper.sh'
+          )
+        },
+        {
           name: 'Firefox',
           isFirefox: true,
           browserDir: null,
@@ -575,7 +600,32 @@ export const setupNativeMessaging = async ({
       }
 
       try {
-        const manifest = browser.isFirefox ? firefoxManifest : chromiumManifest
+        const manifest = browser.isFirefox
+          ? firefoxManifest
+          : { ...chromiumManifest }
+
+        if (browser.flatpakBrowserWrapperPath && !useSnapDirect) {
+          const wrapperContent = buildFlatpakBrowserWrapperContent({
+            electronExecPath: execPath,
+            bridgeScriptPath: bridgePath,
+            isPearPassFlatpak: isFlatpakRuntime()
+          })
+
+          await fs.mkdir(path.dirname(browser.flatpakBrowserWrapperPath), {
+            recursive: true
+          })
+          await fs.writeFile(
+            browser.flatpakBrowserWrapperPath,
+            wrapperContent,
+            'utf8'
+          )
+          if (platform !== 'win32') {
+            await fs.chmod(browser.flatpakBrowserWrapperPath, 0o755)
+          }
+
+          manifest.path = browser.flatpakBrowserWrapperPath
+        }
+
         await fs.mkdir(path.dirname(browser.manifestPath), { recursive: true })
         await fs.writeFile(
           browser.manifestPath,
