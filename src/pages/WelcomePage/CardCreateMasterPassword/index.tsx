@@ -77,6 +77,10 @@ export const CardCreateMasterPassword = () => {
     values.password.length > 0 &&
     values.password === values.passwordConfirm
   const isFormValid = isPasswordStrong && passwordsMatch
+  const passwordsMismatch =
+    values.password.length > 0 &&
+    values.passwordConfirm.length > 0 &&
+    values.password !== values.passwordConfirm
 
   const passwordIndicator: PasswordIndicatorVariant | undefined =
     passwordStrength ? STRENGTH_MAP[passwordStrength.strengthType] : undefined
@@ -178,6 +182,7 @@ export const CardCreateMasterPassword = () => {
             value={values.passwordConfirm}
             onChangeText={handleConfirmChange}
             passwordIndicator={passwordsMatch ? 'match' : undefined}
+            error={passwordsMismatch ? t('Passwords do not match') : undefined}
             testID="confirm-password-field"
           />
 
